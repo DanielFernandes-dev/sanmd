@@ -10,3 +10,4 @@ Cada ADR documenta uma decisão relevante, seu contexto e consequências.
 | 0003  | Separação conteúdo (data) x motor (game) | Aceito | 2026-08-12 |
 | 0004  | Interface em camadas sobrepostas         | Aceito | 2026-08-12 |
 | 0005  | Terminal com parser de comandos para puzzles | Aceito | 2026-08-12 |
+| 0006  | Multi-cena, cronômetro e finais (Atos 2 e 3) | Aceito | 2026-08-12 |
