@@ -4,6 +4,9 @@
   var PIN = '3141';
   var FRAG_HEX = '46 52 41 47 5F 31 3D 4B 58 38 41 2D 37 51 4C 32';
   var FRAG_TEXT = 'FRAG_1=KX8A-7QL2';
+  var FRAG2_TEXT = 'FRAG_2=JW3M-THP9';
+  var FRAG3_TEXT = 'FRAG_3=PQ9Z-MNO2';
+  var FRAG3_HEX = '46 52 41 47 5F 33 3D 50 51 39 5A 2D 4D 4E 4F 32';
 
   var state = {
     ato: 1,
@@ -19,12 +22,20 @@
     timeRemaining: 90,
     neighbor: 'none',
     chatLog: [],
-    badge: 0
+    badge: 0,
+    location: 'casa',
+    reported: false,
+    devNote: false,
+    frag2Done: false,
+    frag3Done: false,
+    timerRunning: false,
+    corrupted: false
   };
 
   var el = {};
   var pinBuffer = '';
   var chatOpen = false;
+  var actCardGo = null;
 
   function $(s) { return document.querySelector(s); }
 
@@ -64,6 +75,17 @@
     el.epilogue = $('#epilogue');
     el.epiText = $('#epi-text');
     el.epiRestart = $('#epi-restart');
+    el.epiContinue = $('#epi-continue');
+    el.actCard = $('#act-card');
+    el.actTitle = $('#act-title');
+    el.actSub = $('#act-sub');
+    el.actGo = $('#act-go');
+    el.ending = $('#ending');
+    el.endingTitle = $('#ending-title');
+    el.endingText = $('#ending-text');
+    el.endingRestart = $('#ending-restart');
+    el.btnPhone = $('#btn-phone');
+    el.btnLocation = $('#btn-location');
     el.toasts = $('#toasts');
     el.dev = $('#dev');
     el.devState = $('#dev-state');
@@ -72,9 +94,16 @@
     el.devReset = $('#dev-reset');
 
     el.room = $('#room');
+    el.roomOffice = $('#room-office');
     var props = el.room.querySelectorAll('.prop');
     for (var i = 0; i < props.length; i++) {
       props[i].addEventListener('click', function () {
+        onPropClick(this.getAttribute('data-prop'));
+      });
+    }
+    var officeProps = el.roomOffice.querySelectorAll('.prop');
+    for (var j = 0; j < officeProps.length; j++) {
+      officeProps[j].addEventListener('click', function () {
         onPropClick(this.getAttribute('data-prop'));
       });
     }
@@ -94,6 +123,19 @@
       if (e.target === el.itemModal) hideModal();
     });
     el.epiRestart.addEventListener('click', function () { location.reload(); });
+    el.epiContinue.addEventListener('click', function () {
+      el.epilogue.classList.add('hidden');
+      startAct2();
+    });
+    el.actGo.addEventListener('click', function () {
+      el.actCard.classList.add('hidden');
+      if (actCardGo) { var cb = actCardGo; actCardGo = null; cb(); }
+    });
+    el.endingRestart.addEventListener('click', function () { location.reload(); });
+    el.btnPhone.addEventListener('click', openPhone);
+    el.btnLocation.addEventListener('click', function () {
+      setLocation(state.location === 'casa' ? 'delegacia' : 'casa');
+    });
     el.btnDev.addEventListener('click', toggleDev);
     el.devIsolate.addEventListener('click', function () {
       state.isolated = !state.isolated;
@@ -132,11 +174,26 @@
   }
 
   function updateHUD() {
-    el.hudAto.textContent = state.neighbor === 'done' ? 'ATO 1 — COMPLETO' : 'ATO 1 — A CURIOSIDADE';
+    if (state.ato === 1) {
+      el.hudAto.textContent = state.neighbor === 'done' ? 'ATO 1 — COMPLETO' : 'ATO 1 — A CURIOSIDADE';
+    } else if (state.ato === 2) {
+      el.hudAto.textContent = 'ATO 2 — O FALSO TESTE';
+    } else {
+      el.hudAto.textContent = 'ATO 3 — A CONSPIRAÇÃO';
+    }
     el.hudFrag.textContent = 'FRAGMENTOS: ' + state.fragments + '/' + state.total;
     el.hudTimer.textContent = 'TEMPO: ' + state.timeRemaining + 's';
+    el.hudTimer.classList.toggle('ticking', state.timerRunning);
     el.hudSolo.textContent = state.isolated ? 'SOLO — TERMINAL LIVRE' : 'PRESENÇA — BLOQUEADO';
     el.hudSolo.style.color = state.isolated ? '#3cff78' : '#ff5f5f';
+  }
+
+  function updateSceneName() {
+    if (state.location === 'casa') {
+      el.sceneName.innerHTML = 'SALA DE ESTAR — <b>investigue os objetos</b>';
+    } else {
+      el.sceneName.innerHTML = 'DELEGACIA — <b>investigue os objetos</b>';
+    }
   }
 
   function toast(msg, ms) {
@@ -246,6 +303,34 @@
       } else if (state.neighbor === 'done') {
         showModal(DATA.items.doorDone.title, DATA.items.doorDone.body);
       }
+      return;
+    }
+    if (prop === 'computer') {
+      if (state.ato === 3 && state.location === 'delegacia') {
+        showModal(DATA.items.computerAct3.title, DATA.items.computerAct3.body);
+      } else {
+        showModal(DATA.items.computerOffice.title, DATA.items.computerOffice.body);
+      }
+      return;
+    }
+    if (prop === 'tv') {
+      showModal(DATA.items.tv.title, DATA.items.tv.body);
+      return;
+    }
+    if (prop === 'cabinet') {
+      if (!state.devNote) {
+        state.devNote = true;
+        DATA.notes.push({ title: 'Pasta PROTOCOLO-7', body: 'Senha do cofre: PROTOCOLO7\nAviso: reinserir as senhas reativa o alarme.' });
+        showModal(DATA.items.cabinet.title, DATA.items.cabinet.body);
+        toast('Nota adicionada ao bloco de notas');
+        playChatSequence(DATA.act2.devNote);
+      } else {
+        showModal(DATA.items.cabinet.title, DATA.items.cabinet.body);
+      }
+      return;
+    }
+    if (prop === 'window-office') {
+      showModal(DATA.items.windowOffice.title, DATA.items.windowOffice.body);
       return;
     }
   }
@@ -545,6 +630,17 @@
   function openTerminal() {
     el.terminal.classList.remove('hidden');
     if (!state.isolated) {
+      if (state.ato === 2 && state.location === 'delegacia' && !state.reported) {
+        state.reported = true;
+        el.terminal.classList.add('hidden');
+        showDialog('CONSULTOR', DATA.act2.report, function () {
+          el.terminal.classList.remove('hidden');
+          el.termLock.classList.remove('hidden');
+          el.termIn.blur();
+          playChatSequence(DATA.act2.chat);
+        });
+        return;
+      }
       el.termLock.classList.remove('hidden');
       el.termIn.blur();
       return;
@@ -632,7 +728,8 @@
       out.push('  decode <arg>    Decodifica hex ou base64');
       out.push('  scan            Varre a rede por fragmentos');
       out.push('  keys            Lista chaves coletadas');
-      out.push('  decrypt         Tenta descriptografar (exige chaves)');
+      out.push('  decrypt [chave] Tenta descriptografar (exige chaves)');
+      out.push('  corromper       Corrompe o código do vírus (exige 3 chaves)');
       out.push('  ls              Lista arquivos locais');
       out.push('  whoami          Identidade da sessão');
       out.push('  checkin         Ping no servidor central');
@@ -711,9 +808,47 @@
     }
 
     if (op === 'decrypt') {
+      var arg = parts.slice(1).join(' ');
+      if (arg) {
+        if (!state.frag2Done && arg === 'PROTOCOLO7' && state.keys.length >= 1) {
+          collectFragment2();
+          out.push('DESCRIPTOGRAFADO: ' + FRAG2_TEXT, 'accent');
+          out.push('Chave registrada: JW3M-THP9', 'accent');
+          return out;
+        }
+        out.push('Chave de descriptografia incorreta.', 'warn');
+        return out;
+      }
       var need = state.total - state.keys.length;
-      if (need === 0) out.push('Tudo descriptografado. O código do vírus está ao alcance.');
-      else out.push('Descriptografia requer ' + need + ' fragmento(s). Atual: ' + state.keys.length + '/' + state.total + '.', 'warn');
+      if (need === 0) {
+        out.push('Código do vírus acessível. Digite: corromper', 'warn');
+      } else {
+        out.push('Faltam ' + need + ' fragmento(s). Atual: ' + state.keys.length + '/' + state.total + '.', 'warn');
+      }
+      return out;
+    }
+
+    if (op === 'corromper') {
+      if (state.keys.length < 3) {
+        out.push('Você precisa das 3 chaves para corromper o código.', 'warn');
+        return out;
+      }
+      state.corrupted = true;
+      state.timerRunning = false;
+      updateHUD();
+      out.push('CORROMPENDO CÓDIGO-FONTE DO VÍRUS...', 'warn');
+      out.push('[OK] Núcleo acessado');
+      out.push('[OK] Chaves validadas: 3/3');
+      out.push('[!!] Sobrescrevendo dados do vírus...', 'warn');
+      out.push('[!!] ALARME DISPARADO — POLÍCIA EM DESLOCAMENTO', 'warn');
+      out.push('[!!] RASTREIO LOCALIZADO: SUA CASA', 'warn');
+      out.push('CÓDIGO DESTRUÍDO.', 'accent');
+      setTimeout(function () {
+        closeTerminal();
+        showDialog('C', DATA.act3.cOrrendo, function () {
+          showEnding('FINAL 3 — O SACRIFÍCIO / VERDADEIRO', DATA.endings.e3);
+        });
+      }, 1600);
       return out;
     }
 
@@ -745,6 +880,14 @@
     }
     if (state.tut === 2 && dec === FRAG_TEXT) {
       collectFragment();
+      return;
+    }
+    if (dec === 'decrypt PROTOCOLO7') {
+      toast('Instrução decodificada. Agora use decrypt.');
+      return;
+    }
+    if (state.ato === 3 && dec === FRAG3_TEXT && !state.frag3Done) {
+      collectFragment3();
     }
   }
 
@@ -788,10 +931,115 @@
       '· Chave registrada: KX8A-7QL2<br/>' +
       '· Trava sensorial: TESTADA (terminal bloqueado durante presença)<br/>' +
       '· Terminal: DOMINADO<br/><br/>' +
-      'O remetente disse que isto é só o começo. No Ato 2, você será isolado dos superiores; no Ato 3, o rastreio policial ativa o cronômetro e as decisões definem qual dos 3 finais você atinge.<br/><br/>' +
-      '<b>Fim do protótipo — Ato 1 completo.</b>';
+      'No Ato 2, você tenta reportar o caso na delegacia — e o terminal se esconde.<br/><br/>' +
+      '<b>Ato 1 completo. Continue para o Ato 2.</b>';
     el.epilogue.classList.remove('hidden');
     el.hudAto.textContent = 'ATO 1 — COMPLETO';
+  }
+
+  /* ---------------- atos 2 e 3 ---------------- */
+
+  function showActCard(title, sub, onGo) {
+    el.actTitle.textContent = title;
+    el.actSub.textContent = sub;
+    actCardGo = onGo;
+    el.actCard.classList.remove('hidden');
+  }
+
+  function setLocation(loc) {
+    if (state.location === loc) return;
+    state.location = loc;
+    el.room.classList.toggle('hidden', loc !== 'casa');
+    el.roomOffice.classList.toggle('hidden', loc !== 'delegacia');
+    state.isolated = (loc === 'casa');
+    if (state.timerRunning) {
+      state.timeRemaining = Math.max(0, state.timeRemaining - 10);
+      if (state.timeRemaining <= 0) {
+        updateHUD();
+        endTimer();
+        return;
+      }
+    }
+    updateHUD();
+    updateSceneName();
+    if (state.ato >= 2) {
+      el.btnLocation.classList.remove('hidden');
+      el.btnLocation.textContent = loc === 'casa' ? 'IR PARA A DELEGACIA' : 'IR PARA CASA';
+    }
+    toast(loc === 'casa' ? 'Você chegou em casa.' : 'Você chegou à delegacia.');
+  }
+
+  function startAct2() {
+    state.ato = 2;
+    el.btnPhone.classList.remove('hidden');
+    updateHUD();
+    setLocation('delegacia');
+    showActCard('ATO 2 — O FALSO TESTE & O ISOLAMENTO', 'O terminal se esconde quando há testemunhas.', function () {
+      showDialog('CONSULTOR', DATA.act2.intro, function () {
+        toast('Tente reportar o caso pelo Terminal do celular.');
+      });
+    });
+  }
+
+  function startAct3() {
+    state.ato = 3;
+    updateHUD();
+    setLocation('casa');
+    showActCard('ATO 3 — A CONSPIRAÇÃO & O CRONÔMETRO', 'O alarme está ativo. A polícia está em movimento.', function () {
+      state.timeRemaining = 90;
+      state.timerRunning = true;
+      updateHUD();
+      toast('RASTREIO ATIVADO — CRONÔMETRO INICIADO');
+      playChatSequence(DATA.act3.chat);
+    });
+  }
+
+  function collectFragment2() {
+    state.fragments = 2;
+    state.frag2Done = true;
+    state.keys.push('JW3M-THP9');
+    DATA.notes.push({ title: 'Fragmento 2', body: 'Chave: JW3M-THP9\nFonte: cofre do desenvolvedor (PROTOCOLO7).' });
+    updateHUD();
+    toast('FRAGMENTO 2/3 COLETADO');
+    playChatSequence(DATA.act2.frag2, function () {
+      setTimeout(startAct3, 1500);
+    });
+  }
+
+  function collectFragment3() {
+    state.fragments = 3;
+    state.frag3Done = true;
+    state.keys.push('PQ9Z-MNO2');
+    DATA.notes.push({ title: 'Fragmento 3', body: 'Chave: PQ9Z-MNO2\nFonte: computador da delegacia (sistema das 23:47).' });
+    updateHUD();
+    toast('FRAGMENTO 3/3 COLETADO — TODAS AS CHAVES');
+    playChatSequence(DATA.act3.frag3);
+  }
+
+  function endTimer() {
+    state.timerRunning = false;
+    updateHUD();
+    if (state.corrupted) return;
+    invasionEnding();
+  }
+
+  function invasionEnding() {
+    var title, text;
+    if (state.fragments >= 2) {
+      title = 'FINAL 2 — A VERDADE PARCIAL';
+      text = DATA.endings.e2;
+    } else {
+      title = 'FINAL 1 — O CULPADO PERFEITO';
+      text = DATA.endings.e1;
+    }
+    showEnding(title, text);
+  }
+
+  function showEnding(title, text) {
+    el.endingTitle.textContent = title;
+    el.endingText.innerHTML = text;
+    el.ending.classList.remove('hidden');
+    el.hudAto.textContent = 'FIM — ' + title;
   }
 
   /* ---------------- dev ---------------- */
@@ -806,6 +1054,14 @@
   }
 
   function tick() {
+    if (state.timerRunning && state.timeRemaining > 0) {
+      state.timeRemaining--;
+      updateHUD();
+      if (state.timeRemaining <= 0) {
+        state.timeRemaining = 0;
+        endTimer();
+      }
+    }
     if (!el.dev.classList.contains('hidden')) updateDev();
   }
 
@@ -819,7 +1075,7 @@
     showDialog('CONSULTOR', DATA.intro, function () {
       toast('Toque nos objetos da sala para investigar.');
     });
-    setInterval(tick, 800);
+    setInterval(tick, 1000);
   }
 
   boot();

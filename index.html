@@ -54,6 +54,37 @@
         <div class="lamp-glow"></div>
       </div>
 
+      <div id="room-office" class="room office hidden">
+        <div class="wall"></div>
+        <div class="floor"></div>
+        <div class="office-window prop" data-prop="window-office">
+          <div class="ow-sky"></div>
+          <div class="ow-bars"></div>
+          <div class="ow-frame-h"></div>
+        </div>
+        <div class="office-desk">
+          <div class="office-computer prop" data-prop="computer">
+            <div class="oc-screen"></div>
+            <div class="oc-base"></div>
+          </div>
+          <div class="office-papers"></div>
+        </div>
+        <div class="office-tv prop" data-prop="tv">
+          <div class="tv-frame">
+            <div class="tv-screen">
+              <div class="tv-line">URGENTE</div>
+              <div class="tv-line2">SISTEMAS MUNICIPAIS INSTAVEIS</div>
+            </div>
+          </div>
+          <div class="tv-leg"></div>
+        </div>
+        <div class="office-cabinet prop" data-prop="cabinet">
+          <div class="cab-front"></div>
+          <div class="cab-handle"></div>
+        </div>
+        <div class="office-sign">DELEGACIA — SALA DO CONSULTOR</div>
+      </div>
+
       <div id="dialog" class="dialog hidden">
         <div id="dialog-name" class="dialog-name"></div>
         <div id="dialog-text" class="dialog-text"></div>
@@ -61,6 +92,7 @@
       </div>
 
       <div id="scene-footer"><span id="scene-name">SALA DE ESTAR — toque nos objetos</span></div>
+      <button id="btn-location" class="loc-btn hidden">IR PARA CASA</button>
     </main>
 
     <section id="phone" class="phone off">
@@ -129,6 +161,8 @@
       </div>
     </section>
 
+    <button id="btn-phone" class="fab hidden">CELULAR</button>
+
     <section id="terminal" class="terminal hidden">
       <div class="term-header">FONTE OCULTA v0.1 — TERMINAL SEGURO</div>
       <div id="term-out" class="term-out"></div>
@@ -157,7 +191,26 @@
         <div class="epi-title">ATO 1 COMPLETO</div>
         <div class="epi-sub">A Curiosidade — encerrado</div>
         <div id="epi-text" class="epi-text"></div>
-        <button id="epi-restart">RECOMEÇAR</button>
+        <div class="btn-row">
+          <button id="epi-restart">RECOMEÇAR</button>
+          <button id="epi-continue">CONTINUAR PARA O ATO 2</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="act-card" class="overlay hidden">
+      <div class="epi-card">
+        <div class="epi-title" id="act-title"></div>
+        <div class="epi-sub" id="act-sub"></div>
+        <button id="act-go">CONTINUAR</button>
+      </div>
+    </section>
+
+    <section id="ending" class="overlay hidden">
+      <div class="epi-card">
+        <div class="epi-title" id="ending-title"></div>
+        <div id="ending-text" class="epi-text"></div>
+        <button id="ending-restart">JOGAR NOVAMENTE</button>
       </div>
     </section>
 
