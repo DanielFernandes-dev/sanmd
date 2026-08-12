@@ -1,0 +1,17 @@
+# Logs
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# IDEs / editores
+.vscode/
+.idea/
+
+# Dependências
+node_modules/
+
+# Temporários
+*.tmp
+*.bak
