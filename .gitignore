@@ -12,6 +12,10 @@ Thumbs.db
 # Dependências
 node_modules/
 
+# Build desktop
+dist/
+build/
+
 # Temporários
 *.tmp
 *.bak
