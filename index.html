@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <main id="vn-area">
+      <div id="scene">
+        <div class="parede"></div>
+        <div class="janela"></div>
+        <div class="lua"></div>
+        <div class="chao"></div>
+        <div class="brilho-lampada"></div>
+        <svg id="personagem" viewBox="0 0 200 340" aria-hidden="true">
+          <ellipse cx="100" cy="330" rx="70" ry="10" fill="rgba(0,0,0,0.35)"/>
+          <circle cx="100" cy="70" r="38" fill="#171c2b"/>
+          <path d="M62 78 Q60 60 100 58 Q140 60 138 78 L134 96 Q100 84 66 96 Z" fill="#10141f"/>
+          <path d="M55 340 Q50 160 78 118 Q100 106 122 118 Q150 160 145 340 Z" fill="#1c2336"/>
+          <path d="M55 340 Q52 200 66 150 L74 152 Q60 210 63 340 Z" fill="#12172a"/>
+          <path d="M145 340 Q148 200 134 150 L126 152 Q140 210 137 340 Z" fill="#12172a"/>
+        </svg>
+        <p id="hint">Clique em <strong>CONVERSAR</strong> para começar</p>
+      </div>
+      <section id="dialogue-box" class="oculto">
+        <span id="name-plate">???</span>
+        <p id="dialogue-text"></p>
+        <span id="continue-arrow" class="oculto">▼</span>
+      </section>
+    </main>
+
+    <aside id="sidebar">
+      <h1 id="titulo">SIM, ACREDITE NAS MENTIRAS DELE <span class="kk">kk</span></h1>
+      <button id="btn-conversar" type="button">CONVERSAR</button>
+      <button id="btn-celular" type="button">CELULAR</button>
+      <p id="versao">PROTÓTIPO V1 — ESTRUTURA BASE</p>
+    </aside>
+  </div>
+
+  <div id="phone-overlay" class="oculto">
+    <div id="phone-frame">
+      <div id="phone-screen">
+        <div id="status-bar">
+          <span>▂▄▆</span>
+          <span id="clock">--:--</span>
+          <span>100%</span>
+        </div>
+        <div id="phone-home">
+          <p id="phone-date"></p>
+          <div id="apps-grid">
+            <button class="app" type="button"><span class="app-icon">💬</span><span class="app-nome">Mensagens</span></button>
+            <button class="app" type="button"><span class="app-icon">🖼️</span><span class="app-nome">Galeria</span></button>
+            <button class="app" type="button"><span class="app-icon">📝</span><span class="app-nome">Notas</span></button>
+            <button class="app" type="button"><span class="app-icon">📁</span><span class="app-nome">Arquivos</span></button>
+          </div>
+        </div>
+        <div id="phone-nav">
+          <span class="nav-dot"></span>
+          <span class="nav-dot"></span>
+          <span class="nav-dot"></span>
+        </div>
+      </div>
+    </div>
+    <button id="btn-voltar" type="button">◀ VOLTAR</button>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
