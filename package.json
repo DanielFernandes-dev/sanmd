@@ -1,0 +1,29 @@
+{
+  "name": "sanmd",
+  "version": "1.0.0",
+  "description": "> Referência: Ace Attorney (Nintendo DS)",
+  "main": "index.js",
+  "scripts": {
+    "sync": "npm run copy:web && npx cap sync android",
+    "copy:web": "rm -rf www && mkdir -p www && cp index.html styles.css www/ && cp -r js www/",
+    "apk": "npm run sync && cd android && ./gradlew assembleDebug",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielFernandes-dev/sanmd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/DanielFernandes-dev/sanmd/issues"
+  },
+  "homepage": "https://github.com/DanielFernandes-dev/sanmd#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.0",
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0"
+  }
+}

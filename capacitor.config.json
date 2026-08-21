@@ -1,0 +1,8 @@
+{
+  "appId": "com.sanmd.game",
+  "appName": "SANMD",
+  "webDir": "www",
+  "android": {
+    "allowMixedContent": false
+  }
+}
