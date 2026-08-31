@@ -69,8 +69,6 @@ A interface separa as conversas presenciais das mensagens digitais:
 - Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
 - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
 
-Os requisitos e as instruções detalhadas de implementação estão em [`FeatureArquiteture.md`](FeatureArquiteture.md).
-
 ## Como executar
 
 O projeto pode ser aberto diretamente pelo `index.html`, mas é recomendado usar um servidor HTTP local.
