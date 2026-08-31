@@ -44,6 +44,102 @@
 - [ ] Ajustar tamanho e posicionamento da interface.
 - [ ] Testar transição entre Visual Novel e celular.
 
+## Feature Prioritária — Celular, Mensagens e Conversas
+
+> Especificação de origem: `FeatureArquiteture.md`.
+
+### Estrutura da interface (`index.html`)
+
+- [ ] Identificar o aplicativo Mensagens com um `id`, como `btn-mensagens`.
+- [ ] Tornar o aplicativo Mensagens interativo e acessível por teclado.
+- [ ] Criar a tela `phone-messages` dentro de `phone-screen`.
+- [ ] Adicionar à tela de mensagens um cabeçalho com o nome do contato.
+- [ ] Exibir `???` como nome do dono enquanto sua identidade não for revelada.
+- [ ] Criar uma área `messages-list` com `aria-live="polite"` para a conversa.
+- [ ] Manter `phone-home` como tela inicial do aparelho.
+- [ ] Deixar a tela de mensagens oculta ao iniciar o jogo.
+- [ ] Mover `btn-voltar` para dentro de `phone-screen`.
+- [ ] Posicionar o botão Voltar no rodapé, no canto inferior esquerdo do celular.
+- [ ] Usar elementos `button` em todas as ações interativas do celular.
+
+### Organização dos dados (`js/data.js`)
+
+- [ ] Remover de `conversas.principal` o diálogo com o dono do celular.
+- [ ] Criar `mensagens.dono` para armazenar a conversa digital.
+- [ ] Transferir as falas atuais com o dono para `mensagens.dono`.
+- [ ] Identificar cada mensagem como enviada pelo `protagonista` ou pelo `dono`.
+- [ ] Criar `monologos.sala` para as falas e pensamentos do protagonista sozinho.
+- [ ] Manter mensagens digitais, monólogos e conversas presenciais em coleções separadas.
+
+### Estado e navegação (`js/game.js`)
+
+- [ ] Adicionar referências aos elementos da tela inicial e da tela de mensagens.
+- [ ] Adicionar ao estado a tela atual do celular, iniciando com `telaCelular: "inicio"`.
+- [ ] Criar uma função para abrir o aplicativo Mensagens.
+- [ ] Criar uma função para retornar à tela inicial do celular.
+- [ ] Criar uma função para renderizar `DATA.mensagens.dono` como balões.
+- [ ] Aplicar classes diferentes às mensagens enviadas e recebidas.
+- [ ] Exibir as mensagens do dono à esquerda.
+- [ ] Exibir as mensagens do protagonista à direita.
+- [ ] Restaurar a tela inicial sempre que o celular for aberto novamente.
+- [ ] Fazer o botão Voltar retornar de Mensagens para a tela inicial.
+- [ ] Fazer o botão Voltar fechar o celular quando o jogador estiver na tela inicial.
+- [ ] Aplicar o mesmo retorno contextual ao pressionar `Escape`.
+- [ ] Limpar intervalos e temporizadores ao fechar o celular.
+- [ ] Registrar os eventos de clique somente uma vez durante a inicialização.
+- [ ] Inserir o conteúdo das mensagens usando `textContent`.
+
+### Comportamento do botão Conversar
+
+- [ ] Reservar o botão Conversar para interações presenciais no cenário.
+- [ ] Detectar se existe outro personagem presente no cenário.
+- [ ] Iniciar uma conversa presencial quando houver outro personagem.
+- [ ] Exibir um monólogo ou pensamento quando o protagonista estiver sozinho.
+- [ ] Usar `DATA.monologos.sala` no cenário atual, pois não há outra pessoa na sala.
+- [ ] Impedir que o botão Conversar inicie o diálogo com o dono do celular.
+- [ ] Garantir que o dono do celular não seja tratado como presente na sala.
+- [ ] Garantir que a conversa com o dono exista somente no aplicativo Mensagens.
+
+### Aparência e responsividade (`styles.css`)
+
+- [ ] Fixar o rodapé de navegação na parte inferior de `phone-screen`.
+- [ ] Alinhar o botão Voltar à esquerda do rodapé.
+- [ ] Remover o posicionamento externo atual do botão Voltar.
+- [ ] Criar estilos para a tela e o cabeçalho de Mensagens.
+- [ ] Organizar a lista de mensagens em coluna flexível.
+- [ ] Adicionar rolagem vertical à conversa.
+- [ ] Criar estilos diferentes para mensagens enviadas e recebidas.
+- [ ] Usar cores distintas e com contraste suficiente para cada remetente.
+- [ ] Limitar a largura dos balões para manter os textos legíveis.
+- [ ] Impedir que mensagens longas ultrapassem os limites da tela.
+- [ ] Validar o celular e a conversa na media query abaixo de `700px`.
+
+### Fluxo esperado
+
+- [ ] Entrar na sala com o protagonista sozinho.
+- [ ] Usar Conversar e visualizar uma fala ou pensamento do protagonista.
+- [ ] Abrir a tela inicial pelo botão Celular.
+- [ ] Abrir a conversa com o dono pelo aplicativo Mensagens.
+- [ ] Exibir a conversa em formato de chat dentro do aparelho.
+- [ ] Usar Voltar para sair da conversa e retornar à tela inicial do celular.
+- [ ] Usar Voltar novamente para fechar o celular e retornar ao cenário.
+
+### Testes e critérios de aceitação
+
+- [ ] Abrir e fechar o celular repetidas vezes sem quebrar o estado.
+- [ ] Confirmar que Mensagens abre pela tela inicial do aparelho.
+- [ ] Confirmar a ordem correta das mensagens.
+- [ ] Confirmar o alinhamento correto de cada remetente.
+- [ ] Testar a rolagem com uma conversa maior que a tela.
+- [ ] Confirmar que Voltar retorna de Mensagens para a tela inicial.
+- [ ] Confirmar que Voltar fecha o celular a partir da tela inicial.
+- [ ] Testar `Escape` na tela de Mensagens e na tela inicial.
+- [ ] Confirmar que somente o protagonista fala ao usar Conversar na sala vazia.
+- [ ] Confirmar que nenhuma fala do dono aparece como diálogo presencial.
+- [ ] Testar o fluxo completo em desktop.
+- [ ] Testar o fluxo completo em telas menores que `700px`.
+- [ ] Confirmar que todas as ações continuam acessíveis por teclado.
+
 ## Cenários
 
 - [ ] Criar cenário provisório.

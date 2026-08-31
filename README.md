@@ -1,259 +1,143 @@
-# Protótipo V1 — Estrutura Base
+# Sim, Acredite nas Mentiras Dele kk
 
-> Referência: Ace Attorney (Nintendo DS)
+Protótipo web de uma Visual Novel de investigação que combina narrativa, interface de celular, puzzles e elementos de ARG.
 
-## Objetivo
+> **Status:** Protótipo V1 em desenvolvimento
+>
+> **Referências:** Ace Attorney, SIMULACRA, Cicada 3301, Enigma do Medo e estética hacker retrô
 
-A primeira versão do protótipo tem como objetivo testar, na prática, a estrutura visual e a experiência básica de interação do jogo.
+## Sobre o projeto
 
-Esta versão será baseada diretamente na estrutura da versão Nintendo DS de *Ace Attorney*.
+O protagonista é um consultor técnico da polícia que encontra um celular desconhecido em sua própria casa. Ao entrar em contato com o proprietário, recebe a explicação de que o aparelho faz parte de um teste de recrutamento e lógica. Conforme investiga, ele percebe que o celular, os códigos e as mensagens escondem algo maior.
 
-O objetivo não é desenvolver o jogo final neste momento, mas criar uma primeira casca jogável para avaliar:
+O objetivo da V1 é validar a estrutura visual e a experiência básica antes do desenvolvimento do jogo completo. O protótipo utiliza conteúdo e arte provisórios para testar:
 
-- Layout.
-- Organização da interface.
-- Apresentação dos personagens.
-- Sistema de diálogos.
-- Distribuição dos elementos na tela.
-- Sensação de navegação pela interface.
+- Layout inspirado na interface compacta de Ace Attorney para Nintendo DS.
+- Apresentação de cenário e personagem.
+- Sistema de diálogos com efeito de digitação.
+- Navegação entre a Visual Novel e o celular.
+- Organização dos aplicativos simulados do aparelho.
+- Funcionamento em desktop e dispositivos móveis.
 
-O conteúdo utilizado será provisório e poderá ser completamente substituído posteriormente.
+## Estado atual
 
----
+O protótipo atual é uma aplicação web estática feita com HTML, CSS e JavaScript, sem dependências externas ou etapa de build.
 
-## 1. Estrutura da Interface
+Já estão disponíveis:
 
-A tela principal será dividida em duas áreas.
+- Cena noturna provisória.
+- Personagem provisório em SVG.
+- Botões **Conversar** e **Celular**.
+- Caixa de diálogo com nome, falas sequenciais e efeito de digitação.
+- Avanço do diálogo por clique, `Enter` ou barra de espaço.
+- Interface de celular com relógio, data e aplicativos provisórios.
+- Retorno do celular pelo botão **Voltar** ou pela tecla `Escape`.
+- Layout responsivo para telas menores.
 
-```
-┌──────────────────────────────────────┬──────────────┐
-│                                      │              │
-│                                      │              │
-│                                      │              │
-│           VISUAL NOVEL               │  CONVERSAR   │
-│                                      │              │
-│        PERSONAGEM / CENÁRIO          │  CELULAR     │
-│                                      │              │
-│                                      │              │
-└──────────────────────────────────────┴──────────────┘
-```
+## Próximas mudanças
 
-### Lado esquerdo
+A próxima atualização deve separar as conversas presenciais das mensagens digitais:
 
-Será a área principal da experiência.
+- O diálogo com o dono do celular acontecerá dentro do aplicativo **Mensagens**.
+- As mensagens do dono serão exibidas à esquerda e as do protagonista à direita.
+- O botão **Conversar** será usado para interações presenciais.
+- Quando o protagonista estiver sozinho, **Conversar** apresentará um pensamento ou monólogo.
+- O botão **Voltar** será movido para o canto inferior da interface do celular.
+- Dentro de Mensagens, **Voltar** retornará à tela inicial do aparelho.
+- Na tela inicial, **Voltar** fechará o celular e retornará ao cenário.
 
-Responsável por:
+Os requisitos e as instruções detalhadas de implementação estão em [`FeatureArquiteture.md`](FeatureArquiteture.md).
 
-- Cenário.
-- Personagens.
-- Diálogos.
-- Apresentação visual da cena.
-- Elementos da Visual Novel.
+## Como executar
 
-A organização visual será baseada na versão Nintendo DS de *Ace Attorney*.
+O projeto pode ser aberto diretamente pelo `index.html`, mas é recomendado usar um servidor HTTP local.
 
-### Lado direito
+Com Python 3:
 
-Será a área de ações.
-
-Nesta primeira versão existirão somente dois botões:
-
-- **Conversar**
-- **Celular**
-
-Não serão implementados outros botões de ação nesta versão.
-
----
-
-## 2. Referência Nintendo DS
-
-A estrutura visual da versão Nintendo DS de *Ace Attorney* será utilizada como base para o protótipo.
-
-A intenção é reproduzir a sensação de uma interface dividida, utilizando:
-
-- Área principal para a cena.
-- Área lateral para comandos.
-- Elementos visuais compactos.
-- Interface com aparência de jogo portátil.
-- Apresentação de diálogos semelhante à Visual Novel.
-
-A referência será utilizada diretamente nesta primeira versão para permitir uma avaliação prática da estrutura.
-
----
-
-## 3. Botão Conversar
-
-O botão **Conversar** será responsável pelas interações com personagens.
-
-A apresentação dos diálogos será baseada no estilo de *Ace Attorney*.
-
-Exemplo:
-
-```
-┌──────────────────────────────────────┬──────────────┐
-│                                      │              │
-│             PERSONAGEM               │  CONVERSAR   │
-│                                      │              │
-│                                      │  CELULAR     │
-│  ┌──────────────────────────────┐    │              │
-│  │ Personagem                   │    │              │
-│  │                              │    │              │
-│  │ "Você estava aqui ontem?"    │    │              │
-│  └──────────────────────────────┘    │              │
-└──────────────────────────────────────┴──────────────┘
+```bash
+python3 -m http.server 8000
 ```
 
-O sistema deverá permitir:
+Depois, acesse:
 
-- Exibir o nome do personagem.
-- Exibir as falas.
-- Avançar o diálogo.
-- Alternar entre falas.
-- Encerrar a conversa.
-
-A primeira versão não precisa possuir uma estrutura complexa de diálogo.
-
-O objetivo é testar a apresentação.
-
----
-
-## 4. Botão Celular
-
-O botão **Celular** será a segunda ação disponível na interface principal.
-
-Ao selecioná-lo, o jogador poderá acessar a interface do celular.
-
-A implementação detalhada do celular não faz parte do objetivo deste protótipo.
-
-Nesta versão, o botão existe principalmente para testar:
-
-- Como uma segunda interface será aberta.
-- Como ela ocupará a tela.
-- Como o jogador retornará para a interface principal.
-- Como a ação ficará visualmente ao lado de Conversar.
-
----
-
-## 5. Cenários
-
-Os cenários serão provisórios.
-
-O objetivo é possuir elementos visuais suficientes para testar a interface, sem investir ainda em arte definitiva.
-
-Podem ser utilizados:
-
-- Fundos simples.
-- Imagens provisórias.
-- Cenários improvisados.
-- Elementos gráficos temporários.
-
-A qualidade artística não será um critério desta versão.
-
----
-
-## 6. Personagens
-
-Os personagens também serão provisórios.
-
-Serão utilizados apenas para testar:
-
-- Posicionamento.
-- Escala.
-- Presença na cena.
-- Apresentação durante os diálogos.
-- Relação entre personagem e caixa de diálogo.
-
-Não será necessário desenvolver sprites ou designs definitivos.
-
----
-
-## 7. Fluxo de Teste
-
-O protótipo deverá permitir uma pequena sequência jogável.
-
-```
-┌─────────────────┐
-│     CENÁRIO     │
-│                 │
-│   PERSONAGEM    │
-└────────┬────────┘
-         │
-         ▼
-    CONVERSAR
-         │
-         ▼
-     DIÁLOGO
-         │
-         ▼
-      CELULAR
-         │
-         ▼
-   INTERFACE DO
-      CELULAR
-         │
-         ▼
-       VOLTAR
-         │
-         ▼
-      CENÁRIO
+```text
+http://localhost:8000
 ```
 
-O objetivo é testar a transição entre as duas ações principais e a apresentação da Visual Novel.
+Não é necessário instalar pacotes.
 
----
+## Controles
 
-## 8. Conteúdo Provisório
+| Ação | Controle |
+|---|---|
+| Iniciar conversa | Botão **Conversar** |
+| Avançar ou completar uma fala | Clique na caixa, `Enter` ou espaço |
+| Abrir o celular | Botão **Celular** |
+| Fechar o celular | Botão **Voltar** ou `Escape` |
 
-Todo o conteúdo utilizado nesta versão deverá ser considerado temporário.
+## Estrutura do projeto
 
-Isso inclui:
+```text
+.
+├── index.html       # Estrutura da Visual Novel e do celular
+├── styles.css       # Aparência, animações e responsividade
+├── js/
+│   ├── data.js      # Cena, personagem e falas provisórias
+│   └── game.js      # Estado, diálogos e navegação
+├── GDD.md           # Visão completa do jogo e da narrativa
+├── FeatureArquiteture.md # Próximas alterações e como implementá-las
+├── TODO.md          # Lista de tarefas do protótipo
+└── README.md        # Visão geral e instruções de execução
+```
 
-- Personagens.
-- Cenários.
-- Textos.
-- Diálogos.
-- Imagens.
-- Ícones.
-- Elementos da interface.
+## Fluxo da V1
 
-O conteúdo definitivo será desenvolvido posteriormente.
+```text
+Cenário
+   │
+   ├── Conversar ──> Diálogo ou monólogo ──> Cenário
+   │
+   └── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
+```
 
----
+O celular é a principal interface narrativa planejada. Seus aplicativos simulados são:
 
-## 9. Fora do Escopo
+- **Mensagens:** comunicação com o proprietário.
+- **Galeria:** fotografias, gravações e pistas visuais.
+- **Notas:** informações contextuais.
+- **Arquivos:** documentos, dados corrompidos e conteúdo oculto.
 
-A V1 **não** terá como objetivo implementar:
+Na V1 atual, os aplicativos ainda são elementos provisórios. A implementação funcional de Mensagens é o próximo passo documentado.
 
-- Sistema de investigação.
-- Examinar.
-- Apresentar evidências.
+## Escopo da V1
+
+A V1 busca validar somente a base da interface e das interações. Permanecem fora deste protótipo inicial:
+
+- Sistema completo de investigação.
+- Exame e apresentação de evidências.
 - Navegação por mapa.
-- Puzzles.
-- Terminal.
-- ARG.
-- Sistema de finais.
-- Sistema de 100%.
-- Replay.
-- Narrativa definitiva.
-- Arte definitiva.
+- Puzzles e terminal hacker.
+- ARG e integrações externas.
+- Sistema de finais e progresso de 100%.
+- Replay narrativo.
+- Arte e narrativa definitivas.
 
-Esses elementos não fazem parte deste primeiro teste.
+Esses recursos fazem parte da visão de longo prazo descrita no [`GDD.md`](GDD.md), mas não são necessários para validar a estrutura atual.
 
----
+## Critérios de validação
 
-## 10. Critério de Sucesso
+A estrutura básica da V1 será considerada funcional quando for possível:
 
-A V1 será considerada funcional quando for possível:
+- [x] Visualizar um cenário provisório.
+- [x] Visualizar um personagem provisório.
+- [x] Utilizar o botão **Conversar**.
+- [x] Exibir e avançar uma sequência de falas.
+- [x] Utilizar o botão **Celular**.
+- [x] Abrir uma interface provisória de celular.
+- [x] Retornar à interface principal.
+- [x] Repetir a navegação sem quebrar o estado da interface.
+- [ ] Conversar com o dono pelo aplicativo **Mensagens**.
+- [ ] Usar **Conversar** como monólogo quando o protagonista estiver sozinho.
+- [ ] Posicionar o botão **Voltar** dentro do celular.
 
-- [ ] Visualizar um cenário.
-- [ ] Visualizar um personagem.
-- [ ] Utilizar o botão Conversar.
-- [ ] Exibir uma sequência de diálogos.
-- [ ] Utilizar o botão Celular.
-- [ ] Abrir uma interface provisória de celular.
-- [ ] Retornar à interface principal.
-- [ ] Alternar entre essas interfaces sem problemas.
-
-O principal objetivo é conseguir jogar a primeira versão e visualizar na prática como essa estrutura de interface funciona.
-
-> «A V1 não precisa representar o jogo final. Ela precisa permitir descobrir se essa casca é a direção que queremos seguir.»
+> A V1 não precisa representar o jogo final. Ela precisa mostrar se essa estrutura é a direção certa para o projeto.
