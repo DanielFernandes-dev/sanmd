@@ -352,6 +352,54 @@ html, body {
   scrollbar-color: #53618e transparent;
 }
 
+#messages-choices {
+  display: flex;
+  flex: none;
+  max-height: 46%;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid #38446d;
+  overflow-y: auto;
+  background: #151e38;
+}
+
+.message-choice {
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 2px solid #596993;
+  border-radius: 9px;
+  background: #222e50;
+  color: #f4f6ff;
+  font-family: var(--fonte);
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+}
+
+.message-choice:hover {
+  border-color: #e8b34b;
+  background: #2d3b62;
+}
+
+.message-choice:focus-visible {
+  outline: 3px solid #e8b34b;
+  outline-offset: 2px;
+}
+
+.message-choice:active {
+  transform: scale(0.98);
+}
+
+.message-choice:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
 .mensagem {
   max-width: 78%;
   padding: 9px 12px;
@@ -375,6 +423,16 @@ html, body {
   border-bottom-right-radius: 4px;
   background: #bc872d;
   color: #161006;
+}
+
+.mensagem-digitando {
+  color: #c2cae5;
+  font-style: italic;
+  animation: pulsar-digitacao 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes pulsar-digitacao {
+  to { opacity: 0.55; }
 }
 
 #phone-date {
@@ -494,5 +552,15 @@ html, body {
 
   .mensagem {
     max-width: 84%;
+  }
+
+  #messages-choices {
+    max-height: 50%;
+    padding: 8px 10px;
+  }
+
+  .message-choice {
+    min-height: 46px;
+    font-size: 11px;
   }
 }

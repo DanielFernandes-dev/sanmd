@@ -1,12 +1,37 @@
+const CONFIG = Object.freeze({
+  velocidadeDigitacao: 22,
+  intervaloMensagemDono: 1200,
+  cooldownPrimeiraResposta: 60 * 1000,
+  transicaoCelular: 280
+});
+
+const DIAS = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+
 const state = {
   modo: "livre",
-  linha: 0,
-  digitando: false,
-  timer: null,
-  relogio: null,
-  transicaoCelular: null,
-  falasAtuais: [],
-  telaCelular: "inicio"
+  dialogo: {
+    linha: 0,
+    digitando: false,
+    timer: null,
+    falas: [],
+    faseMonologo: "inicial"
+  },
+  celular: {
+    tela: "inicio",
+    relogio: null,
+    transicao: null
+  },
+  mensagens: {
+    etapa: null,
+    historico: [],
+    donoRespondendo: false,
+    donoDigitando: false,
+    fila: [],
+    proximaEtapa: null,
+    cooldownAte: null,
+    timer: null
+  }
 };
 
 const el = {
@@ -21,6 +46,7 @@ const el = {
   phoneHome: document.getElementById("phone-home"),
   phoneMessages: document.getElementById("phone-messages"),
   messagesList: document.getElementById("messages-list"),
+  messagesChoices: document.getElementById("messages-choices"),
   btnMensagens: document.getElementById("btn-mensagens"),
   clock: document.getElementById("clock"),
   phoneDate: document.getElementById("phone-date"),
@@ -35,13 +61,17 @@ function definirBotoes() {
 
 function iniciarConversa() {
   if (state.modo !== "livre") return;
+
   const personagemPresente = DATA.cena.personagensPresentes[0];
-  state.falasAtuais = personagemPresente
+  const monologosDaCena = DATA.monologos[DATA.cena.id];
+  state.dialogo.falas = personagemPresente
     ? DATA.conversas.presenciais[personagemPresente]
-    : DATA.monologos[DATA.cena.id];
-  if (!state.falasAtuais?.length) return;
+    : monologosDaCena[state.dialogo.faseMonologo];
+
+  if (!state.dialogo.falas?.length) return;
+
   state.modo = "dialogo";
-  state.linha = 0;
+  state.dialogo.linha = 0;
   el.hint.classList.add("oculto");
   el.dialogueBox.classList.remove("oculto");
   definirBotoes();
@@ -49,52 +79,54 @@ function iniciarConversa() {
 }
 
 function mostrarLinha() {
-  const fala = state.falasAtuais[state.linha];
+  const fala = state.dialogo.falas[state.dialogo.linha];
   el.namePlate.textContent = fala.autor;
   el.continueArrow.classList.add("oculto");
   digitarTexto(fala.texto);
 }
 
 function digitarTexto(texto) {
-  clearInterval(state.timer);
-  state.digitando = true;
+  clearInterval(state.dialogo.timer);
+  state.dialogo.digitando = true;
   el.dialogueText.textContent = "";
-  let i = 0;
-  state.timer = setInterval(() => {
-    el.dialogueText.textContent += texto[i];
-    i++;
-    if (i >= texto.length) finalizarDigitacao();
-  }, 22);
+  let indice = 0;
+
+  state.dialogo.timer = setInterval(() => {
+    el.dialogueText.textContent += texto[indice];
+    indice++;
+    if (indice >= texto.length) finalizarDigitacao();
+  }, CONFIG.velocidadeDigitacao);
 }
 
 function finalizarDigitacao() {
-  clearInterval(state.timer);
-  state.timer = null;
-  state.digitando = false;
-  const fala = state.falasAtuais[state.linha];
-  el.dialogueText.textContent = fala.texto;
+  clearInterval(state.dialogo.timer);
+  state.dialogo.timer = null;
+  state.dialogo.digitando = false;
+  el.dialogueText.textContent = state.dialogo.falas[state.dialogo.linha].texto;
   el.continueArrow.classList.remove("oculto");
 }
 
 function avancarDialogo() {
   if (state.modo !== "dialogo") return;
-  if (state.digitando) {
+  if (state.dialogo.digitando) {
     finalizarDigitacao();
     return;
   }
-  if (state.linha < state.falasAtuais.length - 1) {
-    state.linha++;
+
+  if (state.dialogo.linha < state.dialogo.falas.length - 1) {
+    state.dialogo.linha++;
     mostrarLinha();
-  } else {
-    encerrarConversa();
+    return;
   }
+
+  encerrarConversa();
 }
 
 function encerrarConversa() {
-  clearInterval(state.timer);
-  state.timer = null;
-  state.digitando = false;
-  state.falasAtuais = [];
+  clearInterval(state.dialogo.timer);
+  state.dialogo.timer = null;
+  state.dialogo.digitando = false;
+  state.dialogo.falas = [];
   state.modo = "livre";
   el.dialogueBox.classList.add("oculto");
   el.hint.classList.remove("oculto");
@@ -103,18 +135,17 @@ function encerrarConversa() {
 
 function atualizarRelogio() {
   const agora = new Date();
-  const hh = String(agora.getHours()).padStart(2, "0");
-  const mm = String(agora.getMinutes()).padStart(2, "0");
-  el.clock.textContent = `${hh}:${mm}`;
-  const dias = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
-  const meses = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
-  el.phoneDate.textContent = `${dias[agora.getDay()]}, ${agora.getDate()} de ${meses[agora.getMonth()]}`;
+  const hora = String(agora.getHours()).padStart(2, "0");
+  const minuto = String(agora.getMinutes()).padStart(2, "0");
+  el.clock.textContent = `${hora}:${minuto}`;
+  el.phoneDate.textContent = `${DIAS[agora.getDay()]}, ${agora.getDate()} de ${MESES[agora.getMonth()]}`;
 }
 
 function abrirCelular() {
   if (state.modo !== "livre") return;
-  clearTimeout(state.transicaoCelular);
-  state.transicaoCelular = null;
+
+  clearTimeout(state.celular.transicao);
+  state.celular.transicao = null;
   state.modo = "celular";
   mostrarTelaInicial(false);
   el.phoneOverlay.classList.remove("oculto");
@@ -123,48 +154,196 @@ function abrirCelular() {
     el.btnMensagens.focus();
   });
   atualizarRelogio();
-  state.relogio = setInterval(atualizarRelogio, 1000);
+  state.celular.relogio = setInterval(atualizarRelogio, 1000);
   definirBotoes();
 }
 
 function fecharCelular() {
   if (state.modo !== "celular") return;
+
   state.modo = "livre";
   el.phoneOverlay.classList.remove("aberto");
-  clearInterval(state.relogio);
-  state.relogio = null;
-  clearTimeout(state.transicaoCelular);
-  state.transicaoCelular = setTimeout(() => {
+  clearInterval(state.celular.relogio);
+  state.celular.relogio = null;
+  cancelarEnvioDono();
+  clearTimeout(state.celular.transicao);
+  state.celular.transicao = setTimeout(() => {
     el.phoneOverlay.classList.add("oculto");
-    state.transicaoCelular = null;
+    state.celular.transicao = null;
     el.btnCelular.focus();
-  }, 280);
+  }, CONFIG.transicaoCelular);
   definirBotoes();
 }
 
-function renderizarMensagens() {
-  el.messagesList.replaceChildren();
-  DATA.mensagens.dono.forEach((mensagem) => {
-    const balao = document.createElement("p");
-    const enviada = mensagem.autor === "protagonista";
-    balao.className = enviada ? "mensagem mensagem-enviada" : "mensagem mensagem-recebida";
-    balao.textContent = mensagem.texto;
-    el.messagesList.appendChild(balao);
+function obterEtapaMensagem(etapaId = state.mensagens.etapa) {
+  return etapaId ? DATA.mensagens.dono.etapas[etapaId] : null;
+}
+
+function adicionarMensagem(autor, texto) {
+  state.mensagens.historico.push({ autor, texto });
+}
+
+function prepararEnvioDono(mensagens, proximaEtapa, cooldown = 0) {
+  state.mensagens.donoRespondendo = true;
+  state.mensagens.donoDigitando = cooldown === 0;
+  state.mensagens.fila = [...mensagens];
+  state.mensagens.proximaEtapa = proximaEtapa;
+  state.mensagens.cooldownAte = cooldown > 0 ? Date.now() + cooldown : null;
+}
+
+function iniciarMensagens() {
+  if (state.mensagens.etapa !== null || state.mensagens.historico.length > 0) return;
+
+  state.mensagens.etapa = DATA.mensagens.dono.inicio;
+  const etapa = obterEtapaMensagem();
+  if (etapa.recebidas.length > 0) {
+    prepararEnvioDono(etapa.recebidas, state.mensagens.etapa);
+  }
+}
+
+function rolarMensagens() {
+  requestAnimationFrame(() => {
+    el.messagesList.scrollTop = el.messagesList.scrollHeight;
   });
-  el.messagesList.scrollTop = el.messagesList.scrollHeight;
+}
+
+function criarBalaoMensagem(mensagem) {
+  const balao = document.createElement("p");
+  const enviada = mensagem.autor === "protagonista";
+  balao.className = enviada ? "mensagem mensagem-enviada" : "mensagem mensagem-recebida";
+  balao.textContent = mensagem.texto;
+  return balao;
+}
+
+function renderizarMensagens(moverFoco = false) {
+  el.messagesList.replaceChildren(...state.mensagens.historico.map(criarBalaoMensagem));
+
+  if (state.mensagens.donoDigitando) {
+    const indicador = criarBalaoMensagem({ autor: "dono", texto: "digitando..." });
+    indicador.classList.add("mensagem-digitando");
+    el.messagesList.appendChild(indicador);
+  }
+
+  renderizarEscolhas(moverFoco);
+  rolarMensagens();
+}
+
+function renderizarEscolhas(moverFoco) {
+  el.messagesChoices.replaceChildren();
+  const etapa = obterEtapaMensagem();
+
+  if (!etapa || state.mensagens.donoRespondendo) {
+    el.messagesChoices.classList.add("oculto");
+    if (!etapa && moverFoco) el.btnVoltar.focus();
+    return;
+  }
+
+  etapa.opcoes.forEach((opcao) => {
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "message-choice";
+    botao.dataset.optionId = opcao.id;
+    botao.textContent = opcao.texto;
+    el.messagesChoices.appendChild(botao);
+  });
+  el.messagesChoices.classList.remove("oculto");
+
+  if (moverFoco) el.messagesChoices.firstElementChild?.focus();
+}
+
+function finalizarEnvioDono() {
+  const conversaConcluida = state.mensagens.proximaEtapa === null;
+  state.mensagens.etapa = state.mensagens.proximaEtapa;
+  state.mensagens.proximaEtapa = null;
+  state.mensagens.donoRespondendo = false;
+  state.mensagens.donoDigitando = false;
+  state.mensagens.cooldownAte = null;
+
+  if (conversaConcluida) {
+    state.dialogo.faseMonologo = "conversaConcluida";
+  }
+
+  renderizarMensagens(state.celular.tela === "mensagens");
+}
+
+function enviarProximaMensagemDono() {
+  const texto = state.mensagens.fila.shift();
+  state.mensagens.timer = null;
+
+  if (!texto) {
+    finalizarEnvioDono();
+    return;
+  }
+
+  adicionarMensagem("dono", texto);
+  if (state.mensagens.fila.length === 0) {
+    finalizarEnvioDono();
+    return;
+  }
+
+  renderizarMensagens();
+  agendarEnvioDono();
+}
+
+function iniciarDigitacaoDono() {
+  state.mensagens.timer = null;
+  state.mensagens.cooldownAte = null;
+  state.mensagens.donoDigitando = true;
+  renderizarMensagens();
+  agendarEnvioDono();
+}
+
+function agendarEnvioDono() {
+  if (!state.mensagens.donoRespondendo || state.mensagens.fila.length === 0 || state.mensagens.timer !== null) return;
+
+  if (state.mensagens.cooldownAte !== null) {
+    const tempoRestante = Math.max(0, state.mensagens.cooldownAte - Date.now());
+    state.mensagens.timer = setTimeout(iniciarDigitacaoDono, tempoRestante);
+    return;
+  }
+
+  state.mensagens.timer = setTimeout(enviarProximaMensagemDono, CONFIG.intervaloMensagemDono);
+}
+
+function cancelarEnvioDono() {
+  clearTimeout(state.mensagens.timer);
+  state.mensagens.timer = null;
+}
+
+function escolherResposta(opcaoId) {
+  if (state.mensagens.donoRespondendo || state.mensagens.etapa === null) return;
+
+  const opcao = obterEtapaMensagem().opcoes.find((item) => item.id === opcaoId);
+  if (!opcao) return;
+
+  const primeiraMensagem = state.mensagens.historico.length === 0;
+  adicionarMensagem("protagonista", opcao.texto);
+
+  if (primeiraMensagem) {
+    state.dialogo.faseMonologo = "aposPrimeiroEnvio";
+  }
+
+  const recebidasDaProximaEtapa = obterEtapaMensagem(opcao.proxima)?.recebidas ?? [];
+  const abertura = primeiraMensagem ? DATA.mensagens.dono.abertura : [];
+  const cooldown = primeiraMensagem ? CONFIG.cooldownPrimeiraResposta : 0;
+  prepararEnvioDono([...abertura, ...opcao.resposta, ...recebidasDaProximaEtapa], opcao.proxima, cooldown);
+  renderizarMensagens();
+  agendarEnvioDono();
 }
 
 function abrirMensagens() {
-  if (state.modo !== "celular" || state.telaCelular !== "inicio") return;
-  state.telaCelular = "mensagens";
+  if (state.modo !== "celular" || state.celular.tela !== "inicio") return;
+
+  state.celular.tela = "mensagens";
   el.phoneHome.classList.add("oculto");
   el.phoneMessages.classList.remove("oculto");
-  renderizarMensagens();
-  el.btnVoltar.focus();
+  iniciarMensagens();
+  renderizarMensagens(!state.mensagens.donoRespondendo);
+  agendarEnvioDono();
 }
 
 function mostrarTelaInicial(moverFoco = true) {
-  state.telaCelular = "inicio";
+  state.celular.tela = "inicio";
   el.phoneMessages.classList.add("oculto");
   el.phoneHome.classList.remove("oculto");
   if (moverFoco) el.btnMensagens.focus();
@@ -172,7 +351,7 @@ function mostrarTelaInicial(moverFoco = true) {
 
 function voltarCelular() {
   if (state.modo !== "celular") return;
-  if (state.telaCelular === "mensagens") {
+  if (state.celular.tela === "mensagens") {
     mostrarTelaInicial();
     return;
   }
@@ -183,15 +362,19 @@ el.btnConversar.addEventListener("click", iniciarConversa);
 el.btnCelular.addEventListener("click", abrirCelular);
 el.btnMensagens.addEventListener("click", abrirMensagens);
 el.btnVoltar.addEventListener("click", voltarCelular);
+el.messagesChoices.addEventListener("click", (event) => {
+  const botao = event.target.closest("button[data-option-id]");
+  if (botao) escolherResposta(botao.dataset.optionId);
+});
 el.dialogueBox.addEventListener("click", avancarDialogo);
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape" && state.modo === "celular") {
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && state.modo === "celular") {
     voltarCelular();
     return;
   }
-  if ((e.key === " " || e.key === "Enter") && state.modo === "dialogo") {
-    e.preventDefault();
+  if ((event.key === " " || event.key === "Enter") && state.modo === "dialogo") {
+    event.preventDefault();
     avancarDialogo();
   }
 });

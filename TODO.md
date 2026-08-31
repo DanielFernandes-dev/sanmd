@@ -48,6 +48,19 @@
 
 > Especificação de origem: `FeatureArquiteture.md`.
 
+### Refatoração estrutural
+
+- [x] Centralizar tempos e velocidades no objeto `CONFIG`.
+- [x] Agrupar o estado por `dialogo`, `celular` e `mensagens`.
+- [x] Remover propriedades de estado globais com responsabilidades ambíguas.
+- [x] Centralizar o acesso às etapas em `obterEtapaMensagem()`.
+- [x] Centralizar a inclusão no histórico em `adicionarMensagem()`.
+- [x] Extrair a criação dos balões para `criarBalaoMensagem()`.
+- [x] Separar preparação, agendamento, entrega e finalização da fila do dono.
+- [x] Renomear funções de resposta para refletir o envio sequencial.
+- [x] Mover nomes de dias e meses para constantes reutilizadas pelo relógio.
+- [x] Manter o comportamento existente durante a refatoração.
+
 ### Estrutura da interface (`index.html`)
 
 - [x] Identificar o aplicativo Mensagens com um `id`, como `btn-mensagens`.
@@ -116,56 +129,70 @@
 
 ### Respostas selecionáveis e ramificações curtas
 
-- [ ] Substituir a lista linear de mensagens por etapas identificadas em `js/data.js`.
-- [ ] Definir uma propriedade `inicio` para indicar a primeira etapa da conversa.
-- [ ] Definir em cada etapa as mensagens recebidas e as opções disponíveis.
-- [ ] Limitar cada etapa a no mínimo uma e no máximo três opções de resposta.
-- [ ] Garantir que todas as opções sejam coerentes com a mensagem e o contexto anteriores.
-- [ ] Adicionar `id`, `texto`, `resposta` e `proxima` a cada opção.
-- [ ] Usar reações diferentes do dono para escolhas diferentes.
-- [ ] Fazer ramificações curtas convergirem para uma etapa principal compartilhada.
-- [ ] Usar `proxima: null` para representar o fim da conversa.
-- [ ] Criar `messages-choices` em `index.html` abaixo do histórico de mensagens.
-- [ ] Definir `role="group"` e um nome acessível para a área de escolhas.
-- [ ] Renderizar as opções como elementos `button`.
-- [ ] Adicionar ao estado a etapa atual da conversa.
-- [ ] Adicionar ao estado o histórico de mensagens já exibidas.
-- [ ] Adicionar ao estado a indicação de que o dono está respondendo.
-- [ ] Carregar a etapa inicial ao abrir a conversa pela primeira vez.
-- [ ] Renderizar somente as mensagens pertencentes ao caminho percorrido.
-- [ ] Adicionar a opção escolhida como mensagem enviada pelo protagonista.
-- [ ] Ocultar ou desabilitar todas as opções imediatamente após uma escolha.
-- [ ] Impedir cliques duplicados enquanto a resposta estiver sendo processada.
-- [ ] Exibir um indicador `digitando...` antes da resposta do dono.
-- [ ] Adicionar um pequeno atraso antes de mostrar a reação do dono.
-- [ ] Remover o indicador ao apresentar a mensagem recebida.
-- [ ] Avançar para a etapa indicada em `proxima` depois da reação.
-- [ ] Encerrar as escolhas quando a próxima etapa for `null`.
-- [ ] Preservar histórico e etapa ao sair e retornar ao aplicativo Mensagens.
-- [ ] Cancelar o temporizador de resposta ao fechar o celular ou reiniciar o jogo.
-- [ ] Rolar automaticamente até a mensagem ou escolha mais recente.
-- [ ] Mover o foco para a primeira opção quando novas respostas aparecerem.
-- [ ] Estilizar as opções em coluna para acomodar textos longos.
-- [ ] Estilizar estados de foco, toque e opção desabilitada.
-- [ ] Garantir área de toque adequada e quebra de linha nos botões.
-- [ ] Estilizar o indicador de digitação como mensagem recebida temporária.
+- [x] Substituir a lista linear de mensagens por etapas identificadas em `js/data.js`.
+- [x] Definir uma propriedade `inicio` para indicar a primeira etapa da conversa.
+- [x] Definir em cada etapa as mensagens recebidas e as opções disponíveis.
+- [x] Limitar cada etapa a no mínimo uma e no máximo três opções de resposta.
+- [x] Garantir que todas as opções sejam coerentes com a mensagem e o contexto anteriores.
+- [x] Adicionar `id`, `texto`, `resposta` e `proxima` a cada opção.
+- [x] Usar reações diferentes do dono para escolhas diferentes.
+- [x] Fazer ramificações curtas convergirem para uma etapa principal compartilhada.
+- [x] Usar `proxima: null` para representar o fim da conversa.
+- [x] Criar `messages-choices` em `index.html` abaixo do histórico de mensagens.
+- [x] Definir `role="group"` e um nome acessível para a área de escolhas.
+- [x] Renderizar as opções como elementos `button`.
+- [x] Adicionar ao estado a etapa atual da conversa.
+- [x] Adicionar ao estado o histórico de mensagens já exibidas.
+- [x] Adicionar ao estado a indicação de que o dono está respondendo.
+- [x] Carregar a etapa inicial ao abrir a conversa pela primeira vez.
+- [x] Renderizar somente as mensagens pertencentes ao caminho percorrido.
+- [x] Adicionar a opção escolhida como mensagem enviada pelo protagonista.
+- [x] Ocultar ou desabilitar todas as opções imediatamente após uma escolha.
+- [x] Impedir cliques duplicados enquanto a resposta estiver sendo processada.
+- [x] Exibir um indicador `digitando...` antes da resposta do dono.
+- [x] Aplicar cooldown de 1 minuto antes da primeira resposta do dono.
+- [x] Exibir o indicador de digitação somente depois do cooldown inicial.
+- [x] Entregar cada mensagem do dono individualmente em intervalos de 1,2 segundo.
+- [x] Remover o indicador ao apresentar a mensagem recebida.
+- [x] Avançar para a etapa indicada em `proxima` depois da reação.
+- [x] Encerrar as escolhas quando a próxima etapa for `null`.
+- [x] Preservar histórico e etapa ao sair e retornar ao aplicativo Mensagens.
+- [x] Pausar o temporizador ao fechar o celular e retomar pelo tempo restante.
+- [x] Rolar automaticamente até a mensagem ou escolha mais recente.
+- [x] Mover o foco para a primeira opção quando novas respostas aparecerem.
+- [x] Estilizar as opções em coluna para acomodar textos longos.
+- [x] Estilizar estados de foco, toque e opção desabilitada.
+- [x] Garantir área de toque adequada e quebra de linha nos botões.
+- [x] Estilizar o indicador de digitação como mensagem recebida temporária.
 - [ ] Validar o layout com uma, duas e três opções em diferentes resoluções.
 
 ### Testes das respostas selecionáveis
 
-- [ ] Confirmar que nenhuma etapa exibe mais de três opções.
-- [ ] Confirmar que o protagonista não envia mensagens automaticamente.
+- [x] Confirmar que nenhuma etapa exibe mais de três opções.
+- [x] Confirmar que o protagonista não envia mensagens automaticamente.
 - [ ] Selecionar cada opção e conferir se o texto correto aparece no histórico.
 - [ ] Confirmar que cada escolha produz a reação correspondente do dono.
-- [ ] Confirmar a convergência das ramificações para o fluxo principal.
-- [ ] Tentar selecionar duas opções rapidamente e confirmar somente um envio.
-- [ ] Confirmar que as opções ficam bloqueadas enquanto o dono responde.
-- [ ] Confirmar o funcionamento e a remoção do indicador `digitando...`.
+- [x] Confirmar a convergência das ramificações para o fluxo principal.
+- [x] Tentar selecionar duas opções rapidamente e confirmar somente um envio.
+- [x] Confirmar que as opções ficam bloqueadas enquanto o dono responde.
+- [x] Confirmar o funcionamento e a remoção do indicador `digitando...`.
 - [ ] Sair e retornar ao aplicativo e confirmar a preservação do progresso.
-- [ ] Confirmar que opções não escolhidas não aparecem no histórico.
-- [ ] Concluir uma conversa cuja próxima etapa seja `null`.
+- [x] Confirmar que opções não escolhidas não aparecem no histórico.
+- [x] Concluir uma conversa cuja próxima etapa seja `null`.
 - [ ] Testar escolhas com mouse, toque e teclado.
 - [ ] Testar uma, duas e três opções em telas menores que `700px`.
+
+### Monólogos por progresso
+
+- [x] Criar o monólogo `inicial` da sala.
+- [x] Criar o monólogo `aposPrimeiroEnvio`.
+- [x] Criar o monólogo `conversaConcluida`.
+- [x] Atualizar a fase do monólogo após a primeira mensagem do protagonista.
+- [x] Atualizar a fase do monólogo após a última resposta do dono.
+- [x] Fazer o botão Conversar selecionar o monólogo da fase atual.
+- [ ] Validar manualmente o monólogo inicial.
+- [ ] Validar manualmente o monólogo durante o cooldown.
+- [ ] Validar manualmente o monólogo após concluir o chat.
 
 ### Fluxo esperado
 
@@ -182,6 +209,11 @@
 - [ ] Abrir e fechar o celular repetidas vezes sem quebrar o estado.
 - [ ] Confirmar que Mensagens abre pela tela inicial do aparelho.
 - [ ] Confirmar a ordem correta das mensagens.
+- [ ] Confirmar que o protagonista envia a primeira mensagem.
+- [ ] Confirmar que o dono permanece em silêncio durante 1 minuto.
+- [ ] Confirmar que `digitando...` aparece depois do cooldown.
+- [ ] Confirmar que as mensagens do dono chegam uma por vez.
+- [ ] Fechar e reabrir o celular durante o cooldown e conferir o tempo restante.
 - [ ] Confirmar o alinhamento correto de cada remetente.
 - [ ] Testar a rolagem com uma conversa maior que a tela.
 - [ ] Confirmar que Voltar retorna de Mensagens para a tela inicial.

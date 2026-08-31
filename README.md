@@ -31,7 +31,8 @@ Já estão disponíveis:
 - Caixa de diálogo com nome, falas sequenciais e efeito de digitação.
 - Avanço do diálogo por clique, `Enter` ou barra de espaço.
 - Interface de celular com relógio, data e aplicativos provisórios.
-- Conversa com o dono dentro do aplicativo **Mensagens**.
+- Conversa ramificada com o dono dentro do aplicativo **Mensagens**.
+- Respostas selecionáveis com reações e histórico do caminho escolhido.
 - Monólogo do protagonista ao usar **Conversar** na sala vazia.
 - Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
