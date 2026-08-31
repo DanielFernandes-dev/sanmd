@@ -1,6 +1,76 @@
 # TODO — Protótipo V1 — Estrutura Base
 
 > Referência: Ace Attorney (Nintendo DS)
+>
+> Direção narrativa: [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md). As tarefas abaixo devem distinguir o protótipo técnico já existente do conteúdo canônico ainda planejado.
+
+## Atualização Conceitual Prioritária
+
+### Premissa e abertura
+
+- [ ] Substituir no conteúdo jogável a premissa antiga do celular encontrado em casa.
+- [ ] Permitir que o jogador escolha o nome real de MJ no início.
+- [ ] Prototipar a cutscene inicial de Lulith sem fechar como definitivo o texto ou a motivação de vingança.
+- [ ] Criar a cena em que James acorda MJ.
+- [ ] Criar um caso policial introdutório original que ensine investigação point-and-click.
+- [ ] Levar MJ de volta à mesa na delegacia após o primeiro caso.
+- [ ] Implementar a nota criptografada e suas duas escolhas explícitas.
+- [ ] Implementar o final imediato ao amassar e jogar a nota fora.
+- [ ] Exibir uma porcentagem mínima de conclusão nesse final.
+- [ ] Criar o puzzle que revela as coordenadas.
+- [ ] Criar a consulta das coordenadas no computador da delegacia.
+- [ ] Prototipar o deslocamento rápido até o local indicado.
+- [ ] Criar o cofre e seu segundo puzzle.
+- [ ] Fazer o cofre entregar o celular de Lulith.
+
+### Personagens e conteúdo
+
+- [ ] Atualizar textos e dados para tratar MJ como protagonista feminina.
+- [ ] Criar sprites genéricos de MJ: neutra, analisando, surpresa, irritada e cansada.
+- [ ] Criar sprites genéricos de Lulith: neutra, brincando, confiante, incomodada e com raiva.
+- [ ] Criar sprites genéricos de James: neutro, explicando, preocupado e sério.
+- [ ] Cadastrar William James como amigo, antigo professor e colega de MJ.
+- [ ] Reescrever a conversa atual do contato desconhecido para a personalidade de Lulith.
+- [ ] Implementar o primeiro contato entre MJ e Lulith.
+- [ ] Implementar o reset remoto do celular depois da primeira troca de mensagens.
+- [ ] Manter o medo de MJ estar interpretando algo errado como traço de personalidade, não como mecânica ou conflito central.
+- [ ] Limitar o planejamento a no máximo seis personagens principais/relevantes.
+
+### Celular e investigação
+
+- [ ] Planejar os aplicativos Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e Salvamento/replay.
+- [ ] Definir quais informações do Ato II aparecem no celular antes do reset remoto.
+- [ ] Implementar o terminal como interface de puzzles.
+- [ ] Definir e prototipar comandos e regras iniciais do terminal.
+- [ ] Integrar o mapa ao fluxo de coordenadas e à navegação posterior.
+- [ ] Prototipar o indicador diegético de progresso no celular.
+- [ ] Avaliar o salvamento por fotografias sem tratá-lo como decisão definitiva.
+
+### Direção visual do Protótipo 1
+
+- [ ] Manter a apresentação em pixel art como direção final, mesmo com assets provisórios.
+- [ ] Criar cenários genéricos de dormitório, cena do crime, delegacia e mesa de MJ.
+- [ ] Criar cenários genéricos do local das coordenadas e da área do cofre.
+- [ ] Definir a resolução-base da pixel art para prototipagem.
+- [ ] Testar proporção, enquadramento, poses e expressões dos sprites.
+- [ ] Usar o Protótipo 1 para validar compreensão das cenas, não design canônico.
+- [ ] Adiar o design definitivo de personagens e cenários até o Protótipo 3.
+- [ ] Decidir futuramente se os cenários finais serão 2D, 3D tratado ou híbridos.
+
+## Pendências De Design Narrativo
+
+- [ ] Definir o que Lulith quer recuperar e quem tirou isso dela.
+- [ ] Definir a natureza e o alvo da vingança de Lulith.
+- [ ] Definir quem ou o que está por trás dos testes.
+- [ ] Definir por que Lulith precisa de pessoas capazes de resolver enigmas.
+- [ ] Definir o objetivo verdadeiro do celular.
+- [ ] Definir os demais candidatos e o que aconteceu com eles.
+- [ ] Definir os personagens restantes e suas funções narrativas.
+- [ ] Estruturar os atos posteriores ao tutorial.
+- [ ] Definir a quantidade, as condições e as revelações de cada final/perspectiva.
+- [ ] Definir o final verdadeiro e sua relação com investigação total/100%.
+- [ ] Definir como replay e ARG liberam novas informações.
+- [ ] Decidir se a influência hentai permanece como referência estética ou será removida.
 
 ## Interface Principal
 

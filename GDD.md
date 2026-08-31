@@ -14,18 +14,42 @@
 
 ### Protagonista
 
-- **Perfil:** Consultor técnico da polícia.
-- **Ponto de Partida:** Encontra um celular desconhecido em sua própria casa.
+- **Nome de desenvolvimento:** MJ; o nome real será escolhido pelo jogador.
+- **Perfil:** Mulher, investigadora criminal/consultora técnica ligada à polícia.
+- **Experiência:** Enigmas, ARGs, escape rooms e atividades semelhantes.
+- **Estado inicial:** Cansada e dormindo mal por causa do trabalho antes dos eventos principais.
+- **Traço de personalidade:** Teme interpretar evidências de forma errada ou estar diante de uma farsa, ilusão ou alucinação. Esse medo sustenta sua personalidade, mas não é o centro da trama nem uma mecânica principal.
 
-### A Criação
+### Ponto de partida
 
-O aparelho está bloqueado. Depois de investigar suas primeiras barreiras de segurança, ele consegue entrar em contato com o proprietário. O dono afirma que o celular faz parte de um "teste de recrutamento e lógica" com fragmentos de código espalhados pelo mundo real.
+Após uma cutscene provisória de Lulith, William James acorda MJ e a leva para uma cena de crime. O jogador resolve um caso introdutório que ensina investigação point-and-click. De volta à delegacia, MJ encontra uma nota criptografada sobre sua mesa.
 
-Inicialmente, o protagonista aceita a explicação. Porém, ao tentar envolver a polícia, o comportamento do celular muda. O terminal desaparece. O sistema bloqueia determinadas funções quando detecta mais de uma pessoa próxima. Os superiores consideram a situação paranoia. Sem apoio, ele decide investigar sozinho.
+O jogador recebe duas escolhas explícitas:
 
-### A Verdade
+1. Amassar a nota e jogá-la fora, encerrando imediatamente o jogo com um percentual mínimo de conclusão.
+2. Resolver o enigma, revelar coordenadas e continuar a investigação.
 
-Os códigos espalhados não são apenas enigmas. Eles fazem parte de um vírus autônomo desenvolvido para invasões invisíveis. Um desenvolvedor dissidente descobriu o projeto e tentou impedir sua utilização. Antes de desaparecer, ele criptografou o vírus e criou um mecanismo de emergência. As chaves foram fragmentadas. O protagonista percebe que tudo foi planejado para fazê-lo parecer responsável. O dono do celular precisava de alguém capaz de encontrar as chaves, resolver os enigmas, reunir os fragmentos, ativar o sistema e assumir a culpa pela invasão.
+MJ consulta as coordenadas no computador da delegacia, desloca-se ao local indicado e encontra um cofre protegido por outro puzzle. Dentro dele está o celular de Lulith, que inicia a trama principal.
+
+### Trama principal
+
+O aparelho contém inicialmente pistas capazes de antecipar informações do Ato II. Depois da primeira troca de mensagens, Lulith reinicia o celular remotamente: o conteúdo desaparece do acesso normal e o aparelho passa a parecer comum, além das funções específicas do jogo.
+
+Lulith escolheu MJ por sua experiência com enigmas e experiências imersivas. MJ não é a única candidata testada. A origem dos testes, o objetivo verdadeiro do celular, a situação dos demais candidatos e aquilo que Lulith deseja recuperar ainda não estão definidos.
+
+> A antiga trama do vírus autônomo e do protagonista usado como bode expiatório não é mais tratada como verdade canônica. Seus elementos só poderão retornar após nova decisão narrativa.
+
+### Localização
+
+A história se passa em **São Paulo**. Bairros, delegacia e locais de investigação ainda serão definidos.
+
+### Personagens principais
+
+- **MJ:** protagonista curiosa, analítica e experiente em enigmas.
+- **Lulith:** dona do celular; influencia as pessoas sem ordens explícitas, usa tom leve e perde a calma quando perde o controle. Não haverá romance entre ela e MJ.
+- **William James:** amigo de dormitório, antigo professor de MJ na preparação para o concurso e seu colega de ramo há cerca de dois anos. Sua preocupação com o cansaço de MJ não invalida a competência dela.
+
+O jogo terá no máximo seis personagens principais/relevantes. Os demais nomes e funções ainda estão pendentes.
 
 ---
 
@@ -66,31 +90,44 @@ O jogador casual pode simplesmente jogar a campanha e alcançar um final. O joga
 
 ### Objetivo
 
-Introduzir o celular, seus sistemas, o proprietário, os primeiros enigmas e a relação entre protagonista e aparelho.
+Apresentar MJ e James, ensinar a investigação, introduzir a nota, o deslocamento, o cofre, o celular, Lulith e os principais sistemas de gameplay.
 
 ### Gameplay
 
-O jogador aprende: exploração point-and-click, interface do celular (mensagens, galeria, notas, arquivos), primeiros puzzles e o terminal. O proprietário apresenta toda a situação como um teste de lógica/recrutamento.
+1. Cutscene provisória de Lulith falando sobre recuperar aquilo que lhe foi tirado.
+2. James acorda MJ e a leva à cena do crime.
+3. Caso introdutório e tutorial de investigação point-and-click.
+4. Retorno à mesa na delegacia e descoberta da nota.
+5. Escolha entre o final imediato ou a resolução do enigma.
+6. Consulta das coordenadas, deslocamento e puzzle do cofre.
+7. Obtenção do celular e primeiro contato com Lulith.
+8. Reset remoto e apresentação de Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e Salvamento/replay.
+
+O caso introdutório poderá usar temporariamente o primeiro julgamento de *Ace Attorney* como referência estrutural de prototipagem, mas deverá receber conteúdo original.
 
 ---
 
 ## 6. Ato II — O Falso Teste
 
-O protagonista começa a desconfiar da situação. Quando tenta apresentar o celular à polícia, o terminal desaparece devido à trava de presença. O sistema aparentemente exige que o protagonista esteja sozinho. Os superiores consideram a situação paranoia. Sem apoio, ele continua investigando sozinho.
+**Status: pendente de reestruturação.**
+
+MJ começa a reconstruir a história por fragmentos e percebe que a aparente motivação de vingança de Lulith não significa exatamente o que parecia na abertura. O ato deverá aprofundar os testes, os demais candidatos e as informações vistas antes do reset do celular.
 
 ### Pistas ambientais
 
-O cenário começa a apresentar notícias sobre instabilidade de sistemas, documentos, horários, fotografias, inscrições, informações aparentemente desconectadas e mensagens que contradizem o proprietário.
+O cenário deverá apresentar documentos, horários, fotografias, inscrições, objetos, interfaces e mensagens aparentemente desconectadas. Esses elementos precisam permitir deduções e contradições sem depender de explicações diretas dos personagens.
 
 ---
 
 ## 7. Ato III — A Conspiração
 
-A verdade começa a aparecer. Os códigos espalhados são um vírus autônomo. Um desenvolvedor dissidente o criptografou e criou um mecanismo de emergência. A reintrodução das chaves poderia ativar um rastreamento, alertar a polícia e localizar a origem da invasão. O protagonista percebe que foi usado como bode expiatório.
+**Status: pendente de definição.**
+
+Os atos posteriores deverão revelar a motivação de Lulith, a origem dos testes, o objetivo do celular e o destino dos candidatos. A verdade será reconstruída pelo jogador por meio de investigação, puzzles, interfaces e replay.
 
 ### Clímax
 
-Quando o rastreamento é ativado, a polícia começa a cercar o protagonista. Um cronômetro aparece. O jogador precisa resolver os últimos enigmas antes que o cerco seja concluído. A partir desse momento, **tempo passa a ser um recurso real**. (Ver ADR-0006)
+O clímax e o uso de tempo como recurso ainda precisam ser confirmados. A estrutura final deve recompensar o compartilhamento de informações e a capacidade de MJ de confiar em outras pessoas, conforme o código dramático provisório da personagem.
 
 ---
 
@@ -104,14 +141,19 @@ O jogador explora cenários investigando objetos, fotografias, documentos, compu
 
 Apps simulados que funcionam como canal narrativo:
 
-- **💬 Mensagens:** Comunicação principal com o proprietário.
+- **💬 Mensagens:** Comunicação principal com Lulith.
 - **🖼️ Galeria:** Fotografias, gravações e pistas visuais.
+- **📷 Câmera:** Registro de pistas e possível sistema diegético de salvamento.
 - **📝 Notas:** Informações contextuais.
 - **📁 Arquivos:** Documentos, dados corrompidos e informações ocultas.
+- **⌨️ Terminal:** Interface central de puzzles e acesso a informações escondidas.
+- **🗺️ Mapa:** Consulta de locais e deslocamento.
+- **💯 Progresso:** Percentual da história reconstruída.
+- **💾 Salvamento/replay:** Retomada e investigação de novas perspectivas.
 
 ### C. Terminal Hacker
 
-Interface CRT retrô com comandos:
+Interface de puzzle cuja linguagem visual e comandos definitivos ainda precisam ser definidos. Comandos possíveis para prototipagem:
 
 ```text
 decode
@@ -125,19 +167,21 @@ Puzzles envolvem substituição, padrões, criptografia, códigos, sequências, 
 
 ### D. Trava de Presença
 
-O terminal só funciona quando o protagonista está sozinho. Se outra pessoa entra no ambiente, o sistema exibe `ACESSO BLOQUEADO`. (Ver ADR-0006)
+Existe a ideia de o terminal esconder ou bloquear funções quando outras pessoas estão presentes. Essa regra é provisória e ainda precisa ser validada narrativa e tecnicamente.
 
 ---
 
 ## 9. Sistema de Finais
 
-Os finais representam diferentes níveis de sucesso e conhecimento.
+Os finais representam principalmente perspectivas diferentes de MJ sobre aquilo que conseguiu descobrir. Cada rota pode revelar informações distintas, sem necessariamente constituir uma realidade separada.
 
-| Final | Condição | Desfecho Narrativo |
+| Final | Condição | Função narrativa |
 |---|---|---|
-| **Final 1: O Culpado Perfeito** | Poucas senhas / Tempo esgotado | Preso sem provas; o vilão fica com parte do código; ninguém acredita no consultor. |
-| **Final 2: A Verdade Parcial** | Metade das senhas decifradas | Preso, mas com registros que plantam a dúvida em um aliado policial. |
-| **Final 3: O Sacrifício / Verdadeiro** | 100% das senhas decifradas a tempo | O protagonista corrompe/destrói o vírus. É preso, mas o desenvolvedor dissidente aparece para ajudá-lo. |
+| **Nota descartada** | Amassar e jogar fora a nota | Encerrar antes da investigação principal e mostrar progresso mínimo. |
+| **Perspectivas parciais** | Seguir rotas e reunir conjuntos diferentes de pistas | Revelar partes da cronologia e incentivar reinterpretação. |
+| **Final verdadeiro** | Reconstrução completa da investigação | Oferecer o único encerramento realmente completo. |
+
+A quantidade, os nomes, as condições e a relação exata entre o final verdadeiro, todos os finais e o progresso de 100% permanecem pendentes.
 
 > **Terminar a história não significa necessariamente compreendê-la.**
 
@@ -147,27 +191,23 @@ Os finais representam diferentes níveis de sucesso e conhecimento.
 
 O jogo não exige que o jogador encontre todo o conteúdo adicional para terminar a história principal. Porém, essas descobertas podem alterar finais, desbloquear informações, mudar interpretações, revelar personagens, apresentar novas cenas e revelar a história completa.
 
-### A Rota do Início
+### História fragmentada
 
-Uma das principais camadas opcionais está escondida na abertura. O jogador pode encontrar **"Sempre lembre do seu início."** Na primeira execução, há uma tela de criação de senha. Depois de avançar na história, ele pode salvar, reiniciar, voltar ao momento inicial, criar uma senha diferente e desbloquear conteúdo anteriormente inacessível. Essa mecânica transforma o próprio **replay** em uma ferramenta de investigação.
+A origem dos testes, a motivação de Lulith, os acontecimentos anteriores, a verdade por trás do celular e os participantes envolvidos serão apresentados em fragmentos. O jogador deverá formar uma cronologia a partir deles.
 
-### Gravações Apagadas
+### Informações anteriores ao reset
 
-A senha alternativa pode permitir acesso a gravações antigas do dono do celular. Elas não devem simplesmente explicar a história; seu objetivo é **recontextualizar acontecimentos já vistos**.
+O conteúdo acessível no celular antes de Lulith reiniciá-lo poderá antecipar descobertas do Ato II. Replay, arquivos recuperados e novas perspectivas podem permitir que o jogador compreenda melhor aquilo que viu sem contexto.
 
-> Campanha: "Eu não conheço ninguém da polícia."
->
-> Gravação: O jogador vê o proprietário conversando com um policial.
+### Outros candidatos
 
-A pergunta deixa de ser **"Quem está dizendo a verdade?"** e passa a ser: **"Por que ele precisou mentir?"**
-
-### O Parceiro
-
-Existe uma segunda pessoa relacionada ao dono do celular, descoberta através de mensagens criptografadas, arquivos, documentos e pistas ambientais. Sua intenção permanece ambígua. Ele pode ter participado do plano, conhecer a origem do vírus, ter se voltado contra o proprietário ou possuir objetivos próprios.
+Uma cena provisória poderá mostrar o computador de Lulith e sua pesquisa por pessoas da região com experiência em ARGs e escape rooms. A quantidade de candidatos, o destino deles e a possível presença de outro candidato no elenco principal ainda serão definidos.
 
 ---
 
 ## 11. Metalinguagem e ARG
+
+**Status: direção planejada, ainda sem função definitiva na história.**
 
 ### Camada A — Arquivos reais do APK
 
@@ -200,7 +240,7 @@ investiga o sistema
 
 ### ARG como extensão narrativa
 
-O dono do celular pode dar instruções que parecem relacionadas aos arquivos internos do aparelho. Posteriormente, ele pode dizer: **"Procura onde o programa guarda as coisas."** O jogador pode interpretar isso como uma instrução para investigar o próprio APK.
+Instruções de Lulith podem apontar simultaneamente para arquivos dentro da narrativa e para elementos externos ao jogo. A integração definitiva com o APK, a Web ou o mundo real ainda precisa ser definida e não deve ser obrigatória até que sua acessibilidade e manutenção sejam avaliadas.
 
 ### Metalinguagem progressiva
 
@@ -217,7 +257,7 @@ O dono do celular pode dar instruções que parecem relacionadas aos arquivos in
 
 > **Sim, Acredite nas Mentiras Dele kk**
 
-O **"kk"** possui função narrativa. Ele funciona como uma característica textual recorrente do proprietário ou de outro personagem. Exemplos: "relaxa kk", "foi só um teste kk", "não precisa confiar em mim kk". Ao longo do jogo, o jogador começa a associar:
+O uso de **"kk"** como pista textual recorrente de Lulith ou de outro personagem permanece como hipótese de design. Caso seja mantido, deve adquirir significado retrospectivo sem tornar a identidade ou a mentira óbvios desde o início.
 
 ```text
 kk
@@ -227,7 +267,7 @@ PERSONAGEM
 MENTIRA
 ```
 
-Assim, o próprio título se transforma em uma pista retrospectiva.
+Essa função ainda precisa ser confirmada ao definir a história completa.
 
 ---
 
@@ -276,7 +316,7 @@ A checklist **não informa como encontrar o conteúdo restante**. Ela funciona c
 
 O jogador pode terminar a história sem atingir 100%. Para considerar a história completamente investigada, é necessário descobrir:
 
-- Todos os finais.
+- As perspectivas necessárias para compreender a história.
 - Todas as principais evidências.
 - Gravações.
 - Arquivos.
@@ -287,19 +327,15 @@ O jogador pode terminar a história sem atingir 100%. Para considerar a históri
 
 O 100% representa: **"Você descobriu tudo que existe para descobrir."** — e não simplesmente: **"Você coletou todos os itens."**
 
+Ainda será decidido se todos os finais precisam ser vistos para liberar o final verdadeiro e como cada categoria afeta o percentual.
+
 ---
 
 ## 15. Pistas Pós-Final
 
 Cada final pode fornecer pistas para encontrar outros caminhos.
 
-### Exemplo
-
-Após o Final 1: **"Algumas coisas que foram apagadas ainda podem ser lembradas."** (direciona para as gravações do início)
-
-Após outro final: **"Nem toda mensagem foi enviada para você."** (direciona para o parceiro)
-
-As pistas devem orientar sem entregar diretamente a solução.
+As pistas devem orientar sem entregar diretamente a solução. Elas podem indicar informações perdidas antes do reset, cenas que admitem outra interpretação, arquivos ignorados ou ações possíveis em uma nova partida.
 
 ---
 
@@ -348,7 +384,7 @@ DESCOBRIR ROTAS ALTERNATIVAS
   ↓
 INVESTIGAR O APK
   ↓
-DESCOBRIR O PARCEIRO
+DESCOBRIR OUTROS CANDIDATOS
   ↓
 RECONSTRUIR A HISTÓRIA
   ↓
@@ -365,6 +401,8 @@ O jogo pode omitir, distorcer, contextualizar, esconder informações e permitir
 
 Esse princípio é especialmente importante para o ARG e para o título.
 
+O máximo possível da ambientação deve participar da narração: cenários, personagens, expressões, diálogos, objetos, interfaces, puzzles, mecânicas, arquivos, progresso e replay. A história não deve existir apenas no texto falado.
+
 ---
 
 ## 19. Experiência Desejada
@@ -379,6 +417,18 @@ A experiência ideal possui três momentos de compreensão:
 
 Essa diferença entre **zerar** e **compreender** é o núcleo do projeto.
 
+### Direção artística
+
+- A apresentação final será pixelada; pixel art não é apenas placeholder.
+- Personagens serão apresentados em 2D, com sprites expressivos, poses marcantes e leitura clara de emoções.
+- *Ace Attorney* é referência de linguagem visual e composição, não de personagens ou designs específicos.
+- Protótipos 1 e 2 usarão personagens e cenários genéricos para validar narrativa e compatibilidade visual.
+- O design definitivo será fechado apenas no Protótipo 3.
+- Para os protótipos atuais, todos os elementos serão 2D.
+- A dimensionalidade final dos cenários, entre 2D, 3D tratado como pixel art ou abordagem híbrida, permanece pendente.
+
+A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como referência estética de design ou deixar de integrar a definição de gênero.
+
 ---
 
 ## 20. Arquitetura Técnica (Contexto do Projeto)
@@ -387,25 +437,20 @@ Essa diferença entre **zerar** e **compreender** é o núcleo do projeto.
 
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
 - **Estrutura:** Separada em `js/data.js` (conteúdo) e `js/game.js` (motor) — ver ADR-0003.
-- **Interface:** Camadas sobrepostas (Visual Novel + Smartphone + Terminal) — ver ADR-0004.
-- **Terminal:** Parser de comandos para puzzles — ver ADR-0005.
-- **Atos 2 e 3:** Multi-cena, cronômetro e três finais — ver ADR-0006.
+- **Interface implementada:** Camadas sobrepostas de Visual Novel e smartphone.
+- **Conteúdo implementado:** Uma cena, monólogos e uma conversa curta ramificada em Mensagens.
+- **Ainda não implementado:** Investigação, terminal, puzzles, mapa, múltiplas cenas, atos completos, finais, progresso, replay e ARG.
+- **Compatibilidade narrativa:** O conteúdo atual valida a tecnologia, mas ainda representa a premissa anterior e deverá ser reescrito.
 
-### Variáveis de estado relevantes
-
-- `tempo_restante`
-- `fragmentos_coletados`
-- `local_isolado`
-- `state.timerRunning`
-- `state.isolated`
+O estado atual existe somente em memória. Persistência, save por fotografia e gerenciamento de replay ainda são planejamento.
 
 ---
 
 ## 21. Status do Projeto
 
 **Tipo:** Projeto experimental / vibecoding
-**Plataforma inicial:** Android (APK)
-**Possíveis plataformas futuras:** Web / Desktop
+**Plataforma do protótipo:** Web / Desktop, com camada Capacitor para Android
+**Plataforma planejada:** Android (APK), com possibilidade de Web/Desktop
 **Estrutura:** Visual Novel + Investigação + Puzzle + ARG
 **Estado:** Em desenvolvimento / definição de conceito
 

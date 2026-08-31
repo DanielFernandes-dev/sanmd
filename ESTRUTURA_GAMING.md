@@ -22,6 +22,7 @@ updated: 2026-08-31
 ## Navegação
 
 - [[ESTRUTURA_GAMING#Visão Geral|Visão Geral]]
+- [[ESTRUTURA_GAMING#Direção Conceitual Atual|Direção Conceitual Atual]]
 - [[ESTRUTURA_GAMING#Roadmap Do Fluxo Atual|Roadmap Do Fluxo Atual]]
 - [[ESTRUTURA_GAMING#Arquitetura Técnica|Arquitetura Técnica]]
 - [[ESTRUTURA_GAMING#Máquina De Estados|Máquina De Estados]]
@@ -62,8 +63,57 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 
 O protótipo valida a base da experiência, não o jogo completo. A interface do celular, a apresentação narrativa e a transição entre estados são o foco desta versão.
 
+O conteúdo da cena e da conversa atuais ainda deriva da premissa anterior, em que o celular já estava com o protagonista. Ele é útil para validar a tecnologia, mas não é canônico e deverá ser adaptado para MJ, Lulith e o novo fluxo de abertura.
+
 > [!warning] Fonte de verdade
-> O [[GDD]] descreve investigação, terminal, puzzles, múltiplos atos, finais, replay e ARG. Esses recursos fazem parte da visão futura e não estão presentes no código atual.
+> O [[IDEIA_CONCEITUAL]] registra as decisões narrativas mais recentes. O [[GDD]] organiza o design do jogo. Investigação, terminal, puzzles, múltiplos atos, finais, replay e ARG fazem parte da visão futura e não estão presentes no código atual.
+
+## Direção Conceitual Atual
+
+### Premissa Canônica Planejada
+
+MJ é uma investigadora criminal/consultora técnica ligada à polícia em São Paulo. Após um caso introdutório, ela encontra uma nota na delegacia. Resolver seu enigma leva a coordenadas, a um cofre e ao celular de Lulith; jogar a nota fora encerra a partida imediatamente com progresso mínimo.
+
+```mermaid
+flowchart TD
+    A[Cutscene provisória de Lulith] --> B[James acorda MJ]
+    B --> C[Caso introdutório point-and-click]
+    C --> D[Nota na delegacia]
+    D -->|Jogar fora| E[Final imediato e progresso mínimo]
+    D -->|Resolver| F[Coordenadas]
+    F --> G[Deslocamento e cofre]
+    G --> H[Celular de Lulith]
+    H --> I[Primeiro contato e reset remoto]
+    I --> J[Trama principal]
+```
+
+### Personagens Definidos
+
+| Personagem | Função atual |
+|---|---|
+| MJ | Protagonista; nome escolhido pelo jogador; experiente em enigmas, ARGs e escape rooms |
+| Lulith | Dona do celular e responsável por conduzir os testes |
+| William James | Amigo, antigo professor e colega de trabalho de MJ |
+
+O elenco terá no máximo seis personagens principais/relevantes. Não haverá romance entre MJ e Lulith.
+
+### Sistemas Planejados Do Celular
+
+| Aplicativo | Função planejada | Status atual |
+|---|---|---|
+| Mensagens | Conversas com Lulith e escolhas narrativas | Motor funcional; conteúdo não canônico |
+| Galeria | Fotografias, gravações e pistas | Placeholder |
+| Câmera | Registro e possível save por fotografia | Não implementado; conceito provisório |
+| Notas | Informações contextuais | Placeholder |
+| Arquivos | Documentos e conteúdo oculto | Placeholder |
+| Terminal | Puzzles e acesso a informações escondidas | Não implementado |
+| Mapa | Coordenadas, locais e deslocamento | Não implementado |
+| Progresso | Percentual da investigação reconstruída | Não implementado |
+| Salvamento/replay | Retomada e novas perspectivas | Não implementado |
+
+### Direção Visual
+
+A versão final manterá direção pixelada e personagens 2D expressivos. Os assets dos Protótipos 1 e 2 serão genéricos; o design canônico será fechado apenas no Protótipo 3. Os protótipos atuais usarão tudo em 2D, enquanto a dimensionalidade final dos cenários continua pendente.
 
 ## Roadmap Do Fluxo Atual
 
@@ -168,6 +218,7 @@ Depois da última resposta do dono:
 ├── package.json               # Scripts e dependências
 ├── README.md                  # Visão geral do projeto
 ├── TODO.md                    # Implementação e validações pendentes
+├── IDEIA_CONCEITUAL.md        # Decisões narrativas e visuais mais recentes
 ├── FeatureArquiteture.md      # Arquitetura detalhada da feature de chat
 ├── GDD.md                     # Visão de longo prazo do jogo
 └── ESTRUTURA_GAMING.md        # Esta nota central
@@ -531,6 +582,9 @@ Abrir `http://localhost:8000`.
 | Finais e replay | Não implementado | Planejado no GDD |
 | ARG | Não implementado | Planejado no GDD |
 
+> [!note] Compatibilidade conceitual
+> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. A cena, a silhueta e o conteúdo textual atuais não representam o Ato I canônico descrito em [[IDEIA_CONCEITUAL]].
+
 ## Limitações Atuais
 
 ### Narrativa
@@ -593,19 +647,35 @@ Status: **próxima prioridade**.
 - [ ] Gerar e testar APK de debug.
 - [ ] Tratar o botão físico Voltar no Android.
 
-### Fase 2 — Persistência E Conteúdo
+### Fase 2 — Adaptação Conceitual
+
+Status: **planejada**.
+
+- [ ] Trocar o conteúdo atual para MJ, Lulith e William James.
+- [ ] Permitir a escolha do nome real de MJ.
+- [ ] Prototipar a cutscene de Lulith e a cena de dormitório.
+- [ ] Criar o caso introdutório de investigação point-and-click.
+- [ ] Criar a delegacia, a nota e a escolha que permite encerrar a partida.
+- [ ] Implementar coordenadas, deslocamento, cofre e obtenção do celular.
+- [ ] Adaptar o chat atual para o primeiro contato com Lulith.
+- [ ] Implementar o reset remoto do aparelho.
+
+### Fase 3 — Persistência E Aplicativos
 
 Status: **planejada**.
 
 - [ ] Salvar histórico e progresso.
 - [ ] Restaurar sessão após fechar o jogo.
 - [ ] Implementar Galeria.
+- [ ] Implementar Câmera e avaliar save por fotografias.
 - [ ] Implementar Notas.
 - [ ] Implementar Arquivos.
+- [ ] Implementar Mapa.
+- [ ] Implementar indicador de Progresso.
 - [ ] Cadastrar personagens e conversas presenciais.
 - [ ] Adicionar novas cenas.
 
-### Fase 3 — Investigação
+### Fase 4 — Investigação E Puzzles
 
 Status: **visão do GDD**.
 
@@ -616,17 +686,28 @@ Status: **visão do GDD**.
 - [ ] Puzzles.
 - [ ] Terminal hacker.
 
-### Fase 4 — Estrutura Narrativa Completa
+### Fase 5 — Estrutura Narrativa Completa
 
 Status: **visão do GDD**.
 
 - [ ] Múltiplos atos.
-- [ ] Cronômetro de clímax.
-- [ ] Finais diferentes.
+- [ ] Definir e implementar o clímax.
+- [ ] Finais como perspectivas diferentes de MJ.
 - [ ] Replay narrativo.
 - [ ] Progresso de 100%.
+- [ ] Final verdadeiro associado à reconstrução completa.
 - [ ] Camadas metalinguísticas.
 - [ ] Integração ARG.
+
+### Fase 6 — Direção Visual Definitiva
+
+Status: **planejada para o Protótipo 3**.
+
+- [ ] Consolidar o design de MJ, Lulith e James.
+- [ ] Consolidar os demais personagens principais.
+- [ ] Substituir sprites e cenários genéricos.
+- [ ] Definir a solução final 2D, 3D tratado ou híbrida para os cenários.
+- [ ] Manter a leitura pixelada e os sprites 2D expressivos.
 
 ## Validação Pendente
 
@@ -650,6 +731,7 @@ Status: **visão do GDD**.
 - [[TODO]] — tarefas concluídas e pendentes.
 - [[FeatureArquiteture]] — detalhes da arquitetura de mensagens.
 - [[GDD]] — visão narrativa e mecânicas futuras.
+- [[IDEIA_CONCEITUAL]] — decisões conceituais e pendências atuais.
 - [index.html](index.html) — estrutura atual.
 - [styles.css](styles.css) — apresentação atual.
 - [js/data.js](js/data.js) — dados narrativos atuais.

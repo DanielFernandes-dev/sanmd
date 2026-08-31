@@ -1,6 +1,6 @@
 # Sim, Acredite nas Mentiras Dele kk
 
-Protótipo web de uma Visual Novel de investigação que combina narrativa, interface de celular, puzzles e elementos de ARG.
+Protótipo web de uma Visual Novel de investigação ambientada em São Paulo que combina narrativa, exploração point-and-click, interface de celular, puzzles e elementos de ARG.
 
 > **Status:** Protótipo V1 em desenvolvimento
 >
@@ -8,7 +8,24 @@ Protótipo web de uma Visual Novel de investigação que combina narrativa, inte
 
 ## Sobre o projeto
 
-O protagonista é um consultor técnico da polícia que encontra um celular desconhecido em sua própria casa. Ao entrar em contato com o proprietário, recebe a explicação de que o aparelho faz parte de um teste de recrutamento e lógica. Conforme investiga, ele percebe que o celular, os códigos e as mensagens escondem algo maior.
+MJ, nome provisório de desenvolvimento, é uma investigadora criminal/consultora técnica ligada à polícia. Depois de resolver um caso introdutório, ela encontra uma nota com um enigma em sua mesa na delegacia. O jogador pode jogar o papel fora e encerrar a partida com uma porcentagem mínima de conclusão ou decifrá-lo para encontrar coordenadas, um cofre e, dentro dele, o celular de Lulith.
+
+O aparelho inicia a investigação principal. Suas mensagens, arquivos, interfaces e puzzles apresentam fragmentos sobre Lulith, outros candidatos e a origem dos testes. Os finais representam perspectivas diferentes de MJ sobre o que ela conseguiu descobrir; apenas a reconstrução completa da história conduz ao final verdadeiro.
+
+### Direção conceitual atual
+
+- A história se passa em **São Paulo**.
+- O nome real de MJ será escolhido pelo jogador no início.
+- MJ tem experiência prévia com enigmas, ARGs e escape rooms e não é a única candidata testada.
+- Lulith é a dona do celular e conduz MJ por persuasão, geralmente em tom leve ou de brincadeira.
+- William James é amigo, antigo professor e colega de trabalho de MJ.
+- Não haverá romance entre MJ e Lulith.
+- O elenco principal/relevante terá no máximo seis personagens.
+- A narrativa será fragmentada e utilizará cenários, objetos, expressões, interfaces e mecânicas para contar a história.
+- Replay, progresso e finais fazem parte da investigação, não apenas da conclusão da campanha.
+- A direção visual final será pixelada, com personagens 2D expressivos e apresentação inspirada em *Ace Attorney*.
+
+As decisões conceituais, inclusive seus níveis de certeza e pendências, estão consolidadas em [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md). O [`GDD.md`](GDD.md) organiza essa direção como design do jogo.
 
 O objetivo da V1 é validar a estrutura visual e a experiência básica antes do desenvolvimento do jogo completo. O protótipo utiliza conteúdo e arte provisórios para testar:
 
@@ -37,6 +54,8 @@ Já estão disponíveis:
 - Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
+
+> O conteúdo jogável atual ainda representa a premissa anterior e usa assets genéricos. Ele deve ser tratado como validação técnica da interface, não como narrativa canônica. A incorporação do novo Ato I está planejada no [`TODO.md`](TODO.md).
 
 ## Celular, mensagens e conversas
 
@@ -103,12 +122,14 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── capacitor.config.json # Configuração do aplicativo Android
 ├── package.json      # Dependências e comandos de build
 ├── GDD.md           # Visão completa do jogo e da narrativa
+├── IDEIA_CONCEITUAL.md # Decisões conceituais e pendências atuais
+├── ESTRUTURA_GAMING.md # Estado técnico e roadmap do protótipo
 ├── FeatureArquiteture.md # Próximas alterações e como implementá-las
 ├── TODO.md          # Lista de tarefas do protótipo
 └── README.md        # Visão geral e instruções de execução
 ```
 
-## Fluxo da V1
+## Fluxo do protótipo atual
 
 ```text
 Cenário
@@ -120,10 +141,12 @@ Cenário
 
 O celular é a principal interface narrativa planejada. Seus aplicativos simulados são:
 
-- **Mensagens:** comunicação com o proprietário.
+- **Mensagens:** comunicação com Lulith; no protótipo atual, o contato ainda aparece como `???`.
 - **Galeria:** fotografias, gravações e pistas visuais.
 - **Notas:** informações contextuais.
 - **Arquivos:** documentos, dados corrompidos e conteúdo oculto.
+
+Na direção futura também estão previstos **Câmera**, **Terminal**, **Mapa**, **Progresso** e **Salvamento/replay**.
 
 Na V1 atual, **Mensagens** está funcional; os demais aplicativos ainda são elementos provisórios.
 
@@ -141,6 +164,28 @@ A V1 busca validar somente a base da interface e das interações. Permanecem fo
 - Arte e narrativa definitivas.
 
 Esses recursos fazem parte da visão de longo prazo descrita no [`GDD.md`](GDD.md), mas não são necessários para validar a estrutura atual.
+
+## Fluxo narrativo planejado do Ato I
+
+```text
+Cutscene provisória de Lulith
+   ↓
+James acorda MJ
+   ↓
+Caso policial introdutório e tutorial point-and-click
+   ↓
+Retorno à mesa na delegacia
+   ↓
+Nota: jogar fora → final imediato com progresso mínimo
+   │
+   └── resolver → coordenadas → deslocamento → cofre
+                                      ↓
+                              celular de Lulith
+                                      ↓
+                     mensagens, reset remoto e terminal
+```
+
+O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. O caso introdutório, o texto da cutscene, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos.
 
 ## Critérios de validação
 
