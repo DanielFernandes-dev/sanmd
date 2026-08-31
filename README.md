@@ -21,7 +21,7 @@ O objetivo da V1 é validar a estrutura visual e a experiência básica antes do
 
 ## Estado atual
 
-O protótipo atual é uma aplicação web estática feita com HTML, CSS e JavaScript, sem dependências externas ou etapa de build.
+O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e JavaScript. O projeto também possui uma camada Capacitor para gerar o aplicativo Android.
 
 Já estão disponíveis:
 
@@ -33,6 +33,7 @@ Já estão disponíveis:
 - Interface de celular com relógio, data e aplicativos provisórios.
 - Retorno do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
+- Projeto Android e comando de build de APK com Capacitor.
 
 ## Próximas mudanças
 
@@ -64,7 +65,18 @@ Depois, acesse:
 http://localhost:8000
 ```
 
-Não é necessário instalar pacotes.
+Para executar somente a versão web, não é necessário instalar pacotes.
+
+### Gerar o APK Android
+
+Com Node.js, Java e o Android SDK configurados:
+
+```bash
+npm ci
+npm run apk
+```
+
+O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o build Android de debug.
 
 ## Controles
 
@@ -84,6 +96,9 @@ Não é necessário instalar pacotes.
 ├── js/
 │   ├── data.js      # Cena, personagem e falas provisórias
 │   └── game.js      # Estado, diálogos e navegação
+├── android/          # Projeto nativo gerado pelo Capacitor
+├── capacitor.config.json # Configuração do aplicativo Android
+├── package.json      # Dependências e comandos de build
 ├── GDD.md           # Visão completa do jogo e da narrativa
 ├── FeatureArquiteture.md # Próximas alterações e como implementá-las
 ├── TODO.md          # Lista de tarefas do protótipo
