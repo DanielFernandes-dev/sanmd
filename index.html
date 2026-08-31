@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=mensagens-1">
 </head>
 <body>
   <div id="app">
@@ -51,23 +51,24 @@
         <div id="phone-home">
           <p id="phone-date"></p>
           <div id="apps-grid">
-            <button class="app" type="button"><span class="app-icon">💬</span><span class="app-nome">Mensagens</span></button>
+            <button id="btn-mensagens" class="app" type="button"><span class="app-icon">💬</span><span class="app-nome">Mensagens</span></button>
             <button class="app" type="button"><span class="app-icon">🖼️</span><span class="app-nome">Galeria</span></button>
             <button class="app" type="button"><span class="app-icon">📝</span><span class="app-nome">Notas</span></button>
             <button class="app" type="button"><span class="app-icon">📁</span><span class="app-nome">Arquivos</span></button>
           </div>
         </div>
+        <section id="phone-messages" class="oculto" aria-labelledby="messages-header">
+          <header id="messages-header">???</header>
+          <div id="messages-list" aria-live="polite"></div>
+        </section>
         <div id="phone-nav">
-          <span class="nav-dot"></span>
-          <span class="nav-dot"></span>
-          <span class="nav-dot"></span>
+          <button id="btn-voltar" type="button">◀ VOLTAR</button>
         </div>
       </div>
     </div>
-    <button id="btn-voltar" type="button">◀ VOLTAR</button>
   </div>
 
-  <script src="js/data.js"></script>
-  <script src="js/game.js"></script>
+  <script src="js/data.js?v=mensagens-1"></script>
+  <script src="js/game.js?v=mensagens-1"></script>
 </body>
 </html>

@@ -31,21 +31,23 @@ Já estão disponíveis:
 - Caixa de diálogo com nome, falas sequenciais e efeito de digitação.
 - Avanço do diálogo por clique, `Enter` ou barra de espaço.
 - Interface de celular com relógio, data e aplicativos provisórios.
-- Retorno do celular pelo botão **Voltar** ou pela tecla `Escape`.
+- Conversa com o dono dentro do aplicativo **Mensagens**.
+- Monólogo do protagonista ao usar **Conversar** na sala vazia.
+- Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
 
-## Próximas mudanças
+## Celular, mensagens e conversas
 
-A próxima atualização deve separar as conversas presenciais das mensagens digitais:
+A interface separa as conversas presenciais das mensagens digitais:
 
-- O diálogo com o dono do celular acontecerá dentro do aplicativo **Mensagens**.
-- As mensagens do dono serão exibidas à esquerda e as do protagonista à direita.
-- O botão **Conversar** será usado para interações presenciais.
-- Quando o protagonista estiver sozinho, **Conversar** apresentará um pensamento ou monólogo.
-- O botão **Voltar** será movido para o canto inferior da interface do celular.
-- Dentro de Mensagens, **Voltar** retornará à tela inicial do aparelho.
-- Na tela inicial, **Voltar** fechará o celular e retornará ao cenário.
+- O diálogo com o dono do celular acontece dentro do aplicativo **Mensagens**.
+- As mensagens do dono são exibidas à esquerda e as do protagonista à direita.
+- O botão **Conversar** é usado para interações presenciais.
+- Quando o protagonista está sozinho, **Conversar** apresenta um pensamento ou monólogo.
+- O botão **Voltar** fica no canto inferior da interface do celular.
+- Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
+- Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
 
 Os requisitos e as instruções detalhadas de implementação estão em [`FeatureArquiteture.md`](FeatureArquiteture.md).
 
@@ -85,7 +87,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 | Iniciar conversa | Botão **Conversar** |
 | Avançar ou completar uma fala | Clique na caixa, `Enter` ou espaço |
 | Abrir o celular | Botão **Celular** |
-| Fechar o celular | Botão **Voltar** ou `Escape` |
+| Voltar ou fechar o celular | Botão **Voltar** ou `Escape` |
 
 ## Estrutura do projeto
 
@@ -122,7 +124,7 @@ O celular é a principal interface narrativa planejada. Seus aplicativos simulad
 - **Notas:** informações contextuais.
 - **Arquivos:** documentos, dados corrompidos e conteúdo oculto.
 
-Na V1 atual, os aplicativos ainda são elementos provisórios. A implementação funcional de Mensagens é o próximo passo documentado.
+Na V1 atual, **Mensagens** está funcional; os demais aplicativos ainda são elementos provisórios.
 
 ## Escopo da V1
 
@@ -151,8 +153,8 @@ A estrutura básica da V1 será considerada funcional quando for possível:
 - [x] Abrir uma interface provisória de celular.
 - [x] Retornar à interface principal.
 - [x] Repetir a navegação sem quebrar o estado da interface.
-- [ ] Conversar com o dono pelo aplicativo **Mensagens**.
-- [ ] Usar **Conversar** como monólogo quando o protagonista estiver sozinho.
-- [ ] Posicionar o botão **Voltar** dentro do celular.
+- [x] Conversar com o dono pelo aplicativo **Mensagens**.
+- [x] Usar **Conversar** como monólogo quando o protagonista estiver sozinho.
+- [x] Posicionar o botão **Voltar** dentro do celular.
 
 > A V1 não precisa representar o jogo final. Ela precisa mostrar se essa estrutura é a direção certa para o projeto.

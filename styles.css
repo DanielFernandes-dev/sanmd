@@ -262,10 +262,8 @@ html, body {
   inset: 0;
   z-index: 50;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
   background: rgba(4, 6, 12, 0.88);
   backdrop-filter: blur(3px);
   transform: translateY(100%);
@@ -321,6 +319,64 @@ html, body {
   padding: 12px;
 }
 
+#phone-messages {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  background: #11182d;
+}
+
+#messages-header {
+  flex: none;
+  padding: 14px 16px;
+  border-bottom: 1px solid #38446d;
+  background: #1c2747;
+  color: var(--cor-texto);
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+#messages-list {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 12px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  user-select: text;
+  -webkit-user-select: text;
+  scrollbar-color: #53618e transparent;
+}
+
+.mensagem {
+  max-width: 78%;
+  padding: 9px 12px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.mensagem-recebida {
+  align-self: flex-start;
+  border-bottom-left-radius: 4px;
+  background: #303b5c;
+  color: #f4f6ff;
+}
+
+.mensagem-enviada {
+  align-self: flex-end;
+  border-bottom-right-radius: 4px;
+  background: #bc872d;
+  color: #161006;
+}
+
 #phone-date {
   font-size: 13px;
   color: #8fa0d8;
@@ -365,31 +421,24 @@ html, body {
 
 #phone-nav {
   display: flex;
-  justify-content: center;
-  gap: 22px;
-  padding: 10px 0 14px;
+  flex: none;
+  justify-content: flex-start;
+  padding: 8px 12px 12px;
   background: rgba(0, 0, 0, 0.35);
 }
 
-.nav-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #46507a;
-}
-
 #btn-voltar {
-  padding: 12px 34px;
-  border: 3px solid var(--cor-moldura);
+  padding: 8px 13px;
+  border: 2px solid #465275;
   border-radius: 999px;
-  background: var(--cor-painel);
+  background: #1a2138;
   color: var(--cor-texto);
   font-family: var(--fonte);
-  font-size: 15px;
+  font-size: 11px;
   font-weight: bold;
   letter-spacing: 0.1em;
   cursor: pointer;
-  box-shadow: 0 4px 0 #05070e;
+  box-shadow: 0 3px 0 #05070e;
   transition: transform 0.06s ease, filter 0.15s ease;
 }
 
@@ -436,5 +485,14 @@ html, body {
   #personagem {
     height: 48%;
     bottom: 30%;
+  }
+
+  #phone-frame {
+    width: min(300px, 76vw);
+    max-height: 92vh;
+  }
+
+  .mensagem {
+    max-width: 84%;
   }
 }
