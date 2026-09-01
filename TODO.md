@@ -1,365 +1,441 @@
-# TODO — Protótipo V1 — Estrutura Base
+# TODO — Ato I — A Curiosidade
 
-> Referência: Ace Attorney (Nintendo DS)
+> Roadmap exclusivo do primeiro ato de **Sim, Acredite nas Mentiras Dele kk**.
 >
-> Direção narrativa: [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md). As tarefas abaixo devem distinguir o protótipo técnico já existente do conteúdo canônico ainda planejado.
+> Fontes: [`GDD.md`](GDD.md), [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) e [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md).
+>
+> Objetivo do Ato I: apresentar MJ, James, investigação point-and-click, nota, coordenadas, cofre, celular, Lulith e os principais sistemas de gameplay.
 
-## Atualização Conceitual Prioritária
+## Limites do escopo
 
-### Premissa e abertura
+- [x] Tratar o Ato I como tutorial e início da trama principal.
+- [x] Manter MJ como protagonista feminina cujo nome real é escolhido pelo jogador.
+- [x] Manter Lulith como dona do celular, sem romance entre ela e MJ.
+- [x] Manter William James como amigo, antigo professor e colega de MJ.
+- [x] Ambientar o ato em São Paulo.
+- [x] Usar pixel art, personagens 2D e assets provisórios nos Protótipos 1 e 2.
+- [ ] Não transformar conceitos provisórios em decisões definitivas durante a implementação.
+- [ ] Não incluir no escopo a estrutura completa do Ato II ou dos atos posteriores.
+- [ ] Não incluir no escopo o final verdadeiro, o ARG completo ou o sistema completo de 100%.
+- [ ] Não definir designs canônicos antes do Protótipo 3.
 
-- [ ] Substituir no conteúdo jogável a premissa antiga do celular encontrado em casa.
-- [ ] Permitir que o jogador escolha o nome real de MJ no início.
-- [ ] Prototipar a cutscene inicial de Lulith sem fechar como definitivo o texto ou a motivação de vingança.
-- [ ] Criar a cena em que James acorda MJ.
-- [ ] Criar um caso policial introdutório original que ensine investigação point-and-click.
-- [ ] Levar MJ de volta à mesa na delegacia após o primeiro caso.
-- [ ] Implementar a nota criptografada e suas duas escolhas explícitas.
-- [ ] Implementar o final imediato ao amassar e jogar a nota fora.
-- [ ] Exibir uma porcentagem mínima de conclusão nesse final.
-- [ ] Criar o puzzle que revela as coordenadas.
-- [ ] Criar a consulta das coordenadas no computador da delegacia.
-- [ ] Prototipar o deslocamento rápido até o local indicado.
-- [ ] Criar o cofre e seu segundo puzzle.
-- [ ] Fazer o cofre entregar o celular de Lulith.
+## Fase 0 — Consolidar a fundação existente
 
-### Personagens e conteúdo
+### Sistemas disponíveis
 
-- [ ] Atualizar textos e dados para tratar MJ como protagonista feminina.
-- [ ] Criar sprites genéricos de MJ: neutra, analisando, surpresa, irritada e cansada.
-- [ ] Criar sprites genéricos de Lulith: neutra, brincando, confiante, incomodada e com raiva.
-- [ ] Criar sprites genéricos de James: neutro, explicando, preocupado e sério.
-- [ ] Cadastrar William James como amigo, antigo professor e colega de MJ.
-- [ ] Reescrever a conversa atual do contato desconhecido para a personalidade de Lulith.
-- [ ] Implementar o primeiro contato entre MJ e Lulith.
-- [ ] Implementar o reset remoto do celular depois da primeira troca de mensagens.
-- [ ] Manter o medo de MJ estar interpretando algo errado como traço de personalidade, não como mecânica ou conflito central.
-- [ ] Limitar o planejamento a no máximo seis personagens principais/relevantes.
+- [x] Criar cena base de Visual Novel.
+- [x] Criar caixa de diálogo com efeito de digitação.
+- [x] Permitir avanço por clique, `Enter` e espaço.
+- [x] Implementar os modos livre, diálogo e celular.
+- [x] Implementar o botão Conversar para diálogos presenciais ou monólogos.
+- [x] Implementar celular com tela inicial e navegação contextual.
+- [x] Implementar o aplicativo Mensagens.
+- [x] Implementar respostas selecionáveis e ramificações curtas.
+- [x] Implementar cooldown, indicador `digitando...` e entrega sequencial.
+- [x] Preservar o histórico de mensagens durante a sessão.
+- [x] Implementar retorno contextual pelo botão Voltar e pela tecla `Escape`.
+- [x] Criar estrutura Capacitor para Android.
 
-### Celular e investigação
+### Preparação para o conteúdo canônico
 
-- [ ] Planejar os aplicativos Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e Salvamento/replay.
-- [ ] Definir quais informações do Ato II aparecem no celular antes do reset remoto.
-- [ ] Implementar o terminal como interface de puzzles.
-- [ ] Definir e prototipar comandos e regras iniciais do terminal.
-- [ ] Integrar o mapa ao fluxo de coordenadas e à navegação posterior.
-- [ ] Prototipar o indicador diegético de progresso no celular.
-- [ ] Avaliar o salvamento por fotografias sem tratá-lo como decisão definitiva.
+- [ ] Identificar e remover da experiência jogável a premissa antiga do celular encontrado em casa.
+- [ ] Preservar os motores reutilizáveis de diálogo, monólogo, mensagens e navegação.
+- [ ] Separar dados narrativos do Ato I das regras do motor.
+- [ ] Definir estados e marcos de progresso para todas as fases do ato.
+- [ ] Garantir que cenas e diálogos possam ser trocados sem alterar o motor principal.
+- [ ] Substituir placeholders clicáveis por funções reais ou estados visuais não interativos.
 
-### Direção visual do Protótipo 1
+## Fase 1 — Fechar o roteiro jogável do Ato I
 
-- [ ] Manter a apresentação em pixel art como direção final, mesmo com assets provisórios.
-- [ ] Criar cenários genéricos de dormitório, cena do crime, delegacia e mesa de MJ.
-- [ ] Criar cenários genéricos do local das coordenadas e da área do cofre.
-- [ ] Definir a resolução-base da pixel art para prototipagem.
-- [ ] Testar proporção, enquadramento, poses e expressões dos sprites.
-- [ ] Usar o Protótipo 1 para validar compreensão das cenas, não design canônico.
-- [ ] Adiar o design definitivo de personagens e cenários até o Protótipo 3.
-- [ ] Decidir futuramente se os cenários finais serão 2D, 3D tratado ou híbridos.
+### Estrutura geral
 
-## Pendências De Design Narrativo
+- [ ] Escrever o fluxo completo da cutscene até o reset remoto do celular.
+- [ ] Definir quais informações obrigatórias e opcionais aparecem em cada cena.
+- [ ] Definir como cenários, objetos, expressões e interfaces contam a história sem depender apenas de diálogos.
+- [ ] Marcar os pontos em que o jogador aprende cada mecânica.
+- [ ] Definir as condições de avanço e falha de cada sequência.
+- [ ] Definir o encerramento do Ato I após a apresentação dos sistemas do celular.
 
-- [ ] Definir o que Lulith quer recuperar e quem tirou isso dela.
-- [ ] Definir a natureza e o alvo da vingança de Lulith.
-- [ ] Definir quem ou o que está por trás dos testes.
-- [ ] Definir por que Lulith precisa de pessoas capazes de resolver enigmas.
-- [ ] Definir o objetivo verdadeiro do celular.
-- [ ] Definir os demais candidatos e o que aconteceu com eles.
-- [ ] Definir os personagens restantes e suas funções narrativas.
-- [ ] Estruturar os atos posteriores ao tutorial.
-- [ ] Definir a quantidade, as condições e as revelações de cada final/perspectiva.
-- [ ] Definir o final verdadeiro e sua relação com investigação total/100%.
-- [ ] Definir como replay e ARG liberam novas informações.
-- [ ] Decidir se a influência hentai permanece como referência estética ou será removida.
+### Personagens
 
-## Interface Principal
+- [ ] Escrever MJ como curiosa, analítica, cansada e experiente em enigmas.
+- [ ] Apresentar o medo de MJ estar errada apenas como traço de personalidade.
+- [ ] Mostrar a competência de MJ sem invalidá-la por causa do cansaço.
+- [ ] Apresentar naturalmente a experiência de MJ com ARGs, enigmas e escape rooms.
+- [ ] Escrever James como amigo, antigo professor e colega preocupado com MJ.
+- [ ] Escrever Lulith com tom leve, persuasivo e brincalhão.
+- [ ] Mostrar irritação de Lulith somente quando ela perde o controle da situação.
+- [ ] Garantir que a relação entre MJ e Lulith não tenha leitura romântica.
+- [ ] Decidir se algum personagem além de MJ, Lulith e James é necessário no Ato I.
 
-- [ ] Criar layout principal inspirado na versão Nintendo DS de Ace Attorney.
-- [ ] Dividir a interface entre área principal e área lateral.
-- [ ] Criar área esquerda para Visual Novel.
-- [ ] Criar área direita para os botões.
-- [ ] Criar botão Conversar.
-- [ ] Criar botão Celular.
-- [ ] Ajustar proporções e espaçamentos da interface.
-- [ ] Testar a interface em diferentes resoluções.
+### Pendências narrativas necessárias ao ato
 
-## Visual Novel
+- [ ] Definir provisoriamente o que Lulith diz querer recuperar na cutscene.
+- [ ] Definir quanto da aparente vingança precisa ser compreendido no Ato I.
+- [ ] Definir por que Lulith escolheu MJ para este teste.
+- [ ] Definir como Lulith garante que MJ encontre o cofre.
+- [ ] Definir o risco de outra pessoa encontrar o cofre ou o celular.
+- [ ] Definir quais pistas sobre outros candidatos aparecem no Ato I.
+- [ ] Definir o objetivo aparente do celular neste ato sem revelar sua função verdadeira.
 
-- [ ] Criar área para exibição do cenário.
-- [ ] Criar suporte para exibição de personagem.
-- [ ] Criar caixa de diálogo.
-- [ ] Exibir nome do personagem.
-- [ ] Exibir texto da fala.
-- [ ] Implementar avanço das falas.
-- [ ] Implementar encerramento do diálogo.
-- [ ] Testar troca entre diferentes falas.
-- [ ] Testar posicionamento do personagem na cena.
+## Fase 2 — Definir locais, puzzles e conteúdo
 
-## Conversar
+### São Paulo e cenários
 
-- [ ] Fazer o botão Conversar abrir uma interação.
-- [ ] Criar uma conversa de teste.
-- [ ] Criar personagem provisório.
-- [ ] Criar algumas falas provisórias.
-- [ ] Permitir avançar a conversa.
-- [ ] Permitir finalizar a conversa.
-- [ ] Testar a sensação da interação.
+- [ ] Escolher o bairro ou região do dormitório de MJ.
+- [ ] Definir se a delegacia será real, fictícia ou inspirada em um local real.
+- [ ] Escolher o local da cena do crime introdutória.
+- [ ] Escolher o local revelado pelas coordenadas.
+- [ ] Definir a importância narrativa desse local para Lulith.
+- [ ] Definir quanto de São Paulo será reconhecível nos cenários.
+- [ ] Listar todos os cenários, variações e closes necessários ao ato.
 
-## Celular
+### Caso policial introdutório
 
-- [ ] Fazer o botão Celular abrir a interface do aparelho.
-- [ ] Criar tela inicial provisória do celular.
-- [ ] Criar botão para retornar à interface principal.
-- [ ] Testar entrada e saída do celular.
-- [ ] Ajustar tamanho e posicionamento da interface.
-- [ ] Testar transição entre Visual Novel e celular.
+- [ ] Criar um caso original e curto que funcione como tutorial.
+- [ ] Definir vítima, incidente, envolvidos e solução do caso.
+- [ ] Definir a cronologia real dos acontecimentos.
+- [ ] Criar pistas suficientes para uma dedução lógica e justa.
+- [ ] Criar pistas ambientais opcionais que aprofundem a cena.
+- [ ] Definir objetos examináveis e respostas de MJ para cada um.
+- [ ] Definir a participação de James durante a investigação.
+- [ ] Definir como o jogador apresenta ou relaciona evidências.
+- [ ] Substituir qualquer conteúdo copiado de *Ace Attorney* por material original.
 
-## Feature Prioritária — Celular, Mensagens e Conversas
+### Nota e coordenadas
 
-> Especificação de origem: `FeatureArquiteture.md`.
+- [ ] Escrever o conteúdo visual e textual da nota.
+- [ ] Definir o método de criptografia do primeiro puzzle.
+- [ ] Garantir que a solução possa ser deduzida com pistas presentes no jogo.
+- [ ] Definir dicas graduais para evitar bloqueio permanente.
+- [ ] Definir as coordenadas e validar se correspondem ao local escolhido.
+- [ ] Decidir entre mapa real, mapa estilizado ou interface fictícia.
+- [ ] Definir a apresentação visual do fast travel.
 
-### Refatoração estrutural
+### Cofre
 
-- [x] Centralizar tempos e velocidades no objeto `CONFIG`.
-- [x] Agrupar o estado por `dialogo`, `celular` e `mensagens`.
-- [x] Remover propriedades de estado globais com responsabilidades ambíguas.
-- [x] Centralizar o acesso às etapas em `obterEtapaMensagem()`.
-- [x] Centralizar a inclusão no histórico em `adicionarMensagem()`.
-- [x] Extrair a criação dos balões para `criarBalaoMensagem()`.
-- [x] Separar preparação, agendamento, entrega e finalização da fila do dono.
-- [x] Renomear funções de resposta para refletir o envio sequencial.
-- [x] Mover nomes de dias e meses para constantes reutilizadas pelo relógio.
-- [x] Manter o comportamento existente durante a refatoração.
+- [ ] Definir o design provisório e o esconderijo do cofre.
+- [ ] Criar um segundo puzzle diferente do puzzle da nota.
+- [ ] Definir pistas, solução e dicas graduais do puzzle.
+- [ ] Justificar narrativamente a presença do cofre naquele local.
+- [ ] Definir o estado do celular quando o cofre é aberto.
 
-### Estrutura da interface (`index.html`)
+### Nota descartada
 
-- [x] Identificar o aplicativo Mensagens com um `id`, como `btn-mensagens`.
-- [x] Tornar o aplicativo Mensagens interativo e acessível por teclado.
-- [x] Criar a tela `phone-messages` dentro de `phone-screen`.
-- [x] Adicionar à tela de mensagens um cabeçalho com o nome do contato.
-- [x] Exibir `???` como nome do dono enquanto sua identidade não for revelada.
-- [x] Criar uma área `messages-list` com `aria-live="polite"` para a conversa.
-- [x] Manter `phone-home` como tela inicial do aparelho.
-- [x] Deixar a tela de mensagens oculta ao iniciar o jogo.
-- [x] Mover `btn-voltar` para dentro de `phone-screen`.
-- [x] Posicionar o botão Voltar no rodapé, no canto inferior esquerdo do celular.
-- [x] Usar elementos `button` em todas as ações interativas do celular.
+- [ ] Definir o nome do final da nota descartada.
+- [ ] Definir o percentual mínimo exibido.
+- [ ] Escrever o texto da tela final.
+- [ ] Decidir se haverá uma pista discreta incentivando replay.
+- [ ] Decidir se esse resultado aparece na lista de finais do Ato I.
 
-### Organização dos dados (`js/data.js`)
+## Fase 3 — Construir a progressão técnica do ato
 
-- [x] Remover de `conversas.principal` o diálogo com o dono do celular.
-- [x] Criar `mensagens.dono` para armazenar a conversa digital.
-- [x] Transferir as falas atuais com o dono para `mensagens.dono`.
-- [x] Identificar cada mensagem como enviada pelo `protagonista` ou pelo `dono`.
-- [x] Criar `monologos.sala` para as falas e pensamentos do protagonista sozinho.
-- [x] Manter mensagens digitais, monólogos e conversas presenciais em coleções separadas.
+### Estado e cenas
 
-### Estado e navegação (`js/game.js`)
+- [ ] Criar um identificador para cada cena do Ato I.
+- [ ] Implementar carregamento e troca de cenários.
+- [ ] Implementar entrada, saída e troca de personagens em cena.
+- [ ] Implementar poses e expressões por fala ou evento.
+- [ ] Criar eventos de entrada, interação, conclusão e transição de cena.
+- [ ] Bloquear ações incompatíveis durante diálogos, puzzles e transições.
+- [ ] Manter o foco e os controles corretos após cada mudança de estado.
 
-- [x] Adicionar referências aos elementos da tela inicial e da tela de mensagens.
-- [x] Adicionar ao estado a tela atual do celular, iniciando com `telaCelular: "inicio"`.
-- [x] Criar uma função para abrir o aplicativo Mensagens.
-- [x] Criar uma função para retornar à tela inicial do celular.
-- [x] Criar uma função para renderizar `DATA.mensagens.dono` como balões.
-- [x] Aplicar classes diferentes às mensagens enviadas e recebidas.
-- [x] Exibir as mensagens do dono à esquerda.
-- [x] Exibir as mensagens do protagonista à direita.
-- [x] Restaurar a tela inicial sempre que o celular for aberto novamente.
-- [x] Fazer o botão Voltar retornar de Mensagens para a tela inicial.
-- [x] Fazer o botão Voltar fechar o celular quando o jogador estiver na tela inicial.
-- [x] Aplicar o mesmo retorno contextual ao pressionar `Escape`.
-- [x] Limpar intervalos e temporizadores ao fechar o celular.
-- [x] Registrar os eventos de clique somente uma vez durante a inicialização.
-- [x] Inserir o conteúdo das mensagens usando `textContent`.
+### Nome e progresso
 
-### Comportamento do botão Conversar
+- [ ] Criar a tela inicial de escolha do nome real de MJ.
+- [ ] Validar nome vazio, tamanho máximo e caracteres aceitos.
+- [ ] Usar o nome escolhido em diálogos, mensagens e telas de resultado.
+- [ ] Criar marcos de progresso do Ato I.
+- [ ] Persistir nome, cena atual, pistas, escolhas e estado dos puzzles.
+- [ ] Restaurar a partida após recarregar ou fechar o jogo.
+- [ ] Permitir reiniciar o Ato I após o final da nota descartada.
 
-- [x] Reservar o botão Conversar para interações presenciais no cenário.
-- [x] Detectar se existe outro personagem presente no cenário.
-- [x] Iniciar uma conversa presencial quando houver outro personagem.
-- [x] Exibir um monólogo ou pensamento quando o protagonista estiver sozinho.
-- [x] Usar `DATA.monologos.sala` no cenário atual, pois não há outra pessoa na sala.
-- [x] Impedir que o botão Conversar inicie o diálogo com o dono do celular.
-- [x] Garantir que o dono do celular não seja tratado como presente na sala.
-- [x] Garantir que a conversa com o dono exista somente no aplicativo Mensagens.
+### Investigação point-and-click
 
-### Aparência e responsividade (`styles.css`)
+- [ ] Criar hotspots acessíveis para objetos investigáveis.
+- [ ] Exibir feedback visual e por teclado ao focar um hotspot.
+- [ ] Implementar inspeção de objetos e pistas ambientais.
+- [ ] Criar inventário ou registro mínimo de evidências do caso.
+- [ ] Marcar evidências obrigatórias e opcionais separadamente.
+- [ ] Implementar relação ou apresentação de evidências, se exigida pelo caso.
+- [ ] Impedir conclusão antes das descobertas obrigatórias.
+- [ ] Permitir revisitar pistas sem quebrar o progresso.
 
-- [x] Fixar o rodapé de navegação na parte inferior de `phone-screen`.
-- [x] Alinhar o botão Voltar à esquerda do rodapé.
-- [x] Remover o posicionamento externo atual do botão Voltar.
-- [x] Criar estilos para a tela e o cabeçalho de Mensagens.
-- [x] Organizar a lista de mensagens em coluna flexível.
-- [x] Adicionar rolagem vertical à conversa.
-- [x] Criar estilos diferentes para mensagens enviadas e recebidas.
-- [x] Usar cores distintas e com contraste suficiente para cada remetente.
-- [x] Limitar a largura dos balões para manter os textos legíveis.
-- [x] Impedir que mensagens longas ultrapassem os limites da tela.
-- [ ] Validar o celular e a conversa na media query abaixo de `700px`.
+### Puzzles e escolhas
 
-### Respostas selecionáveis e ramificações curtas
+- [ ] Criar uma interface reutilizável para puzzles.
+- [ ] Implementar tentativas, erros, acertos e dicas.
+- [ ] Implementar a escolha explícita entre descartar e resolver a nota.
+- [ ] Solicitar confirmação antes de encerrar pelo descarte da nota.
+- [ ] Implementar o puzzle da nota.
+- [ ] Implementar a consulta das coordenadas no computador.
+- [ ] Implementar o puzzle do cofre.
+- [ ] Registrar puzzles concluídos para evitar repetição indevida.
 
-- [x] Substituir a lista linear de mensagens por etapas identificadas em `js/data.js`.
-- [x] Definir uma propriedade `inicio` para indicar a primeira etapa da conversa.
-- [x] Definir em cada etapa as mensagens recebidas e as opções disponíveis.
-- [x] Limitar cada etapa a no mínimo uma e no máximo três opções de resposta.
-- [x] Garantir que todas as opções sejam coerentes com a mensagem e o contexto anteriores.
-- [x] Adicionar `id`, `texto`, `resposta` e `proxima` a cada opção.
-- [x] Usar reações diferentes do dono para escolhas diferentes.
-- [x] Fazer ramificações curtas convergirem para uma etapa principal compartilhada.
-- [x] Usar `proxima: null` para representar o fim da conversa.
-- [x] Criar `messages-choices` em `index.html` abaixo do histórico de mensagens.
-- [x] Definir `role="group"` e um nome acessível para a área de escolhas.
-- [x] Renderizar as opções como elementos `button`.
-- [x] Adicionar ao estado a etapa atual da conversa.
-- [x] Adicionar ao estado o histórico de mensagens já exibidas.
-- [x] Adicionar ao estado a indicação de que o dono está respondendo.
-- [x] Carregar a etapa inicial ao abrir a conversa pela primeira vez.
-- [x] Renderizar somente as mensagens pertencentes ao caminho percorrido.
-- [x] Adicionar a opção escolhida como mensagem enviada pelo protagonista.
-- [x] Ocultar ou desabilitar todas as opções imediatamente após uma escolha.
-- [x] Impedir cliques duplicados enquanto a resposta estiver sendo processada.
-- [x] Exibir um indicador `digitando...` antes da resposta do dono.
-- [x] Aplicar cooldown de 1 minuto antes da primeira resposta do dono.
-- [x] Exibir o indicador de digitação somente depois do cooldown inicial.
-- [x] Entregar cada mensagem do dono individualmente em intervalos de 1,2 segundo.
-- [x] Remover o indicador ao apresentar a mensagem recebida.
-- [x] Avançar para a etapa indicada em `proxima` depois da reação.
-- [x] Encerrar as escolhas quando a próxima etapa for `null`.
-- [x] Preservar histórico e etapa ao sair e retornar ao aplicativo Mensagens.
-- [x] Pausar o temporizador ao fechar o celular e retomar pelo tempo restante.
-- [x] Rolar automaticamente até a mensagem ou escolha mais recente.
-- [x] Mover o foco para a primeira opção quando novas respostas aparecerem.
-- [x] Estilizar as opções em coluna para acomodar textos longos.
-- [x] Estilizar estados de foco, toque e opção desabilitada.
-- [x] Garantir área de toque adequada e quebra de linha nos botões.
-- [x] Estilizar o indicador de digitação como mensagem recebida temporária.
-- [ ] Validar o layout com uma, duas e três opções em diferentes resoluções.
+## Fase 4 — Implementar a abertura
 
-### Testes das respostas selecionáveis
+### Cutscene de Lulith
 
-- [x] Confirmar que nenhuma etapa exibe mais de três opções.
-- [x] Confirmar que o protagonista não envia mensagens automaticamente.
-- [ ] Selecionar cada opção e conferir se o texto correto aparece no histórico.
-- [ ] Confirmar que cada escolha produz a reação correspondente do dono.
-- [x] Confirmar a convergência das ramificações para o fluxo principal.
-- [x] Tentar selecionar duas opções rapidamente e confirmar somente um envio.
-- [x] Confirmar que as opções ficam bloqueadas enquanto o dono responde.
-- [x] Confirmar o funcionamento e a remoção do indicador `digitando...`.
-- [ ] Sair e retornar ao aplicativo e confirmar a preservação do progresso.
-- [x] Confirmar que opções não escolhidas não aparecem no histórico.
-- [x] Concluir uma conversa cuja próxima etapa seja `null`.
-- [ ] Testar escolhas com mouse, toque e teclado.
-- [ ] Testar uma, duas e três opções em telas menores que `700px`.
+- [ ] Escrever um texto provisório sobre recuperar o que foi tirado dela.
+- [ ] Evitar confirmar a interpretação de vingança como verdade completa.
+- [ ] Criar enquadramentos, expressões e ritmo da cutscene.
+- [ ] Implementar avanço e opção de pular a cutscene.
+- [ ] Garantir que a cena continue marcada como provisória.
 
-### Monólogos por progresso
+### Dormitório e James
 
-- [x] Criar o monólogo `inicial` da sala.
-- [x] Criar o monólogo `aposPrimeiroEnvio`.
-- [x] Criar o monólogo `conversaConcluida`.
-- [x] Atualizar a fase do monólogo após a primeira mensagem do protagonista.
-- [x] Atualizar a fase do monólogo após a última resposta do dono.
-- [x] Fazer o botão Conversar selecionar o monólogo da fase atual.
-- [ ] Validar manualmente o monólogo inicial.
-- [ ] Validar manualmente o monólogo durante o cooldown.
-- [ ] Validar manualmente o monólogo após concluir o chat.
+- [ ] Criar o cenário provisório do dormitório.
+- [ ] Mostrar que MJ já estava cansada e dormindo mal antes dos eventos.
+- [ ] Implementar James acordando MJ.
+- [ ] Apresentar a relação entre os dois por ações e diálogo natural.
+- [ ] Implementar a conversa que leva MJ à cena do crime.
+- [ ] Implementar a transição do dormitório para a investigação.
 
-### Fluxo esperado
+## Fase 5 — Implementar o caso introdutório
 
-- [ ] Entrar na sala com o protagonista sozinho.
-- [ ] Usar Conversar e visualizar uma fala ou pensamento do protagonista.
-- [ ] Abrir a tela inicial pelo botão Celular.
-- [ ] Abrir a conversa com o dono pelo aplicativo Mensagens.
-- [ ] Exibir a conversa em formato de chat dentro do aparelho.
-- [ ] Usar Voltar para sair da conversa e retornar à tela inicial do celular.
-- [ ] Usar Voltar novamente para fechar o celular e retornar ao cenário.
+- [ ] Criar o cenário provisório da cena do crime.
+- [ ] Posicionar personagens, objetos e hotspots.
+- [ ] Introduzir os controles point-and-click de forma contextual.
+- [ ] Implementar exame de todos os objetos planejados.
+- [ ] Implementar coleta e consulta das evidências.
+- [ ] Implementar diálogos presenciais com James.
+- [ ] Implementar dicas contextuais sem entregar diretamente a solução.
+- [ ] Implementar a dedução ou conclusão do caso.
+- [ ] Exibir reação adequada para respostas erradas.
+- [ ] Confirmar que todas as conclusões dependem de pistas visíveis anteriormente.
+- [ ] Implementar a resolução original do caso.
+- [ ] Implementar o retorno à mesa de MJ na delegacia.
 
-### Testes e critérios de aceitação
+## Fase 6 — Implementar a nota e o primeiro final
 
-- [ ] Abrir e fechar o celular repetidas vezes sem quebrar o estado.
-- [ ] Confirmar que Mensagens abre pela tela inicial do aparelho.
-- [ ] Confirmar a ordem correta das mensagens.
-- [ ] Confirmar que o protagonista envia a primeira mensagem.
-- [ ] Confirmar que o dono permanece em silêncio durante 1 minuto.
-- [ ] Confirmar que `digitando...` aparece depois do cooldown.
-- [ ] Confirmar que as mensagens do dono chegam uma por vez.
-- [ ] Fechar e reabrir o celular durante o cooldown e conferir o tempo restante.
-- [ ] Confirmar o alinhamento correto de cada remetente.
-- [ ] Testar a rolagem com uma conversa maior que a tela.
-- [ ] Confirmar que Voltar retorna de Mensagens para a tela inicial.
-- [ ] Confirmar que Voltar fecha o celular a partir da tela inicial.
-- [ ] Testar `Escape` na tela de Mensagens e na tela inicial.
-- [ ] Confirmar que somente o protagonista fala ao usar Conversar na sala vazia.
-- [ ] Confirmar que nenhuma fala do dono aparece como diálogo presencial.
-- [ ] Testar o fluxo completo em desktop.
-- [ ] Testar o fluxo completo em telas menores que `700px`.
-- [ ] Confirmar que todas as ações continuam acessíveis por teclado.
+- [ ] Criar os cenários provisórios da delegacia e da mesa de MJ.
+- [ ] Implementar a descoberta e inspeção da nota.
+- [ ] Apresentar claramente as opções de descartar ou resolver.
+- [ ] Implementar a animação ou descrição de amassar e jogar fora.
+- [ ] Encerrar imediatamente a investigação principal após o descarte.
+- [ ] Exibir nome, texto e percentual do final definido.
+- [ ] Oferecer reinício ou retorno ao menu após o final.
+- [ ] Implementar o fluxo de resolução da nota.
+- [ ] Revelar as coordenadas somente após a solução correta.
 
-## Cenários
+## Fase 7 — Implementar coordenadas, deslocamento e cofre
 
-- [ ] Criar cenário provisório.
-- [ ] Criar um segundo cenário provisório, se necessário para o teste.
-- [ ] Testar troca de cenário.
-- [ ] Testar posicionamento dos personagens sobre os cenários.
-- [ ] Utilizar somente arte temporária nesta versão.
+- [ ] Criar a interface do computador da delegacia.
+- [ ] Permitir inserir ou consultar as coordenadas descobertas.
+- [ ] Apresentar o destino no mapa escolhido.
+- [ ] Introduzir o funcionamento futuro do Mapa por essa interação.
+- [ ] Implementar a sequência curta de deslocamento.
+- [ ] Criar o cenário do local indicado pelas coordenadas.
+- [ ] Criar a área e o close provisório do cofre.
+- [ ] Implementar descoberta, inspeção e abertura do cofre.
+- [ ] Implementar o segundo puzzle com feedback e dicas.
+- [ ] Revelar o celular de Lulith ao concluir o puzzle.
+- [ ] Registrar a obtenção do celular no progresso do ato.
 
-## Personagens
+## Fase 8 — Implementar o celular e o primeiro contato
 
-- [ ] Criar personagem provisório.
-- [ ] Criar pelo menos uma pose ou sprite provisório.
-- [ ] Posicionar personagem na área de Visual Novel.
-- [ ] Testar personagem durante os diálogos.
-- [ ] Ajustar escala e posicionamento.
+### Estado anterior ao reset
 
-## Fluxo de Teste
+- [ ] Definir quais informações antecipam conteúdos posteriores sem exigir o Ato II.
+- [ ] Criar arquivos, imagens, mensagens ou registros anteriores ao reset.
+- [ ] Permitir que o jogador examine esse conteúdo antes do primeiro contato.
+- [ ] Registrar quais pistas opcionais foram vistas.
+- [ ] Garantir que as pistas continuem interpretáveis em um replay futuro.
 
-- [ ] Entrar no cenário.
-- [ ] Visualizar personagem.
-- [ ] Clicar em Conversar.
-- [ ] Executar diálogo.
-- [ ] Encerrar diálogo.
-- [ ] Clicar em Celular.
-- [ ] Abrir interface do celular.
-- [ ] Retornar para a Visual Novel.
-- [ ] Repetir o ciclo sem quebrar a interface.
+### Primeiro contato com Lulith
 
-## Testes
+- [ ] Substituir o chat não canônico pela conversa do Ato I.
+- [ ] Definir quando o contato deixa de aparecer como `???`.
+- [ ] Criar de uma a três respostas coerentes em cada etapa.
+- [ ] Fazer escolhas produzirem reações locais diferentes de Lulith.
+- [ ] Manter ramificações curtas compatíveis com o restante do ato.
+- [ ] Aplicar corretamente o tom persuasivo e brincalhão de Lulith.
+- [ ] Atualizar monólogos de MJ antes, durante e depois da conversa.
 
-- [ ] Testar navegação entre as interfaces.
-- [ ] Testar avanço rápido dos diálogos.
-- [ ] Testar retorno do celular.
-- [ ] Testar diferentes tamanhos de texto.
-- [ ] Testar diferentes resoluções.
-- [ ] Verificar elementos sobrepostos.
-- [ ] Verificar problemas de escala.
-- [ ] Verificar problemas de posicionamento.
-- [ ] Verificar se os dois botões permanecem claramente acessíveis.
+### Reset remoto
 
-## Refinamento da V1
+- [ ] Definir o gatilho exato do reset após a primeira troca de mensagens.
+- [ ] Criar aviso, animação ou interrupção visual do reset.
+- [ ] Remover do acesso normal o conteúdo anterior.
+- [ ] Restaurar o celular com aparência comum e funções específicas do jogo.
+- [ ] Preservar internamente o registro das pistas vistas antes do reset.
+- [ ] Impedir acesso acidental ao conteúdo apagado na primeira partida.
 
-- [ ] Ajustar tamanho dos botões.
-- [ ] Ajustar posição dos botões.
-- [ ] Ajustar tamanho da caixa de diálogo.
-- [ ] Ajustar posição dos personagens.
-- [ ] Ajustar proporção da área Visual Novel.
-- [ ] Ajustar proporção da área lateral.
-- [ ] Ajustar transições.
-- [ ] Remover elementos desnecessários.
+## Fase 9 — Apresentar os sistemas do celular
 
-## Validação
+### Aplicativos do Ato I
 
-- [ ] Jogar o protótipo do início ao fim.
-- [ ] Avaliar se a interface funciona visualmente.
-- [ ] Avaliar se a divisão entre Visual Novel e ações funciona.
-- [ ] Avaliar se Conversar e Celular são suficientes para a interface inicial.
-- [ ] Anotar problemas encontrados.
-- [ ] Anotar ideias para a próxima versão.
-- [ ] Decidir o que será mantido.
-- [ ] Decidir o que será alterado.
-- [ ] Decidir o que será descartado.
+- [ ] Apresentar Mensagens como canal principal com Lulith.
+- [ ] Implementar uma função mínima de Galeria para pistas visuais.
+- [ ] Implementar uma função mínima de Câmera ou marcá-la claramente como indisponível.
+- [ ] Implementar uma função mínima de Notas para informações contextuais.
+- [ ] Implementar uma função mínima de Arquivos para documentos.
+- [ ] Integrar Mapa ao local visitado no ato.
+- [ ] Implementar o indicador diegético de progresso do Ato I.
+- [ ] Definir e implementar o salvamento mínimo necessário.
+- [ ] Evitar que aplicativos sem função pareçam interativos.
 
-## Conclusão
+### Tutorial do terminal
 
-- [ ] V1 considerada funcional.
-- [ ] Feedback da primeira experiência registrado.
-- [ ] Próxima versão definida a partir dos testes.
+- [ ] Definir os comandos disponíveis no Ato I.
+- [ ] Escolher comandos iniciais entre `decode`, `scan`, `decrypt`, `access` e `trace`.
+- [ ] Definir sintaxe, mensagens de erro e ajuda integrada.
+- [ ] Criar um puzzle introdutório curto para ensinar o terminal.
+- [ ] Introduzir comandos por uso, sem depender de explicação longa.
+- [ ] Definir a quantidade e a dificuldade dos puzzles de terminal neste ato.
+- [ ] Avaliar a trava por presença como conceito provisório.
+- [ ] Não implementar a trava por presença sem justificativa narrativa clara.
+
+## Fase 10 — Produzir arte e apresentação provisórias
+
+### Padrão visual
+
+- [ ] Definir a resolução-base da pixel art.
+- [ ] Definir proporção, enquadramento e área visível dos sprites.
+- [ ] Definir paleta e regras básicas de contraste do Ato I.
+- [ ] Testar leitura de poses e expressões em desktop e celular.
+- [ ] Manter cenários e personagens inteiramente em 2D neste protótipo.
+- [ ] Tratar todos os assets como provisórios, não canônicos.
+
+### Sprites genéricos
+
+- [ ] Criar MJ neutra.
+- [ ] Criar MJ pensando ou analisando.
+- [ ] Criar MJ surpresa.
+- [ ] Criar MJ irritada.
+- [ ] Criar MJ cansada.
+- [ ] Criar Lulith neutra.
+- [ ] Criar Lulith brincando.
+- [ ] Criar Lulith confiante.
+- [ ] Criar Lulith incomodada.
+- [ ] Criar Lulith com raiva.
+- [ ] Criar James neutro.
+- [ ] Criar James explicando.
+- [ ] Criar James preocupado.
+- [ ] Criar James sério.
+
+### Cenários genéricos
+
+- [ ] Criar dormitório.
+- [ ] Criar cena do crime.
+- [ ] Criar delegacia.
+- [ ] Criar mesa de MJ.
+- [ ] Criar local indicado pelas coordenadas.
+- [ ] Criar área do cofre.
+- [ ] Criar close do cofre.
+- [ ] Criar interfaces da nota, computador, mapa e puzzles.
+
+## Fase 11 — Estabilizar e testar
+
+### Fluxo narrativo
+
+- [ ] Jogar da escolha do nome até a cutscene final do Ato I.
+- [ ] Confirmar a ordem correta de todas as cenas e transições.
+- [ ] Confirmar que o caso ensina investigação antes da nota.
+- [ ] Confirmar que descartar a nota encerra o jogo imediatamente.
+- [ ] Confirmar que resolver a nota leva às coordenadas e ao cofre.
+- [ ] Confirmar que o cofre entrega o celular de Lulith.
+- [ ] Confirmar que o primeiro contato aciona o reset remoto.
+- [ ] Confirmar que os principais sistemas do celular são apresentados.
+- [ ] Confirmar que nenhum conteúdo antigo contradiz a premissa canônica.
+
+### Puzzles e investigação
+
+- [ ] Validar todos os hotspots com mouse, toque e teclado.
+- [ ] Confirmar que pistas obrigatórias não podem ser perdidas definitivamente.
+- [ ] Confirmar que pistas opcionais não bloqueiam o avanço.
+- [ ] Testar soluções corretas, incorretas e tentativas repetidas.
+- [ ] Confirmar que nota e cofre possuem soluções dedutíveis.
+- [ ] Validar dicas com jogadores que não conhecem as respostas.
+- [ ] Confirmar que o jogo nunca exige informação que não apresentou.
+
+### Estado e persistência
+
+- [ ] Recarregar o jogo em cada fase e validar a restauração.
+- [ ] Fechar e reabrir durante diálogos, investigação, puzzles e mensagens.
+- [ ] Confirmar persistência do nome escolhido.
+- [ ] Confirmar persistência de evidências, pistas e puzzles concluídos.
+- [ ] Confirmar persistência do conteúdo visto antes do reset.
+- [ ] Testar reinício após o final da nota descartada.
+- [ ] Impedir estados impossíveis ou progressão fora de ordem.
+
+### Interface e acessibilidade
+
+- [ ] Testar o fluxo completo acima e abaixo de `700px`.
+- [ ] Testar orientação retrato e paisagem.
+- [ ] Testar zoom e fontes ampliadas.
+- [ ] Validar contraste formal.
+- [ ] Validar navegação completa somente por teclado.
+- [ ] Validar leitor de tela e anúncios de conteúdo dinâmico.
+- [ ] Implementar e validar trava de foco em overlays.
+- [ ] Respeitar `prefers-reduced-motion`.
+- [ ] Validar safe areas e recortes de tela.
+
+### Mensagens
+
+- [ ] Percorrer todas as opções do primeiro contato.
+- [ ] Confirmar cada reação específica de Lulith.
+- [ ] Confirmar bloqueio contra escolhas duplicadas.
+- [ ] Confirmar cooldown e entrega individual das mensagens.
+- [ ] Fechar e reabrir o celular durante o cooldown.
+- [ ] Confirmar histórico e monólogos em todos os estados.
+- [ ] Testar uma, duas e três opções em diferentes resoluções.
+
+### Web e Android
+
+- [ ] Criar testes automatizados para estados e progressão crítica.
+- [ ] Substituir o `npm test` provisório por uma suíte funcional.
+- [ ] Corrigir o pacote do teste instrumentado Android.
+- [ ] Executar `npm run sync` em ambiente Android configurado.
+- [ ] Gerar o APK de debug.
+- [ ] Instalar e jogar o Ato I completo em um aparelho Android.
+- [ ] Tratar o botão físico Voltar no Android.
+- [ ] Validar retorno após o aplicativo ir para segundo plano.
+
+## Fase 12 — Critérios de conclusão do Ato I
+
+- [ ] O jogador escolhe o nome de MJ e o nome aparece corretamente durante o ato.
+- [ ] A abertura apresenta Lulith, MJ e James sem exposição excessiva.
+- [ ] O caso policial original ensina investigação point-and-click.
+- [ ] A cena do crime pode ser concluída apenas com pistas disponíveis no jogo.
+- [ ] A nota oferece claramente os caminhos de descarte e resolução.
+- [ ] O descarte produz um final imediato com progresso mínimo.
+- [ ] A resolução revela coordenadas consultáveis na delegacia.
+- [ ] O deslocamento conduz ao local correto em São Paulo.
+- [ ] O puzzle do cofre é funcional, justo e diferente do puzzle da nota.
+- [ ] O celular contém pistas opcionais antes do reset.
+- [ ] O primeiro contato representa corretamente a personalidade de Lulith.
+- [ ] O reset remoto altera o estado e o conteúdo do celular.
+- [ ] Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e salvamento/replay são apresentados de forma clara.
+- [ ] O terminal possui ao menos um tutorial jogável.
+- [ ] O ato funciona do início ao fim em desktop, mobile e APK Android.
+- [ ] O progresso pode ser salvo e restaurado sem quebrar a sequência.
+- [ ] O conteúdo jogável não depende da premissa antiga.
+- [ ] Feedback da primeira experiência foi registrado.
+- [ ] Pendências encontradas foram classificadas para correção ou para atos posteriores.
+- [ ] Ato I considerado funcional.
+
+## Decisões provisórias a preservar
+
+- [ ] Confirmar futuramente se a cutscene de Lulith permanecerá na versão final.
+- [ ] Refinar futuramente o código dramático de MJ.
+- [ ] Confirmar futuramente a função completa do terminal.
+- [ ] Decidir futuramente se a trava por presença será usada.
+- [ ] Decidir futuramente se a Câmera será um sistema de save por fotografias.
+- [ ] Definir futuramente o cálculo completo do progresso e do 100%.
+- [ ] Definir futuramente como replay recupera informações anteriores ao reset.
+- [ ] Adiar design definitivo de personagens e cenários até o Protótipo 3.
+- [ ] Adiar a decisão final entre cenários 2D, 3D tratado ou híbridos.
+
+## Fora do Ato I
+
+Os itens abaixo devem permanecer documentados no GDD, mas não entram neste roadmap:
+
+- Estrutura completa do Ato II e dos atos posteriores.
+- Motivação definitiva e história completa de Lulith.
+- Origem completa dos testes e destino de todos os candidatos.
+- Todas as perspectivas, finais e condições do final verdadeiro.
+- Sistema completo de 100%, replay e investigação pós-final.
+- Metalinguagem, exploração dos arquivos do APK e ARG completo.
+- Design canônico dos personagens e cenários.
+- Decisão definitiva sobre a influência hentai.
