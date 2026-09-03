@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-01
+updated: 2026-09-03
 ---
 
 # Estrutura Gaming
@@ -44,7 +44,7 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 ### O Que Funciona
 
 - Cena noturna provisória.
-- Silhueta provisória em SVG.
+- Sprite genérico e estático de MJ em SVG externo.
 - Botões **Conversar** e **Celular**.
 - Caixa de diálogo com efeito de digitação.
 - Monólogos condicionados ao progresso da conversa.
@@ -230,6 +230,7 @@ Depois da última resposta do contato:
 ├── js/
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
 │   └── game.js                # Estado, regras e renderização
+├── assets/                    # Arte provisória usada em runtime
 ├── android/                   # Projeto nativo Android
 ├── capacitor.config.json      # Configuração Capacitor
 ├── package.json               # Scripts e dependências
@@ -384,8 +385,8 @@ Portanto, somente os monólogos são jogáveis.
 
 A primeira resposta condicional fixa uma única rota individual, mesmo que outros arquivos tenham sido vistos. Isso impede a mistura de informações e incentiva novas partidas. A rota `todosArquivos` tem prioridade sobre a individual e continua disponível depois do reset porque os IDs examinados permanecem registrados internamente.
 
-> [!info] Silhueta e presença narrativa
-> A silhueta SVG permanece visível na cena, mas `personagensPresentes` está vazio. A interpretação atual é que a arte representa o protagonista ou um elemento provisório, não outra pessoa disponível para conversa.
+> [!info] Sprite e presença narrativa
+> O sprite genérico de MJ permanece visível na cena, mas `personagensPresentes` está vazio. `personagensVisuais` controla somente a presença gráfica; por isso, exibir MJ não cria uma conversa presencial inexistente.
 
 ## Interface Do Celular
 
@@ -613,7 +614,7 @@ Abrir `http://localhost:8000`.
 | Recurso | Status | Observação |
 |---|---|---|
 | Cena noturna | Implementado | Estática e provisória |
-| Silhueta SVG | Implementado | Papel narrativo ainda provisório |
+| Sprite genérico de MJ | Implementado | SVG externo, pose neutra estática e design não canônico |
 | Conversar | Implementado | Executa monólogos na cena atual |
 | Diálogo digitado | Implementado | Clique, `Enter` e espaço |
 | Monólogos por progresso | Implementado | Fases gerais, três rotas individuais e uma rota completa |
@@ -642,7 +643,7 @@ Abrir `http://localhost:8000`.
 | ARG | Não implementado | Planejado no GDD |
 
 > [!note] Compatibilidade conceitual
-> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. O recorte do celular, do primeiro contato e do reset já segue a direção canônica; a cena e a silhueta ainda não representam as etapas anteriores do Ato I descritas em [[IDEIA_CONCEITUAL]].
+> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. O recorte do celular, do primeiro contato e do reset já segue a direção canônica; a cena e o sprite genérico de MJ ainda não representam as etapas anteriores do Ato I descritas em [[IDEIA_CONCEITUAL]].
 
 ## Limitações Atuais
 
@@ -672,7 +673,7 @@ Abrir `http://localhost:8000`.
 
 ### Qualidade
 
-- A suíte automatizada possui onze testes para fluxo, dados, 14 escolhas, opções condicionais, pronomes, monólogos, cronômetro e reset da Fase 8; os demais sistemas ainda não possuem cobertura.
+- A suíte automatizada possui onze testes para fluxo, dados, 14 escolhas, opções condicionais, pronomes, monólogos, cronômetro e reset da Fase 8, além de três testes do contrato visual da MJ genérica; os demais sistemas ainda não possuem cobertura.
 - Não existe CI.
 - Responsividade e acessibilidade dependem de validação manual.
 - O APK ainda não foi validado ponta a ponta.

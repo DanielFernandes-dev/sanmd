@@ -55,6 +55,7 @@ const state = {
 };
 
 const el = {
+  personagem: document.getElementById("personagem"),
   hint: document.getElementById("hint"),
   dialogueBox: document.getElementById("dialogue-box"),
   namePlate: document.getElementById("name-plate"),
@@ -87,6 +88,27 @@ const el = {
   phoneDate: document.getElementById("phone-date"),
   btnVoltar: document.getElementById("btn-voltar")
 };
+
+function renderizarPersonagem() {
+  const personagemVisual = DATA.cena.personagensVisuais[0];
+  if (!personagemVisual) {
+    el.personagem.classList.add("oculto");
+    return;
+  }
+
+  const personagem = DATA.personagens[personagemVisual.id];
+  const sprite = personagem?.sprites[personagemVisual.pose];
+  if (!sprite) {
+    el.personagem.classList.add("oculto");
+    return;
+  }
+
+  el.personagem.src = sprite;
+  el.personagem.dataset.characterId = personagem.id;
+  el.personagem.dataset.pose = personagemVisual.pose;
+  el.personagem.dataset.slot = personagemVisual.slot;
+  el.personagem.classList.remove("oculto");
+}
 
 function definirBotoes() {
   const livre = state.modo === "livre";
@@ -645,5 +667,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+renderizarPersonagem();
 atualizarCabecalhoMensagens();
 definirBotoes();

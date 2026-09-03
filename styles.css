@@ -104,18 +104,35 @@ html, body {
 }
 
 #personagem {
+  --personagem-x: 50%;
   position: absolute;
-  left: 50%;
+  left: var(--personagem-x);
   bottom: 24%;
   transform: translateX(-58%);
   height: 58%;
+  width: auto;
   filter: drop-shadow(0 0 18px rgba(0, 0, 0, 0.6));
-  animation: respirar 3.2s ease-in-out infinite;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  animation: personagem-entrar 180ms steps(3, end) both;
+  pointer-events: none;
 }
 
-@keyframes respirar {
-  0%, 100% { transform: translateX(-58%) scaleY(1); }
-  50% { transform: translateX(-58%) scaleY(1.008); }
+#personagem[data-slot="left"] {
+  --personagem-x: 30%;
+}
+
+#personagem[data-slot="center"] {
+  --personagem-x: 50%;
+}
+
+#personagem[data-slot="right"] {
+  --personagem-x: 70%;
+}
+
+@keyframes personagem-entrar {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 #hint {
@@ -716,6 +733,12 @@ html, body {
 
 .oculto {
   display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #personagem {
+    animation: none;
+  }
 }
 
 @media (max-width: 700px) {

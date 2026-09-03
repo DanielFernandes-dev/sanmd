@@ -2,12 +2,20 @@ const DATA = {
   cena: {
     id: "sala",
     nome: "Sala — Noite",
+    personagensVisuais: [
+      { id: "mj", pose: "neutral", slot: "center" }
+    ],
     personagensPresentes: []
   },
 
-  personagem: {
-    id: "protagonista",
-    nome: "MJ"
+  personagens: {
+    mj: {
+      id: "mj",
+      nome: "MJ",
+      sprites: {
+        neutral: "assets/art/characters/mj/vn/mj__vn__neutral.svg"
+      }
+    }
   },
 
   celular: {

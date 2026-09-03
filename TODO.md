@@ -290,43 +290,125 @@
 
 ## Fase 9 — Apresentar os sistemas do celular
 
-### Aplicativos do Ato I
+### Objetivo e limites
 
-- [x] Apresentar Mensagens como canal principal com o contato ainda identificado como `???`.
-- [ ] Implementar uma função mínima de Galeria para pistas visuais.
-- [ ] Implementar uma função mínima de Câmera ou marcá-la claramente como indisponível.
-- [ ] Implementar uma função mínima de Notas para informações contextuais.
-- [x] Implementar uma função mínima de Arquivos para documentos e pistas pré-reset.
-- [ ] Integrar Mapa ao local visitado no ato.
-- [ ] Implementar o indicador diegético de progresso do Ato I.
-- [ ] Definir e implementar o salvamento mínimo necessário.
-- [ ] Evitar que aplicativos sem função pareçam interativos.
+- [ ] Apresentar, depois do reset remoto, as funções que formarão a interface narrativa do celular sem revelar conteúdo apagado.
+- [ ] Usar cada aplicativo para uma ação curta, pista contextual ou estado claramente indisponível; não criar ícones decorativos que aparentem funcionar.
+- [ ] Manter Mensagens e Arquivos acessíveis, porém vazios, após o reset, preservando a ausência como consequência narrativa da ação de Lulith.
+- [ ] Ensinar a navegação básica entre tela inicial, aplicativos e botão Voltar sem tutorial textual longo.
+- [ ] Não antecipar nesta fase o ARG, a exploração do APK, o cálculo completo de 100%, perspectivas posteriores ou regras definitivas de replay.
+- [ ] Não transformar o salvamento por fotografia, a trava por presença ou os comandos finais do terminal em decisões canônicas.
+
+### Aplicativos e sequência de apresentação
+
+- [x] Apresentar Mensagens como canal principal com o contato ainda identificado como `???` antes do reset.
+- [x] Implementar Arquivos para os quatro documentos e pistas pré-reset.
+- [ ] Definir a ordem diegética em que MJ descobre Galeria, Câmera, Notas, Terminal, Mapa, Progresso e salvamento/replay depois do reset.
+- [ ] Implementar Galeria com ao menos uma pista visual ou gravação contextual do Ato I, examinável e registrada como descoberta opcional.
+- [ ] Implementar Notas como registro contextual consultável, sem converter automaticamente as interpretações provisórias de MJ em fatos da história.
+- [ ] Integrar Mapa ao destino já visitado pelas coordenadas, permitindo consultar o local e deixando claro que deslocamentos futuros dependerão de locais descobertos.
+- [ ] Criar uma tela de Progresso acessível pelo controle central do celular, com marcos do Ato I encontrados e percentual explicitamente provisório.
+- [ ] Exibir, após finais futuros, o mesmo recorte de progresso como mapa conceitual do que foi encontrado, sem indicar como obter o conteúdo ausente.
+- [ ] Implementar Câmera apenas como indisponível nesta fase ou com uma função narrativa mínima que não dependa de salvamento; manter save por fotografia como hipótese.
+- [ ] Garantir que o estado visual e os rótulos de cada aplicativo comuniquem se ele está disponível, vazio, bloqueado ou ainda indisponível.
+
+### Salvamento e replay mínimos
+
+- [ ] Definir os dados mínimos persistidos: nome de MJ, cena e marcos do Ato I, evidências, arquivos vistos, solução de `ELA`, rota de monólogo, histórico e estado do reset.
+- [ ] Implementar persistência local independente da Câmera e restaurar a partida sem permitir cenas, opções ou conteúdos fora de ordem.
+- [ ] Definir o comportamento ao carregar uma partida durante cooldown, cronômetro ou animação de reset e restaurá-la por um estado estável e equivalente.
+- [ ] Separar o save da partida atual do registro de descobertas para replay; não implementar ainda o acesso a perspectivas de atos posteriores.
+- [ ] Definir reinício do Ato I preservando somente as descobertas que o sistema de replay realmente deve reutilizar.
 
 ### Tutorial do terminal
 
-- [ ] Definir os comandos disponíveis no Ato I.
-- [ ] Escolher comandos iniciais entre `decode`, `scan`, `decrypt`, `access` e `trace`.
-- [ ] Definir sintaxe, mensagens de erro e ajuda integrada.
-- [ ] Criar um puzzle introdutório curto para ensinar o terminal.
-- [ ] Introduzir comandos por uso, sem depender de explicação longa.
-- [ ] Definir a quantidade e a dificuldade dos puzzles de terminal neste ato.
-- [ ] Avaliar a trava por presença como conceito provisório.
-- [ ] Não implementar a trava por presença sem justificativa narrativa clara.
+- [ ] Definir a função narrativa do primeiro terminal: ensinar que o aparelho permite investigar informações escondidas, sem revelar a função definitiva do celular.
+- [ ] Escolher o conjunto mínimo de comandos do Ato I entre `decode`, `scan`, `decrypt`, `access` e `trace`, mantendo os demais como planejamento.
+- [ ] Definir sintaxe consistente, mensagens de erro úteis e um comando de ajuda integrado.
+- [ ] Criar um puzzle introdutório curto, dedutível com elementos já apresentados, que ensine ao menos um comando por uso em vez de explicação longa.
+- [ ] Registrar a conclusão do tutorial e permitir consultar novamente a ajuda e o resultado sem repetir indevidamente a recompensa narrativa.
+- [ ] Definir quantos puzzles de terminal pertencem ao Ato I e graduar sua dificuldade sem exigir conhecimento externo ou ARG.
+- [ ] Avaliar a trava por presença somente depois de estabelecer sua justificativa narrativa, feedback ao jogador e viabilidade técnica.
+- [ ] Não implementar a trava por presença enquanto ela permanecer um conceito provisório.
+
+### Critérios da fase
+
+- [ ] Jogar do primeiro contato ao reset e confirmar que o conteúdo pré-reset não reaparece pelos aplicativos novos.
+- [ ] Confirmar que cada aplicativo apresentado possui uma finalidade compreensível, estado honesto e retorno funcional à tela inicial.
+- [ ] Confirmar que Galeria, Notas, Mapa, Terminal e Progresso contribuem para a narrativa por pistas, ações ou consequências, e não apenas por texto explicativo.
+- [ ] Confirmar que o tutorial do terminal pode ser concluído usando exclusivamente informações disponíveis no Ato I.
+- [ ] Recarregar o jogo em estados relevantes e confirmar a restauração do progresso mínimo sem expor dados apagados ou desbloquear rotas indevidas.
 
 ## Fase 10 — Produzir arte e apresentação provisórias
+
+### Objetivo e limites do recorte atual
+
+- [x] Usar a arte genérica somente para validar presença, escala, leitura e integração técnica.
+- [x] Manter o cenário atual, seu enquadramento e seus elementos visuais intactos durante a criação da primeira MJ.
+- [x] Usar somente uma pose neutra e estática de MJ durante o protótipo atual.
+- [x] Não implementar animações internas, troca de frames, lip sync, piscadas ou respiração no sprite.
+- [x] Permitir somente uma transição de interface para a entrada da personagem na cena.
+- [x] Não definir cabelo, roupa, proporções, acessórios ou identidade visual canônica de MJ.
+- [x] Registrar explicitamente a origem assistida por IA e o caráter provisório do asset.
 
 ### Padrão visual
 
 - [ ] Definir a resolução-base da pixel art.
-- [ ] Definir proporção, enquadramento e área visível dos sprites.
+- [x] Definir proporção, enquadramento e área visível dos sprites.
 - [ ] Definir paleta e regras básicas de contraste do Ato I.
 - [ ] Testar leitura de poses e expressões em desktop e celular.
-- [ ] Manter cenários e personagens inteiramente em 2D neste protótipo.
-- [ ] Tratar todos os assets como provisórios, não canônicos.
+- [x] Manter cenários e personagens inteiramente em 2D neste protótipo.
+- [x] Tratar todos os assets como provisórios, não canônicos.
+
+### Contrato técnico dos assets
+
+- [ ] Preparar uma cena lógica futura de `320×180` em proporção 16:9 sem alterar o cenário atual neste recorte.
+- [ ] Preparar uma área central segura para o futuro recorte de cenários em telas retrato.
+- [ ] Definir as camadas futuras de background, personagens, foreground, efeitos e interface.
+- [x] Criar uma pasta-fonte de assets separada de `www`.
+- [ ] Separar personagens, cenários, foregrounds, closes, interfaces e máscaras de hotspots.
+- [x] Usar nomes baseados na função narrativa, sem características visuais provisórias.
+- [x] Atualizar `copy:web` para incluir os assets ao gerar `www`.
+- [x] Manter `www` como artefato gerado e a pasta-fonte como origem dos arquivos.
+
+### Primeiro recorte — MJ genérica
+
+- [x] Criar MJ como uma personagem feminina adulta sem características visuais canônicas.
+- [ ] Comunicar postura curiosa e analítica por meio de uma silhueta legível.
+- [x] Criar um único sprite neutro em canvas transparente de `128×176`.
+- [x] Fixar o pivô visual no centro inferior do canvas.
+- [ ] Manter rosto e gesto principal acima da região ocupada pela caixa de diálogo.
+- [x] Usar uma paleta pequena e provisória compatível com o cenário noturno atual.
+- [x] Gerar o sprite em SVG externo com formas pixeladas e bordas rígidas.
+- [x] Nomear o asset como `mj__vn__neutral.svg`.
+- [x] Preparar o contrato para substituição futura por um PNG ou sprite canônico com o mesmo ID.
+
+### Integração da MJ
+
+- [x] Substituir somente a silhueta SVG inline pelo asset externo, sem modificar os demais elementos do cenário.
+- [x] Associar o asset ao identificador narrativo `mj` nos dados do jogo.
+- [x] Separar o identificador da personagem do caminho físico da imagem.
+- [x] Definir uma pose `neutral` e um slot `center` para a cena atual.
+- [x] Preparar os slots semânticos `left`, `center` e `right` sem alterar o enquadramento atual.
+- [x] Manter separadas a presença visual, a presença narrativa e a disponibilidade para conversa.
+- [x] Remover a animação contínua de respiração da silhueta substituída.
+- [x] Implementar somente uma entrada curta por opacidade, sem escalar ou deformar o sprite.
+- [x] Respeitar `prefers-reduced-motion` e exibir MJ imediatamente quando necessário.
+
+### Validação da primeira MJ
+
+- [x] Confirmar que o cenário atual permaneceu visual e estruturalmente inalterado fora da substituição da silhueta.
+- [x] Confirmar que MJ aparece usando os dados de personagem, pose e slot.
+- [x] Confirmar que o sprite permanece estático depois da entrada.
+- [x] Confirmar que o sprite não é deformado em desktop ou celular.
+- [ ] Confirmar que o rosto permanece visível durante diálogos.
+- [x] Confirmar que a presença visual de MJ não cria uma conversa presencial inexistente.
+- [x] Confirmar que o asset entra corretamente na cópia web usada pelo Capacitor.
+- [x] Confirmar que os testes existentes da Fase 8 continuam passando.
 
 ### Sprites genéricos
 
-- [ ] Criar MJ neutra.
+- [x] Criar MJ neutra.
 - [ ] Criar MJ pensando ou analisando.
 - [ ] Criar MJ surpresa.
 - [ ] Criar MJ irritada.
@@ -341,8 +423,19 @@
 - [ ] Criar James preocupado.
 - [ ] Criar James sério.
 
+### Poses adiadas de MJ
+
+- [x] Não iniciar as poses pensando, surpresa, irritada e cansada antes de validar o sprite neutro.
+- [x] Reutilizar a pose neutra em todo o protótipo atual até uma nova decisão de escopo.
+
 ### Cenários genéricos
 
+- [ ] Iniciar os cenários somente depois da validação da primeira MJ.
+- [ ] Usar o dormitório como primeiro cenário-piloto quando a produção de cenários começar.
+- [ ] Aplicar `320×180`, área central segura e recorte controlado 16:9 somente na futura etapa de cenários.
+- [ ] Separar background, foreground, objetos interativos e máscaras de hotspots.
+- [ ] Não incorporar textos, caixa de diálogo ou informações variáveis aos backgrounds.
+- [ ] Criar enquadramentos próprios para closes em vez de recortar o cenário amplo por CSS.
 - [ ] Criar dormitório.
 - [ ] Criar cena do crime.
 - [ ] Criar delegacia.
