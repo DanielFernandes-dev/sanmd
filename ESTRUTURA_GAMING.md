@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-08-31
+updated: 2026-09-01
 ---
 
 # Estrutura Gaming
@@ -50,11 +50,16 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 - Monólogos condicionados ao progresso da conversa.
 - Tela inicial do celular com relógio e data reais.
 - Aplicativo Mensagens funcional.
+- Aplicativo Arquivos com primeiro enigma e registros opcionais anteriores ao reset.
 - Respostas selecionáveis com ramificações curtas.
 - Cooldown antes da primeira resposta do dono.
 - Indicador `digitando...`.
 - Entrega individual das mensagens do dono.
 - Histórico do caminho escolhido durante a sessão.
+- Primeiro contato canônico com Lulith e reset remoto do aparelho.
+- Arquivamento interno das pistas vistas e do chat antes do reset.
+- Rotas de conversa e monólogos condicionados aos arquivos examinados.
+- Cronômetro vermelho de um minuto antes da limpeza remota.
 - Navegação contextual pelo botão **Voltar** e pela tecla `Escape`.
 - Layout responsivo básico para telas menores que `700px`.
 - Estrutura Capacitor para geração do aplicativo Android.
@@ -63,7 +68,7 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 
 O protótipo valida a base da experiência, não o jogo completo. A interface do celular, a apresentação narrativa e a transição entre estados são o foco desta versão.
 
-O conteúdo da cena e da conversa atuais ainda deriva da premissa anterior, em que o celular já estava com o protagonista. Ele é útil para validar a tecnologia, mas não é canônico e deverá ser adaptado para MJ, Lulith e o novo fluxo de abertura.
+A cena ainda é um contexto provisório que começa com o celular em posse de MJ. A conversa, os monólogos, os arquivos anteriores ao reset e a limpeza remota já representam um recorte canônico da Fase 8 do Ato I; as etapas anteriores, da abertura à obtenção do aparelho, ainda não estão implementadas.
 
 > [!warning] Fonte de verdade
 > O [[IDEIA_CONCEITUAL]] registra as decisões narrativas mais recentes. O [[GDD]] organiza o design do jogo. Investigação, terminal, puzzles, múltiplos atos, finais, replay e ARG fazem parte da visão futura e não estão presentes no código atual.
@@ -101,11 +106,11 @@ O elenco terá no máximo seis personagens principais/relevantes. Não haverá r
 
 | Aplicativo | Função planejada | Status atual |
 |---|---|---|
-| Mensagens | Conversas com Lulith e escolhas narrativas | Motor funcional; conteúdo não canônico |
+| Mensagens | Conversas com Lulith e escolhas narrativas | Primeiro contato canônico e anônimo funcional |
 | Galeria | Fotografias, gravações e pistas | Placeholder |
 | Câmera | Registro e possível save por fotografia | Não implementado; conceito provisório |
 | Notas | Informações contextuais | Placeholder |
-| Arquivos | Documentos e conteúdo oculto | Placeholder |
+| Arquivos | Documentos e conteúdo oculto | Quatro registros pré-reset; vazio após a limpeza |
 | Terminal | Puzzles e acesso a informações escondidas | Não implementado |
 | Mapa | Coordenadas, locais e deslocamento | Não implementado |
 | Progresso | Percentual da investigação reconstruída | Não implementado |
@@ -151,17 +156,18 @@ O celular abre sempre na tela inicial e apresenta:
 - Notas.
 - Arquivos.
 
-Somente **Mensagens** possui comportamento implementado.
+**Mensagens** e **Arquivos** possuem comportamento implementado. Mensagens fica acessível desde o início. Três arquivos podem liberar opções condicionais durante a conversa; `REMETENTE.enc` aparece somente quando a conversa termina e o cronômetro do reset começa. Após a limpeza, os dois aplicativos continuam acessíveis, mas não exibem conteúdo.
 
 ### Etapa 5 — Primeira Mensagem Do Protagonista
 
-Ao entrar em Mensagens pela primeira vez, nenhuma mensagem do dono é mostrada. O jogador escolhe uma entre três opções e o protagonista envia a primeira mensagem.
+Ao entrar em Mensagens pela primeira vez, nenhuma mensagem do dono é mostrada. O jogador escolhe entre as opções básicas e aquelas liberadas pelos arquivos examinados, e o protagonista envia a primeira mensagem.
 
 Nesse momento:
 
 - A escolha entra no histórico à direita.
 - As opções são ocultadas.
 - O monólogo muda para `aposPrimeiroEnvio`.
+- Se a escolha for condicional, sua rota de monólogo é preservada sem poder ser substituída por outra rota individual.
 - Começa um cooldown de 1 minuto.
 
 ### Etapa 6 — Resposta Do Dono
@@ -176,30 +182,41 @@ Quando o cooldown termina:
 
 ### Etapa 7 — Ramificações Curtas
 
-O jogador percorre quatro etapas narrativas. As respostas alteram reações locais do dono, mas convergem novamente para o fluxo principal.
+O jogador sempre pode seguir uma rota principal curta, mas arquivos específicos liberam opções e rotas adicionais. `CANDIDATOS_04.log` libera uma pergunta sobre candidatos; `ROTA_013.txt` libera a rota sobre a origem do aparelho; `RECUPERAR.tmp` libera uma cobrança direta. Essas rotas entregam informações diferentes antes de convergirem para `antes-reset`. O cabeçalho permanece como `???`, e o contato não revela nome, gênero ou dados pessoais.
 
 ```mermaid
 flowchart LR
-    A[celular-encontrado<br/>3 opções]
-    B[explicar-teste<br/>2 opções]
-    C[questionar-confianca<br/>1 opção]
-    D[encerrar-contato<br/>2 opções]
-    E[Fim do chat]
+    A[celular-encontrado]
+    B[explicar-escolha]
+    C[explicar-teste]
+    D[questionar-confianca]
+    E[encerrar-contato]
+    F[antes-reset]
+    G[Cronômetro de 1 minuto]
+    H[Reset remoto]
 
-    A --> B
-    B --> C
+    A -->|rota principal ou candidatos| B
+    A -->|ROTA_013 ou RECUPERAR| C
+    B --> F
     C --> D
     D --> E
+    E --> F
+    F --> G
+    G --> H
 ```
 
 ### Etapa 8 — Conclusão
 
-Depois da última resposta do dono:
+Depois da última resposta do contato:
 
 - A etapa do chat passa a `null`.
 - Nenhuma nova opção é apresentada.
-- O histórico permanece disponível durante a sessão.
-- O monólogo muda para `conversaConcluida`.
+- Um cronômetro vermelho de um minuto aparece no canto superior esquerdo do celular.
+- O último arquivo fica disponível durante essa janela.
+- O histórico e os IDs dos arquivos vistos são arquivados internamente quando o reset começa.
+- Uma tela de reset bloqueia temporariamente a navegação.
+- O histórico visível é apagado e Arquivos passa a exibir uma lista vazia.
+- O monólogo muda para `conversaConcluida` somente depois que a limpeza termina.
 - **Conversar** passa a apresentar a reflexão final do protagonista.
 
 ## Arquitetura Técnica
@@ -219,7 +236,6 @@ Depois da última resposta do dono:
 ├── README.md                  # Visão geral do projeto
 ├── TODO.md                    # Implementação e validações pendentes
 ├── IDEIA_CONCEITUAL.md        # Decisões narrativas e visuais mais recentes
-├── FeatureArquiteture.md      # Arquitetura detalhada da feature de chat
 ├── GDD.md                     # Visão de longo prazo do jogo
 └── ESTRUTURA_GAMING.md        # Esta nota central
 ```
@@ -249,7 +265,13 @@ stateDiagram-v2
     dialogo --> livre: Encerrar diálogo
     livre --> celular_inicio: Celular
     celular_inicio --> mensagens: Abrir Mensagens
+    celular_inicio --> arquivos: Abrir Arquivos
     mensagens --> celular_inicio: Voltar ou Escape
+    arquivos --> celular_inicio: Voltar ou Escape
+    mensagens --> reset: Prazo encerrado
+    arquivos --> reset: Prazo encerrado
+    celular_inicio --> reset: Prazo encerrado
+    reset --> celular_inicio: Limpeza concluída
     celular_inicio --> livre: Voltar ou Escape
 ```
 
@@ -268,6 +290,7 @@ const state = {
   modo: "livre",
   dialogo: {},
   celular: {},
+  arquivos: {},
   mensagens: {}
 };
 ```
@@ -281,14 +304,28 @@ const state = {
 | `timer` | Intervalo do efeito de digitação |
 | `falas` | Sequência em execução |
 | `faseMonologo` | Seleciona o monólogo narrativo atual |
+| `rotaMonologoArquivo` | Preserva a primeira rota condicional escolhida |
 
 ### Estado Do Celular
 
 | Propriedade | Uso |
 |---|---|
-| `tela` | `inicio` ou `mensagens` |
+| `tela` | `inicio`, `mensagens`, `arquivos` ou `reset` |
 | `relogio` | Intervalo de atualização da hora |
 | `transicao` | Timer da animação de fechamento |
+| `resetTimer` | Timer para início ou conclusão da limpeza |
+| `resetInterval` | Intervalo visual do cronômetro |
+| `resetAte` | Horário absoluto do início do reset |
+| `resetStatus` | `inativo`, `agendado`, `executando` ou `concluido` |
+
+### Estado Dos Arquivos
+
+| Propriedade | Uso |
+|---|---|
+| `vistos` | IDs examinados durante a sessão |
+| `vistosAntesReset` | Snapshot dos IDs examinados antes da limpeza |
+| `enigmaIdentidadeResolvido` | Controla pronome e rota completa |
+| `enigmaIdentidadeResolvidoAntesReset` | Preserva a solução no snapshot pré-reset |
 
 ### Estado Das Mensagens
 
@@ -302,6 +339,7 @@ const state = {
 | `proximaEtapa` | Destino após a fila |
 | `cooldownAte` | Horário absoluto do fim do cooldown |
 | `timer` | Timer do cooldown ou do próximo envio |
+| `historicoAntesReset` | Preserva internamente o chat apagado pelo reset |
 
 ## Visual Novel E Diálogos
 
@@ -335,9 +373,16 @@ Portanto, somente os monólogos são jogáveis.
 
 | Fase | Momento |
 |---|---|
-| `inicial` | Antes de enviar qualquer mensagem |
+| `inicial` | Antes de resolver o enigma; MJ presume um dono masculino |
+| `identidadeResolvida` | Depois de decodificar `5-12-1` como `ELA` |
 | `aposPrimeiroEnvio` | Depois da primeira escolha do protagonista |
+| `arquivoCandidatos` | Primeira resposta condicional relacionada a `CANDIDATOS_04.log` |
+| `arquivoRota` | Primeira resposta condicional relacionada a `ROTA_013.txt` |
+| `arquivoRecuperar` | Primeira resposta condicional relacionada a `RECUPERAR.tmp` |
+| `todosArquivos` | Os quatro arquivos foram examinados e `REMETENTE.enc` foi resolvido |
 | `conversaConcluida` | Depois da última resposta do dono |
+
+A primeira resposta condicional fixa uma única rota individual, mesmo que outros arquivos tenham sido vistos. Isso impede a mistura de informações e incentiva novas partidas. A rota `todosArquivos` tem prioridade sobre a individual e continua disponível depois do reset porque os IDs examinados permanecem registrados internamente.
 
 > [!info] Silhueta e presença narrativa
 > A silhueta SVG permanece visível na cena, mas `personagensPresentes` está vazio. A interpretação atual é que a arte representa o protagonista ou um elemento provisório, não outra pessoa disponível para conversa.
@@ -376,7 +421,7 @@ Ao fechar o aparelho:
 | Mensagens | Funcional |
 | Galeria | Placeholder sem ação |
 | Notas | Placeholder sem ação |
-| Arquivos | Placeholder sem ação |
+| Arquivos | Quatro registros antes do reset; aplicativo vazio após a limpeza |
 
 ## Aplicativo Mensagens
 
@@ -428,10 +473,12 @@ mensagens: {
 
 | Etapa | Opções | Resultado |
 |---|---:|---|
-| `celular-encontrado` | 3 | Converge para `explicar-teste` |
-| `explicar-teste` | 2 | Converge para `questionar-confianca` |
-| `questionar-confianca` | 1 | Avança para `encerrar-contato` |
-| `encerrar-contato` | 2 | Encerra em `null` |
+| `celular-encontrado` | Variável | Opções e destinos dependem dos arquivos examinados |
+| `explicar-escolha` | 2 | Converge para `antes-reset` |
+| `explicar-teste` | 2 | Rota condicional que revela informações sobre o teste |
+| `questionar-confianca` | 1 | Continua a rota condicional |
+| `encerrar-contato` | 2 | Converge para `antes-reset` |
+| `antes-reset` | 2 | Encerra em `null` e agenda o reset remoto |
 
 ### Responsabilidades Principais
 
@@ -456,7 +503,9 @@ const CONFIG = Object.freeze({
   velocidadeDigitacao: 22,
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,
-  transicaoCelular: 280
+  transicaoCelular: 280,
+  esperaAntesReset: 60 * 1000,
+  duracaoReset: 2800
 });
 ```
 
@@ -474,6 +523,14 @@ const CONFIG = Object.freeze({
 - Cada mensagem do dono é removida individualmente da fila.
 - O intervalo entre entregas é de 1,2 segundo.
 - Depois da última mensagem, a próxima etapa é ativada.
+
+### Cronômetro Do Reset
+
+- Começa quando a conversa chega a `null`.
+- Exibe `01:00` em vermelho no canto superior esquerdo do celular.
+- Atualiza durante a janela de resolução do último arquivo.
+- Exibe `00:00` quando a limpeza remota começa.
+- Desaparece e restaura o indicador de sinal quando o reset termina.
 
 ### Retomada
 
@@ -533,7 +590,7 @@ Abrir `http://localhost:8000`.
 | `npm run copy:web` | Recria `www` com os arquivos web |
 | `npm run sync` | Copia a web e sincroniza o Android |
 | `npm run apk` | Sincroniza e gera o APK de debug |
-| `npm test` | Placeholder; atualmente encerra com erro |
+| `npm test` | Executa a suíte Node de caracterização e domínio |
 
 ### Capacitor
 
@@ -559,12 +616,12 @@ Abrir `http://localhost:8000`.
 | Silhueta SVG | Implementado | Papel narrativo ainda provisório |
 | Conversar | Implementado | Executa monólogos na cena atual |
 | Diálogo digitado | Implementado | Clique, `Enter` e espaço |
-| Monólogos por progresso | Implementado | Três fases |
+| Monólogos por progresso | Implementado | Fases gerais, três rotas individuais e uma rota completa |
 | Conversa presencial | Parcial | Motor existe, conteúdo não |
 | Celular | Implementado | Overlay com tela inicial |
 | Relógio e data | Implementado | Valores locais |
-| Mensagens | Implementado | Chat ramificado curto |
-| Respostas selecionáveis | Implementado | De uma a três opções |
+| Mensagens | Implementado | Primeiro contato canônico e anônimo com opções condicionais por arquivo |
+| Respostas selecionáveis | Implementado | Opções básicas e adicionais liberadas por pistas examinadas |
 | Cooldown inicial | Implementado | 1 minuto |
 | Entrega sequencial | Implementado | Uma mensagem por vez |
 | Histórico na sessão | Implementado | Somente em memória |
@@ -573,17 +630,19 @@ Abrir `http://localhost:8000`.
 | Capacitor Android | Parcial | Configurado; build pendente |
 | Galeria | Placeholder | Sem ação |
 | Notas | Placeholder | Sem ação |
-| Arquivos | Placeholder | Sem ação |
+| Arquivos | Parcial | Quatro registros pré-reset; acessível e vazio após a limpeza |
+| Reset remoto | Implementado | Arquiva pistas e chat, limpa o acesso normal e restaura a tela inicial |
+| Puzzle de identidade | Implementado | `5-12-1` deve ser decodificado como `ELA` durante o cronômetro |
 | Persistência permanente | Não implementado | Sem save/localStorage |
 | Investigação | Não implementado | Planejado no GDD |
-| Puzzles | Não implementado | Planejado no GDD |
+| Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
 | Múltiplas cenas | Não implementado | Planejado no GDD |
 | Finais e replay | Não implementado | Planejado no GDD |
 | ARG | Não implementado | Planejado no GDD |
 
 > [!note] Compatibilidade conceitual
-> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. A cena, a silhueta e o conteúdo textual atuais não representam o Ato I canônico descrito em [[IDEIA_CONCEITUAL]].
+> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. O recorte do celular, do primeiro contato e do reset já segue a direção canônica; a cena e a silhueta ainda não representam as etapas anteriores do Ato I descritas em [[IDEIA_CONCEITUAL]].
 
 ## Limitações Atuais
 
@@ -592,7 +651,7 @@ Abrir `http://localhost:8000`.
 - Existe somente uma cena.
 - Não há personagens presenciais cadastrados.
 - Todas as ramificações convergem para o mesmo fluxo.
-- O contato permanece identificado como `???`.
+- O contato permanece como `???` durante toda a primeira conversa.
 - Não existem finais distintos.
 
 ### Sistemas
@@ -602,19 +661,18 @@ Abrir `http://localhost:8000`.
 - Sem sistema de inventário ou evidências.
 - Sem eventos de cenário.
 - Sem áudio.
-- Sem investigação, terminal ou puzzles.
+- Sem investigação point-and-click, terminal ou sistema geral de puzzles; existe apenas o enigma de identidade do celular.
 
 ### Interface
 
-- Galeria, Notas e Arquivos parecem clicáveis, mas não executam ações.
+- Galeria e Notas permanecem visíveis como planejamento, mas estão desabilitadas e identificadas como indisponíveis.
 - O overlay não possui trava completa de foco.
 - O botão físico Voltar do Android não possui tratamento específico.
 - Bateria e sinal são decorativos.
 
 ### Qualidade
 
-- Não existe suíte de testes versionada para o jogo.
-- `npm test` é apenas um placeholder.
+- A suíte automatizada possui onze testes para fluxo, dados, 14 escolhas, opções condicionais, pronomes, monólogos, cronômetro e reset da Fase 8; os demais sistemas ainda não possuem cobertura.
 - Não existe CI.
 - Responsividade e acessibilidade dependem de validação manual.
 - O APK ainda não foi validado ponta a ponta.
@@ -657,8 +715,8 @@ Status: **planejada**.
 - [ ] Criar o caso introdutório de investigação point-and-click.
 - [ ] Criar a delegacia, a nota e a escolha que permite encerrar a partida.
 - [ ] Implementar coordenadas, deslocamento, cofre e obtenção do celular.
-- [ ] Adaptar o chat atual para o primeiro contato com Lulith.
-- [ ] Implementar o reset remoto do aparelho.
+- [x] Adaptar o chat atual para o primeiro contato com Lulith.
+- [x] Implementar o reset remoto do aparelho.
 
 ### Fase 3 — Persistência E Aplicativos
 
@@ -669,7 +727,8 @@ Status: **planejada**.
 - [ ] Implementar Galeria.
 - [ ] Implementar Câmera e avaliar save por fotografias.
 - [ ] Implementar Notas.
-- [ ] Implementar Arquivos.
+- [x] Implementar o recorte pré-reset de Arquivos.
+- [ ] Expandir Arquivos para os documentos dos atos posteriores.
 - [ ] Implementar Mapa.
 - [ ] Implementar indicador de Progresso.
 - [ ] Cadastrar personagens e conversas presenciais.
@@ -711,12 +770,12 @@ Status: **planejada para o Protótipo 3**.
 
 ## Validação Pendente
 
-- [ ] Percorrer todas as oito opções cadastradas.
-- [ ] Confirmar todas as reações específicas.
+- [x] Validar estruturalmente e processar as 14 opções cadastradas.
+- [x] Confirmar que todas as respostas específicas entram na fila correta.
 - [ ] Confirmar o cooldown real de 1 minuto.
 - [ ] Fechar e reabrir o celular durante o cooldown.
 - [ ] Confirmar entrega individual de todas as mensagens.
-- [ ] Validar os três monólogos nos momentos corretos.
+- [ ] Validar todas as fases e rotas de monólogo nos momentos corretos.
 - [ ] Testar clique, `Enter`, espaço e `Escape`.
 - [ ] Testar teclado, mouse e toque no chat.
 - [ ] Testar larguras abaixo e acima de `700px`.
@@ -729,7 +788,6 @@ Status: **planejada para o Protótipo 3**.
 
 - [[README]] — visão geral e execução.
 - [[TODO]] — tarefas concluídas e pendentes.
-- [[FeatureArquiteture]] — detalhes da arquitetura de mensagens.
 - [[GDD]] — visão narrativa e mecânicas futuras.
 - [[IDEIA_CONCEITUAL]] — decisões conceituais e pendências atuais.
 - [index.html](index.html) — estrutura atual.

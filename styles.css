@@ -304,6 +304,18 @@ html, body {
   background: rgba(0, 0, 0, 0.35);
 }
 
+#reset-countdown {
+  color: #ff536d;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(255, 48, 80, 0.8);
+  animation: alerta-cronometro 0.7s steps(2) infinite;
+}
+
+@keyframes alerta-cronometro {
+  50% { opacity: 0.58; }
+}
+
 #clock {
   font-weight: bold;
   color: var(--cor-texto);
@@ -319,7 +331,9 @@ html, body {
   padding: 12px;
 }
 
-#phone-messages {
+#phone-messages,
+#phone-files,
+#phone-reset {
   flex: 1;
   display: flex;
   min-height: 0;
@@ -327,7 +341,8 @@ html, body {
   background: #11182d;
 }
 
-#messages-header {
+#messages-header,
+#files-header {
   flex: none;
   padding: 14px 16px;
   border-bottom: 1px solid #38446d;
@@ -336,6 +351,188 @@ html, body {
   font-weight: bold;
   letter-spacing: 0.06em;
   text-align: center;
+}
+
+#files-list {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border-bottom: 1px solid #38446d;
+}
+
+.file-entry {
+  min-height: 42px;
+  padding: 9px 10px;
+  border: 1px solid #4f608d;
+  border-radius: 6px;
+  background: #182441;
+  color: #dce5ff;
+  font: 12px/1.3 "Courier New", monospace;
+  text-align: left;
+  cursor: pointer;
+}
+
+.file-entry::before {
+  content: "> ";
+  color: #72e0a4;
+}
+
+.file-entry.arquivo-visto {
+  color: #8995b8;
+}
+
+.file-entry:hover,
+.file-entry:focus-visible {
+  border-color: #72e0a4;
+  outline: none;
+  background: #203052;
+}
+
+#file-viewer {
+  flex: 1;
+  min-height: 0;
+  padding: 16px 14px;
+  overflow-y: auto;
+  background: #0c1324;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#file-type {
+  margin-bottom: 5px;
+  color: #72e0a4;
+  font: 10px/1.4 "Courier New", monospace;
+  letter-spacing: 0.12em;
+}
+
+#file-name {
+  margin-bottom: 14px;
+  color: #f0ead6;
+  font: bold 14px/1.3 "Courier New", monospace;
+  overflow-wrap: anywhere;
+}
+
+#file-content {
+  color: #b8c4e5;
+  font: 12px/1.6 "Courier New", monospace;
+  white-space: pre-wrap;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+#identity-puzzle {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed #526185;
+}
+
+#identity-puzzle label {
+  display: block;
+  margin-bottom: 9px;
+  color: #dce5ff;
+  font: 11px/1.4 "Courier New", monospace;
+}
+
+.puzzle-input-row {
+  display: flex;
+  gap: 6px;
+}
+
+#identity-answer {
+  min-width: 0;
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #526185;
+  border-radius: 4px;
+  outline: none;
+  background: #060a13;
+  color: #72e0a4;
+  font: bold 13px "Courier New", monospace;
+  text-transform: uppercase;
+}
+
+#identity-answer:focus {
+  border-color: #72e0a4;
+}
+
+.puzzle-input-row button {
+  padding: 8px;
+  border: 1px solid #72e0a4;
+  border-radius: 4px;
+  background: #183429;
+  color: #a5f2c8;
+  font: bold 9px "Courier New", monospace;
+  cursor: pointer;
+}
+
+.puzzle-input-row button:disabled,
+#identity-answer:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#identity-feedback {
+  min-height: 1.4em;
+  margin-top: 8px;
+  color: #e8b34b;
+  font: 10px/1.4 "Courier New", monospace;
+}
+
+.files-empty {
+  padding: 28px 12px;
+  color: #7480a3;
+  font-size: 12px;
+  text-align: center;
+}
+
+#phone-reset {
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+  padding: 26px;
+  background: #080b12;
+  color: #ff667d;
+  font-family: "Courier New", monospace;
+  text-align: center;
+}
+
+.reset-code {
+  font-size: 18px;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  animation: falha-reset 0.18s steps(2) infinite;
+}
+
+#reset-status {
+  color: #cbd2e8;
+  font-size: 12px;
+}
+
+.reset-progress {
+  height: 8px;
+  border: 1px solid #733241;
+  background: #190d12;
+  overflow: hidden;
+}
+
+.reset-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #d63f58;
+  transform-origin: left;
+  animation: progresso-reset 2.8s linear forwards;
+}
+
+@keyframes progresso-reset {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes falha-reset {
+  50% { opacity: 0.45; transform: translateX(1px); }
 }
 
 #messages-list {
@@ -350,6 +547,13 @@ html, body {
   user-select: text;
   -webkit-user-select: text;
   scrollbar-color: #53618e transparent;
+}
+
+.messages-empty {
+  margin: auto;
+  color: #7480a3;
+  font-size: 12px;
+  text-align: center;
 }
 
 #messages-choices {
@@ -393,11 +597,6 @@ html, body {
 
 .message-choice:active {
   transform: scale(0.98);
-}
-
-.message-choice:disabled {
-  opacity: 0.45;
-  cursor: default;
 }
 
 .mensagem {
@@ -465,12 +664,18 @@ html, body {
   transition: transform 0.08s ease, background 0.15s ease;
 }
 
-.app:hover {
+.app:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.1);
 }
 
-.app:active {
+.app:active:not(:disabled) {
   transform: scale(0.93);
+}
+
+.app:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+  filter: grayscale(1);
 }
 
 .app-icon {

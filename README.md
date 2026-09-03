@@ -48,20 +48,27 @@ Já estão disponíveis:
 - Caixa de diálogo com nome, falas sequenciais e efeito de digitação.
 - Avanço do diálogo por clique, `Enter` ou barra de espaço.
 - Interface de celular com relógio, data e aplicativos provisórios.
-- Conversa ramificada com o dono dentro do aplicativo **Mensagens**.
+- Primeiro contato ramificado e anônimo dentro do aplicativo **Mensagens**.
+- Rotas adicionais de conversa liberadas conforme os arquivos examinados.
+- Monólogos diferentes conforme a primeira resposta condicional escolhida.
+- Monólogo especial para quem examina os quatro arquivos e resolve `REMETENTE.enc`.
+- Primeiro enigma em **Arquivos**, usado para deduzir que a dona do aparelho é uma mulher.
+- Registros opcionais anteriores ao reset dentro de **Arquivos**.
+- Reset remoto que limpa o acesso normal e preserva internamente as pistas vistas.
+- Cronômetro vermelho de um minuto durante a janela anterior ao reset.
 - Respostas selecionáveis com reações e histórico do caminho escolhido.
 - Monólogo do protagonista ao usar **Conversar** na sala vazia.
 - Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
 
-> O conteúdo jogável atual ainda representa a premissa anterior e usa assets genéricos. Ele deve ser tratado como validação técnica da interface, não como narrativa canônica. A incorporação do novo Ato I está planejada no [`TODO.md`](TODO.md).
+> A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
 ## Celular, mensagens e conversas
 
 A interface separa as conversas presenciais das mensagens digitais:
 
-- O diálogo com o dono do celular acontece dentro do aplicativo **Mensagens**.
+- O diálogo com a dona do celular acontece dentro de **Mensagens**, sem revelar sua identidade nesse primeiro contato.
 - As mensagens do dono são exibidas à esquerda e as do protagonista à direita.
 - O botão **Conversar** é usado para interações presenciais.
 - Quando o protagonista está sozinho, **Conversar** apresenta um pensamento ou monólogo.
@@ -122,8 +129,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── GDD.md           # Visão completa do jogo e da narrativa
 ├── IDEIA_CONCEITUAL.md # Decisões conceituais e pendências atuais
 ├── ESTRUTURA_GAMING.md # Estado técnico e roadmap do protótipo
-├── FeatureArquiteture.md # Próximas alterações e como implementá-las
 ├── TODO.md          # Lista de tarefas do protótipo
+├── test/            # Testes automatizados dos fluxos implementados
 └── README.md        # Visão geral e instruções de execução
 ```
 
@@ -139,14 +146,14 @@ Cenário
 
 O celular é a principal interface narrativa planejada. Seus aplicativos simulados são:
 
-- **Mensagens:** comunicação com Lulith; no protótipo atual, o contato ainda aparece como `???`.
+- **Mensagens:** primeiro contato anônimo; permanece identificado como `???` durante toda a conversa inicial.
 - **Galeria:** fotografias, gravações e pistas visuais.
 - **Notas:** informações contextuais.
-- **Arquivos:** documentos, dados corrompidos e conteúdo oculto.
+- **Arquivos:** quatro registros anteriores ao reset, incluindo o enigma obrigatório `5-12-1`; após a limpeza, o aplicativo continua acessível, mas vazio.
 
 Na direção futura também estão previstos **Câmera**, **Terminal**, **Mapa**, **Progresso** e **Salvamento/replay**.
 
-Na V1 atual, **Mensagens** está funcional; os demais aplicativos ainda são elementos provisórios.
+Na V1 atual, **Mensagens** e o recorte pré-reset de **Arquivos** estão funcionais; Galeria e Notas ainda são elementos provisórios.
 
 ## Escopo da V1
 

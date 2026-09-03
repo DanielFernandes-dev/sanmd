@@ -2,11 +2,19 @@ const CONFIG = Object.freeze({
   velocidadeDigitacao: 22,
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,
-  transicaoCelular: 280
+  transicaoCelular: 280,
+  esperaAntesReset: 60 * 1000,
+  duracaoReset: 2800
 });
 
 const DIAS = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+const RESET_STATUS = Object.freeze({
+  INATIVO: "inativo",
+  AGENDADO: "agendado",
+  EXECUTANDO: "executando",
+  CONCLUIDO: "concluido"
+});
 
 const state = {
   modo: "livre",
@@ -15,12 +23,23 @@ const state = {
     digitando: false,
     timer: null,
     falas: [],
-    faseMonologo: "inicial"
+    faseMonologo: "inicial",
+    rotaMonologoArquivo: null
   },
   celular: {
     tela: "inicio",
     relogio: null,
-    transicao: null
+    transicao: null,
+    resetTimer: null,
+    resetInterval: null,
+    resetAte: null,
+    resetStatus: RESET_STATUS.INATIVO
+  },
+  arquivos: {
+    vistos: new Set(),
+    vistosAntesReset: [],
+    enigmaIdentidadeResolvido: false,
+    enigmaIdentidadeResolvidoAntesReset: false
   },
   mensagens: {
     etapa: null,
@@ -30,7 +49,8 @@ const state = {
     fila: [],
     proximaEtapa: null,
     cooldownAte: null,
-    timer: null
+    timer: null,
+    historicoAntesReset: []
   }
 };
 
@@ -45,9 +65,24 @@ const el = {
   phoneOverlay: document.getElementById("phone-overlay"),
   phoneHome: document.getElementById("phone-home"),
   phoneMessages: document.getElementById("phone-messages"),
+  phoneFiles: document.getElementById("phone-files"),
+  phoneReset: document.getElementById("phone-reset"),
   messagesList: document.getElementById("messages-list"),
   messagesChoices: document.getElementById("messages-choices"),
+  messagesHeader: document.getElementById("messages-header"),
   btnMensagens: document.getElementById("btn-mensagens"),
+  btnArquivos: document.getElementById("btn-arquivos"),
+  filesList: document.getElementById("files-list"),
+  fileViewer: document.getElementById("file-viewer"),
+  fileType: document.getElementById("file-type"),
+  fileName: document.getElementById("file-name"),
+  fileContent: document.getElementById("file-content"),
+  identityPuzzle: document.getElementById("identity-puzzle"),
+  identityAnswer: document.getElementById("identity-answer"),
+  identityFeedback: document.getElementById("identity-feedback"),
+  resetStatus: document.getElementById("reset-status"),
+  resetCountdown: document.getElementById("reset-countdown"),
+  phoneSignal: document.getElementById("phone-signal"),
   clock: document.getElementById("clock"),
   phoneDate: document.getElementById("phone-date"),
   btnVoltar: document.getElementById("btn-voltar")
@@ -64,9 +99,10 @@ function iniciarConversa() {
 
   const personagemPresente = DATA.cena.personagensPresentes[0];
   const monologosDaCena = DATA.monologos[DATA.cena.id];
+  const faseMonologo = obterFaseMonologo();
   state.dialogo.falas = personagemPresente
     ? DATA.conversas.presenciais[personagemPresente]
-    : monologosDaCena[state.dialogo.faseMonologo];
+    : obterFalasMonologo(monologosDaCena, faseMonologo);
 
   if (!state.dialogo.falas?.length) return;
 
@@ -76,6 +112,29 @@ function iniciarConversa() {
   el.dialogueBox.classList.remove("oculto");
   definirBotoes();
   mostrarLinha();
+}
+
+function selecionarFaseMonologo({ arquivos, arquivosVistos, identidadeResolvida, rota, fase }) {
+  const todosArquivosVistos = arquivos.every((arquivo) => arquivosVistos.has(arquivo.id));
+
+  if (todosArquivosVistos && identidadeResolvida) return "todosArquivos";
+  return rota ?? fase;
+}
+
+function obterFaseMonologo() {
+  return selecionarFaseMonologo({
+    arquivos: DATA.celular.arquivosAntesReset,
+    arquivosVistos: state.arquivos.vistos,
+    identidadeResolvida: state.arquivos.enigmaIdentidadeResolvido,
+    rota: state.dialogo.rotaMonologoArquivo,
+    fase: state.dialogo.faseMonologo
+  });
+}
+
+function obterFalasMonologo(monologosDaCena, fase) {
+  const monologo = monologosDaCena[fase];
+  if (Array.isArray(monologo)) return monologo;
+  return monologo?.[state.arquivos.enigmaIdentidadeResolvido ? "feminino" : "masculino"];
 }
 
 function mostrarLinha() {
@@ -179,6 +238,10 @@ function obterEtapaMensagem(etapaId = state.mensagens.etapa) {
   return etapaId ? DATA.mensagens.dono.etapas[etapaId] : null;
 }
 
+function atualizarCabecalhoMensagens() {
+  el.messagesHeader.textContent = state.celular.resetStatus === RESET_STATUS.CONCLUIDO ? "Mensagens" : "???";
+}
+
 function adicionarMensagem(autor, texto) {
   state.mensagens.historico.push({ autor, texto });
 }
@@ -192,6 +255,7 @@ function prepararEnvioDono(mensagens, proximaEtapa, cooldown = 0) {
 }
 
 function iniciarMensagens() {
+  if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return;
   if (state.mensagens.etapa !== null || state.mensagens.historico.length > 0) return;
 
   state.mensagens.etapa = DATA.mensagens.dono.inicio;
@@ -218,6 +282,13 @@ function criarBalaoMensagem(mensagem) {
 function renderizarMensagens(moverFoco = false) {
   el.messagesList.replaceChildren(...state.mensagens.historico.map(criarBalaoMensagem));
 
+  if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO && state.mensagens.historico.length === 0) {
+    const vazio = document.createElement("p");
+    vazio.className = "messages-empty";
+    vazio.textContent = "Nenhuma conversa encontrada.";
+    el.messagesList.appendChild(vazio);
+  }
+
   if (state.mensagens.donoDigitando) {
     const indicador = criarBalaoMensagem({ autor: "dono", texto: "digitando..." });
     indicador.classList.add("mensagem-digitando");
@@ -238,17 +309,23 @@ function renderizarEscolhas(moverFoco) {
     return;
   }
 
-  etapa.opcoes.forEach((opcao) => {
-    const botao = document.createElement("button");
-    botao.type = "button";
-    botao.className = "message-choice";
-    botao.dataset.optionId = opcao.id;
-    botao.textContent = opcao.texto;
-    el.messagesChoices.appendChild(botao);
-  });
+  etapa.opcoes
+    .filter(opcaoEstaDisponivel)
+    .forEach((opcao) => {
+      const botao = document.createElement("button");
+      botao.type = "button";
+      botao.className = "message-choice";
+      botao.dataset.optionId = opcao.id;
+      botao.textContent = opcao.texto;
+      el.messagesChoices.appendChild(botao);
+    });
   el.messagesChoices.classList.remove("oculto");
 
   if (moverFoco) el.messagesChoices.firstElementChild?.focus();
+}
+
+function opcaoEstaDisponivel(opcao) {
+  return !opcao.requerArquivoVisto || state.arquivos.vistos.has(opcao.requerArquivoVisto);
 }
 
 function finalizarEnvioDono() {
@@ -260,7 +337,7 @@ function finalizarEnvioDono() {
   state.mensagens.cooldownAte = null;
 
   if (conversaConcluida) {
-    state.dialogo.faseMonologo = "conversaConcluida";
+    agendarResetRemoto();
   }
 
   renderizarMensagens(state.celular.tela === "mensagens");
@@ -313,11 +390,15 @@ function cancelarEnvioDono() {
 function escolherResposta(opcaoId) {
   if (state.mensagens.donoRespondendo || state.mensagens.etapa === null) return;
 
-  const opcao = obterEtapaMensagem().opcoes.find((item) => item.id === opcaoId);
+  const opcao = obterEtapaMensagem().opcoes.find((item) => item.id === opcaoId && opcaoEstaDisponivel(item));
   if (!opcao) return;
 
   const primeiraMensagem = state.mensagens.historico.length === 0;
   adicionarMensagem("protagonista", opcao.texto);
+
+  if (opcao.rotaMonologo && state.dialogo.rotaMonologoArquivo === null) {
+    state.dialogo.rotaMonologoArquivo = opcao.rotaMonologo;
+  }
 
   if (primeiraMensagem) {
     state.dialogo.faseMonologo = "aposPrimeiroEnvio";
@@ -335,23 +416,199 @@ function abrirMensagens() {
   if (state.modo !== "celular" || state.celular.tela !== "inicio") return;
 
   state.celular.tela = "mensagens";
-  el.phoneHome.classList.add("oculto");
+  ocultarTelasCelular();
   el.phoneMessages.classList.remove("oculto");
+  atualizarCabecalhoMensagens();
   iniciarMensagens();
   renderizarMensagens(!state.mensagens.donoRespondendo);
   agendarEnvioDono();
 }
 
+function renderizarArquivos() {
+  el.filesList.replaceChildren();
+
+  if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) {
+    const vazio = document.createElement("p");
+    vazio.className = "files-empty";
+    vazio.textContent = "Nenhum arquivo encontrado.";
+    el.filesList.appendChild(vazio);
+    return;
+  }
+
+  DATA.celular.arquivosAntesReset.forEach((arquivo) => {
+    if (arquivo.enigma && state.celular.resetStatus !== RESET_STATUS.AGENDADO) return;
+
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "file-entry";
+    botao.dataset.fileId = arquivo.id;
+    botao.textContent = arquivo.nome;
+    if (state.arquivos.vistos.has(arquivo.id)) {
+      botao.classList.add("arquivo-visto");
+      botao.setAttribute("aria-label", `${arquivo.nome}, arquivo já examinado`);
+    }
+    el.filesList.appendChild(botao);
+  });
+}
+
+function visualizarArquivo(arquivoId) {
+  if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return;
+
+  const arquivo = DATA.celular.arquivosAntesReset.find((item) => item.id === arquivoId);
+  if (!arquivo || (arquivo.enigma && state.celular.resetStatus !== RESET_STATUS.AGENDADO)) return;
+
+  state.arquivos.vistos.add(arquivo.id);
+  el.fileType.textContent = arquivo.tipo;
+  el.fileName.textContent = arquivo.nome;
+  el.fileContent.textContent = arquivo.conteudo;
+  el.fileViewer.classList.remove("oculto");
+  el.identityPuzzle.classList[arquivo.enigma ? "remove" : "add"]("oculto");
+  if (arquivo.enigma) {
+    const enigmaBloqueado = state.arquivos.enigmaIdentidadeResolvido;
+    el.identityAnswer.disabled = enigmaBloqueado;
+    el.identityPuzzle.querySelector('button[type="submit"]').disabled = enigmaBloqueado;
+    el.identityFeedback.textContent = state.arquivos.enigmaIdentidadeResolvido
+      ? "DECODIFICADO: ELA"
+      : "Você tem 1 minuto antes do reset.";
+  }
+  renderizarArquivos();
+  el.filesList.querySelector(`[data-file-id="${arquivo.id}"]`)?.focus();
+}
+
+function resolverEnigmaIdentidade(resposta) {
+  if (
+    state.celular.resetStatus !== RESET_STATUS.AGENDADO
+    || state.arquivos.enigmaIdentidadeResolvido
+  ) return;
+
+  const tentativa = resposta.trim().toLocaleLowerCase("pt-BR");
+  if (tentativa !== "ela") {
+    el.identityFeedback.textContent = "Sequência inválida.";
+    el.identityAnswer.select();
+    return;
+  }
+
+  state.arquivos.enigmaIdentidadeResolvido = true;
+  state.dialogo.faseMonologo = "identidadeResolvida";
+  el.identityFeedback.textContent = "DECODIFICADO: ELA";
+  el.identityAnswer.disabled = true;
+  el.identityPuzzle.querySelector('button[type="submit"]').disabled = true;
+}
+
+function abrirArquivos() {
+  if (state.modo !== "celular" || state.celular.tela !== "inicio") return;
+
+  state.celular.tela = "arquivos";
+  ocultarTelasCelular();
+  el.phoneFiles.classList.remove("oculto");
+  el.fileViewer.classList.add("oculto");
+  el.identityPuzzle.classList.add("oculto");
+  renderizarArquivos();
+  el.filesList.firstElementChild?.focus();
+}
+
+function arquivarDadosAntesReset() {
+  state.arquivos.vistosAntesReset = [...state.arquivos.vistos];
+  state.arquivos.enigmaIdentidadeResolvidoAntesReset = state.arquivos.enigmaIdentidadeResolvido;
+  state.mensagens.historicoAntesReset = [...state.mensagens.historico];
+}
+
+function atualizarCronometroReset() {
+  if (state.celular.resetAte === null) return;
+
+  const segundosRestantes = Math.max(0, Math.ceil((state.celular.resetAte - Date.now()) / 1000));
+  el.resetCountdown.textContent = formatarDuracao(segundosRestantes);
+}
+
+function formatarDuracao(segundosTotais) {
+  const minutos = String(Math.floor(segundosTotais / 60)).padStart(2, "0");
+  const segundos = String(segundosTotais % 60).padStart(2, "0");
+  return `${minutos}:${segundos}`;
+}
+
+function iniciarCronometroReset() {
+  clearInterval(state.celular.resetInterval);
+  el.phoneSignal.classList.add("oculto");
+  el.resetCountdown.classList.remove("oculto");
+  atualizarCronometroReset();
+  state.celular.resetInterval = setInterval(atualizarCronometroReset, 250);
+}
+
+function ocultarCronometroReset() {
+  clearInterval(state.celular.resetInterval);
+  state.celular.resetInterval = null;
+  state.celular.resetAte = null;
+  el.resetCountdown.classList.add("oculto");
+  el.phoneSignal.classList.remove("oculto");
+}
+
+function concluirResetRemoto() {
+  clearTimeout(state.celular.resetTimer);
+  state.celular.resetTimer = null;
+  state.celular.resetStatus = RESET_STATUS.CONCLUIDO;
+  ocultarCronometroReset();
+  state.mensagens.etapa = null;
+  state.mensagens.historico = [];
+  state.mensagens.fila = [];
+  state.dialogo.faseMonologo = "conversaConcluida";
+  atualizarCabecalhoMensagens();
+
+  if (state.modo === "celular") {
+    el.btnVoltar.disabled = false;
+    mostrarTelaInicial();
+  }
+}
+
+function iniciarResetRemoto() {
+  state.celular.resetTimer = null;
+  clearInterval(state.celular.resetInterval);
+  state.celular.resetInterval = null;
+  el.resetCountdown.textContent = "00:00";
+  arquivarDadosAntesReset();
+  state.celular.resetStatus = RESET_STATUS.EXECUTANDO;
+
+  if (state.modo !== "celular") {
+    concluirResetRemoto();
+    return;
+  }
+
+  state.celular.tela = "reset";
+  cancelarEnvioDono();
+  ocultarTelasCelular();
+  el.phoneReset.classList.remove("oculto");
+  el.resetStatus.textContent = "Apagando dados locais...";
+  el.btnVoltar.disabled = true;
+  state.celular.resetTimer = setTimeout(concluirResetRemoto, CONFIG.duracaoReset);
+}
+
+function agendarResetRemoto() {
+  if (state.celular.resetStatus !== RESET_STATUS.INATIVO) return;
+
+  state.celular.resetStatus = RESET_STATUS.AGENDADO;
+  state.celular.resetAte = Date.now() + CONFIG.esperaAntesReset;
+  iniciarCronometroReset();
+  state.celular.resetTimer = setTimeout(iniciarResetRemoto, CONFIG.esperaAntesReset);
+  if (state.celular.tela === "arquivos") renderizarArquivos();
+}
+
+function ocultarTelasCelular() {
+  el.phoneHome.classList.add("oculto");
+  el.phoneMessages.classList.add("oculto");
+  el.phoneFiles.classList.add("oculto");
+  el.phoneReset.classList.add("oculto");
+}
+
 function mostrarTelaInicial(moverFoco = true) {
   state.celular.tela = "inicio";
-  el.phoneMessages.classList.add("oculto");
+  ocultarTelasCelular();
   el.phoneHome.classList.remove("oculto");
   if (moverFoco) el.btnMensagens.focus();
 }
 
 function voltarCelular() {
   if (state.modo !== "celular") return;
-  if (state.celular.tela === "mensagens") {
+  if (state.celular.resetStatus === RESET_STATUS.EXECUTANDO) return;
+  if (state.celular.tela === "mensagens" || state.celular.tela === "arquivos") {
     mostrarTelaInicial();
     return;
   }
@@ -361,7 +618,16 @@ function voltarCelular() {
 el.btnConversar.addEventListener("click", iniciarConversa);
 el.btnCelular.addEventListener("click", abrirCelular);
 el.btnMensagens.addEventListener("click", abrirMensagens);
+el.btnArquivos.addEventListener("click", abrirArquivos);
 el.btnVoltar.addEventListener("click", voltarCelular);
+el.filesList.addEventListener("click", (event) => {
+  const botao = event.target.closest("button[data-file-id]");
+  if (botao) visualizarArquivo(botao.dataset.fileId);
+});
+el.identityPuzzle.addEventListener("submit", (event) => {
+  event.preventDefault();
+  resolverEnigmaIdentidade(el.identityAnswer.value);
+});
 el.messagesChoices.addEventListener("click", (event) => {
   const botao = event.target.closest("button[data-option-id]");
   if (botao) escolherResposta(botao.dataset.optionId);
@@ -379,4 +645,5 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+atualizarCabecalhoMensagens();
 definirBotoes();

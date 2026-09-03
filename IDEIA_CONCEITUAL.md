@@ -307,12 +307,33 @@ Ao resolver o enigma, MJ consegue acessar o celular de Lulith.
 
 Quando MJ encontra o aparelho, ele inicialmente possui informações e pistas capazes de antecipar conteúdos que normalmente seriam alcançados apenas no segundo ato.
 
-Após a primeira troca de mensagens entre MJ e Lulith:
+Após a conclusão da primeira conversa entre MJ e Lulith:
 
 - Lulith reinicia o aparelho remotamente;
 - o celular retorna aparentemente limpo;
 - as informações anteriores desaparecem do acesso normal;
 - o aparelho passa a aparentar ser um celular comum, além das funções específicas do jogo.
+
+## Primeiro contato e informações pré-reset
+
+**[DECIDIDO COMO DIREÇÃO ATUAL]**
+
+- O contato permanece identificado como `???` durante toda a primeira conversa.
+- O contato não revela nome, gênero ou informações pessoais nesse momento.
+- Antes de resolver o enigma de identidade, MJ presume que o dono do aparelho seja um homem e pensa nele no masculino.
+- `CANDIDATOS_04.log`, `ROTA_013.txt` e `RECUPERAR.tmp` podem ser examinados antes ou durante a conversa.
+- Cada arquivo libera uma resposta condicional e uma possibilidade diferente de informação.
+- A primeira resposta condicional escolhida fixa apenas um monólogo interno de MJ, mesmo que outros arquivos tenham sido vistos.
+- Depois de resolver `ELA`, a rota individual permanece a mesma, mas os pensamentos de MJ passam a usar o feminino.
+- Essa limitação existe para incentivar replay e novas escolhas em partidas futuras.
+- Depois da conclusão da conversa, o arquivo `REMETENTE.enc` é liberado e começa um cronômetro vermelho de um minuto.
+- `REMETENTE.enc` apresenta `5-12-1` com a chave A1Z26; a solução `ELA` permite que MJ deduza que a dona do aparelho é uma mulher.
+- Se os quatro arquivos forem examinados e `REMETENTE.enc` for resolvido, um quarto monólogo substitui a rota individual e relaciona todas as informações.
+- Quando o cronômetro termina, o reset remoto apaga o chat e o conteúdo visível de Arquivos.
+- Mensagens e Arquivos continuam acessíveis depois da limpeza, mas aparecem vazios.
+- Os arquivos vistos, a solução do enigma, o histórico e a rota de monólogo permanecem registrados internamente durante a sessão.
+
+O replay persistente ainda não está implementado. A preservação atual existe somente em memória e funciona como protótipo da regra narrativa futura.
 
 ## Funções planejadas
 
@@ -694,6 +715,8 @@ Cada nova partida deve permitir:
 - encontrar pistas anteriormente ignoradas;
 - reconstruir a cronologia real.
 
+O recorte atual do Ato I já prototipa esse princípio: três respostas condicionais produzem monólogos individuais diferentes, enquanto a descoberta dos quatro arquivos libera uma reflexão completa. Em uma versão com persistência, o jogador deverá repetir a sequência para conhecer as outras perspectivas individuais sem combiná-las em uma única partida.
+
 ---
 
 ## 20.1. Salvamento por fotografia
@@ -931,7 +954,13 @@ Esses assets não representam o design final.
 - Resolver leva às coordenadas.
 - Coordenadas levam ao cofre.
 - Cofre contém o celular.
-- Lulith reinicia o aparelho após o primeiro contato.
+- O primeiro contato permanece anônimo e não revela nome ou gênero.
+- Três arquivos liberam opções e monólogos condicionais diferentes.
+- A primeira resposta condicional fixa uma única perspectiva individual de MJ.
+- `REMETENTE.enc` é liberado depois da conversa e inicia um cronômetro de um minuto.
+- Resolver `5-12-1` como `ELA` permite que MJ deduza o gênero da dona do aparelho.
+- Examinar os quatro arquivos libera um monólogo completo que substitui a rota individual.
+- Lulith reinicia o aparelho após o cronômetro do primeiro contato.
 - MJ possui experiência com enigmas/ARGs/escape rooms.
 - MJ foi escolhida por essa competência.
 - Ela não é a única candidata.

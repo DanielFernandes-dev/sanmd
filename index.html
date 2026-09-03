@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
-  <link rel="stylesheet" href="styles.css?v=mensagens-7">
+  <link rel="stylesheet" href="styles.css?v=fase-8-refactor">
 </head>
 <body>
   <div id="app">
@@ -44,23 +44,46 @@
     <div id="phone-frame">
       <div id="phone-screen">
         <div id="status-bar">
-          <span>▂▄▆</span>
+          <span id="phone-signal">▂▄▆</span>
+          <span id="reset-countdown" class="oculto" role="timer" aria-label="Tempo até o reset">01:00</span>
           <span id="clock">--:--</span>
           <span>100%</span>
         </div>
         <div id="phone-home">
           <p id="phone-date"></p>
           <div id="apps-grid">
-            <button id="btn-mensagens" class="app" type="button"><span class="app-icon">💬</span><span class="app-nome">Mensagens</span></button>
-            <button class="app" type="button"><span class="app-icon">🖼️</span><span class="app-nome">Galeria</span></button>
-            <button class="app" type="button"><span class="app-icon">📝</span><span class="app-nome">Notas</span></button>
-            <button class="app" type="button"><span class="app-icon">📁</span><span class="app-nome">Arquivos</span></button>
+            <button id="btn-mensagens" class="app" type="button" aria-label="Abrir Mensagens"><span class="app-icon">💬</span><span>Mensagens</span></button>
+            <button class="app" type="button" aria-label="Galeria indisponível" disabled><span class="app-icon">🖼️</span><span>Galeria</span></button>
+            <button class="app" type="button" aria-label="Notas indisponíveis" disabled><span class="app-icon">📝</span><span>Notas</span></button>
+            <button id="btn-arquivos" class="app" type="button" aria-label="Abrir Arquivos"><span class="app-icon">📁</span><span>Arquivos</span></button>
           </div>
         </div>
         <section id="phone-messages" class="oculto" aria-labelledby="messages-header">
           <header id="messages-header">???</header>
           <div id="messages-list" aria-live="polite"></div>
           <div id="messages-choices" class="oculto" role="group" aria-label="Escolha uma resposta"></div>
+        </section>
+        <section id="phone-files" class="oculto" aria-labelledby="files-header">
+          <header id="files-header">ARQUIVOS RECENTES</header>
+          <div id="files-list"></div>
+          <article id="file-viewer" class="oculto" aria-live="polite">
+            <p id="file-type"></p>
+            <h2 id="file-name"></h2>
+            <p id="file-content"></p>
+            <form id="identity-puzzle" class="oculto">
+              <label for="identity-answer">Decodifique o pronome do remetente:</label>
+              <div class="puzzle-input-row">
+                <input id="identity-answer" type="text" autocomplete="off" maxlength="12">
+                <button type="submit">DECODIFICAR</button>
+              </div>
+              <p id="identity-feedback" aria-live="polite"></p>
+            </form>
+          </article>
+        </section>
+        <section id="phone-reset" class="oculto" role="status" aria-live="assertive">
+          <p class="reset-code">REMOTE_RESET</p>
+          <p id="reset-status">Conexão remota detectada...</p>
+          <div class="reset-progress" aria-hidden="true"><span></span></div>
         </section>
         <div id="phone-nav">
           <button id="btn-voltar" type="button">◀ VOLTAR</button>
@@ -69,7 +92,7 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=mensagens-7"></script>
-  <script src="js/game.js?v=mensagens-7"></script>
+  <script src="js/data.js?v=fase-8-refactor"></script>
+  <script src="js/game.js?v=fase-8-refactor"></script>
 </body>
 </html>

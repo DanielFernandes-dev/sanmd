@@ -33,7 +33,7 @@ MJ consulta as coordenadas no computador da delegacia, desloca-se ao local indic
 
 ### Trama principal
 
-O aparelho contém inicialmente pistas capazes de antecipar informações do Ato II. Depois da primeira troca de mensagens, Lulith reinicia o celular remotamente: o conteúdo desaparece do acesso normal e o aparelho passa a parecer comum, além das funções específicas do jogo.
+O aparelho contém inicialmente pistas capazes de antecipar informações do Ato II. Depois da conclusão da primeira conversa, um último arquivo é liberado e começa uma janela de um minuto. Ao final dela, Lulith reinicia o celular remotamente: o conteúdo desaparece do acesso normal e o aparelho passa a parecer comum, além das funções específicas do jogo.
 
 Lulith escolheu MJ por sua experiência com enigmas e experiências imersivas. MJ não é a única candidata testada. A origem dos testes, o objetivo verdadeiro do celular, a situação dos demais candidatos e aquilo que Lulith deseja recuperar ainda não estão definidos.
 
@@ -100,10 +100,32 @@ Apresentar MJ e James, ensinar a investigação, introduzir a nota, o deslocamen
 4. Retorno à mesa na delegacia e descoberta da nota.
 5. Escolha entre o final imediato ou a resolução do enigma.
 6. Consulta das coordenadas, deslocamento e puzzle do cofre.
-7. Obtenção do celular e primeiro contato com Lulith.
-8. Reset remoto e apresentação de Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e Salvamento/replay.
+7. Obtenção do celular, exploração dos arquivos iniciais e primeiro contato anônimo com Lulith.
+8. Rotas condicionais de conversa, liberação do enigma de identidade e cronômetro de um minuto.
+9. Reset remoto e apresentação de Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e Salvamento/replay.
 
 O caso introdutório poderá usar temporariamente o primeiro julgamento de *Ace Attorney* como referência estrutural de prototipagem, mas deverá receber conteúdo original.
+
+### Primeiro contato, arquivos e reset
+
+O contato permanece identificado como `???` durante a primeira conversa e não revela nome, gênero ou informações pessoais. MJ presume inicialmente que o dono do aparelho seja um homem.
+
+Antes do reset, o aparelho apresenta quatro registros:
+
+| Arquivo | Informação | Efeito no fluxo |
+|---|---|---|
+| `CANDIDATOS_04.log` | Existem outros perfis avaliados em São Paulo | Libera uma pergunta sobre candidatos |
+| `ROTA_013.txt` | Nota, coordenadas, cofre e aparelho formam uma rota planejada | Libera uma rota sobre a origem do celular |
+| `RECUPERAR.tmp` | O contato deseja recuperar algo que lhe foi tirado | Libera uma cobrança direta |
+| `REMETENTE.enc` | `5-12-1`, usando A1Z26, resulta em `ELA` | Permite deduzir que a dona do aparelho é uma mulher |
+
+Os três primeiros arquivos podem ser examinados antes ou durante a conversa. A primeira resposta condicional escolhida fixa um único monólogo interno de MJ, relacionado a candidatos, rota ou recuperação. Mesmo que outros registros tenham sido vistos, essas reflexões não se misturam na mesma partida, incentivando replay.
+
+Antes de resolver o enigma de identidade, os monólogos individuais usam o masculino presumido por MJ. Depois da solução `ELA`, a rota escolhida é preservada, mas sua redação passa ao feminino.
+
+`REMETENTE.enc` só aparece depois da conclusão da conversa. Sua liberação inicia um cronômetro vermelho de um minuto. Se o jogador examinar os quatro arquivos e resolver o enigma, um quarto monólogo substitui a rota individual e conecta todas as informações.
+
+Quando o tempo termina, Lulith reinicia o aparelho remotamente. Mensagens e Arquivos permanecem acessíveis, mas seus conteúdos visíveis desaparecem. O protótipo preserva internamente, apenas durante a sessão, os arquivos vistos, a solução, o histórico e a rota de monólogo.
 
 ---
 
@@ -141,11 +163,11 @@ O jogador explora cenários investigando objetos, fotografias, documentos, compu
 
 Apps simulados que funcionam como canal narrativo:
 
-- **💬 Mensagens:** Comunicação principal com Lulith.
+- **💬 Mensagens:** Comunicação principal com Lulith; o primeiro contato permanece anônimo e possui opções condicionadas às pistas examinadas.
 - **🖼️ Galeria:** Fotografias, gravações e pistas visuais.
 - **📷 Câmera:** Registro de pistas e possível sistema diegético de salvamento.
 - **📝 Notas:** Informações contextuais.
-- **📁 Arquivos:** Documentos, dados corrompidos e informações ocultas.
+- **📁 Arquivos:** Documentos, dados corrompidos, informações ocultas e gatilhos para rotas de conversa e monólogos.
 - **⌨️ Terminal:** Interface central de puzzles e acesso a informações escondidas.
 - **🗺️ Mapa:** Consulta de locais e deslocamento.
 - **💯 Progresso:** Percentual da história reconstruída.
@@ -198,6 +220,8 @@ A origem dos testes, a motivação de Lulith, os acontecimentos anteriores, a ve
 ### Informações anteriores ao reset
 
 O conteúdo acessível no celular antes de Lulith reiniciá-lo poderá antecipar descobertas do Ato II. Replay, arquivos recuperados e novas perspectivas podem permitir que o jogador compreenda melhor aquilo que viu sem contexto.
+
+No recorte atual, candidatos, rota de entrega e recuperação representam três perspectivas individuais. A primeira resposta condicional escolhida determina qual delas será elaborada pelo monólogo de MJ. A leitura dos quatro arquivos libera uma perspectiva combinada. Quando houver persistência entre partidas, essa estrutura deverá estimular o jogador a repetir o Ato I para acessar as outras interpretações.
 
 ### Outros candidatos
 
@@ -438,11 +462,11 @@ A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
 - **Estrutura:** Separada em `js/data.js` (conteúdo) e `js/game.js` (motor) — ver ADR-0003.
 - **Interface implementada:** Camadas sobrepostas de Visual Novel e smartphone.
-- **Conteúdo implementado:** Uma cena, monólogos e uma conversa curta ramificada em Mensagens.
-- **Ainda não implementado:** Investigação, terminal, puzzles, mapa, múltiplas cenas, atos completos, finais, progresso, replay e ARG.
-- **Compatibilidade narrativa:** O conteúdo atual valida a tecnologia, mas ainda representa a premissa anterior e deverá ser reescrito.
+- **Conteúdo implementado:** Uma cena provisória, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos.
+- **Ainda não implementado:** Investigação point-and-click, terminal, sistema geral de puzzles, mapa, múltiplas cenas, atos completos, finais, progresso, replay persistente e ARG.
+- **Compatibilidade narrativa:** O recorte do celular segue a direção atual do Ato I; a cena inicial ainda é provisória e começa depois de etapas narrativas não implementadas.
 
-O estado atual existe somente em memória. Persistência, save por fotografia e gerenciamento de replay ainda são planejamento.
+O estado atual existe somente em memória. Arquivos vistos, solução, histórico e rota de monólogo sobrevivem à navegação e ao reset durante a sessão, mas não ao recarregamento ou fechamento. Persistência, save por fotografia e gerenciamento de replay ainda são planejamento.
 
 ---
 

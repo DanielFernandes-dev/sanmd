@@ -39,7 +39,7 @@
 ### Preparação para o conteúdo canônico
 
 - [ ] Identificar e remover da experiência jogável a premissa antiga do celular encontrado em casa.
-- [ ] Preservar os motores reutilizáveis de diálogo, monólogo, mensagens e navegação.
+- [x] Preservar os motores reutilizáveis de diálogo, monólogo, mensagens e navegação.
 - [ ] Separar dados narrativos do Ato I das regras do motor.
 - [ ] Definir estados e marcos de progresso para todas as fases do ato.
 - [ ] Garantir que cenas e diálogos possam ser trocados sem alterar o motor principal.
@@ -236,40 +236,67 @@
 
 ### Estado anterior ao reset
 
-- [ ] Definir quais informações antecipam conteúdos posteriores sem exigir o Ato II.
-- [ ] Criar arquivos, imagens, mensagens ou registros anteriores ao reset.
-- [ ] Permitir que o jogador examine esse conteúdo antes do primeiro contato.
-- [ ] Registrar quais pistas opcionais foram vistas.
-- [ ] Garantir que as pistas continuem interpretáveis em um replay futuro.
+- [x] Definir quais informações antecipam conteúdos posteriores sem exigir o Ato II.
+- [x] Criar arquivos, imagens, mensagens ou registros anteriores ao reset.
+- [x] Permitir que o jogador examine esse conteúdo antes do primeiro contato.
+- [x] Registrar quais pistas opcionais foram vistas.
+- [x] Garantir que as pistas continuem interpretáveis em um replay futuro.
+- [x] Criar o primeiro enigma interno do celular para MJ deduzir que a dona do aparelho é uma mulher.
+- [x] Liberar `REMETENTE.enc` somente depois da conclusão do primeiro contato.
+- [x] Manter Mensagens acessível antes da liberação de `REMETENTE.enc`.
 
 ### Primeiro contato com Lulith
 
-- [ ] Substituir o chat não canônico pela conversa do Ato I.
-- [ ] Definir quando o contato deixa de aparecer como `???`.
-- [ ] Criar de uma a três respostas coerentes em cada etapa.
-- [ ] Fazer escolhas produzirem reações locais diferentes de Lulith.
-- [ ] Manter ramificações curtas compatíveis com o restante do ato.
-- [ ] Aplicar corretamente o tom persuasivo e brincalhão de Lulith.
-- [ ] Atualizar monólogos de MJ antes, durante e depois da conversa.
+- [x] Substituir o chat não canônico pela conversa do Ato I.
+- [x] Manter o contato como `???` e impedir que revele nome, gênero ou dados pessoais.
+- [x] Fazer MJ se referir ao contato no masculino antes de resolver o enigma.
+- [x] Atualizar a percepção de MJ para o feminino somente após a dedução.
+- [x] Criar respostas básicas e opções adicionais condicionadas aos arquivos examinados.
+- [x] Fazer escolhas produzirem reações locais diferentes de Lulith.
+- [x] Manter ramificações curtas compatíveis com o restante do ato.
+- [x] Condicionar opções e rotas adicionais aos arquivos examinados pelo jogador.
+- [x] Usar as rotas condicionais para revelar informações diferentes.
+- [x] Fixar o monólogo individual pela primeira resposta condicional escolhida.
+- [x] Criar monólogos individuais para candidatos, rota e recuperação.
+- [x] Criar um quarto monólogo para quem examinou e resolveu os quatro arquivos.
+- [x] Dar prioridade ao monólogo dos quatro arquivos sobre a rota individual.
+- [x] Preservar a rota de monólogo escolhida durante o reset.
+- [x] Manter a rota individual e trocar seus pronomes para o feminino depois de resolver `ELA`.
+- [x] Revalidar no domínio os requisitos de opções condicionais antes de aceitar uma escolha.
+- [x] Aplicar corretamente o tom persuasivo e brincalhão de Lulith.
+- [x] Atualizar monólogos de MJ antes, durante e depois da conversa.
 
 ### Reset remoto
 
-- [ ] Definir o gatilho exato do reset após a primeira troca de mensagens.
-- [ ] Criar aviso, animação ou interrupção visual do reset.
-- [ ] Remover do acesso normal o conteúdo anterior.
-- [ ] Restaurar o celular com aparência comum e funções específicas do jogo.
-- [ ] Preservar internamente o registro das pistas vistas antes do reset.
-- [ ] Impedir acesso acidental ao conteúdo apagado na primeira partida.
+- [x] Definir o gatilho do reset após a conclusão da primeira conversa.
+- [x] Criar aviso, animação ou interrupção visual do reset.
+- [x] Exibir um cronômetro vermelho durante o minuto anterior ao reset.
+- [x] Remover do acesso normal o conteúdo anterior.
+- [x] Manter o aplicativo Arquivos acessível, mas vazio, após o reset.
+- [x] Restaurar o celular com aparência comum e funções específicas do jogo.
+- [x] Preservar internamente o registro das pistas vistas antes do reset.
+- [x] Impedir acesso acidental ao conteúdo apagado na primeira partida.
+- [x] Consolidar o reset nos estados `inativo`, `agendado`, `executando` e `concluido`.
+
+### Refatoração e limpeza
+
+- [x] Remover o estado de arquivo atual que não era consultado.
+- [x] Remover atualização imperativa redundante dos aplicativos.
+- [x] Mover rótulos acessíveis fixos dos aplicativos para o HTML.
+- [x] Manter Galeria e Notas visíveis, mas desabilitadas enquanto forem placeholders.
+- [x] Remover metadado de entrada que apontava para `index.js` inexistente.
+- [x] Marcar o pacote como privado.
+- [x] Preservar metadados de personagem, cena e conversas presenciais planejadas.
 
 ## Fase 9 — Apresentar os sistemas do celular
 
 ### Aplicativos do Ato I
 
-- [ ] Apresentar Mensagens como canal principal com Lulith.
+- [x] Apresentar Mensagens como canal principal com o contato ainda identificado como `???`.
 - [ ] Implementar uma função mínima de Galeria para pistas visuais.
 - [ ] Implementar uma função mínima de Câmera ou marcá-la claramente como indisponível.
 - [ ] Implementar uma função mínima de Notas para informações contextuais.
-- [ ] Implementar uma função mínima de Arquivos para documentos.
+- [x] Implementar uma função mínima de Arquivos para documentos e pistas pré-reset.
 - [ ] Integrar Mapa ao local visitado no ato.
 - [ ] Implementar o indicador diegético de progresso do Ato I.
 - [ ] Definir e implementar o salvamento mínimo necessário.
@@ -335,7 +362,7 @@
 - [ ] Confirmar que descartar a nota encerra o jogo imediatamente.
 - [ ] Confirmar que resolver a nota leva às coordenadas e ao cofre.
 - [ ] Confirmar que o cofre entrega o celular de Lulith.
-- [ ] Confirmar que o primeiro contato aciona o reset remoto.
+- [x] Confirmar que a conclusão do primeiro contato agenda o reset remoto.
 - [ ] Confirmar que os principais sistemas do celular são apresentados.
 - [ ] Confirmar que nenhum conteúdo antigo contradiz a premissa canônica.
 
@@ -379,12 +406,15 @@
 - [ ] Confirmar cooldown e entrega individual das mensagens.
 - [ ] Fechar e reabrir o celular durante o cooldown.
 - [ ] Confirmar histórico e monólogos em todos os estados.
-- [ ] Testar uma, duas e três opções em diferentes resoluções.
+- [x] Confirmar que cada arquivo libera somente sua opção condicional correspondente.
+- [x] Validar os três monólogos individuais e o monólogo dos quatro arquivos.
+- [x] Confirmar que a primeira resposta condicional permanece como rota individual.
+- [ ] Testar quantidades variáveis de opções em diferentes resoluções.
 
 ### Web e Android
 
-- [ ] Criar testes automatizados para estados e progressão crítica.
-- [ ] Substituir o `npm test` provisório por uma suíte funcional.
+- [x] Criar testes automatizados para estados e progressão crítica da Fase 8.
+- [x] Substituir o `npm test` provisório por uma suíte funcional.
 - [ ] Corrigir o pacote do teste instrumentado Android.
 - [ ] Executar `npm run sync` em ambiente Android configurado.
 - [ ] Gerar o APK de debug.
@@ -403,9 +433,9 @@
 - [ ] A resolução revela coordenadas consultáveis na delegacia.
 - [ ] O deslocamento conduz ao local correto em São Paulo.
 - [ ] O puzzle do cofre é funcional, justo e diferente do puzzle da nota.
-- [ ] O celular contém pistas opcionais antes do reset.
+- [x] O celular contém pistas opcionais antes do reset.
 - [ ] O primeiro contato representa corretamente a personalidade de Lulith.
-- [ ] O reset remoto altera o estado e o conteúdo do celular.
+- [x] O reset remoto altera o estado e o conteúdo do celular.
 - [ ] Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e salvamento/replay são apresentados de forma clara.
 - [ ] O terminal possui ao menos um tutorial jogável.
 - [ ] O ato funciona do início ao fim em desktop, mobile e APK Android.
