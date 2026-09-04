@@ -13,7 +13,7 @@ const DATA = {
       id: "mj",
       nome: "MJ",
       sprites: {
-        neutral: "assets/art/characters/mj/vn/mj__vn__neutral.svg"
+        neutral: "sprites/MJ.png"
       }
     }
   },

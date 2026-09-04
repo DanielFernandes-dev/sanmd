@@ -5,17 +5,15 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const raiz = path.resolve(__dirname, "..");
-const caminhoSprite = "assets/art/characters/mj/vn/mj__vn__neutral.svg";
+const caminhoSprite = "sprites/MJ.png";
 
 test("MJ genérica usa um sprite externo estático e provisório", () => {
   const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
-  const sprite = fs.readFileSync(path.join(raiz, caminhoSprite), "utf8");
+  const sprite = fs.readFileSync(path.join(raiz, caminhoSprite));
 
   assert.match(html, /<img id="personagem"/);
   assert.doesNotMatch(html, /<svg id="personagem"/);
-  assert.match(sprite, /width="128" height="176" viewBox="0 0 128 176"/);
-  assert.match(sprite, /shape-rendering="crispEdges"/);
-  assert.doesNotMatch(sprite, /<animate|<script/);
+  assert.strictEqual(sprite.toString("utf8", 1, 4), "PNG");
 });
 
 test("dados separam personagem, pose, slot e caminho do sprite", () => {
@@ -33,5 +31,5 @@ test("dados separam personagem, pose, slot e caminho do sprite", () => {
 
 test("pipeline web inclui a pasta de assets", () => {
   const pacote = JSON.parse(fs.readFileSync(path.join(raiz, "package.json"), "utf8"));
-  assert.match(pacote.scripts["copy:web"], /cp -r js assets www\//);
+  assert.match(pacote.scripts["copy:web"], /cp -r js assets sprites www\//);
 });

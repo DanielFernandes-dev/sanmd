@@ -114,8 +114,38 @@ html, body {
   filter: drop-shadow(0 0 18px rgba(0, 0, 0, 0.6));
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  animation: personagem-entrar 180ms steps(3, end) both;
+  opacity: 1;
   pointer-events: none;
+}
+
+#personagem.personagem-entrando {
+  animation: mj-entrar 320ms ease-out forwards;
+}
+
+#personagem.personagem-saindo {
+  animation: mj-sair 280ms ease-in forwards;
+}
+
+@keyframes mj-entrar {
+  from {
+    opacity: 0;
+    transform: translateX(-58%) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-58%) translateY(0);
+  }
+}
+
+@keyframes mj-sair {
+  from {
+    opacity: 1;
+    transform: translateX(-58%) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-58%) translateY(16px);
+  }
 }
 
 #personagem[data-slot="left"] {
@@ -128,11 +158,6 @@ html, body {
 
 #personagem[data-slot="right"] {
   --personagem-x: 70%;
-}
-
-@keyframes personagem-entrar {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 #hint {

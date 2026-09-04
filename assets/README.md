@@ -10,4 +10,4 @@ Os assets desta pasta pertencem aos Protótipos 1 e 2 e não representam o desig
 - Arquivos de runtime recebem nomes semânticos, sem características provisórias do design.
 - Sprites não contêm animação; movimento de entrada ou saída pertence à interface.
 
-`mj__vn__neutral.svg` foi criado com auxílio de IA como pixel art vetorial provisória. Formas, cores, cabelo e roupa existem somente para validar leitura e integração e poderão ser substituídos integralmente no Protótipo 3.
+O sprite de runtime de MJ atualmente é `sprites/MJ.png` (referenciado em `js/data.js`). É um asset provisório usado apenas para validar leitura e integração, podendo ser substituído integralmente no Protótipo 3.

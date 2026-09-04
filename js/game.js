@@ -3,6 +3,8 @@ const CONFIG = Object.freeze({
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,
   transicaoCelular: 280,
+  transicaoPersonagemEntrada: 320,
+  transicaoPersonagemSaida: 280,
   esperaAntesReset: 60 * 1000,
   duracaoReset: 2800
 });
@@ -18,6 +20,7 @@ const RESET_STATUS = Object.freeze({
 
 const state = {
   modo: "livre",
+  personagemSaidaTimer: null,
   dialogo: {
     linha: 0,
     digitando: false,
@@ -89,25 +92,48 @@ const el = {
   btnVoltar: document.getElementById("btn-voltar")
 };
 
-function renderizarPersonagem() {
-  const personagemVisual = DATA.cena.personagensVisuais[0];
-  if (!personagemVisual) {
+function ocultarPersonagem() {
+  if (el.personagem.classList.contains("oculto")) return;
+
+  const estavaVisivel = Boolean(el.personagem.dataset.characterId);
+  clearTimeout(state.personagemSaidaTimer);
+  state.personagemSaidaTimer = null;
+
+  if (!estavaVisivel) {
     el.personagem.classList.add("oculto");
     return;
   }
 
-  const personagem = DATA.personagens[personagemVisual.id];
-  const sprite = personagem?.sprites[personagemVisual.pose];
-  if (!sprite) {
+  el.personagem.classList.remove("personagem-entrando");
+  el.personagem.classList.add("personagem-saindo");
+  state.personagemSaidaTimer = setTimeout(() => {
     el.personagem.classList.add("oculto");
-    return;
-  }
+    el.personagem.classList.remove("personagem-saindo");
+    el.personagem.src = "";
+    el.personagem.dataset.characterId = "";
+    el.personagem.dataset.pose = "";
+    el.personagem.dataset.slot = "";
+    state.personagemSaidaTimer = null;
+  }, CONFIG.transicaoPersonagemSaida);
+}
 
+function mostrarPersonagem(id, pose, slot) {
+  const personagem = DATA.personagens[id];
+  const sprite = personagem?.sprites[pose];
+  if (!sprite) return;
+
+  clearTimeout(state.personagemSaidaTimer);
   el.personagem.src = sprite;
   el.personagem.dataset.characterId = personagem.id;
-  el.personagem.dataset.pose = personagemVisual.pose;
-  el.personagem.dataset.slot = personagemVisual.slot;
+  el.personagem.dataset.pose = pose;
+  el.personagem.dataset.slot = slot;
   el.personagem.classList.remove("oculto");
+  el.personagem.classList.remove("personagem-saindo");
+  el.personagem.classList.add("personagem-entrando");
+}
+
+function renderizarPersonagem() {
+  ocultarPersonagem();
 }
 
 function definirBotoes() {
@@ -122,11 +148,14 @@ function iniciarConversa() {
   const personagemPresente = DATA.cena.personagensPresentes[0];
   const monologosDaCena = DATA.monologos[DATA.cena.id];
   const faseMonologo = obterFaseMonologo();
-  state.dialogo.falas = personagemPresente
-    ? DATA.conversas.presenciais[personagemPresente]
-    : obterFalasMonologo(monologosDaCena, faseMonologo);
+  const ehMonologo = !personagemPresente;
+  state.dialogo.falas = ehMonologo
+    ? obterFalasMonologo(monologosDaCena, faseMonologo)
+    : DATA.conversas.presenciais[personagemPresente];
 
   if (!state.dialogo.falas?.length) return;
+
+  if (ehMonologo) mostrarPersonagem("mj", "neutral", "center");
 
   state.modo = "dialogo";
   state.dialogo.linha = 0;
@@ -211,6 +240,7 @@ function encerrarConversa() {
   state.modo = "livre";
   el.dialogueBox.classList.add("oculto");
   el.hint.classList.remove("oculto");
+  ocultarPersonagem();
   definirBotoes();
 }
 
