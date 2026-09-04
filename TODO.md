@@ -347,7 +347,7 @@
 - [x] Manter o cenário atual, seu enquadramento e seus elementos visuais intactos durante a criação da primeira MJ.
 - [x] Usar somente uma pose neutra e estática de MJ durante o protótipo atual.
 - [x] Não implementar animações internas, troca de frames, lip sync, piscadas ou respiração no sprite.
-- [x] Permitir somente uma transição de interface para a entrada da personagem na cena.
+- [x] Permitir somente transições de interface para a entrada e a saída da personagem na cena (sem animações internas no sprite).
 - [x] Não definir cabelo, roupa, proporções, acessórios ou identidade visual canônica de MJ.
 - [x] Registrar explicitamente a origem assistida por IA e o caráter provisório do asset.
 
@@ -379,9 +379,9 @@
 - [x] Fixar o pivô visual no centro inferior do canvas.
 - [ ] Manter rosto e gesto principal acima da região ocupada pela caixa de diálogo.
 - [x] Usar uma paleta pequena e provisória compatível com o cenário noturno atual.
-- [x] Gerar o sprite em SVG externo com formas pixeladas e bordas rígidas.
-- [x] Nomear o asset como `mj__vn__neutral.svg`.
-- [x] Preparar o contrato para substituição futura por um PNG ou sprite canônico com o mesmo ID.
+- [x] Gerar o sprite em PNG externo (`sprites/MJ.png`) com formas pixeladas e bordas rígidas.
+- [x] Nomear o asset no runtime como `sprites/MJ.png`, com o ID narrativo `mj` separado do caminho físico.
+- [x] Substituir definitivamente o SVG anterior pelo PNG com o mesmo identificador.
 
 ### Integração da MJ
 
@@ -392,8 +392,20 @@
 - [x] Preparar os slots semânticos `left`, `center` e `right` sem alterar o enquadramento atual.
 - [x] Manter separadas a presença visual, a presença narrativa e a disponibilidade para conversa.
 - [x] Remover a animação contínua de respiração da silhueta substituída.
-- [x] Implementar somente uma entrada curta por opacidade, sem escalar ou deformar o sprite.
+- [x] Exibir MJ em cena somente durante os monólogos (sala sem personagens presenciais), oculta no restante.
+- [x] Implementar transições de entrada (`mj-entrar`, 320 ms) e saída (`mj-sair`, 280 ms) sem escalar ou deformar o sprite.
 - [x] Respeitar `prefers-reduced-motion` e exibir MJ imediatamente quando necessário.
+
+### Caixa de diálogo estilo Ace Attorney
+
+- [x] Adotar caixa de diálogo de cantos retos com fundo claro, texto escuro, borda marcada e sombra deslocada.
+- [x] Criar placa de nome `#name-plate` em azul-escuro com ponta apontando para a caixa.
+- [x] Manter a seta de continuação piscando quando a fala está pronta.
+
+### Apresentação da V1
+
+- [x] Aumentar `velocidadeDigitacao` para 65 ms e manter o avanço por clique, `Enter` e espaço.
+- [x] Sintetizar o blip de digitação via Web Audio API para letras não-espaço, com fallback silencioso.
 
 ### Validação da primeira MJ
 
@@ -404,6 +416,8 @@
 - [ ] Confirmar que o rosto permanece visível durante diálogos.
 - [x] Confirmar que a presença visual de MJ não cria uma conversa presencial inexistente.
 - [x] Confirmar que o asset entra corretamente na cópia web usada pelo Capacitor.
+- [x] Validar por teste que o sprite de runtime é o PNG `sprites/MJ.png` e está incluído no pipeline web.
+- [x] Confirmar que MJ aparece apenas durante monólogos e volta a ficar oculta ao encerrar a conversa.
 - [x] Confirmar que os testes existentes da Fase 8 continuam passando.
 
 ### Sprites genéricos

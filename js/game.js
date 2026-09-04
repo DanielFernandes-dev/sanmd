@@ -1,5 +1,5 @@
 const CONFIG = Object.freeze({
-  velocidadeDigitacao: 22,
+  velocidadeDigitacao: 65,
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,
   transicaoCelular: 280,
@@ -21,6 +21,7 @@ const RESET_STATUS = Object.freeze({
 const state = {
   modo: "livre",
   personagemSaidaTimer: null,
+  audio: null,
   dialogo: {
     linha: 0,
     digitando: false,
@@ -195,6 +196,35 @@ function mostrarLinha() {
   digitarTexto(fala.texto);
 }
 
+function tocarBlipTexto() {
+  try {
+    if (!state.audio) {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      state.audio = new AudioContext();
+    }
+    if (state.audio.state === "suspended") state.audio.resume();
+
+    const oscilador = state.audio.createOscillator();
+    const ganho = state.audio.createGain();
+    const filtro = state.audio.createBiquadFilter();
+
+    oscilador.type = "square";
+    oscilador.frequency.value = 620 + Math.random() * 60;
+    filtro.type = "highpass";
+    filtro.frequency.value = 1400;
+    ganho.gain.setValueAtTime(0.05, state.audio.currentTime);
+    ganho.gain.exponentialRampToValueAtTime(0.0001, state.audio.currentTime + 0.05);
+
+    oscilador.connect(filtro);
+    filtro.connect(ganho);
+    ganho.connect(state.audio.destination);
+    oscilador.start();
+    oscilador.stop(state.audio.currentTime + 0.06);
+  } catch {
+    // áudio indisponível: segue em silêncio
+  }
+}
+
 function digitarTexto(texto) {
   clearInterval(state.dialogo.timer);
   state.dialogo.digitando = true;
@@ -202,7 +232,9 @@ function digitarTexto(texto) {
   let indice = 0;
 
   state.dialogo.timer = setInterval(() => {
-    el.dialogueText.textContent += texto[indice];
+    const caractere = texto[indice];
+    el.dialogueText.textContent += caractere;
+    if (caractere && !/\s/.test(caractere)) tocarBlipTexto();
     indice++;
     if (indice >= texto.length) finalizarDigitacao();
   }, CONFIG.velocidadeDigitacao);

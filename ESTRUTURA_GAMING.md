@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-03
+updated: 2026-09-04
 ---
 
 # Estrutura Gaming
@@ -44,9 +44,12 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 ### O Que Funciona
 
 - Cena noturna provisória.
-- Sprite genérico e estático de MJ em SVG externo.
+- Sprite genérico e estático de MJ em PNG externo (`sprites/MJ.png`).
+- MJ aparece em cena somente durante os monólogos (sala sem personagens presenciais).
+- Transição animada de entrada e saída de MJ.
 - Botões **Conversar** e **Celular**.
-- Caixa de diálogo com efeito de digitação.
+- Caixa de diálogo inspirada em *Ace Attorney* (fundo claro, placa de nome com ponta e contorno marcado).
+- Efeito de digitação com som sintetizado por letra.
 - Monólogos condicionados ao progresso da conversa.
 - Tela inicial do celular com relógio e data reais.
 - Aplicativo Mensagens funcional.
@@ -230,7 +233,8 @@ Depois da última resposta do contato:
 ├── js/
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
 │   └── game.js                # Estado, regras e renderização
-├── assets/                    # Arte provisória usada em runtime
+├── assets/                    # Arte-fonte provisória
+├── sprites/                   # Sprites de runtime (ex.: MJ.png)
 ├── android/                   # Projeto nativo Android
 ├── capacitor.config.json      # Configuração Capacitor
 ├── package.json               # Scripts e dependências
@@ -362,13 +366,32 @@ conversas: {
 
 Portanto, somente os monólogos são jogáveis.
 
+### Apresentação Do Diálogo
+
+A caixa de diálogo segue a linguagem visual inspirada em *Ace Attorney*:
+
+- Fundo claro (`#d9d6cf`) com texto escuro (`#16181f`), cantos retos.
+- Borda marcada de `4px` e sombra deslocada `6px 6px 0` (duro, sem difusão).
+- Placa de nome (`#name-plate`) em azul-escuro (`#1a3d4f`) com triângulo `::after` apontando para a caixa.
+- Seta de continuação (`▼`) piscando quando a fala está pronta.
+
+### Personagem Em Cena
+
+MJ fica oculta por padrão. O sprite carregado é `sprites/MJ.png` (`js/data.js`), na pose `neutral` e no slot `center`:
+
+- `mostrarPersonagem("mj", "neutral", "center")` remove `oculto`, aplica `.personagem-entrando` e roda `@keyframes mj-entrar` (320 ms, fade + deslize vertical).
+- `ocultarPersonagem()` aplica `.personagem-saindo` (`@keyframes mj-sair`, 280 ms) e, ao terminar, restaura o sprite oculto/vazio.
+- A transição respeita `prefers-reduced-motion`, exibindo MJ imediatamente quando necessário.
+- Os slots `left`, `center` e `right` estão preparados, mas a cena atual usa apenas `center`.
+
 ### Efeito De Digitação
 
-- Cada caractere aparece em intervalo de 22 ms.
+- Cada caractere aparece em intervalo de **65 ms** (`CONFIG.velocidadeDigitacao`).
 - Um clique durante a animação completa a frase.
 - Outro clique avança para a próxima fala.
 - `Enter` e espaço possuem o mesmo comportamento.
 - Uma seta aparece quando a fala está pronta para avançar.
+- Para cada letra não-espaço, `tocarBlipTexto()` toca um blip sintetizado via Web Audio API (oscilador `square` de ~620 Hz, filtro `highpass`), protegido por `try/catch` e silencioso quando o áudio não está disponível.
 
 ### Monólogos Por Progresso
 
@@ -386,7 +409,7 @@ Portanto, somente os monólogos são jogáveis.
 A primeira resposta condicional fixa uma única rota individual, mesmo que outros arquivos tenham sido vistos. Isso impede a mistura de informações e incentiva novas partidas. A rota `todosArquivos` tem prioridade sobre a individual e continua disponível depois do reset porque os IDs examinados permanecem registrados internamente.
 
 > [!info] Sprite e presença narrativa
-> O sprite genérico de MJ permanece visível na cena, mas `personagensPresentes` está vazio. `personagensVisuais` controla somente a presença gráfica; por isso, exibir MJ não cria uma conversa presencial inexistente.
+> MJ fica oculta por padrão e só é exibida quando **Conversar** inicia um monólogo (sala sem personagens presenciais). `mostrarPersonagem("mj","neutral","center")` aplica a animação de entrada e `ocultarPersonagem()` a de saída. Como `personagensPresentes` está vazio, exibir MJ não cria uma conversa presencial inexistente; a presença visual e a narrativa continuam separadas.
 
 ## Interface Do Celular
 
@@ -501,10 +524,12 @@ Os valores ficam centralizados em `CONFIG`:
 
 ```js
 const CONFIG = Object.freeze({
-  velocidadeDigitacao: 22,
+  velocidadeDigitacao: 65,
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,
   transicaoCelular: 280,
+  transicaoPersonagemEntrada: 320,
+  transicaoPersonagemSaida: 280,
   esperaAntesReset: 60 * 1000,
   duracaoReset: 2800
 });
@@ -614,7 +639,7 @@ Abrir `http://localhost:8000`.
 | Recurso | Status | Observação |
 |---|---|---|
 | Cena noturna | Implementado | Estática e provisória |
-| Sprite genérico de MJ | Implementado | SVG externo, pose neutra estática e design não canônico |
+| Sprite genérico de MJ | Implementado | `sprites/MJ.png`, pose neutra estática, mostrado somente em monólogos, com transição de entrada/saída |
 | Conversar | Implementado | Executa monólogos na cena atual |
 | Diálogo digitado | Implementado | Clique, `Enter` e espaço |
 | Monólogos por progresso | Implementado | Fases gerais, três rotas individuais e uma rota completa |
@@ -643,7 +668,7 @@ Abrir `http://localhost:8000`.
 | ARG | Não implementado | Planejado no GDD |
 
 > [!note] Compatibilidade conceitual
-> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. O recorte do celular, do primeiro contato e do reset já segue a direção canônica; a cena e o sprite genérico de MJ ainda não representam as etapas anteriores do Ato I descritas em [[IDEIA_CONCEITUAL]].
+> Os motores de diálogo, monólogo e Mensagens podem ser reaproveitados. O recorte do celular, do primeiro contato e do reset já segue a direção canônica; a cena ainda não representa as etapas anteriores do Ato I descritas em [[IDEIA_CONCEITUAL]], e o sprite de MJ permanece genérico e não canônico.
 
 ## Limitações Atuais
 
@@ -661,7 +686,7 @@ Abrir `http://localhost:8000`.
 - Sem gerenciamento de múltiplas partidas.
 - Sem sistema de inventário ou evidências.
 - Sem eventos de cenário.
-- Sem áudio.
+- Áudio limitado ao blip sintetizado de digitação; sem música, efeitos de interface ou trilha.
 - Sem investigação point-and-click, terminal ou sistema geral de puzzles; existe apenas o enigma de identidade do celular.
 
 ### Interface
@@ -673,7 +698,7 @@ Abrir `http://localhost:8000`.
 
 ### Qualidade
 
-- A suíte automatizada possui onze testes para fluxo, dados, 14 escolhas, opções condicionais, pronomes, monólogos, cronômetro e reset da Fase 8, além de três testes do contrato visual da MJ genérica; os demais sistemas ainda não possuem cobertura.
+- A suíte automatizada possui 14 testes: fluxo do chat da Fase 8 (cooldown, opções condicionais, pronomes, monólogos, cronômetro e reset) e o contrato visual de MJ (sprite `sprites/MJ.png` em runtime e inclusão da pasta no pipeline); os demais sistemas ainda não possuem cobertura.
 - Não existe CI.
 - Responsividade e acessibilidade dependem de validação manual.
 - O APK ainda não foi validado ponta a ponta.

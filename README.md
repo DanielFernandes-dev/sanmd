@@ -43,9 +43,10 @@ O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e J
 Já estão disponíveis:
 
 - Cena noturna provisória.
-- Personagem provisório em SVG.
+- Personagem de MJ em PNG (`sprites/MJ.png`), mostrado em cena somente durante os monólogos.
 - Botões **Conversar** e **Celular**.
-- Caixa de diálogo com nome, falas sequenciais e efeito de digitação.
+- Caixa de diálogo inspirada em *Ace Attorney* com nome, falas sequenciais e efeito de digitação.
+- Efeito de digitação com som sintetizado por letra via Web Audio API.
 - Avanço do diálogo por clique, `Enter` ou barra de espaço.
 - Interface de celular com relógio, data e aplicativos provisórios.
 - Primeiro contato ramificado e anônimo dentro do aplicativo **Mensagens**.
@@ -123,6 +124,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── js/
 │   ├── data.js      # Cena, personagem e falas provisórias
 │   └── game.js      # Estado, diálogos e navegação
+├── sprites/          # Sprites de runtime (ex.: MJ.png)
 ├── android/          # Projeto nativo gerado pelo Capacitor
 ├── capacitor.config.json # Configuração do aplicativo Android
 ├── package.json      # Dependências e comandos de build
