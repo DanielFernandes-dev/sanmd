@@ -442,22 +442,53 @@
 - [x] Não iniciar as poses pensando, surpresa, irritada e cansada antes de validar o sprite neutro.
 - [x] Reutilizar a pose neutra em todo o protótipo atual até uma nova decisão de escopo.
 
-### Cenários genéricos
+### Cenários genéricos — início da produção
 
-- [ ] Iniciar os cenários somente depois da validação da primeira MJ.
-- [ ] Usar o dormitório como primeiro cenário-piloto quando a produção de cenários começar.
-- [ ] Aplicar `320×180`, área central segura e recorte controlado 16:9 somente na futura etapa de cenários.
-- [ ] Separar background, foreground, objetos interativos e máscaras de hotspots.
+- [x] Iniciar os cenários somente depois da validação da primeira MJ.
+- [ ] Usar o dormitório como primeiro cenário-piloto.
 - [ ] Não incorporar textos, caixa de diálogo ou informações variáveis aos backgrounds.
 - [ ] Criar enquadramentos próprios para closes em vez de recortar o cenário amplo por CSS.
-- [ ] Criar dormitório.
-- [ ] Criar cena do crime.
-- [ ] Criar delegacia.
-- [ ] Criar mesa de MJ.
-- [ ] Criar local indicado pelas coordenadas.
-- [ ] Criar área do cofre.
-- [ ] Criar close do cofre.
-- [ ] Criar interfaces da nota, computador, mapa e puzzles.
+
+### Padrão técnico do cenário-piloto
+
+- [ ] Definir a resolução-base (`320×180`) e a proporção 16:9 de cada cenário.
+- [ ] Definir a área central segura para o recorte em telas retrato.
+- [ ] Definir a paleta noturna e as regras de contraste do Ato I.
+- [ ] Definir as camadas: background, foreground, objetos interativos e máscaras de hotspots.
+- [ ] Acordar o pipeline de asset (pasta-fonte → `www`) para incluir cenários e seus cortes.
+- [ ] Entregar um cenário-piloto jogável no recorte atual para validar escala, enquadramento e integração.
+
+### Checklist de construção de cada cenário
+
+Para cada cenário do Ato I, antes de considerar pronto:
+
+- [ ] Definir narrativamente o que o cenário comunica (hora, clima, função na cena).
+- [ ] Criar a arte-base do cenário no tamanho e proporção acordados.
+- [ ] Separar a arte em camadas editoráveis (ambiente, detalhes, iluminação) sem mesclar com a interface.
+- [ ] Definir a paleta do cenário e garantir contraste com os personagens.
+- [ ] Identificar e desenhar os objetos interativos (hotspots) separadamente dos backgrounds.
+- [ ] Criar a máscara/área clicável de cada hotspot coerente com o desenho.
+- [ ] Garantir área central segura com o conteúdo essencial protegido no recorte retrato.
+- [ ] Garantir que o enquadramento não esconda o rosto do personagem nos slots.
+- [ ] Não embutir textos ou caixa de diálogo na imagem do cenário.
+- [ ] Validar leitura em desktop acima de `700px` e no recorte do celular abaixo disso.
+- [ ] Registrar o asset como provisório e não canônico.
+
+### Roteiro de produção dos cenários do Ato I
+
+Prioridade de criação (validação → fluxo canônico):
+
+- [ ] **Dormitório de MJ** — primeiro cenário-piloto (tutorial de cenário).
+- [ ] **Cena do crime** — caso introdutório point-and-click.
+- [ ] **Delegacia (ambiente geral)** — liga o caso ao retorno de MJ.
+- [ ] **Mesa de MJ (delegacia)** — nota, computador e escolha de descartar/resolver.
+- [ ] **Close da nota** — apresentação visual do primeiro puzzle.
+- [ ] **Interface do computador / consulta de coordenadas**.
+- [ ] **Mapa/deslocamento** — apresentação do destino.
+- [ ] **Local indicado pelas coordenadas** — cenário exterior/interior.
+- [ ] **Área do cofre** — cenário com o cofre em destaque.
+- [ ] **Close do cofre** — segundo puzzle.
+- [ ] **Interfaces dos puzzles** (nota e cofre) como máscaras ou overlays reutilizáveis.
 
 ## Fase 11 — Estabilizar e testar
 
