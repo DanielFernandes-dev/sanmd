@@ -95,6 +95,10 @@ const DATA = {
       nome: "MJ",
       sprites: {
         neutral: "assets/sprites/MJ.png"
+      },
+      fotografia: {
+        expressoes: Array.from({ length: 10 }, (_, indice) => `mj__photo__${String(indice + 1).padStart(2, "0")}`),
+        sprites: {}
       }
     }
   },

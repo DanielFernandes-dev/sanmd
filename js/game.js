@@ -6,8 +6,11 @@ const CONFIG = Object.freeze({
   transicaoPersonagemEntrada: 320,
   transicaoPersonagemSaida: 280,
   esperaAntesReset: 60 * 1000,
-  duracaoReset: 2800
+  duracaoReset: 2800,
+  duracaoFlashFoto: 140
 });
+
+const SAVE_VERSION = 1;
 
 const DIAS = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
 const MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
@@ -59,6 +62,13 @@ const state = {
     cooldownAte: null,
     timer: null,
     historicoAntesReset: []
+  },
+  galeria: {
+    saves: [],
+    visualizacao: "grade",
+    capturaPendente: null,
+    selecionadoId: null,
+    flashTimer: null
   }
 };
 
@@ -77,11 +87,13 @@ const el = {
   phoneHome: document.getElementById("phone-home"),
   phoneMessages: document.getElementById("phone-messages"),
   phoneFiles: document.getElementById("phone-files"),
+  phoneGallery: document.getElementById("phone-gallery"),
   phoneReset: document.getElementById("phone-reset"),
   messagesList: document.getElementById("messages-list"),
   messagesChoices: document.getElementById("messages-choices"),
   messagesHeader: document.getElementById("messages-header"),
   btnMensagens: document.getElementById("btn-mensagens"),
+  btnGaleria: document.getElementById("btn-galeria"),
   btnArquivos: document.getElementById("btn-arquivos"),
   filesList: document.getElementById("files-list"),
   fileViewer: document.getElementById("file-viewer"),
@@ -96,8 +108,198 @@ const el = {
   phoneSignal: document.getElementById("phone-signal"),
   clock: document.getElementById("clock"),
   phoneDate: document.getElementById("phone-date"),
+  galleryGrid: document.getElementById("gallery-grid"),
+  galleryToolbar: document.getElementById("gallery-toolbar"),
+  galleryCount: document.getElementById("gallery-count"),
+  galleryStatus: document.getElementById("gallery-status"),
+  btnTirarFoto: document.getElementById("btn-tirar-foto"),
+  galleryPhotoForm: document.getElementById("gallery-photo-form"),
+  galleryPreview: document.getElementById("gallery-preview"),
+  galleryPhotoName: document.getElementById("gallery-photo-name"),
+  btnCancelarFoto: document.getElementById("btn-cancelar-foto"),
+  galleryDetail: document.getElementById("gallery-detail"),
+  galleryDetailPhoto: document.getElementById("gallery-detail-photo"),
+  galleryDetailName: document.getElementById("gallery-detail-name"),
+  galleryDetailDate: document.getElementById("gallery-detail-date"),
+  btnCarregarFoto: document.getElementById("btn-carregar-foto"),
+  btnExcluirFoto: document.getElementById("btn-excluir-foto"),
+  btnVoltarGaleria: document.getElementById("btn-voltar-galeria"),
+  galleryFlash: document.getElementById("gallery-flash"),
   btnVoltar: document.getElementById("btn-voltar")
 };
+
+const saveRepository = criarSaveRepository(typeof localStorage === "undefined" ? null : localStorage);
+
+function copiarDados(dados) {
+  return JSON.parse(JSON.stringify(dados));
+}
+
+function capturarEstadoJogo() {
+  return {
+    saveVersion: SAVE_VERSION,
+    capturedAt: Date.now(),
+    localizacao: { ...state.localizacao },
+    dialogo: {
+      faseMonologo: state.dialogo.faseMonologo,
+      rotaMonologoArquivo: state.dialogo.rotaMonologoArquivo
+    },
+    celular: {
+      resetAte: state.celular.resetAte,
+      resetStatus: state.celular.resetStatus
+    },
+    arquivos: {
+      vistos: [...state.arquivos.vistos],
+      vistosAntesReset: [...state.arquivos.vistosAntesReset],
+      enigmaIdentidadeResolvido: state.arquivos.enigmaIdentidadeResolvido,
+      enigmaIdentidadeResolvidoAntesReset: state.arquivos.enigmaIdentidadeResolvidoAntesReset
+    },
+    mensagens: {
+      etapa: state.mensagens.etapa,
+      historico: copiarDados(state.mensagens.historico),
+      donoRespondendo: state.mensagens.donoRespondendo,
+      donoDigitando: state.mensagens.donoDigitando,
+      fila: [...state.mensagens.fila],
+      proximaEtapa: state.mensagens.proximaEtapa,
+      cooldownAte: state.mensagens.cooldownAte,
+      historicoAntesReset: copiarDados(state.mensagens.historicoAntesReset)
+    }
+  };
+}
+
+function validarSnapshot(candidato) {
+  if (!candidato || candidato.saveVersion !== SAVE_VERSION || !Number.isFinite(candidato.capturedAt)) return null;
+
+  const local = DATA.locais[candidato.localizacao?.local];
+  if (!local || !local.cenas[candidato.localizacao?.cena]) return null;
+
+  const fases = Object.values(DATA.monologos)
+    .some((monologos) => Object.hasOwn(monologos, candidato.dialogo?.faseMonologo));
+  const rota = candidato.dialogo?.rotaMonologoArquivo;
+  if (
+    !fases
+    || (rota !== null && !Object.values(DATA.monologos).some((monologos) => Object.hasOwn(monologos, rota)))
+  ) return null;
+
+  const idsArquivos = new Set(DATA.celular.arquivosAntesReset.map((arquivo) => arquivo.id));
+  const arraysDeArquivosValidos = [candidato.arquivos?.vistos, candidato.arquivos?.vistosAntesReset]
+    .every((lista) => Array.isArray(lista) && lista.every((id) => idsArquivos.has(id)));
+  if (!arraysDeArquivosValidos) return null;
+
+  const mensagens = candidato.mensagens;
+  const etapas = DATA.mensagens.dono.etapas;
+  const etapaValida = (etapa) => etapa === null || Boolean(etapas[etapa]);
+  const historicoValido = (historico) => Array.isArray(historico) && historico.every((mensagem) =>
+    mensagem && ["protagonista", "dono"].includes(mensagem.autor) && typeof mensagem.texto === "string"
+  );
+  if (
+    !mensagens
+    || !etapaValida(mensagens.etapa)
+    || !etapaValida(mensagens.proximaEtapa)
+    || !historicoValido(mensagens.historico)
+    || !historicoValido(mensagens.historicoAntesReset)
+    || !Array.isArray(mensagens.fila)
+    || !mensagens.fila.every((texto) => typeof texto === "string")
+    || typeof mensagens.donoRespondendo !== "boolean"
+    || typeof mensagens.donoDigitando !== "boolean"
+    || (mensagens.cooldownAte !== null && !Number.isFinite(mensagens.cooldownAte))
+  ) return null;
+
+  const celular = candidato.celular;
+  if (
+    !celular
+    || !Object.values(RESET_STATUS).includes(celular.resetStatus)
+    || (celular.resetAte !== null && !Number.isFinite(celular.resetAte))
+    || typeof candidato.arquivos.enigmaIdentidadeResolvido !== "boolean"
+    || typeof candidato.arquivos.enigmaIdentidadeResolvidoAntesReset !== "boolean"
+  ) return null;
+
+  return copiarDados(candidato);
+}
+
+function concluirResetRestaurado() {
+  if (state.celular.resetStatus !== RESET_STATUS.CONCLUIDO) arquivarDadosAntesReset();
+  state.celular.resetStatus = RESET_STATUS.CONCLUIDO;
+  state.celular.resetAte = null;
+  state.mensagens.etapa = null;
+  state.mensagens.historico = [];
+  state.mensagens.fila = [];
+  state.mensagens.proximaEtapa = null;
+  state.mensagens.donoRespondendo = false;
+  state.mensagens.donoDigitando = false;
+  state.mensagens.cooldownAte = null;
+  state.dialogo.faseMonologo = "conversaConcluida";
+}
+
+function restaurarEstadoJogo(candidato) {
+  const snapshot = validarSnapshot(candidato);
+  if (!snapshot) throw new Error("Este ponto de salvamento está corrompido ou é incompatível.");
+
+  clearTimeout(state.personagemSaidaTimer);
+  clearInterval(state.dialogo.timer);
+  clearInterval(state.celular.relogio);
+  clearTimeout(state.celular.transicao);
+  clearTimeout(state.celular.resetTimer);
+  clearInterval(state.celular.resetInterval);
+  cancelarEnvioDono();
+
+  state.modo = "livre";
+  state.localizacao = snapshot.localizacao;
+  state.dialogo.linha = 0;
+  state.dialogo.digitando = false;
+  state.dialogo.timer = null;
+  state.dialogo.falas = [];
+  state.dialogo.faseMonologo = snapshot.dialogo.faseMonologo;
+  state.dialogo.rotaMonologoArquivo = snapshot.dialogo.rotaMonologoArquivo;
+  state.celular.tela = "inicio";
+  state.celular.relogio = null;
+  state.celular.transicao = null;
+  state.celular.resetTimer = null;
+  state.celular.resetInterval = null;
+  state.celular.resetAte = snapshot.celular.resetAte;
+  state.celular.resetStatus = snapshot.celular.resetStatus;
+  state.arquivos.vistos = new Set(snapshot.arquivos.vistos);
+  state.arquivos.vistosAntesReset = snapshot.arquivos.vistosAntesReset;
+  state.arquivos.enigmaIdentidadeResolvido = snapshot.arquivos.enigmaIdentidadeResolvido;
+  state.arquivos.enigmaIdentidadeResolvidoAntesReset = snapshot.arquivos.enigmaIdentidadeResolvidoAntesReset;
+  Object.assign(state.mensagens, snapshot.mensagens, { timer: null });
+
+  if (
+    state.celular.resetStatus === RESET_STATUS.EXECUTANDO
+    || (state.celular.resetStatus === RESET_STATUS.AGENDADO && state.celular.resetAte <= Date.now())
+  ) {
+    concluirResetRestaurado();
+  } else if (state.celular.resetStatus === RESET_STATUS.AGENDADO) {
+    state.celular.resetTimer = setTimeout(iniciarResetRemoto, state.celular.resetAte - Date.now());
+  }
+
+  el.phoneOverlay.classList.remove("aberto");
+  el.phoneOverlay.classList.add("oculto");
+  ocultarTelasCelular();
+  el.phoneHome.classList.remove("oculto");
+  el.dialogueBox.classList.add("oculto");
+  el.personagem.classList.add("oculto");
+  el.personagem.classList.remove("personagem-entrando", "personagem-saindo");
+  el.personagem.src = "";
+  el.resetCountdown.classList.add("oculto");
+  el.phoneSignal.classList.remove("oculto");
+  trocarCenario(obterCenaAtual());
+  fecharMenuIrPara();
+  atualizarCabecalhoMensagens();
+  definirBotoes();
+  el.btnCelular.focus();
+}
+
+function registrarAutosave() {
+  try {
+    saveRepository.salvarAutosave({
+      id: "autosave",
+      createdAt: Date.now(),
+      saveState: capturarEstadoJogo()
+    });
+  } catch (erro) {
+    console.warn("Não foi possível atualizar o autosave.", erro);
+  }
+}
 
 function ocultarPersonagem() {
   if (el.personagem.classList.contains("oculto")) return;
@@ -365,6 +567,7 @@ function encerrarConversa() {
   state.modo = "livre";
   el.dialogueBox.classList.add("oculto");
   ocultarPersonagem();
+  registrarAutosave();
   definirBotoes();
 }
 
@@ -390,6 +593,7 @@ function abrirCelular() {
   });
   atualizarRelogio();
   state.celular.relogio = setInterval(atualizarRelogio, 1000);
+  if (state.celular.resetStatus === RESET_STATUS.AGENDADO) iniciarCronometroReset();
   definirBotoes();
 }
 
@@ -683,6 +887,239 @@ function abrirArquivos() {
   el.filesList.firstElementChild?.focus();
 }
 
+function obterCenaDaFoto(save) {
+  const local = DATA.locais[save.saveState?.localizacao?.local];
+  return local?.cenas[save.sceneId] ?? local?.cenas[save.saveState?.localizacao?.cena] ?? null;
+}
+
+function obterSpriteFotografico(expressao) {
+  return DATA.personagens.mj.fotografia.sprites[expressao] ?? DATA.personagens.mj.sprites.neutral;
+}
+
+function criarComposicaoFoto(save) {
+  const composicao = document.createElement("figure");
+  composicao.className = "photo-composition";
+
+  const cenario = document.createElement("img");
+  cenario.className = "photo-background";
+  cenario.src = obterCenaDaFoto(save)?.background ?? "";
+  cenario.alt = "";
+
+  const mj = document.createElement("img");
+  mj.className = "photo-mj";
+  mj.src = obterSpriteFotografico(save.photoExpression);
+  mj.alt = "MJ voltada para a câmera";
+  mj.dataset.photoExpression = save.photoExpression;
+
+  composicao.appendChild(cenario);
+  composicao.appendChild(mj);
+  return composicao;
+}
+
+function formatarDataFoto(timestamp) {
+  const data = new Date(timestamp);
+  if (Number.isNaN(data.getTime())) return { data: "Data indisponível", hora: "--:--" };
+  return {
+    data: data.toLocaleDateString("pt-BR"),
+    hora: data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+  };
+}
+
+function definirStatusGaleria(mensagem = "") {
+  el.galleryStatus.textContent = mensagem;
+}
+
+function carregarSavesGaleria() {
+  state.galeria.saves = saveRepository.listarManuais();
+}
+
+function criarSlotFoto(save, indice) {
+  if (!save) {
+    const vazio = document.createElement("div");
+    vazio.className = "gallery-slot gallery-slot-empty";
+    vazio.textContent = String(indice + 1);
+    return vazio;
+  }
+
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "gallery-slot gallery-photo";
+  botao.dataset.saveId = save.id;
+  botao.appendChild(criarComposicaoFoto(save));
+
+  const nome = document.createElement("strong");
+  nome.textContent = save.name;
+  const data = document.createElement("span");
+  const formatada = formatarDataFoto(save.createdAt);
+  data.textContent = `${formatada.data} · ${formatada.hora}`;
+  botao.appendChild(nome);
+  botao.appendChild(data);
+  return botao;
+}
+
+function renderizarGaleria() {
+  el.galleryGrid.replaceChildren(
+    ...Array.from({ length: MAX_MANUAL_SAVES }, (_, indice) => criarSlotFoto(state.galeria.saves[indice], indice))
+  );
+  el.galleryCount.textContent = `${state.galeria.saves.length}/${MAX_MANUAL_SAVES}`;
+  el.btnTirarFoto.disabled = state.galeria.saves.length >= MAX_MANUAL_SAVES;
+}
+
+function mostrarGradeGaleria(moverFoco = false) {
+  clearTimeout(state.galeria.flashTimer);
+  state.galeria.flashTimer = null;
+  state.galeria.visualizacao = "grade";
+  state.galeria.capturaPendente = null;
+  state.galeria.selecionadoId = null;
+  el.galleryFlash.classList.add("oculto");
+  el.galleryPhotoForm.classList.add("oculto");
+  el.galleryDetail.classList.add("oculto");
+  el.galleryGrid.classList.remove("oculto");
+  el.galleryToolbar.classList?.remove("oculto");
+  renderizarGaleria();
+  if (moverFoco) el.btnTirarFoto.focus();
+}
+
+function abrirGaleria() {
+  if (state.modo !== "celular" || state.celular.tela !== "inicio") return;
+
+  state.celular.tela = "galeria";
+  ocultarTelasCelular();
+  el.phoneGallery.classList.remove("oculto");
+  carregarSavesGaleria();
+  definirStatusGaleria(
+    state.galeria.saves.length >= MAX_MANUAL_SAVES
+      ? "A galeria está cheia. Apague uma fotografia para registrar um novo momento."
+      : ""
+  );
+  mostrarGradeGaleria(true);
+}
+
+function sortearExpressaoFotografica() {
+  const expressoes = DATA.personagens.mj.fotografia.expressoes;
+  const anterior = state.galeria.saves.at(-1)?.photoExpression;
+  const candidatas = expressoes.length > 1 ? expressoes.filter((expressao) => expressao !== anterior) : expressoes;
+  return candidatas[Math.floor(Math.random() * candidatas.length)];
+}
+
+function gerarIdSave() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") return crypto.randomUUID();
+  return `foto-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function mostrarPreviewFoto() {
+  state.galeria.flashTimer = null;
+  el.galleryFlash.classList.add("oculto");
+  if (!state.galeria.capturaPendente) return;
+
+  state.galeria.visualizacao = "preview";
+  el.galleryToolbar.classList.add("oculto");
+  el.galleryGrid.classList.add("oculto");
+  el.galleryDetail.classList.add("oculto");
+  el.galleryPreview.replaceChildren(criarComposicaoFoto(state.galeria.capturaPendente));
+  el.galleryPhotoForm.classList.remove("oculto");
+  el.galleryPhotoName.value = "";
+  el.galleryPhotoName.focus();
+}
+
+function tirarFoto() {
+  if (state.galeria.saves.length >= MAX_MANUAL_SAVES) {
+    definirStatusGaleria("A galeria está cheia. Apague uma fotografia para registrar um novo momento.");
+    return;
+  }
+
+  const createdAt = Date.now();
+  state.galeria.capturaPendente = {
+    id: gerarIdSave(),
+    name: "",
+    createdAt,
+    photoExpression: sortearExpressaoFotografica(),
+    sceneId: state.localizacao.cena,
+    saveState: capturarEstadoJogo()
+  };
+  definirStatusGaleria();
+  el.galleryFlash.classList.remove("oculto");
+  state.galeria.flashTimer = setTimeout(mostrarPreviewFoto, CONFIG.duracaoFlashFoto);
+}
+
+function confirmarFoto(nome) {
+  if (!state.galeria.capturaPendente) return false;
+  const nomeSeguro = nome.trim().slice(0, el.galleryPhotoName.maxLength || 28);
+  if (!nomeSeguro) {
+    definirStatusGaleria("Informe um nome para a fotografia.");
+    el.galleryPhotoName.focus();
+    return false;
+  }
+
+  try {
+    const save = { ...state.galeria.capturaPendente, name: nomeSeguro };
+    saveRepository.criarManual(save);
+    carregarSavesGaleria();
+    definirStatusGaleria("Momento registrado.");
+    mostrarGradeGaleria();
+    return true;
+  } catch (erro) {
+    definirStatusGaleria(erro.message || "Não foi possível registrar a fotografia.");
+    return false;
+  }
+}
+
+function cancelarFoto() {
+  definirStatusGaleria();
+  mostrarGradeGaleria(true);
+}
+
+function selecionarFoto(saveId) {
+  const save = state.galeria.saves.find((item) => item.id === saveId);
+  if (!save) return;
+
+  state.galeria.visualizacao = "detalhe";
+  state.galeria.selecionadoId = save.id;
+  el.galleryToolbar.classList.add("oculto");
+  el.galleryGrid.classList.add("oculto");
+  el.galleryPhotoForm.classList.add("oculto");
+  el.galleryDetailPhoto.replaceChildren(criarComposicaoFoto(save));
+  el.galleryDetailName.textContent = save.name;
+  const formatada = formatarDataFoto(save.createdAt);
+  el.galleryDetailDate.textContent = `${formatada.data}\n${formatada.hora}`;
+  el.galleryDetail.classList.remove("oculto");
+  definirStatusGaleria();
+  el.btnCarregarFoto.focus();
+}
+
+function confirmarAcao(mensagem) {
+  return typeof window !== "undefined" && typeof window.confirm === "function" && window.confirm(mensagem);
+}
+
+function carregarFotoSelecionada() {
+  const save = state.galeria.saves.find((item) => item.id === state.galeria.selecionadoId);
+  if (!save || !confirmarAcao("Voltar para este momento?")) return false;
+
+  try {
+    restaurarEstadoJogo(save.saveState);
+    return true;
+  } catch (erro) {
+    definirStatusGaleria(erro.message || "Não foi possível carregar esta fotografia.");
+    return false;
+  }
+}
+
+function excluirFotoSelecionada() {
+  const save = state.galeria.saves.find((item) => item.id === state.galeria.selecionadoId);
+  if (!save || !confirmarAcao("Excluir esta fotografia?\n\nEste ponto de salvamento será removido.")) return false;
+
+  try {
+    saveRepository.excluirManual(save.id);
+    carregarSavesGaleria();
+    definirStatusGaleria("Fotografia excluída.");
+    mostrarGradeGaleria(true);
+    return true;
+  } catch {
+    definirStatusGaleria("Não foi possível excluir esta fotografia.");
+    return false;
+  }
+}
+
 function arquivarDadosAntesReset() {
   state.arquivos.vistosAntesReset = [...state.arquivos.vistos];
   state.arquivos.enigmaIdentidadeResolvidoAntesReset = state.arquivos.enigmaIdentidadeResolvido;
@@ -728,6 +1165,7 @@ function concluirResetRemoto() {
   state.mensagens.fila = [];
   state.dialogo.faseMonologo = "conversaConcluida";
   atualizarCabecalhoMensagens();
+  registrarAutosave();
 
   if (state.modo === "celular") {
     el.btnVoltar.disabled = false;
@@ -771,6 +1209,7 @@ function ocultarTelasCelular() {
   el.phoneHome.classList.add("oculto");
   el.phoneMessages.classList.add("oculto");
   el.phoneFiles.classList.add("oculto");
+  el.phoneGallery.classList.add("oculto");
   el.phoneReset.classList.add("oculto");
 }
 
@@ -784,7 +1223,11 @@ function mostrarTelaInicial(moverFoco = true) {
 function voltarCelular() {
   if (state.modo !== "celular") return;
   if (state.celular.resetStatus === RESET_STATUS.EXECUTANDO) return;
-  if (state.celular.tela === "mensagens" || state.celular.tela === "arquivos") {
+  if (state.celular.tela === "galeria" && state.galeria.visualizacao !== "grade") {
+    mostrarGradeGaleria(true);
+    return;
+  }
+  if (["mensagens", "arquivos", "galeria"].includes(state.celular.tela)) {
     mostrarTelaInicial();
     return;
   }
@@ -795,6 +1238,7 @@ el.btnConversar.addEventListener("click", iniciarConversa);
 el.btnIrPara.addEventListener("click", alternarMenuIrPara);
 el.btnCelular.addEventListener("click", abrirCelular);
 el.btnMensagens.addEventListener("click", abrirMensagens);
+el.btnGaleria.addEventListener("click", abrirGaleria);
 el.btnArquivos.addEventListener("click", abrirArquivos);
 el.btnVoltar.addEventListener("click", voltarCelular);
 el.filesList.addEventListener("click", (event) => {
@@ -808,6 +1252,19 @@ el.identityPuzzle.addEventListener("submit", (event) => {
 el.messagesChoices.addEventListener("click", (event) => {
   const botao = event.target.closest("button[data-option-id]");
   if (botao) escolherResposta(botao.dataset.optionId);
+});
+el.btnTirarFoto.addEventListener("click", tirarFoto);
+el.btnCancelarFoto.addEventListener("click", cancelarFoto);
+el.btnVoltarGaleria.addEventListener("click", () => mostrarGradeGaleria(true));
+el.btnCarregarFoto.addEventListener("click", carregarFotoSelecionada);
+el.btnExcluirFoto.addEventListener("click", excluirFotoSelecionada);
+el.galleryGrid.addEventListener("click", (event) => {
+  const botao = event.target.closest("button[data-save-id]");
+  if (botao) selecionarFoto(botao.dataset.saveId);
+});
+el.galleryPhotoForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  confirmarFoto(el.galleryPhotoName.value);
 });
 el.dialogueBox.addEventListener("click", avancarDialogo);
 

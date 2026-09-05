@@ -55,7 +55,7 @@
           <p id="phone-date"></p>
           <div id="apps-grid">
             <button id="btn-mensagens" class="app" type="button" aria-label="Abrir Mensagens"><span class="app-icon">💬</span><span>Mensagens</span></button>
-            <button class="app" type="button" aria-label="Galeria indisponível" disabled><span class="app-icon">🖼️</span><span>Galeria</span></button>
+            <button id="btn-galeria" class="app" type="button" aria-label="Abrir Galeria"><span class="app-icon">🖼️</span><span>Galeria</span></button>
             <button class="app" type="button" aria-label="Notas indisponíveis" disabled><span class="app-icon">📝</span><span>Notas</span></button>
             <button id="btn-arquivos" class="app" type="button" aria-label="Abrir Arquivos"><span class="app-icon">📁</span><span>Arquivos</span></button>
           </div>
@@ -82,6 +82,35 @@
             </form>
           </article>
         </section>
+        <section id="phone-gallery" class="oculto" aria-labelledby="gallery-header">
+          <header id="gallery-header">GALERIA</header>
+          <div id="gallery-toolbar">
+            <span id="gallery-count">0/9</span>
+            <button id="btn-tirar-foto" type="button">TIRAR FOTO</button>
+          </div>
+          <p id="gallery-status" role="status" aria-live="polite"></p>
+          <div id="gallery-grid" aria-label="Fotografias salvas"></div>
+          <form id="gallery-photo-form" class="oculto">
+            <div id="gallery-preview"></div>
+            <label for="gallery-photo-name">Nome da fotografia</label>
+            <input id="gallery-photo-name" type="text" maxlength="28" autocomplete="off" required>
+            <div class="gallery-actions">
+              <button type="submit">CONFIRMAR</button>
+              <button id="btn-cancelar-foto" type="button">CANCELAR</button>
+            </div>
+          </form>
+          <article id="gallery-detail" class="oculto">
+            <div id="gallery-detail-photo"></div>
+            <h2 id="gallery-detail-name"></h2>
+            <p id="gallery-detail-date"></p>
+            <div class="gallery-actions">
+              <button id="btn-carregar-foto" type="button">CARREGAR</button>
+              <button id="btn-excluir-foto" type="button">EXCLUIR</button>
+              <button id="btn-voltar-galeria" type="button">VOLTAR</button>
+            </div>
+          </article>
+          <div id="gallery-flash" class="oculto" aria-hidden="true"></div>
+        </section>
         <section id="phone-reset" class="oculto" role="status" aria-live="assertive">
           <p class="reset-code">REMOTE_RESET</p>
           <p id="reset-status">Conexão remota detectada...</p>
@@ -95,6 +124,7 @@
   </div>
 
   <script src="js/data.js?v=ir-para"></script>
-  <script src="js/game.js?v=ir-para"></script>
+  <script src="js/save-system.js?v=save-gallery-v1"></script>
+  <script src="js/game.js?v=save-gallery-v1"></script>
 </body>
 </html>

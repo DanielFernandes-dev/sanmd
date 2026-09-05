@@ -113,8 +113,9 @@ function criarAmbiente() {
   });
 
   const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
+  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
   const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${game}`, contexto);
+  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
 
   return { contexto, elementos, executarProximoTimeout, timeouts };
 }
@@ -189,6 +190,8 @@ test("Fase 8 libera o enigma após a rota nova e preserva a solução antes do r
   assert.equal(elementos.get("btn-arquivos").disabled, false);
   assert.equal(elementos.get("phone-home").classList.contains("oculto"), false);
   assert.equal(ler('state.dialogo.faseMonologo'), "conversaConcluida");
+  assert.equal(ler('saveRepository.obterAutosave().saveState.dialogo.faseMonologo'), "conversaConcluida");
+  assert.equal(ler('saveRepository.obterAutosave().saveState.celular.resetStatus'), "concluido");
   assert.equal(elementos.get("reset-countdown").classList.contains("oculto"), true);
   assert.equal(elementos.get("phone-signal").classList.contains("oculto"), false);
 

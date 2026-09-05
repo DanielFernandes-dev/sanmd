@@ -75,8 +75,9 @@ function criarAmbiente() {
   });
 
   const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
+  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
   const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${game}`, contexto);
+  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
 
   return { contexto, elementos };
 }
