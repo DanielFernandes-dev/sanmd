@@ -140,16 +140,11 @@ function mostrarPersonagem(id, pose, slot) {
   el.personagem.classList.add("personagem-entrando");
 }
 
-function renderizarPersonagem() {
-  ocultarPersonagem();
-}
-
 function definirBotoes() {
+  if (state.modo !== "livre") fecharMenuIrPara();
   const livre = state.modo === "livre";
-  if (!livre) fecharMenuIrPara();
-  const temDestinos = obterCenaAtual()?.destinos.length > 0;
   el.btnConversar.disabled = !livre;
-  el.btnIrPara.disabled = !livre || !temDestinos;
+  el.btnIrPara.disabled = !livre || !temDestinos();
   el.btnCelular.disabled = !livre;
 }
 
@@ -161,24 +156,33 @@ function obterCenaAtual() {
   return obterLocal()?.cenas[state.localizacao.cena];
 }
 
-function renderizarMenuIrPara() {
+function obterDestinos(cena = obterCenaAtual()) {
   const local = obterLocal();
-  const cena = obterCenaAtual();
-  if (!local || !cena) return;
+  if (!local || !cena) return [];
+  return cena.destinos
+    .map((destinoId) => local.cenas[destinoId])
+    .filter(Boolean);
+}
 
-  el.irParaMenu.replaceChildren(
-    ...cena.destinos
-      .map((destinoId) => local.cenas[destinoId])
-      .filter(Boolean)
-      .map((destino) => {
-        const botao = document.createElement("button");
-        botao.type = "button";
-        botao.className = "message-choice";
-        botao.dataset.destinoId = destino.id;
-        botao.textContent = destino.label;
-        return botao;
-      })
-  );
+function temDestinos() {
+  return obterDestinos().length > 0;
+}
+
+function criarBotaoDestino(destino) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "message-choice";
+  botao.textContent = destino.label;
+  botao.addEventListener("click", () => irPara(destino.id));
+  return botao;
+}
+
+function renderizarMenuIrPara() {
+  el.irParaMenu.replaceChildren(...obterDestinos().map(criarBotaoDestino));
+}
+
+function menuIrParaAberto() {
+  return !el.irParaMenu.classList.contains("oculto");
 }
 
 function abrirMenuIrPara() {
@@ -195,21 +199,25 @@ function fecharMenuIrPara() {
 
 function alternarMenuIrPara() {
   if (state.modo !== "livre") return;
-  if (el.irParaMenu.classList.contains("oculto")) {
-    abrirMenuIrPara();
-  } else {
+  if (menuIrParaAberto()) {
     fecharMenuIrPara();
     el.btnIrPara.focus();
+  } else {
+    abrirMenuIrPara();
   }
 }
 
-function aplicarCena(cena) {
+function trocarCenario(cena) {
   state.localizacao.cena = cena.id;
   DATA.cena = cena;
   el.cenario.src = cena.background;
+}
+
+function aplicarCena(cena) {
+  if (!cena) return;
+  trocarCenario(cena);
   fecharMenuIrPara();
   ocultarPersonagem();
-  renderizarMenuIrPara();
   definirBotoes();
 }
 
@@ -788,10 +796,6 @@ function voltarCelular() {
 
 el.btnConversar.addEventListener("click", iniciarConversa);
 el.btnIrPara.addEventListener("click", alternarMenuIrPara);
-el.irParaMenu.addEventListener("click", (event) => {
-  const botao = event.target.closest("button[data-destino-id]");
-  if (botao) irPara(botao.dataset.destinoId);
-});
 el.btnCelular.addEventListener("click", abrirCelular);
 el.btnMensagens.addEventListener("click", abrirMensagens);
 el.btnArquivos.addEventListener("click", abrirArquivos);
@@ -811,7 +815,7 @@ el.messagesChoices.addEventListener("click", (event) => {
 el.dialogueBox.addEventListener("click", avancarDialogo);
 
 document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && state.modo === "livre" && !el.irParaMenu.classList.contains("oculto")) {
+  if (event.key === "Escape" && state.modo === "livre" && menuIrParaAberto()) {
     fecharMenuIrPara();
     el.btnIrPara.focus();
     return;
