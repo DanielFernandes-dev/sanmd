@@ -20,6 +20,10 @@ const RESET_STATUS = Object.freeze({
 
 const state = {
   modo: "livre",
+  localizacao: {
+    local: "beco",
+    cena: "beco_entrada"
+  },
   personagemSaidaTimer: null,
   audio: null,
   dialogo: {
@@ -59,6 +63,7 @@ const state = {
 };
 
 const el = {
+  cenario: document.getElementById("cenario"),
   personagem: document.getElementById("personagem"),
   hint: document.getElementById("hint"),
   dialogueBox: document.getElementById("dialogue-box"),
@@ -66,6 +71,8 @@ const el = {
   dialogueText: document.getElementById("dialogue-text"),
   continueArrow: document.getElementById("continue-arrow"),
   btnConversar: document.getElementById("btn-conversar"),
+  btnIrPara: document.getElementById("btn-ir-para"),
+  irParaMenu: document.getElementById("ir-para-menu"),
   btnCelular: document.getElementById("btn-celular"),
   phoneOverlay: document.getElementById("phone-overlay"),
   phoneHome: document.getElementById("phone-home"),
@@ -139,8 +146,88 @@ function renderizarPersonagem() {
 
 function definirBotoes() {
   const livre = state.modo === "livre";
+  if (!livre) fecharMenuIrPara();
+  const temDestinos = obterCenaAtual()?.destinos.length > 0;
   el.btnConversar.disabled = !livre;
+  el.btnIrPara.disabled = !livre || !temDestinos;
   el.btnCelular.disabled = !livre;
+}
+
+function obterLocal() {
+  return DATA.locais[state.localizacao.local];
+}
+
+function obterCenaAtual() {
+  return obterLocal()?.cenas[state.localizacao.cena];
+}
+
+function renderizarMenuIrPara() {
+  const local = obterLocal();
+  const cena = obterCenaAtual();
+  if (!local || !cena) return;
+
+  el.irParaMenu.replaceChildren(
+    ...cena.destinos
+      .map((destinoId) => local.cenas[destinoId])
+      .filter(Boolean)
+      .map((destino) => {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "message-choice";
+        botao.dataset.destinoId = destino.id;
+        botao.textContent = destino.label;
+        return botao;
+      })
+  );
+}
+
+function abrirMenuIrPara() {
+  if (state.modo !== "livre") return;
+  renderizarMenuIrPara();
+  el.irParaMenu.classList.remove("oculto");
+  el.irParaMenu.firstElementChild?.focus();
+}
+
+function fecharMenuIrPara() {
+  el.irParaMenu.classList.add("oculto");
+  el.irParaMenu.replaceChildren();
+}
+
+function alternarMenuIrPara() {
+  if (state.modo !== "livre") return;
+  if (el.irParaMenu.classList.contains("oculto")) {
+    abrirMenuIrPara();
+  } else {
+    fecharMenuIrPara();
+    el.btnIrPara.focus();
+  }
+}
+
+function aplicarCena(cena) {
+  state.localizacao.cena = cena.id;
+  DATA.cena = cena;
+  el.cenario.src = cena.background;
+  fecharMenuIrPara();
+  ocultarPersonagem();
+  renderizarMenuIrPara();
+  definirBotoes();
+}
+
+function irPara(destinoId) {
+  if (state.modo !== "livre") return;
+  const cena = obterCenaAtual();
+  if (!cena?.destinos.includes(destinoId)) return;
+  const destino = obterLocal()?.cenas[destinoId];
+  if (!destino) return;
+  aplicarCena(destino);
+}
+
+function irParaLocal(localId) {
+  if (state.modo !== "livre") return;
+  const local = DATA.locais[localId];
+  if (!local) return;
+  state.localizacao.local = local.id;
+  aplicarCena(local.cenas[local.cenaInicial]);
 }
 
 function iniciarConversa() {
@@ -700,6 +787,11 @@ function voltarCelular() {
 }
 
 el.btnConversar.addEventListener("click", iniciarConversa);
+el.btnIrPara.addEventListener("click", alternarMenuIrPara);
+el.irParaMenu.addEventListener("click", (event) => {
+  const botao = event.target.closest("button[data-destino-id]");
+  if (botao) irPara(botao.dataset.destinoId);
+});
 el.btnCelular.addEventListener("click", abrirCelular);
 el.btnMensagens.addEventListener("click", abrirMensagens);
 el.btnArquivos.addEventListener("click", abrirArquivos);
@@ -719,6 +811,11 @@ el.messagesChoices.addEventListener("click", (event) => {
 el.dialogueBox.addEventListener("click", avancarDialogo);
 
 document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && state.modo === "livre" && !el.irParaMenu.classList.contains("oculto")) {
+    fecharMenuIrPara();
+    el.btnIrPara.focus();
+    return;
+  }
   if (event.key === "Escape" && state.modo === "celular") {
     voltarCelular();
     return;
@@ -729,6 +826,5 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-renderizarPersonagem();
+aplicarCena(obterCenaAtual());
 atualizarCabecalhoMensagens();
-definirBotoes();

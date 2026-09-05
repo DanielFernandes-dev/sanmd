@@ -1,19 +1,100 @@
-const DATA = {
-  cena: {
-    id: "sala",
-    nome: "Sala — Noite",
-    personagensVisuais: [
-      { id: "mj", pose: "neutral", slot: "center" }
-    ],
+const CENAS_BECO = {
+  beco_entrada: {
+    id: "beco_entrada",
+    label: "Entrada do beco",
+    background: "assets/cenario/beco/entrada.png",
+    destinos: ["beco_interior"],
+    personagensVisuais: [{ id: "mj", pose: "neutral", slot: "center" }],
     personagensPresentes: []
   },
+  beco_interior: {
+    id: "beco_interior",
+    label: "Interior do beco",
+    background: "assets/cenario/beco/corredor.png",
+    destinos: ["beco_entrada", "beco_fundo"],
+    personagensVisuais: [{ id: "mj", pose: "neutral", slot: "center" }],
+    personagensPresentes: []
+  },
+  beco_fundo: {
+    id: "beco_fundo",
+    label: "Fundo do beco",
+    background: "assets/cenario/beco/cofre.png",
+    destinos: ["beco_interior"],
+    personagensVisuais: [{ id: "mj", pose: "neutral", slot: "center" }],
+    personagensPresentes: []
+  }
+};
+
+function monologosDeBeco(inicial) {
+  return {
+    inicial,
+    identidadeResolvida: [
+      { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
+      { autor: "MJ", texto: "(Então o aparelho pertence a uma mulher. Ela queria que eu descobrisse isso.)" }
+    ],
+    aposPrimeiroEnvio: [
+      { autor: "MJ", texto: "(Mensagem enviada. Quem está do outro lado sabia que eu chegaria até o cofre.)" },
+      { autor: "MJ", texto: "(Ainda não sei com quem estou falando.)" }
+    ],
+    arquivoCandidatos: {
+      masculino: [
+        { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
+        { autor: "MJ", texto: "(O dono deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
+      ],
+      feminino: [
+        { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
+        { autor: "MJ", texto: "(A dona deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
+      ]
+    },
+    arquivoRota: {
+      masculino: [
+        { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ele planejou cada etapa antes de eu começar.)" },
+        { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
+      ],
+      feminino: [
+        { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ela planejou cada etapa antes de eu começar.)" },
+        { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
+      ]
+    },
+    arquivoRecuperar: {
+      masculino: [
+        { autor: "MJ", texto: "(Ele escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dele.)" },
+        { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
+      ],
+      feminino: [
+        { autor: "MJ", texto: "(Ela escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dela.)" },
+        { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
+      ]
+    },
+    todosArquivos: [
+      { autor: "MJ", texto: "(Candidatos, rota, recuperação e a assinatura: ELA.)" },
+      { autor: "MJ", texto: "(Os quatro arquivos formam uma mensagem. Ela queria medir não só minha lógica, mas o que eu escolheria investigar.)" }
+    ],
+    conversaConcluida: [
+      { autor: "MJ", texto: "(Ela apagou tudo antes que eu pudesse comparar os arquivos.)" },
+      { autor: "MJ", texto: "(Mas eu vi o bastante para saber que não sou a única.)" }
+    ]
+  };
+}
+
+const DATA = {
+  locais: {
+    beco: {
+      id: "beco",
+      nome: "Beco",
+      cenaInicial: "beco_entrada",
+      cenas: CENAS_BECO
+    }
+  },
+
+  cena: CENAS_BECO.beco_entrada,
 
   personagens: {
     mj: {
       id: "mj",
       nome: "MJ",
       sprites: {
-        neutral: "sprites/MJ.png"
+        neutral: "assets/sprites/MJ.png"
       }
     }
   },
@@ -53,58 +134,18 @@ const DATA = {
   },
 
   monologos: {
-    sala: {
-      inicial: [
-        { autor: "MJ", texto: "(O dono deste aparelho preparou o cofre para mim.)" },
-        { autor: "MJ", texto: "(Há uma conversa esperando. Talvez eu descubra quem preparou tudo isso.)" }
-      ],
-      identidadeResolvida: [
-        { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
-        { autor: "MJ", texto: "(Então o aparelho pertence a uma mulher. Ela queria que eu descobrisse isso.)" }
-      ],
-      aposPrimeiroEnvio: [
-        { autor: "MJ", texto: "(Mensagem enviada. Quem está do outro lado sabia que eu chegaria até o cofre.)" },
-        { autor: "MJ", texto: "(Ainda não sei com quem estou falando.)" }
-      ],
-      arquivoCandidatos: {
-        masculino: [
-          { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
-          { autor: "MJ", texto: "(O dono deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
-        ],
-        feminino: [
-          { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
-          { autor: "MJ", texto: "(A dona deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
-        ]
-      },
-      arquivoRota: {
-        masculino: [
-          { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ele planejou cada etapa antes de eu começar.)" },
-          { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
-        ],
-        feminino: [
-          { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ela planejou cada etapa antes de eu começar.)" },
-          { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
-        ]
-      },
-      arquivoRecuperar: {
-        masculino: [
-          { autor: "MJ", texto: "(Ele escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dele.)" },
-          { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
-        ],
-        feminino: [
-          { autor: "MJ", texto: "(Ela escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dela.)" },
-          { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
-        ]
-      },
-      todosArquivos: [
-        { autor: "MJ", texto: "(Candidatos, rota, recuperação e a assinatura: ELA.)" },
-        { autor: "MJ", texto: "(Os quatro arquivos formam uma mensagem. Ela queria medir não só minha lógica, mas o que eu escolheria investigar.)" }
-      ],
-      conversaConcluida: [
-        { autor: "MJ", texto: "(Ela apagou tudo antes que eu pudesse comparar os arquivos.)" },
-        { autor: "MJ", texto: "(Mas eu vi o bastante para saber que não sou a única.)" }
-      ]
-    }
+    beco_entrada: monologosDeBeco([
+      { autor: "MJ", texto: "(O dono deste aparelho preparou o cofre para mim.)" },
+      { autor: "MJ", texto: "(Há uma conversa esperando. Talvez eu descubra quem preparou tudo isso.)" }
+    ]),
+    beco_interior: monologosDeBeco([
+      { autor: "MJ", texto: "(O beco se estreita. Se o caminho estiver certo, o cofre deve estar mais adiante.)" },
+      { autor: "MJ", texto: "(Alguém deixou tudo preparado antes de eu chegar.)" }
+    ]),
+    beco_fundo: monologosDeBeco([
+      { autor: "MJ", texto: "(Este é o fundo do beco. O cofre está aqui, como o dono do aparelho planejou.)" },
+      { autor: "MJ", texto: "(Ainda não sei o que ele guarda. Talvez o celular esteja dentro.)" }
+    ])
   },
 
   mensagens: {

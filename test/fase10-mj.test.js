@@ -5,7 +5,7 @@ const test = require("node:test");
 const vm = require("node:vm");
 
 const raiz = path.resolve(__dirname, "..");
-const caminhoSprite = "sprites/MJ.png";
+const caminhoSprite = "assets/sprites/MJ.png";
 
 test("MJ genérica usa um sprite externo estático e provisório", () => {
   const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
@@ -31,5 +31,5 @@ test("dados separam personagem, pose, slot e caminho do sprite", () => {
 
 test("pipeline web inclui a pasta de assets", () => {
   const pacote = JSON.parse(fs.readFileSync(path.join(raiz, "package.json"), "utf8"));
-  assert.match(pacote.scripts["copy:web"], /cp -r js assets sprites www\//);
+  assert.match(pacote.scripts["copy:web"], /cp -r js assets www\//);
 });

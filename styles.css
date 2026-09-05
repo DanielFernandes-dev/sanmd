@@ -47,59 +47,13 @@ html, body {
   inset: 0;
 }
 
-.parede {
+#cenario {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #232c4d 0%, #1a2140 55%, #141a30 100%);
-}
-
-.janela {
-  position: absolute;
-  top: 12%;
-  left: 14%;
-  width: 22%;
-  height: 38%;
-  border: 4px solid #10152a;
-  border-radius: 4px;
-  background: linear-gradient(180deg, #0c1230 0%, #1b2450 70%, #2a3160 100%);
-  box-shadow: inset 0 0 40px rgba(120, 140, 255, 0.15);
-}
-
-.janela::after {
-  content: "";
-  position: absolute;
-  inset: 0 50% 0 50%;
-  background: #10152a;
-}
-
-.lua {
-  position: absolute;
-  top: 16%;
-  left: 19%;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #dfe6ff;
-  box-shadow: 0 0 24px 6px rgba(200, 215, 255, 0.45);
-}
-
-.chao {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 26%;
-  background: linear-gradient(180deg, #171228 0%, #0e0a18 100%);
-  border-top: 3px solid #060410;
-}
-
-.brilho-lampada {
-  position: absolute;
-  right: -8%;
-  bottom: 20%;
-  width: 45%;
-  height: 55%;
-  background: radial-gradient(closest-side, rgba(232, 179, 75, 0.22), transparent 70%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
   pointer-events: none;
 }
 
@@ -271,6 +225,7 @@ html, body {
 }
 
 #btn-conversar,
+#btn-ir-para,
 #btn-celular {
   flex: 1;
   border: 3px solid var(--cor-moldura);
@@ -287,20 +242,39 @@ html, body {
 }
 
 #btn-conversar:hover:not(:disabled),
+#btn-ir-para:hover:not(:disabled),
 #btn-celular:hover:not(:disabled) {
   filter: brightness(1.25);
 }
 
 #btn-conversar:active:not(:disabled),
+#btn-ir-para:active:not(:disabled),
 #btn-celular:active:not(:disabled) {
   transform: translateY(3px);
   box-shadow: 0 1px 0 #0a0d18;
 }
 
 #btn-conversar:disabled,
+#btn-ir-para:disabled,
 #btn-celular:disabled {
   opacity: 0.35;
   cursor: default;
+}
+
+#ir-para-menu {
+  position: absolute;
+  top: 4%;
+  right: 3%;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: min(264px, 42%);
+  padding: 10px;
+  border: 3px solid #39415c;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #1a2036, #0d1120);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 #versao {
@@ -800,6 +774,7 @@ html, body {
   }
 
   #btn-conversar,
+  #btn-ir-para,
   #btn-celular {
     flex: 1;
     font-size: 15px;

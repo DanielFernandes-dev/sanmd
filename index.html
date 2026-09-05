@@ -10,14 +10,11 @@
   <div id="app">
     <main id="vn-area">
       <div id="scene">
-        <div class="parede"></div>
-        <div class="janela"></div>
-        <div class="lua"></div>
-        <div class="chao"></div>
-        <div class="brilho-lampada"></div>
+        <img id="cenario" src="assets/cenario/beco/entrada.png" alt="Entrada do beco" aria-hidden="true" draggable="false">
         <img id="personagem" alt="" aria-hidden="true" draggable="false">
-        <p id="hint">Clique em <strong>CONVERSAR</strong> para começar</p>
+        <p id="hint">Clique em <strong>CONVERSAR</strong>, <strong>IR PARA</strong> ou <strong>CELULAR</strong> para começar</p>
       </div>
+      <div id="ir-para-menu" class="oculto" role="group" aria-label="Ir para"></div>
       <section id="dialogue-box" class="oculto">
         <span id="name-plate">???</span>
         <p id="dialogue-text"></p>
@@ -28,6 +25,7 @@
     <aside id="sidebar">
       <h1 id="titulo">SIM, ACREDITE NAS MENTIRAS DELE <span class="kk">kk</span></h1>
       <button id="btn-conversar" type="button">CONVERSAR</button>
+      <button id="btn-ir-para" type="button">IR PARA</button>
       <button id="btn-celular" type="button">CELULAR</button>
       <p id="versao">PROTÓTIPO V1 — ESTRUTURA BASE</p>
     </aside>
