@@ -32,6 +32,7 @@ O objetivo da V1 é validar a estrutura visual e a experiência básica antes do
 - Layout inspirado na interface compacta de Ace Attorney para Nintendo DS.
 - Apresentação de cenário e personagem.
 - Sistema de diálogos com efeito de digitação.
+- Navegação contextual entre cenas.
 - Navegação entre a Visual Novel e o celular.
 - Organização dos aplicativos simulados do aparelho.
 - Funcionamento em desktop e dispositivos móveis.
@@ -42,9 +43,10 @@ O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e J
 
 Já estão disponíveis:
 
-- Cena noturna provisória.
-- Personagem de MJ em PNG (`sprites/MJ.png`), mostrado em cena somente durante os monólogos.
-- Botões **Conversar** e **Celular**.
+- Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
+- Personagem de MJ em PNG (`assets/sprites/MJ.png`), mostrada em cena somente durante os monólogos.
+- Comandos por ícones pixelados para **Conversar**, **Ir para** e **Celular**, sem sidebar visual.
+- Menu **Ir para** compacto e contextual, com somente os destinos disponíveis na cena atual.
 - Caixa de diálogo inspirada em *Ace Attorney* com nome, falas sequenciais e efeito de digitação.
 - Efeito de digitação com som sintetizado por letra via Web Audio API.
 - Avanço do diálogo por clique, `Enter` ou barra de espaço.
@@ -58,7 +60,9 @@ Já estão disponíveis:
 - Reset remoto que limpa o acesso normal e preserva internamente as pistas vistas.
 - Cronômetro vermelho de um minuto durante a janela anterior ao reset.
 - Respostas selecionáveis com reações e histórico do caminho escolhido.
-- Monólogo do protagonista ao usar **Conversar** na sala vazia.
+- Monólogo do protagonista ao usar **Conversar** em cenas sem personagens presenciais.
+- Navegação de ida e volta pelo beco sem alterar o estado do celular ou das mensagens.
+- Fechamento do menu **Ir para** por escolha ou `Escape`, com suporte a teclado.
 - Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
@@ -111,9 +115,12 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 | Ação | Controle |
 |---|---|
 | Iniciar conversa | Botão **Conversar** |
+| Mostrar destinos | Botão **Ir para** |
+| Escolher destino | Opção do menu **Ir para** |
 | Avançar ou completar uma fala | Clique na caixa, `Enter` ou espaço |
 | Abrir o celular | Botão **Celular** |
-| Voltar ou fechar o celular | Botão **Voltar** ou `Escape` |
+| Fechar destinos ou voltar no celular | `Escape` |
+| Voltar ou fechar o celular | Botão **Voltar** |
 
 ## Estrutura do projeto
 
@@ -122,10 +129,13 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── index.html       # Estrutura da Visual Novel e do celular
 ├── styles.css       # Aparência, animações e responsividade
 ├── js/
-│   ├── data.js      # Cena, personagem e falas provisórias
+│   ├── data.js      # Locais, cenas, personagem e conteúdo narrativo
 │   └── game.js      # Estado, diálogos e navegação
-├── sprites/          # Sprites de runtime (ex.: MJ.png)
-├── android/          # Projeto nativo gerado pelo Capacitor
+├── assets/
+│   ├── cenario/     # Fundos e README do contrato de cenários
+│   ├── interfaces/  # Ícones e README do contrato de interface
+│   └── sprites/     # Personagens e README do contrato de sprites
+├── android/         # Projeto nativo gerado pelo Capacitor
 ├── capacitor.config.json # Configuração do aplicativo Android
 ├── package.json      # Dependências e comandos de build
 ├── GDD.md           # Visão completa do jogo e da narrativa
@@ -136,12 +146,26 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 └── README.md        # Visão geral e instruções de execução
 ```
 
+## Documentação
+
+| Documento | Responsabilidade |
+|---|---|
+| [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
+| [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
+| [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
+| [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
+| [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
+| [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
+| [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
+
 ## Fluxo do protótipo atual
 
 ```text
 Cenário
    │
    ├── Conversar ──> Diálogo ou monólogo ──> Cenário
+   │
+   ├── Ir para ──> Destinos conectados ──> Outra cena
    │
    └── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
 ```
@@ -199,9 +223,11 @@ O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior 
 A estrutura básica da V1 será considerada funcional quando for possível:
 
 - [x] Visualizar um cenário provisório.
+- [x] Navegar entre entrada, interior e fundo do beco.
 - [x] Visualizar um personagem provisório.
 - [x] Utilizar o botão **Conversar**.
 - [x] Exibir e avançar uma sequência de falas.
+- [x] Utilizar o botão **Ir para** e exibir somente destinos válidos.
 - [x] Utilizar o botão **Celular**.
 - [x] Abrir uma interface provisória de celular.
 - [x] Retornar à interface principal.

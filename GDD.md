@@ -165,6 +165,8 @@ O protótipo usa o comando **Ir para** para apresentar somente os destinos conec
 
 Os destinos são botões de texto reais, acessíveis por teclado, empilhados quando existe mais de uma opção. A implementação atual valida uma rota curta entre `beco_entrada`, `beco_interior` e `beco_fundo`; ela serve de base técnica para locais futuros, mas não define ainda o mapa completo do Ato I.
 
+Como regra de design, o menu não deve competir com a cena: não possui título, moldura ornamental, backdrop ou aparência de formulário. A apresentação pode se adaptar entre desktop e celular, mas deve permanecer compacta, legível, próxima ao comando e separada da lógica que determina os destinos.
+
 ### C. Interface do Celular
 
 Apps simulados que funcionam como canal narrativo:

@@ -374,12 +374,13 @@
 - [x] Usar nomes baseados na função narrativa, sem características visuais provisórias.
 - [x] Atualizar `copy:web` para incluir os assets ao gerar `www`.
 - [x] Manter `www` como artefato gerado e a pasta-fonte como origem dos arquivos.
+- [x] Documentar separadamente os contratos de cenários, interfaces e sprites em seus READMEs.
 
 ### Primeiro recorte — MJ genérica
 
 - [x] Criar MJ como uma personagem feminina adulta sem características visuais canônicas.
 - [ ] Comunicar postura curiosa e analítica por meio de uma silhueta legível.
-- [x] Criar um único sprite neutro em canvas transparente de `128×176`.
+- [x] Criar um único sprite neutro provisório em canvas transparente (`1070×1470` no asset atual).
 - [x] Fixar o pivô visual no centro inferior do canvas.
 - [ ] Manter rosto e gesto principal acima da região ocupada pela caixa de diálogo.
 - [x] Usar uma paleta pequena e provisória compatível com o cenário noturno atual.
@@ -414,6 +415,8 @@
 - [x] Criar estados normal, hover, foco visível, ativo e desabilitado para os três comandos principais.
 - [x] Restringir o estilo minimalista de destinos a `#ir-para-menu .message-choice`, preservando `.message-choice` no celular.
 - [x] Posicionar o menu Ir para à esquerda do ícone no desktop e acima dele no celular.
+- [x] Documentar o menu Ir para como camada visual independente da lógica de destinos e da estrutura de cenas.
+- [x] Preservar botões reais, handlers, foco inicial e fechamento por escolha ou `Escape` como contrato arquitetural.
 
 ### Validação da primeira MJ
 

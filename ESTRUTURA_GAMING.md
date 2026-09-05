@@ -237,9 +237,9 @@ Depois da última resposta do contato:
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
 │   └── game.js                # Estado, regras e renderização
 ├── assets/                    # Arte-fonte provisória
-│   ├── cenario/beco/          # Fundos das cenas navegáveis
-│   ├── interfaces/icons/      # Fontes dos três ícones principais
-│   └── sprites/               # Sprites de runtime (ex.: MJ.png)
+│   ├── cenario/               # Fundos navegáveis e contrato em README.md
+│   ├── interfaces/            # Ícones principais e contrato em README.md
+│   └── sprites/               # Sprites de runtime e contrato em README.md
 ├── android/                   # Projeto nativo Android
 ├── capacitor.config.json      # Configuração Capacitor
 ├── package.json               # Scripts e dependências
@@ -464,6 +464,24 @@ O menu é reconstruído a cada abertura por `renderizarMenuIrPara()`. A primeira
 | `beco_entrada` | Interior do beco |
 | `beco_interior` | Entrada do beco; Fundo do beco |
 | `beco_fundo` | Interior do beco |
+
+#### Contrato Arquitetural Do Menu
+
+O design minimalista é uma restrição de apresentação sobre a navegação existente. Alterações futuras devem preservar:
+
+- `#ir-para-menu` como menu contextual dentro da cena, sem modal, backdrop, título ou sidebar;
+- `criarBotaoDestino()` e `renderizarMenuIrPara()` como responsáveis pela criação e renderização das opções;
+- cada destino como `button.message-choice`, com texto acessível e handler associado ao próprio botão;
+- `obterDestinos()`, `temDestinos()`, `irPara()`, IDs e conexões das cenas como regras de domínio independentes do visual;
+- `.message-choice` global como estilo das respostas do celular, sem receber alterações motivadas pelo menu de destinos;
+- customizações visuais limitadas a `#ir-para-menu .message-choice` e seus pseudo-elementos/estados;
+- foco inicial na primeira opção, ativação nativa por `Enter` e espaço e fechamento existente por escolha ou `Escape`;
+- associação espacial ao ícone **Ir para**, com posicionamento à esquerda no desktop e adaptação próxima ao controle no mobile;
+- largura compacta entre aproximadamente `170px` e `230px`, altura determinada pelo conteúdo e touch target mínimo de `40px` por destino;
+- texto creme, fundo escuro translúcido e dourado reservado a hover, foco e demais feedbacks de interação;
+- ausência de gradientes chamativos, glow, bordas grossas, grandes sombras, escala no clique ou ornamentação.
+
+Esse contrato permite alterar medidas finas e tratamento responsivo sem acoplar apresentação à estrutura de cenas ou ao gameplay.
 
 ### Botões Do Celular
 
@@ -892,6 +910,9 @@ Status: **planejada para o Protótipo 3**.
 - [styles.css](styles.css) — apresentação atual.
 - [js/data.js](js/data.js) — dados narrativos atuais.
 - [js/game.js](js/game.js) — regras e estado atuais.
+- [assets/cenario/README.md](assets/cenario/README.md) — contrato dos fundos de cena.
+- [assets/interfaces/README.md](assets/interfaces/README.md) — contrato dos ícones e assets de interface.
+- [assets/sprites/README.md](assets/sprites/README.md) — contrato dos sprites de personagem.
 
 > [!tip] Uso No Obsidian
 > Use esta nota como índice técnico principal. As seções podem ser transformadas em notas independentes no futuro e conectadas por links wiki sem alterar a organização conceitual.

@@ -533,6 +533,7 @@ Até lá, os assets devem ser tratados como material de exploração visual.
 - **Ir para** abre um menu pequeno e contextual próximo ao próprio ícone, sem modal, backdrop ou painel ornamental.
 - Os destinos aparecem como uma lista compacta de texto claro, com indicador pixelado e dourado reservado para interação.
 - No celular, os comandos podem mudar de posição para preservar área de toque e impedir que o menu saia da tela.
+- A simplificação é exclusivamente visual: destinos, conexões entre cenas e regras de navegação não devem depender da aparência do menu.
 
 Essa solução é uma decisão de interface do protótipo e não define o design canônico dos personagens, cenários ou aplicativos futuros.
 
