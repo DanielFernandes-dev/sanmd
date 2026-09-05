@@ -523,6 +523,19 @@ O design definitivo dos personagens será definido apenas no **terceiro protóti
 
 Até lá, os assets devem ser tratados como material de exploração visual.
 
+## 14.4. Interface do protótipo
+
+**[DECIDIDO PARA A DIREÇÃO ATUAL DO PROTÓTIPO]**
+
+- A cena deve ocupar o máximo possível da tela, sem uma sidebar visual permanente.
+- **Conversar**, **Ir para** e **Celular** são representados por ícones pixelados discretos, sem textos visíveis junto aos comandos principais.
+- Os três controles preservam nomes acessíveis e interação por botão real.
+- **Ir para** abre um menu pequeno e contextual próximo ao próprio ícone, sem modal, backdrop ou painel ornamental.
+- Os destinos aparecem como uma lista compacta de texto claro, com indicador pixelado e dourado reservado para interação.
+- No celular, os comandos podem mudar de posição para preservar área de toque e impedir que o menu saia da tela.
+
+Essa solução é uma decisão de interface do protótipo e não define o design canônico dos personagens, cenários ou aplicativos futuros.
+
 ---
 
 # 15. Dimensionalidade dos cenários
@@ -883,7 +896,7 @@ Antes de desenvolver a história completa, ainda precisam ser respondidas princi
 
 # 26. Pendências visuais prioritárias
 
-1. Criar sprites genéricos de MJ.
+1. Expandir os sprites genéricos de MJ além da pose neutra já implementada.
 2. Criar sprites genéricos de Lulith.
 3. Criar sprites genéricos de James.
 4. Criar cenários genéricos do começo do jogo.
@@ -894,6 +907,7 @@ Antes de desenvolver a história completa, ainda precisam ser respondidas princi
 9. Testar poses e expressões.
 10. Decidir posteriormente se os cenários finais serão 2D, 3D ou híbridos.
 11. Definir o design final apenas no Protótipo 3.
+12. Validar os ícones principais e o menu contextual de destinos em desktop e celular.
 
 ---
 
@@ -955,6 +969,9 @@ Esses assets não representam o design final.
 - Coordenadas levam ao cofre.
 - Cofre contém o celular.
 - O primeiro contato permanece anônimo e não revela nome ou gênero.
+- O protótipo usa três cenas navegáveis no beco para validar deslocamento contextual.
+- A interface principal não possui sidebar e usa ícones pixelados para Conversar, Ir para e Celular.
+- O menu Ir para é compacto, contextual e associado ao ícone de navegação.
 - Três arquivos liberam opções e monólogos condicionais diferentes.
 - A primeira resposta condicional fixa uma única perspectiva individual de MJ.
 - `REMETENTE.enc` é liberado depois da conversa e inicia um cronômetro de um minuto.

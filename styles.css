@@ -26,16 +26,25 @@ html, body {
 }
 
 #app {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(72px, 7vw, 96px);
+  grid-template-rows: minmax(0, 1fr) 60px 32px 60px 32px 60px minmax(0, 1fr);
+  align-items: stretch;
   height: 100vh;
   width: 100vw;
-  gap: 6px;
+  column-gap: 6px;
   padding: 6px;
+  overflow: hidden;
 }
 
 #vn-area {
   position: relative;
-  flex: 1;
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   border: 3px solid var(--cor-moldura);
   border-radius: 10px;
   overflow: hidden;
@@ -45,6 +54,9 @@ html, body {
 #scene {
   position: absolute;
   inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 #cenario {
@@ -114,26 +126,6 @@ html, body {
   --personagem-x: 70%;
 }
 
-#hint {
-  position: absolute;
-  top: 6%;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 18px;
-  background: rgba(10, 13, 24, 0.72);
-  border: 2px solid var(--cor-moldura);
-  border-radius: 999px;
-  font-size: clamp(11px, 1.4vw, 15px);
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  transition: opacity 0.25s ease;
-}
-
-#hint.oculto {
-  opacity: 0;
-  pointer-events: none;
-}
-
 #dialogue-box {
   position: absolute;
   left: 2%;
@@ -199,59 +191,61 @@ html, body {
   50% { opacity: 0; }
 }
 
-#sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  width: clamp(150px, 19vw, 230px);
-  padding: 14px 10px;
-  border: 3px solid var(--cor-moldura);
-  border-radius: 10px;
-  background: var(--cor-painel);
-}
-
-#titulo {
-  font-size: clamp(11px, 1.1vw, 14px);
-  line-height: 1.45;
-  text-align: center;
-  letter-spacing: 0.05em;
-  color: #aab3cf;
-  border-bottom: 2px solid var(--cor-moldura);
-  padding-bottom: 12px;
-}
-
-#titulo .kk {
-  color: var(--cor-destaque);
-}
-
 #btn-conversar,
 #btn-ir-para,
 #btn-celular {
-  flex: 1;
-  border: 3px solid var(--cor-moldura);
-  border-radius: 10px;
-  background: linear-gradient(180deg, var(--cor-botao-hover) 0%, var(--cor-botao) 60%);
-  color: var(--cor-texto);
-  font-family: var(--fonte);
-  font-size: clamp(14px, 1.6vw, 19px);
-  font-weight: bold;
-  letter-spacing: 0.12em;
+  display: flex;
+  grid-column: 2;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  justify-self: center;
+  width: 60px;
+  height: 60px;
+  padding: 10px;
+  border: 0;
+  background: transparent;
   cursor: pointer;
-  box-shadow: 0 4px 0 #0a0d18;
-  transition: transform 0.06s ease, filter 0.15s ease;
+  transition: transform 0.06s ease, opacity 0.15s ease;
+  z-index: 2;
 }
 
-#btn-conversar:hover:not(:disabled),
-#btn-ir-para:hover:not(:disabled),
-#btn-celular:hover:not(:disabled) {
-  filter: brightness(1.25);
+#btn-conversar {
+  grid-row: 2;
+}
+
+#btn-ir-para {
+  grid-row: 4;
+}
+
+#btn-celular {
+  grid-row: 6;
+}
+
+.action-icon {
+  display: block;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  color: #f4f0df;
+  pointer-events: none;
+}
+
+button:hover:not(:disabled) .action-icon {
+  color: #e8b34b;
+}
+
+#btn-conversar:focus-visible,
+#btn-ir-para:focus-visible,
+#btn-celular:focus-visible {
+  outline: 3px solid var(--cor-destaque);
+  outline-offset: 2px;
 }
 
 #btn-conversar:active:not(:disabled),
 #btn-ir-para:active:not(:disabled),
 #btn-celular:active:not(:disabled) {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #0a0d18;
+  transform: translateY(2px);
 }
 
 #btn-conversar:disabled,
@@ -263,26 +257,64 @@ html, body {
 
 #ir-para-menu {
   position: absolute;
-  top: 4%;
-  right: 3%;
+  top: 50%;
+  right: calc(clamp(72px, 7vw, 96px) / 2 + 34px);
   z-index: 6;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: min(264px, 42%);
-  padding: 10px;
-  border: 3px solid #39415c;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #1a2036, #0d1120);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  width: max-content;
+  min-width: 170px;
+  max-width: min(230px, calc(100% - 120px));
+  padding: 4px;
+  border: 0;
+  border-radius: 2px;
+  background: rgba(8, 12, 22, 0.9);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+  transform: translateY(-50%);
 }
 
-#versao {
-  margin-top: auto;
-  text-align: center;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  color: #59637f;
+#ir-para-menu .message-choice {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 7px 12px 7px 9px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #f4f0df;
+  font: 13px/1.3 "Courier New", monospace;
+  text-align: left;
+  overflow-wrap: normal;
+  cursor: pointer;
+  transition: color 70ms linear, background 70ms linear, transform 50ms linear;
+}
+
+#ir-para-menu .message-choice::before {
+  content: ">";
+  color: rgba(244, 240, 223, 0.48);
+}
+
+#ir-para-menu .message-choice:hover {
+  border: 0;
+  background: rgba(255, 255, 255, 0.06);
+  color: #e8b34b;
+}
+
+#ir-para-menu .message-choice:hover::before,
+#ir-para-menu .message-choice:focus-visible::before {
+  color: #e8b34b;
+}
+
+#ir-para-menu .message-choice:focus-visible {
+  outline: 2px solid #e8b34b;
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#ir-para-menu .message-choice:active {
+  transform: translateX(2px);
 }
 
 #phone-overlay {
@@ -754,30 +786,46 @@ html, body {
 
 @media (max-width: 700px) {
   #app {
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr) 60px 16px 60px 16px 60px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 60px;
+    column-gap: 0;
+    row-gap: 8px;
   }
 
-  #sidebar {
-    flex-direction: row;
-    align-items: stretch;
-    width: auto;
-    height: clamp(84px, 16vh, 120px);
-    padding: 10px;
-  }
-
-  #titulo {
-    display: none;
-  }
-
-  #versao {
-    display: none;
+  #vn-area {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    width: 100%;
+    min-height: 0;
   }
 
   #btn-conversar,
   #btn-ir-para,
   #btn-celular {
-    flex: 1;
-    font-size: 15px;
+    grid-row: 2;
+    width: 60px;
+    height: 60px;
+  }
+
+  #btn-conversar {
+    grid-column: 2;
+  }
+
+  #btn-ir-para {
+    grid-column: 4;
+  }
+
+  #btn-celular {
+    grid-column: 6;
+  }
+
+  #ir-para-menu {
+    top: auto;
+    right: auto;
+    bottom: 8px;
+    left: 50%;
+    max-width: calc(100% - 24px);
+    transform: translateX(-50%);
   }
 
   #personagem {

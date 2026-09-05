@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
-  <link rel="stylesheet" href="styles.css?v=ir-para">
+  <link rel="stylesheet" href="styles.css?v=ir-para-minimal-v1">
 </head>
 <body>
   <div id="app">
@@ -12,7 +12,6 @@
       <div id="scene">
         <img id="cenario" src="assets/cenario/beco/entrada.png" alt="Entrada do beco" aria-hidden="true" draggable="false">
         <img id="personagem" alt="" aria-hidden="true" draggable="false">
-        <p id="hint">Clique em <strong>CONVERSAR</strong>, <strong>IR PARA</strong> ou <strong>CELULAR</strong> para começar</p>
       </div>
       <div id="ir-para-menu" class="oculto" role="group" aria-label="Ir para"></div>
       <section id="dialogue-box" class="oculto">
@@ -22,13 +21,25 @@
       </section>
     </main>
 
-    <aside id="sidebar">
-      <h1 id="titulo">SIM, ACREDITE NAS MENTIRAS DELE <span class="kk">kk</span></h1>
-      <button id="btn-conversar" type="button">CONVERSAR</button>
-      <button id="btn-ir-para" type="button">IR PARA</button>
-      <button id="btn-celular" type="button">CELULAR</button>
-      <p id="versao">PROTÓTIPO V1 — ESTRUTURA BASE</p>
-    </aside>
+    <button id="btn-conversar" type="button" aria-label="Conversar">
+        <svg class="action-icon" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+          <path opacity="0.45" d="M10 4H26V6H28V17H26V19H23V22H21V19H10V17H8V6H10V4Z"/>
+          <path fill-rule="evenodd" d="M6 9H22V11H24V22H22V24H14V26H12V28H10V24H6V22H4V11H6V9ZM8 15H11V18H8V15ZM14 15H17V18H14V15ZM20 15H22V18H20V15Z"/>
+        </svg>
+    </button>
+    <button id="btn-ir-para" type="button" aria-label="Ir para">
+        <svg class="action-icon" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+          <path opacity="0.45" d="M4 8H13V11H4V8ZM4 21H13V24H4V21Z"/>
+          <path d="M8 13H17V8H20V10H22V12H24V14H28V18H24V20H22V22H20V24H17V19H8V13Z"/>
+        </svg>
+    </button>
+    <button id="btn-celular" type="button" aria-label="Celular">
+        <svg class="action-icon" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+          <path opacity="0.45" d="M23 9H26V16H23V9Z"/>
+          <path fill-rule="evenodd" d="M11 3H21V5H23V7H24V27H22V29H10V27H8V7H9V5H11V3ZM11 9H21V23H11V9ZM14 6H18V7H14V6ZM15 25H17V27H15V25Z"/>
+          <path opacity="0.55" d="M13 11H19V13H13V11ZM13 15H19V17H13V15ZM13 19H17V21H13V19Z"/>
+        </svg>
+    </button>
   </div>
 
   <div id="phone-overlay" class="oculto">

@@ -5,7 +5,7 @@
   "description": "> Referência: Ace Attorney (Nintendo DS)",
   "scripts": {
     "sync": "npm run copy:web && npx cap sync android",
-    "copy:web": "rm -rf www && mkdir -p www && cp index.html styles.css www/ && sed -i \"s/v=ir-para/v=$(date +%s)/g\" www/index.html && cp -r js assets www/",
+    "copy:web": "rm -rf www && mkdir -p www && cp index.html styles.css www/ && sed -Ei \"s/v=[a-zA-Z0-9_-]+/v=$(date +%s)/g\" www/index.html && cp -r js assets www/",
     "apk": "npm run sync && cd android && ./gradlew assembleDebug",
     "test": "node --test"
   },

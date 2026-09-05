@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-04
+updated: 2026-09-05
 ---
 
 # Estrutura Gaming
@@ -27,6 +27,7 @@ updated: 2026-09-04
 - [[ESTRUTURA_GAMING#Arquitetura Técnica|Arquitetura Técnica]]
 - [[ESTRUTURA_GAMING#Máquina De Estados|Máquina De Estados]]
 - [[ESTRUTURA_GAMING#Visual Novel E Diálogos|Visual Novel E Diálogos]]
+- [[ESTRUTURA_GAMING#Controles E Botões|Controles E Botões]]
 - [[ESTRUTURA_GAMING#Interface Do Celular|Interface Do Celular]]
 - [[ESTRUTURA_GAMING#Aplicativo Mensagens|Aplicativo Mensagens]]
 - [[ESTRUTURA_GAMING#Timers E Ritmo|Timers E Ritmo]]
@@ -39,15 +40,16 @@ updated: 2026-09-04
 
 ## Visão Geral
 
-O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, CSS e JavaScript. Ele possui uma única cena jogável, um sistema de diálogo, monólogos que mudam conforme o progresso e uma interface de celular usada como canal narrativo.
+O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, CSS e JavaScript. Ele possui três cenas provisórias navegáveis no beco, um sistema de diálogo, monólogos que mudam conforme o progresso e uma interface de celular usada como canal narrativo.
 
 ### O Que Funciona
 
-- Cena noturna provisória.
-- Sprite genérico e estático de MJ em PNG externo (`sprites/MJ.png`).
+- Três cenas noturnas provisórias: entrada, interior e fundo do beco.
+- Sprite genérico e estático de MJ em PNG externo (`assets/sprites/MJ.png`).
 - MJ aparece em cena somente durante os monólogos (sala sem personagens presenciais).
 - Transição animada de entrada e saída de MJ.
-- Botões **Conversar** e **Celular**.
+- Comandos por ícone para **Conversar**, **Ir para** e **Celular**, sem sidebar visual.
+- Menu contextual minimalista de destinos, associado ao ícone **Ir para**.
 - Caixa de diálogo inspirada em *Ace Attorney* (fundo claro, placa de nome com ponta e contorno marcado).
 - Efeito de digitação com som sintetizado por letra.
 - Monólogos condicionados ao progresso da conversa.
@@ -129,23 +131,24 @@ Este roadmap descreve a sequência que já funciona durante uma partida.
 
 ### Etapa 1 — Inicialização
 
-1. `index.html` monta a cena, a barra lateral e o celular oculto.
-2. `js/data.js` disponibiliza cena, monólogos e árvore de mensagens.
+1. `index.html` monta a cena, os três controles sobrepostos e o celular oculto.
+2. `js/data.js` disponibiliza locais, cenas, destinos, monólogos e árvore de mensagens.
 3. `js/game.js` cria o estado inicial em modo `livre`.
-4. **Conversar** e **Celular** ficam disponíveis.
+4. **Conversar**, **Ir para** e **Celular** ficam disponíveis conforme o estado e os destinos da cena.
 
 ### Etapa 2 — Cena Livre
 
-O jogador vê a sala e pode escolher uma das duas ações principais:
+O jogador vê o beco e pode escolher uma das três ações principais:
 
 - **Conversar:** inicia uma interação local.
+- **Ir para:** abre os destinos ligados à cena atual.
 - **Celular:** abre o aparelho em uma camada sobre o cenário.
 
-Enquanto um diálogo ou o celular está aberto, os dois botões principais ficam desabilitados.
+Enquanto um diálogo ou o celular está aberto, os três botões principais ficam desabilitados e o menu de destinos é fechado.
 
 ### Etapa 3 — Monólogo Inicial
 
-Como `DATA.cena.personagensPresentes` está vazio, **Conversar** não encontra um personagem presencial. O sistema usa o monólogo `inicial`, no qual o protagonista percebe que deve verificar o celular.
+Como `DATA.cena.personagensPresentes` está vazio nas cenas atuais, **Conversar** não encontra um personagem presencial. O sistema usa o monólogo correspondente à cena e à fase de progresso.
 
 ### Etapa 4 — Abertura Do Celular
 
@@ -234,7 +237,9 @@ Depois da última resposta do contato:
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
 │   └── game.js                # Estado, regras e renderização
 ├── assets/                    # Arte-fonte provisória
-├── sprites/                   # Sprites de runtime (ex.: MJ.png)
+│   ├── cenario/beco/          # Fundos das cenas navegáveis
+│   ├── interfaces/icons/      # Fontes dos três ícones principais
+│   └── sprites/               # Sprites de runtime (ex.: MJ.png)
 ├── android/                   # Projeto nativo Android
 ├── capacitor.config.json      # Configuração Capacitor
 ├── package.json               # Scripts e dependências
@@ -266,6 +271,7 @@ Não há framework de interface, bundler ou backend. O navegador carrega os scri
 ```mermaid
 stateDiagram-v2
     [*] --> livre
+    livre --> livre: Ir para / trocar cena
     livre --> dialogo: Conversar
     dialogo --> livre: Encerrar diálogo
     livre --> celular_inicio: Celular
@@ -293,6 +299,7 @@ O estado é dividido por domínio:
 ```js
 const state = {
   modo: "livre",
+  localizacao: {},
   dialogo: {},
   celular: {},
   arquivos: {},
@@ -346,6 +353,10 @@ const state = {
 | `timer` | Timer do cooldown ou do próximo envio |
 | `historicoAntesReset` | Preserva internamente o chat apagado pelo reset |
 
+### Estado Da Localização
+
+`state.localizacao` separa o local atual da cena atual. O local `beco` contém `beco_entrada`, `beco_interior` e `beco_fundo`; cada cena declara seus próprios destinos em `js/data.js`. `obterDestinos()` resolve somente conexões válidas e `irPara()` rejeita saltos que não estejam declarados na cena atual.
+
 ## Visual Novel E Diálogos
 
 ### Seleção Da Interação
@@ -377,7 +388,7 @@ A caixa de diálogo segue a linguagem visual inspirada em *Ace Attorney*:
 
 ### Personagem Em Cena
 
-MJ fica oculta por padrão. O sprite carregado é `sprites/MJ.png` (`js/data.js`), na pose `neutral` e no slot `center`:
+MJ fica oculta por padrão. O sprite carregado é `assets/sprites/MJ.png` (`js/data.js`), na pose `neutral` e no slot `center`:
 
 - `mostrarPersonagem("mj", "neutral", "center")` remove `oculto`, aplica `.personagem-entrando` e roda `@keyframes mj-entrar` (320 ms, fade + deslize vertical).
 - `ocultarPersonagem()` aplica `.personagem-saindo` (`@keyframes mj-sair`, 280 ms) e, ao terminar, restaura o sprite oculto/vazio.
@@ -410,6 +421,61 @@ A primeira resposta condicional fixa uma única rota individual, mesmo que outro
 
 > [!info] Sprite e presença narrativa
 > MJ fica oculta por padrão e só é exibida quando **Conversar** inicia um monólogo (sala sem personagens presenciais). `mostrarPersonagem("mj","neutral","center")` aplica a animação de entrada e `ocultarPersonagem()` a de saída. Como `personagensPresentes` está vazio, exibir MJ não cria uma conversa presencial inexistente; a presença visual e a narrativa continuam separadas.
+
+## Controles E Botões
+
+Esta seção consolida a referência técnica dos botões do jogo. As fontes de verdade continuam sendo `index.html`, `styles.css` e `js/game.js`.
+
+### Contextos Interativos
+
+| Contexto | Estrutura | Controles |
+|---|---|---|
+| Cena | Segunda coluna do Grid `#app` | **Conversar**, **Ir para** e **Celular** |
+| Destinos | `#ir-para-menu` dentro de `#vn-area` | Botões de destino criados dinamicamente |
+| Celular | `#phone-overlay` | Apps, respostas, arquivos, **Decodificar** e **Voltar** |
+| Diálogo | `#dialogue-box` | Caixa clicável; a seta `▼` é apenas decorativa |
+
+Todos os controles de ação são elementos `button`. Os três comandos principais mantêm seus IDs e handlers, usam `aria-label` e contêm SVGs decorativos com `aria-hidden="true"`. Os SVGs inline reproduzem as fontes em `assets/interfaces/icons/`, usam `currentColor` e não recebem a lógica de clique.
+
+### Comandos Principais
+
+Não existe `#sidebar`. `#vn-area` atravessa o Grid inteiro e os controles ficam diretamente sobre a faixa direita do cenário no desktop. A ordem vertical é **Conversar**, **Ir para** e **Celular**. Abaixo de `700px`, os três passam para uma linha inferior, com touch targets de `60px × 60px`.
+
+| Estado | Apresentação |
+|---|---|
+| Normal | Ícone creme `#f4f0df` sobre fundo transparente |
+| Hover | Ícone dourado `#e8b34b` |
+| Foco visível | Outline dourado no botão real |
+| Ativo | Deslocamento curto de `2px` |
+| Desabilitado | Opacidade reduzida; sem ação |
+
+`definirBotoes()` habilita **Conversar** e **Celular** apenas no modo `livre`. **Ir para** também exige pelo menos um destino válido. Abrir diálogo ou celular fecha o menu de destinos.
+
+### Menu Ir Para
+
+`#ir-para-menu` permanece um menu contextual, não um modal: ele não cria backdrop nem escurece a tela. No desktop aparece imediatamente à esquerda do ícone; no mobile aparece acima dele, dentro dos limites da cena. Sua largura fica entre `170px` e `230px`, a altura acompanha a quantidade de destinos e o fundo usa `rgba(8, 12, 22, 0.9)` com sombra curta.
+
+Cada destino continua sendo um `button.message-choice`, criado por `criarBotaoDestino()` com handler direto para `irPara(destino.id)`. O estilo visual é restrito a `#ir-para-menu .message-choice`, pois `.message-choice` também é usada nas respostas do celular. As opções têm fundo transparente, texto creme, indicador pixelado `>` e destaque dourado em hover e foco.
+
+O menu é reconstruído a cada abertura por `renderizarMenuIrPara()`. A primeira opção recebe foco; `Escape` fecha o menu e devolve o foco ao ícone; escolher um destino aplica a cena e fecha o menu. Destinos atuais:
+
+| Cena | Opções exibidas |
+|---|---|
+| `beco_entrada` | Interior do beco |
+| `beco_interior` | Entrada do beco; Fundo do beco |
+| `beco_fundo` | Interior do beco |
+
+### Botões Do Celular
+
+| Controle | Elemento | Função |
+|---|---|---|
+| Mensagens | `#btn-mensagens.app` | Abre o primeiro contato |
+| Galeria e Notas | `.app:disabled` | Placeholders indisponíveis |
+| Arquivos | `#btn-arquivos.app` | Abre os registros do aparelho |
+| Respostas | `#messages-choices .message-choice` | Executa `escolherResposta()` |
+| Arquivo | `button.file-entry` | Abre o visualizador |
+| Decodificar | `.puzzle-input-row button[type="submit"]` | Resolve o enigma de identidade |
+| Voltar | `#btn-voltar` | Retorna à tela anterior ou fecha o celular |
 
 ## Interface Do Celular
 
@@ -571,10 +637,10 @@ Se o celular for fechado durante o cooldown, o timer é cancelado, mas o horári
 
 Em telas menores que `700px`:
 
-- A interface principal muda de linha para coluna.
-- A barra lateral vira uma barra inferior.
-- Título e versão são ocultados.
-- Botões principais dividem a largura.
+- A cena ocupa a primeira linha do Grid.
+- Os três comandos principais ficam lado a lado na linha inferior, sem container visual.
+- O menu **Ir para** aparece acima do ícone e permanece dentro da viewport.
+- Cada comando mantém uma área interativa de `60px × 60px`.
 - O celular é reduzido.
 - Balões podem ocupar até 84% da largura.
 - A área de escolhas recebe mais espaço vertical.
@@ -638,8 +704,10 @@ Abrir `http://localhost:8000`.
 
 | Recurso | Status | Observação |
 |---|---|---|
-| Cena noturna | Implementado | Estática e provisória |
-| Sprite genérico de MJ | Implementado | `sprites/MJ.png`, pose neutra estática, mostrado somente em monólogos, com transição de entrada/saída |
+| Cenas noturnas | Implementado | Três fundos estáticos e provisórios do beco |
+| Navegação entre cenas | Implementado | Entrada, interior e fundo do beco com conexões declaradas |
+| Menu Ir para | Implementado | Contextual, minimalista, responsivo e acessível por teclado |
+| Sprite genérico de MJ | Implementado | `assets/sprites/MJ.png`, pose neutra estática, mostrado somente em monólogos, com transição de entrada/saída |
 | Conversar | Implementado | Executa monólogos na cena atual |
 | Diálogo digitado | Implementado | Clique, `Enter` e espaço |
 | Monólogos por progresso | Implementado | Fases gerais, três rotas individuais e uma rota completa |
@@ -663,7 +731,7 @@ Abrir `http://localhost:8000`.
 | Investigação | Não implementado | Planejado no GDD |
 | Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
-| Múltiplas cenas | Não implementado | Planejado no GDD |
+| Estrutura de múltiplas cenas | Parcial | Três cenas do beco implementadas; Ato I completo ainda planejado |
 | Finais e replay | Não implementado | Planejado no GDD |
 | ARG | Não implementado | Planejado no GDD |
 
@@ -674,7 +742,7 @@ Abrir `http://localhost:8000`.
 
 ### Narrativa
 
-- Existe somente uma cena.
+- Existem somente três cenas provisórias do beco; as cenas canônicas anteriores do Ato I ainda não existem.
 - Não há personagens presenciais cadastrados.
 - Todas as ramificações convergem para o mesmo fluxo.
 - O contato permanece como `???` durante toda a primeira conversa.
@@ -698,7 +766,7 @@ Abrir `http://localhost:8000`.
 
 ### Qualidade
 
-- A suíte automatizada possui 14 testes: fluxo do chat da Fase 8 (cooldown, opções condicionais, pronomes, monólogos, cronômetro e reset) e o contrato visual de MJ (sprite `sprites/MJ.png` em runtime e inclusão da pasta no pipeline); os demais sistemas ainda não possuem cobertura.
+- A suíte automatizada possui 27 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ e ícones principais; validações visuais e sistemas futuros ainda não possuem cobertura completa.
 - Não existe CI.
 - Responsividade e acessibilidade dependem de validação manual.
 - O APK ainda não foi validado ponta a ponta.
@@ -714,6 +782,9 @@ Status: **implementada**.
 - [x] Cena base.
 - [x] Visual Novel e diálogo digitado.
 - [x] Celular e navegação contextual.
+- [x] Navegação declarativa entre as três cenas provisórias do beco.
+- [x] Controles principais por SVG sem sidebar visual.
+- [x] Menu contextual minimalista de destinos.
 - [x] Mensagens ramificadas.
 - [x] Cooldown e entrega sequencial.
 - [x] Monólogos por progresso.
@@ -805,6 +876,7 @@ Status: **planejada para o Protótipo 3**.
 - [ ] Testar clique, `Enter`, espaço e `Escape`.
 - [ ] Testar teclado, mouse e toque no chat.
 - [ ] Testar larguras abaixo e acima de `700px`.
+- [ ] Validar visualmente o menu **Ir para** com um e dois destinos em desktop e celular.
 - [ ] Testar orientação paisagem.
 - [ ] Validar contraste e foco.
 - [ ] Executar `npm run sync` em ambiente Android configurado.

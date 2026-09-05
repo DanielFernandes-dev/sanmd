@@ -65,7 +65,6 @@ const state = {
 const el = {
   cenario: document.getElementById("cenario"),
   personagem: document.getElementById("personagem"),
-  hint: document.getElementById("hint"),
   dialogueBox: document.getElementById("dialogue-box"),
   namePlate: document.getElementById("name-plate"),
   dialogueText: document.getElementById("dialogue-text"),
@@ -255,7 +254,6 @@ function iniciarConversa() {
 
   state.modo = "dialogo";
   state.dialogo.linha = 0;
-  el.hint.classList.add("oculto");
   el.dialogueBox.classList.remove("oculto");
   definirBotoes();
   mostrarLinha();
@@ -366,7 +364,6 @@ function encerrarConversa() {
   state.dialogo.falas = [];
   state.modo = "livre";
   el.dialogueBox.classList.add("oculto");
-  el.hint.classList.remove("oculto");
   ocultarPersonagem();
   definirBotoes();
 }

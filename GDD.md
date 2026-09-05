@@ -159,7 +159,13 @@ O clímax e o uso de tempo como recurso ainda precisam ser confirmados. A estrut
 
 O jogador explora cenários investigando objetos, fotografias, documentos, computadores, celulares, inscrições, relógios, notícias e elementos aparentemente decorativos. Nem toda pista é obrigatória; algumas existem exclusivamente para a investigação de 100%.
 
-### B. Interface do Celular
+### B. Navegação Contextual Entre Cenas
+
+O protótipo usa o comando **Ir para** para apresentar somente os destinos conectados à cena atual. O menu é uma extensão contextual do ícone, não uma sidebar nem um modal, e deve ocupar pouco espaço sem ocultar desnecessariamente o cenário.
+
+Os destinos são botões de texto reais, acessíveis por teclado, empilhados quando existe mais de uma opção. A implementação atual valida uma rota curta entre `beco_entrada`, `beco_interior` e `beco_fundo`; ela serve de base técnica para locais futuros, mas não define ainda o mapa completo do Ato I.
+
+### C. Interface do Celular
 
 Apps simulados que funcionam como canal narrativo:
 
@@ -173,7 +179,7 @@ Apps simulados que funcionam como canal narrativo:
 - **💯 Progresso:** Percentual da história reconstruída.
 - **💾 Salvamento/replay:** Retomada e investigação de novas perspectivas.
 
-### C. Terminal Hacker
+### D. Terminal Hacker
 
 Interface de puzzle cuja linguagem visual e comandos definitivos ainda precisam ser definidos. Comandos possíveis para prototipagem:
 
@@ -187,7 +193,7 @@ trace
 
 Puzzles envolvem substituição, padrões, criptografia, códigos, sequências, lógica e fragmentos de texto. A dificuldade aumenta progressivamente.
 
-### D. Trava de Presença
+### E. Trava de Presença
 
 Existe a ideia de o terminal esconder ou bloquear funções quando outras pessoas estão presentes. Essa regra é provisória e ainda precisa ser validada narrativa e tecnicamente.
 
@@ -461,9 +467,9 @@ A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como
 
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
 - **Estrutura:** Separada em `js/data.js` (conteúdo) e `js/game.js` (motor) — ver ADR-0003.
-- **Interface implementada:** Camadas sobrepostas de Visual Novel e smartphone.
-- **Conteúdo implementado:** Uma cena provisória, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos.
-- **Ainda não implementado:** Investigação point-and-click, terminal, sistema geral de puzzles, mapa, múltiplas cenas, atos completos, finais, progresso, replay persistente e ARG.
+- **Interface implementada:** Cena em tela cheia com três comandos por ícones pixelados, menu contextual de destinos e smartphone sobreposto.
+- **Conteúdo implementado:** Três cenas provisórias conectadas no beco, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos.
+- **Ainda não implementado:** Investigação point-and-click, terminal, sistema geral de puzzles, mapa completo, cenas canônicas do início do Ato I, atos completos, finais, progresso, replay persistente e ARG.
 - **Compatibilidade narrativa:** O recorte do celular segue a direção atual do Ato I; a cena inicial ainda é provisória e começa depois de etapas narrativas não implementadas.
 
 O estado atual existe somente em memória. Arquivos vistos, solução, histórico e rota de monólogo sobrevivem à navegação e ao reset durante a sessão, mas não ao recarregamento ou fechamento. Persistência, save por fotografia e gerenciamento de replay ainda são planejamento.

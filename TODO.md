@@ -34,6 +34,10 @@
 - [x] Implementar cooldown, indicador `digitando...` e entrega sequencial.
 - [x] Preservar o histórico de mensagens durante a sessão.
 - [x] Implementar retorno contextual pelo botão Voltar e pela tecla `Escape`.
+- [x] Criar três cenas provisórias conectadas: entrada, interior e fundo do beco.
+- [x] Implementar o comando Ir para com destinos válidos por cena.
+- [x] Substituir a sidebar visual por três controles com ícones pixelados.
+- [x] Implementar o menu Ir para pequeno, contextual e específico, sem alterar as respostas do celular.
 - [x] Criar estrutura Capacitor para Android.
 
 ### Preparação para o conteúdo canônico
@@ -133,7 +137,7 @@
 ### Estado e cenas
 
 - [ ] Criar um identificador para cada cena do Ato I.
-- [ ] Implementar carregamento e troca de cenários.
+- [x] Implementar carregamento e troca de cenários no recorte provisório do beco.
 - [ ] Implementar entrada, saída e troca de personagens em cena.
 - [ ] Implementar poses e expressões por fala ou evento.
 - [ ] Criar eventos de entrada, interação, conclusão e transição de cena.
@@ -379,8 +383,8 @@
 - [x] Fixar o pivô visual no centro inferior do canvas.
 - [ ] Manter rosto e gesto principal acima da região ocupada pela caixa de diálogo.
 - [x] Usar uma paleta pequena e provisória compatível com o cenário noturno atual.
-- [x] Gerar o sprite em PNG externo (`sprites/MJ.png`) com formas pixeladas e bordas rígidas.
-- [x] Nomear o asset no runtime como `sprites/MJ.png`, com o ID narrativo `mj` separado do caminho físico.
+- [x] Gerar o sprite em PNG externo (`assets/sprites/MJ.png`) com formas pixeladas e bordas rígidas.
+- [x] Nomear o asset no runtime como `assets/sprites/MJ.png`, com o ID narrativo `mj` separado do caminho físico.
 - [x] Substituir definitivamente o SVG anterior pelo PNG com o mesmo identificador.
 
 ### Integração da MJ
@@ -406,6 +410,10 @@
 
 - [x] Aumentar `velocidadeDigitacao` para 65 ms e manter o avanço por clique, `Enter` e espaço.
 - [x] Sintetizar o blip de digitação via Web Audio API para letras não-espaço, com fallback silencioso.
+- [x] Remover a sidebar visível e manter Conversar, Ir para e Celular como botões reais com SVGs pixelados.
+- [x] Criar estados normal, hover, foco visível, ativo e desabilitado para os três comandos principais.
+- [x] Restringir o estilo minimalista de destinos a `#ir-para-menu .message-choice`, preservando `.message-choice` no celular.
+- [x] Posicionar o menu Ir para à esquerda do ícone no desktop e acima dele no celular.
 
 ### Validação da primeira MJ
 
@@ -416,7 +424,7 @@
 - [ ] Confirmar que o rosto permanece visível durante diálogos.
 - [x] Confirmar que a presença visual de MJ não cria uma conversa presencial inexistente.
 - [x] Confirmar que o asset entra corretamente na cópia web usada pelo Capacitor.
-- [x] Validar por teste que o sprite de runtime é o PNG `sprites/MJ.png` e está incluído no pipeline web.
+- [x] Validar por teste que o sprite de runtime é o PNG `assets/sprites/MJ.png` e está incluído no pipeline web.
 - [x] Confirmar que MJ aparece apenas durante monólogos e volta a ficar oculta ao encerrar a conversa.
 - [x] Confirmar que os testes existentes da Fase 8 continuam passando.
 
@@ -526,6 +534,9 @@ Prioridade de criação (validação → fluxo canônico):
 
 ### Interface e acessibilidade
 
+- [ ] Validar visualmente o menu Ir para com um destino em `beco_entrada` e `beco_fundo`.
+- [ ] Validar visualmente o menu Ir para com dois destinos em `beco_interior`.
+- [ ] Confirmar em navegador que o menu permanece associado ao ícone e dentro da viewport.
 - [ ] Testar o fluxo completo acima e abaixo de `700px`.
 - [ ] Testar orientação retrato e paisagem.
 - [ ] Testar zoom e fontes ampliadas.
@@ -553,6 +564,8 @@ Prioridade de criação (validação → fluxo canônico):
 
 - [x] Criar testes automatizados para estados e progressão crítica da Fase 8.
 - [x] Substituir o `npm test` provisório por uma suíte funcional.
+- [x] Cobrir por testes a navegação de ida e volta, bloqueio de saltos e destinos exibidos nas três cenas do beco.
+- [x] Cobrir por testes a semântica e o contrato visual dos três ícones principais.
 - [ ] Corrigir o pacote do teste instrumentado Android.
 - [ ] Executar `npm run sync` em ambiente Android configurado.
 - [ ] Gerar o APK de debug.
