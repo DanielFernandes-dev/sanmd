@@ -1,5 +1,19 @@
 # Registro de decisões
 
+## 2026-09-06 — Ícone do jogo no launcher Android
+
+Status: aceito.
+
+Decisão: usar a arte oficial do jogo em `assets/interfaces/game-icon.png` como
+ícone normal e redondo do launcher, nas densidades legadas e no adaptive icon do
+Android. O fundo do adaptive icon acompanha a paleta escura da arte.
+
+Consequências: o ícone exibido na tela inicial do Android fica consistente com o
+ícone do jogo, sem alterar o sistema de Save/Load ou a identidade visual interna.
+
+Validação: APK debug recompilado com sucesso e instalado no dispositivo Android
+conectado via ADB.
+
 ## 2026-09-06 — Fundos atuais e visuais após a cutscene
 
 Status: aceito.
