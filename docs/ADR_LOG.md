@@ -4,9 +4,10 @@
 
 Status: aceito.
 
-Decisão: usar a arte oficial do jogo em `assets/interfaces/game-icon.png` como
-ícone normal e redondo do launcher, nas densidades legadas e no adaptive icon do
-Android. O fundo do adaptive icon acompanha a paleta escura da arte.
+Decisão: usar a arte oficial do jogo em `assets/interfaces/game-icon.png`, sem a
+chave dourada, como ícone normal e redondo do launcher, nas densidades legadas e
+no adaptive icon do Android. O fundo do adaptive icon acompanha a paleta escura
+da arte.
 
 Consequências: o ícone exibido na tela inicial do Android fica consistente com o
 ícone do jogo, sem alterar o sistema de Save/Load ou a identidade visual interna.
