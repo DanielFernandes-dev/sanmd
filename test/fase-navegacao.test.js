@@ -121,7 +121,7 @@ test("IR PARA navega linearmente entrada <-> interior <-> fundo", () => {
   executar('irPara("beco_interior"); irPara("beco_fundo");');
   assert.equal(ler("state.localizacao.cena"), "beco_fundo");
   assert.equal(ler("DATA.cena.id"), "beco_fundo");
-  assert.equal(ler("el.cenario.src"), "assets/cenario/beco/cofre.png");
+  assert.equal(ler("el.cenario.src"), "assets/cenario/beco/background.png");
   assert.equal(ler("JSON.stringify(DATA.cena.destinos)"), '["beco_interior"]');
 
   executar('irPara("beco_interior"); irPara("beco_entrada"); irPara("beco_interior");');

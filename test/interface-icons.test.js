@@ -65,7 +65,7 @@ test("tela inicial usa grade 4x2 de apps com ícones SVG e botão Voltar", () =>
   assert.match(html, /<button id="btn-voltar" type="button" aria-label="Voltar"><span class="back-icon" aria-hidden="true">[^<]+<\/span><\/button>/);
   assert.match(css, /#apps-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/s);
   assert.match(css, /\[data-phone-theme="mj"\] \.phone-app--galeria\s*\{[^}]*#d75d8c/s);
-  assert.match(css, /#btn-voltar\s*\{[^}]*border-radius:\s*12px;[^}]*background:\s*rgba\(40, 33, 61, 0\.9\)/s);
+  assert.match(css, /#btn-voltar\s*\{[^}]*border:\s*0;[^}]*border-radius:\s*0;[^}]*background:\s*transparent;/s);
   assert.match(css, /#btn-voltar \.back-icon\s*\{[^}]*color:\s*#f2b5cd;/s);
 });
 

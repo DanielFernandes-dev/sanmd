@@ -326,3 +326,62 @@ test("fim de cutscene substitui autosave, mas load manual não", () => {
   assert.equal(ambiente.ler("saveRepository.obterAutosave().saveState.arquivos.vistos.includes('rota')"), true);
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 1);
 });
+
+test("point-and-click: snapshots isolados nos três estados e navegação", () => {
+  const a = criarAmbiente();
+  a.executar('irPara("beco_interior"); irPara("beco_fundo"); const fechado = capturarEstadoJogo();');
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
+  assert.equal(a.ler('executarHotspot("safe")'), true);
+  assert.equal(a.ler('executarHotspot("safe")'), false);
+  a.executar('const aberto = capturarEstadoJogo();');
+  assert.equal(a.ler('el.hotspotLayer.children[0].dataset.hotspot'), 'lulith_phone');
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), true);
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
+  assert.equal(a.ler('state.inventory.length'), 1);
+  a.executar('const coletado = capturarEstadoJogo(); irPara("beco_interior"); irPara("beco_fundo");');
+  assert.equal(a.ler('el.objectLayer.children.length'), 1);
+  assert.equal(a.ler('el.hotspotLayer.children.length'), 0);
+  a.executar('restaurarEstadoJogo(fechado);');
+  assert.equal(a.ler('state.inventory.length'), 0);
+  assert.equal(a.ler('el.hotspotLayer.children[0].dataset.hotspot'), 'safe');
+  a.executar('restaurarEstadoJogo(aberto);');
+  assert.equal(a.ler('el.objectLayer.children.length'), 2);
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), true);
+  a.executar('restaurarEstadoJogo(coletado);');
+  assert.equal(a.ler('state.inventory[0]'), 'lulith_phone');
+  assert.equal(a.ler('el.hotspotLayer.children.length'), 0);
+  assert.equal(a.ler('el.bagGrid.children[0].children[1].textContent'), 'Celular');
+  assert.equal(a.ler('el.bagDetails.children[0].textContent'), 'Celular Misterioso');
+  const b = criarAmbiente(a.storage);
+  b.executar('restaurarEstadoJogo(saveRepository.obterAutosave().saveState);');
+  assert.equal(b.ler('state.inventory[0]'), 'lulith_phone');
+  assert.equal(b.ler('el.hotspotLayer.children.length'), 0);
+});
+
+test("point-and-click: saves antigos, dados inválidos e IDs únicos", () => {
+  const a = criarAmbiente();
+  a.executar('const antigo = capturarEstadoJogo(); delete antigo.inventory; delete antigo.sceneState; adicionarItem("lulith_phone"); restaurarEstadoJogo(antigo);');
+  assert.equal(a.ler('state.inventory.length'), 0);
+  assert.equal(a.ler('validarSnapshot({...antigo, inventory: ["inexistente"]})'), null);
+  assert.equal(a.ler('validarSnapshot({...antigo, inventory: null})'), null);
+  assert.equal(a.ler('validarSnapshot({...antigo, sceneState: {beco_fundo: {safeOpened: "true"}}})'), null);
+  assert.equal(a.ler('validarSnapshot({...antigo, inventory: ["lulith_phone", "lulith_phone"]}).inventory.length'), 1);
+});
+
+test("point-and-click: exige item, consumo automático e remoção narrativa", () => {
+  const a = criarAmbiente();
+  a.executar(`
+    ITEMS.test_key = { id: "test_key", label: "Chave", description: "Teste", asset: "", consumable: true };
+    irPara("beco_interior"); irPara("beco_fundo");
+    DATA.cena.hotspots.push({id: "test_door", type: "use_item", requiresItem: "test_key",
+      conditions: {safeOpened: false}, changes: {safeOpened: true}});
+  `);
+  assert.equal(a.ler('executarHotspot("test_door")'), false);
+  a.executar('adicionarItem("test_key");');
+  assert.equal(a.ler('executarHotspot("test_door", "lulith_phone")'), false);
+  assert.equal(a.ler('executarHotspot("test_door")'), true);
+  assert.equal(a.ler('state.inventory.length'), 0);
+  a.executar('executarHotspot("lulith_phone"); removerItem("lulith_phone"); irPara("beco_interior"); irPara("beco_fundo");');
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
+  assert.equal(a.ler('state.inventory.length'), 0);
+});

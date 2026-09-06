@@ -11,6 +11,8 @@
     <main id="vn-area">
       <div id="scene">
         <img id="cenario" src="assets/cenario/beco/entrada.png" alt="Entrada do beco" aria-hidden="true" draggable="false">
+        <div id="object-layer" aria-hidden="true"></div>
+        <div id="hotspot-layer"></div>
         <img id="personagem" alt="" aria-hidden="true" draggable="false">
       </div>
       <div id="ir-para-menu" class="oculto" role="group" aria-label="Ir para"></div>
@@ -21,6 +23,10 @@
       </section>
     </main>
 
+    <button id="btn-bolsa" type="button" aria-label="Bolsa da MJ" aria-haspopup="dialog">
+      <svg class="action-icon" viewBox="0 0 32 32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"><path fill-rule="evenodd" d="M10 5H22V7H24V12H28V28H4V12H8V7H10ZM12 8V12H20V8ZM7 16V25H25V16ZM14 18H18V21H14Z"/></svg>
+    </button>
+    <p id="interaction-status" role="status" aria-live="polite"></p>
     <button id="btn-conversar" type="button" aria-label="Conversar">
         <svg class="action-icon" viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
           <path opacity="0.45" d="M10 4H26V6H28V17H26V19H23V22H21V19H10V17H8V6H10V4Z"/>
@@ -42,6 +48,43 @@
     </button>
   </div>
 
+  <dialog id="bag-dialog" aria-labelledby="bag-title">
+    <header class="bag-header">
+      <div class="bag-header-content">
+        <span class="bag-icon" aria-hidden="true">◇</span>
+        <div class="bag-title-group">
+          <h2 id="bag-title">Bolsa da MJ</h2>
+          <p class="bag-subtitle">Itens coletados durante a investigação.</p>
+        </div>
+      </div>
+      <button type="button" id="bag-close" class="bag-close" aria-label="Fechar Bolsa" aria-controls="bag-dialog">×</button>
+    </header>
+    <div id="bag-search-wrapper" class="bag-search-wrapper">
+      <span class="search-icon" aria-hidden="true">🔎</span>
+      <input type="search" id="bag-search" aria-label="Pesquisar na Bolsa" autocomplete="off">
+      <button type="button" id="bag-search-clear" class="bag-search-clear" aria-label="Limpar pesquisa" hidden>×</button>
+    </div>
+    <div id="bag-body" class="bag-body">
+      <section class="bag-grid-section" aria-label="Itens da Bolsa">
+        <div id="bag-grid" class="bag-grid" role="list"></div>
+        <nav id="bag-pagination" class="bag-pagination" aria-label="Paginação da Bolsa" hidden></nav>
+      </section>
+      <aside id="bag-details" class="bag-details" aria-label="Detalhes do item" aria-live="polite"></aside>
+    </div>
+    <div id="bag-empty" class="bag-empty" hidden>
+      <span class="bag-empty-icon" aria-hidden="true">
+        <svg class="bag-empty-svg" viewBox="0 0 32 32" width="48" height="48" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 5H22V7H24V12H28V28H4V12H8V7H10ZM12 8V12H20V8ZM7 16V25H25V16ZM14 18H18V21H14Z"/>
+        </svg>
+      </span>
+      <h3>A Bolsa está vazia.</h3>
+      <p>Explore o ambiente e colete itens<br>importantes durante sua investigação.</p>
+    </div>
+    <div id="bag-no-results" class="bag-no-results" hidden>
+      <h3>Nenhum item encontrado.</h3>
+      <p>Tente outro nome ou palavra-chave.</p>
+    </div>
+  </dialog>
   <div id="phone-overlay" class="oculto">
     <div id="phone-frame">
       <div id="phone-screen" data-phone-theme="mj">

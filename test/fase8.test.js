@@ -255,21 +255,21 @@ test("rota condicional longa converge no enigma e respeita o prazo de reset", ()
     arquivo: "candidatos",
     opcao: "questionar-arquivos",
     rota: "arquivoCandidatos",
-    trechoMasculino: "O dono deste celular",
-    trechoFeminino: "A dona deste celular"
+    trechoMasculino: "Quem está por trás deste celular está testando outras pessoas",
+    trechoFeminino: "A pessoa por trás deste celular está testando outras pessoas"
   },
   {
     arquivo: "rota",
     opcao: "questionar-origem-aparelho",
     rota: "arquivoRota",
-    trechoMasculino: "Ele planejou cada etapa",
+    trechoMasculino: "Quem planejou isso previu cada etapa",
     trechoFeminino: "Ela planejou cada etapa"
   },
   {
     arquivo: "recuperar",
     opcao: "exigir-resposta",
     rota: "arquivoRecuperar",
-    trechoMasculino: "Ele escreveu que não quer destruir",
+    trechoMasculino: "A mensagem diz que não quer destruir",
     trechoFeminino: "Ela escreveu que não quer destruir"
   }
 ].forEach(({ arquivo, opcao, rota, trechoMasculino, trechoFeminino }) => {

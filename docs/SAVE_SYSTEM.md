@@ -90,3 +90,7 @@ Repetir para os IDs existentes. Não substituir os IDs em saves persistidos e n�
 Antes de qualquer mutação, o load valida versão, IDs de local/cena, fases, rotas, arquivos, etapas, mensagens, flags e timestamps. Um snapshot inválido mantém a sessão intacta e exibe erro no detalhe da fotografia. Outros saves continuam disponíveis e o registro inválido ainda pode ser excluído.
 
 Falhas de escrita também não devem derrubar o jogo. O autosave registra aviso no console; ações manuais apresentam erro na própria Galeria.
+
+## Objetos e Bolsa
+
+O snapshot v1 também aceita `inventory` (IDs únicos) e `sceneState` (flags por cena). Saves anteriores recebem inventário vazio e estados iniciais. A restauração substitui esses dados por cópias independentes. Veja [POINT_AND_CLICK.md](POINT_AND_CLICK.md).

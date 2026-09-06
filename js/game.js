@@ -22,6 +22,13 @@ const RESET_STATUS = Object.freeze({
 });
 
 const state = {
+  inventory: [],
+  bolsa: {
+    pagina: 1,
+    pesquisa: "",
+    itemSelecionadoId: null
+  },
+  sceneState: {},
   modo: "livre",
   localizacao: {
     local: "beco",
@@ -73,6 +80,21 @@ const state = {
 };
 
 const el = {
+  objectLayer: document.getElementById("object-layer"),
+  hotspotLayer: document.getElementById("hotspot-layer"),
+  btnBolsa: document.getElementById("btn-bolsa"),
+  bagDialog: document.getElementById("bag-dialog"),
+  bagClose: document.getElementById("bag-close"),
+  bagSearchWrapper: document.getElementById("bag-search-wrapper"),
+  bagSearch: document.getElementById("bag-search"),
+  bagSearchClear: document.getElementById("bag-search-clear"),
+  bagBody: document.getElementById("bag-body"),
+  bagGrid: document.getElementById("bag-grid"),
+  bagPagination: document.getElementById("bag-pagination"),
+  bagDetails: document.getElementById("bag-details"),
+  bagEmpty: document.getElementById("bag-empty"),
+  bagNoResults: document.getElementById("bag-no-results"),
+  interactionStatus: document.getElementById("interaction-status"),
   cenario: document.getElementById("cenario"),
   personagem: document.getElementById("personagem"),
   dialogueBox: document.getElementById("dialogue-box"),
@@ -136,6 +158,8 @@ function copiarDados(dados) {
 
 function capturarEstadoJogo() {
   return {
+    inventory: [...state.inventory],
+    sceneState: copiarDados(state.sceneState),
     saveVersion: SAVE_VERSION,
     capturedAt: Date.now(),
     localizacao: { ...state.localizacao },
@@ -213,7 +237,9 @@ function validarSnapshot(candidato) {
     || typeof candidato.arquivos.enigmaIdentidadeResolvidoAntesReset !== "boolean"
   ) return null;
 
-  return copiarDados(candidato);
+  const exploration = validarExploracao(candidato);
+  if (!exploration) return null;
+  return { ...copiarDados(candidato), ...exploration };
 }
 
 function concluirResetRestaurado() {
@@ -244,6 +270,15 @@ function restaurarEstadoJogo(candidato) {
 
   state.modo = "livre";
   state.localizacao = snapshot.localizacao;
+  state.inventory = snapshot.inventory;
+  state.sceneState = snapshot.sceneState;
+  if (el.bagDialog.open && typeof el.bagDialog.close === "function") el.bagDialog.close();
+  el.interactionStatus.textContent = "";
+  state.bolsa.pagina = 1;
+  state.bolsa.pesquisa = "";
+  if (el.bagSearch) el.bagSearch.value = "";
+  state.bolsa.itemSelecionadoId = null;
+  renderizarBolsa();
   state.dialogo.linha = 0;
   state.dialogo.digitando = false;
   state.dialogo.timer = null;
@@ -347,6 +382,8 @@ function definirBotoes() {
   el.btnConversar.disabled = !livre;
   el.btnIrPara.disabled = !livre || !temDestinos();
   el.btnCelular.disabled = !livre;
+  el.btnBolsa.disabled = !livre;
+  el.hotspotLayer.inert = !livre;
 }
 
 function obterLocal() {
@@ -412,6 +449,8 @@ function trocarCenario(cena) {
   state.localizacao.cena = cena.id;
   DATA.cena = cena;
   el.cenario.src = cena.background;
+  renderizarObjetos();
+  el.interactionStatus.textContent = "";
 }
 
 function aplicarCena(cena) {
@@ -914,6 +953,13 @@ function criarComposicaoFoto(save) {
   mj.dataset.photoExpression = save.photoExpression;
 
   composicao.appendChild(cenario);
+  const cena = obterCenaDaFoto(save);
+  if (cena?.objects?.length) {
+    const objects = document.createElement("div");
+    objects.className = "photo-objects";
+    objects.replaceChildren(...criarObjetos(cena, save.saveState?.sceneState ?? {}));
+    composicao.appendChild(objects);
+  }
   composicao.appendChild(mj);
   return composicao;
 }
@@ -1236,6 +1282,40 @@ function voltarCelular() {
   fecharCelular();
 }
 
+el.btnBolsa.addEventListener("click", () => {
+  if (state.modo !== "livre") return;
+  fecharMenuIrPara();
+  state.bolsa.pagina = 1;
+  state.bolsa.pesquisa = "";
+  if (el.bagSearch) el.bagSearch.value = "";
+  renderizarBolsa();
+  if (typeof el.bagDialog.showModal === "function") el.bagDialog.showModal();
+});
+el.bagClose.addEventListener("click", () => {
+  if (typeof el.bagDialog.close === "function") el.bagDialog.close();
+});
+el.bagDialog.addEventListener("close", () => el.btnBolsa.focus());
+el.bagSearch.addEventListener("input", () => {
+  state.bolsa.pesquisa = el.bagSearch.value;
+  state.bolsa.pagina = 1;
+  renderizarBolsa();
+});
+el.bagSearchClear.addEventListener("click", () => {
+  el.bagSearch.value = "";
+  state.bolsa.pesquisa = "";
+  state.bolsa.pagina = 1;
+  if (typeof el.bagSearch.focus === "function") el.bagSearch.focus();
+  renderizarBolsa();
+});
+el.bagSearch.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && el.bagSearch.value) {
+    event.stopPropagation();
+    el.bagSearch.value = "";
+    state.bolsa.pesquisa = "";
+    state.bolsa.pagina = 1;
+    renderizarBolsa();
+  }
+});
 el.btnConversar.addEventListener("click", iniciarConversa);
 el.btnIrPara.addEventListener("click", alternarMenuIrPara);
 el.btnCelular.addEventListener("click", abrirCelular);
@@ -1288,3 +1368,361 @@ document.addEventListener("keydown", (event) => {
 
 aplicarCena(obterCenaAtual());
 atualizarCabecalhoMensagens();
+renderizarBolsa();
+
+function estadoDaCena(cena, source = state.sceneState) {
+  return { ...cena.initialState, ...source[cena.id] };
+}
+
+function condicoesAtendidas(conditions = {}, sceneState) {
+  return Object.entries(conditions).every(([key, value]) => sceneState[key] === value);
+}
+
+function validarExploracao(snapshot) {
+  const inventory = snapshot.inventory === undefined ? [] : snapshot.inventory;
+  const scenes = snapshot.sceneState === undefined ? {} : snapshot.sceneState;
+  if (!Array.isArray(inventory) || !inventory.every(id => Object.hasOwn(ITEMS, id))
+    || !scenes || typeof scenes !== "object" || Array.isArray(scenes)) return null;
+  const result = {};
+  const definitions = Object.values(DATA.locais).flatMap(local => Object.values(local.cenas));
+  for (const [id, values] of Object.entries(scenes)) {
+    const definition = definitions.find(cena => cena.id === id);
+    if (!definition?.initialState || !values || typeof values !== "object" || Array.isArray(values)) return null;
+    if (!Object.entries(values).every(([key, value]) => Object.hasOwn(definition.initialState, key)
+      && typeof value === typeof definition.initialState[key])) return null;
+    result[id] = { ...definition.initialState, ...values };
+  }
+  return { inventory: [...new Set(inventory)], sceneState: result };
+}
+
+function adicionarItem(id) {
+  if (!Object.hasOwn(ITEMS, id) || state.inventory.includes(id)) return false;
+  state.inventory.push(id);
+  renderizarBolsa();
+  return true;
+}
+
+function removerItem(id) {
+  const index = state.inventory.indexOf(id);
+  if (index < 0) return false;
+  state.inventory.splice(index, 1);
+  if (state.bolsa.itemSelecionadoId === id) {
+    state.bolsa.itemSelecionadoId = null;
+  }
+  renderizarBolsa();
+  return true;
+}
+
+function posicionarObjeto(element, rect) {
+  const [x, y, width, height] = rect;
+  element.style = `left:${x}%;top:${y}%;width:${width}%;height:${height}%;`;
+}
+
+function criarObjetos(cena, source = state.sceneState) {
+  const values = estadoDaCena(cena, source);
+  return (cena.objects ?? []).flatMap(object => {
+    const variant = object.variants.find(v => condicoesAtendidas(v.conditions, values));
+    if (!variant) return [];
+    const sprite = document.createElement("img");
+    sprite.className = "scene-object";
+    sprite.src = variant.asset;
+    sprite.alt = "";
+    sprite.draggable = false;
+    sprite.dataset.objectId = object.id;
+    posicionarObjeto(sprite, object.rect);
+    return [sprite];
+  });
+}
+
+function renderizarObjetos() {
+  const cena = obterCenaAtual();
+  el.objectLayer.replaceChildren(...criarObjetos(cena));
+  const values = estadoDaCena(cena);
+  el.hotspotLayer.replaceChildren(...(cena.hotspots ?? [])
+    .filter(h => condicoesAtendidas(h.conditions, values))
+    .map(h => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "scene-hotspot";
+      button.ariaLabel = h.ariaLabel;
+      button.dataset.hotspot = h.id;
+      posicionarObjeto(button, h.rect);
+      button.addEventListener("click", () => executarHotspot(h.id));
+      return button;
+    }));
+}
+
+// Optional selectedItem lets a future puzzle reuse this executor without a new inventory.
+function executarHotspot(id, selectedItem = null) {
+  if (state.modo !== "livre" || el.bagDialog.open) return false;
+  const cena = obterCenaAtual();
+  const h = cena.hotspots?.find(hotspot => hotspot.id === id);
+  if (!h || !["examine", "interact", "collect", "use_item", "trigger"].includes(h.type)
+    || !condicoesAtendidas(h.conditions, estadoDaCena(cena))) return false;
+  if (h.requiresItem && (!state.inventory.includes(h.requiresItem)
+    || (selectedItem !== null && selectedItem !== h.requiresItem))) {
+    el.interactionStatus.textContent = h.missingItemMessage ?? "Preciso de outro item para isso.";
+    return false;
+  }
+  if (h.type === "collect" && !adicionarItem(h.itemId)) return false;
+  state.sceneState[cena.id] = { ...estadoDaCena(cena), ...h.changes };
+  if (h.requiresItem && (h.consumeItem ?? ITEMS[h.requiresItem]?.consumable)) removerItem(h.requiresItem);
+  fecharMenuIrPara();
+  renderizarObjetos();
+  el.interactionStatus.textContent = h.message ?? "";
+  // Narrative hooks run after the atomic logical transition and may remove inventory items.
+  if (h.eventId) eventosInteracao[h.eventId]?.({ sceneId: cena.id, itemId: h.itemId });
+  registrarAutosave();
+  (el.hotspotLayer.firstElementChild ?? el.btnBolsa).focus();
+  return true;
+}
+
+function normalizarTexto(texto) {
+  return (texto ?? "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function obterItensFiltradosBolsa() {
+  const ids = state.inventory;
+  const termo = normalizarTexto(state.bolsa.pesquisa);
+  if (!termo) {
+    return ids.map(id => ITEMS[id]).filter(Boolean);
+  }
+  return ids
+    .map(id => ITEMS[id])
+    .filter(Boolean)
+    .filter(item => {
+      const nome = normalizarTexto(item.label);
+      const curto = normalizarTexto(item.shortLabel);
+      const desc = normalizarTexto(item.description);
+      const prop = normalizarTexto(item.purpose);
+      return nome.includes(termo) || curto.includes(termo) || desc.includes(termo) || prop.includes(termo);
+    });
+}
+
+function gerarNumerosPaginacao(paginaAtual, totalPaginas) {
+  if (totalPaginas <= 7) {
+    return Array.from({ length: totalPaginas }, (_, i) => i + 1);
+  }
+  if (paginaAtual <= 4) {
+    return [1, 2, 3, 4, 5, "…", totalPaginas];
+  }
+  if (paginaAtual >= totalPaginas - 3) {
+    return [1, "…", totalPaginas - 4, totalPaginas - 3, totalPaginas - 2, totalPaginas - 1, totalPaginas];
+  }
+  return [1, "…", paginaAtual - 1, paginaAtual, paginaAtual + 1, "…", totalPaginas];
+}
+
+function renderizarPaginacaoBolsa(totalPaginas) {
+  if (totalPaginas <= 1) {
+    el.bagPagination.hidden = true;
+    el.bagPagination.replaceChildren();
+    return;
+  }
+
+  el.bagPagination.hidden = false;
+  const botoes = [];
+
+  const btnAnterior = document.createElement("button");
+  btnAnterior.type = "button";
+  btnAnterior.className = "bag-page-btn bag-page-nav";
+  btnAnterior.textContent = "‹";
+  btnAnterior.setAttribute("aria-label", "Página anterior");
+  btnAnterior.disabled = state.bolsa.pagina <= 1;
+  btnAnterior.addEventListener("click", () => {
+    if (state.bolsa.pagina > 1) {
+      state.bolsa.pagina--;
+      renderizarBolsa();
+    }
+  });
+  botoes.push(btnAnterior);
+
+  const paginas = gerarNumerosPaginacao(state.bolsa.pagina, totalPaginas);
+  for (const p of paginas) {
+    if (p === "…") {
+      const ellipsis = document.createElement("span");
+      ellipsis.className = "bag-page-ellipsis";
+      ellipsis.textContent = "…";
+      ellipsis.setAttribute("aria-hidden", "true");
+      botoes.push(ellipsis);
+    } else {
+      const btnPagina = document.createElement("button");
+      btnPagina.type = "button";
+      btnPagina.className = "bag-page-btn";
+      if (p === state.bolsa.pagina) {
+        btnPagina.classList.add("bag-page-btn--active");
+        btnPagina.setAttribute("aria-current", "page");
+      }
+      btnPagina.textContent = String(p);
+      btnPagina.setAttribute("aria-label", `Página ${p} da Bolsa`);
+      btnPagina.addEventListener("click", () => {
+        state.bolsa.pagina = p;
+        renderizarBolsa();
+      });
+      botoes.push(btnPagina);
+    }
+  }
+
+  const btnProximo = document.createElement("button");
+  btnProximo.type = "button";
+  btnProximo.className = "bag-page-btn bag-page-nav";
+  btnProximo.textContent = "›";
+  btnProximo.setAttribute("aria-label", "Próxima página");
+  btnProximo.disabled = state.bolsa.pagina >= totalPaginas;
+  btnProximo.addEventListener("click", () => {
+    if (state.bolsa.pagina < totalPaginas) {
+      state.bolsa.pagina++;
+      renderizarBolsa();
+    }
+  });
+  botoes.push(btnProximo);
+
+  el.bagPagination.replaceChildren(...botoes);
+}
+
+function renderizarDetalhesBolsa() {
+  const item = ITEMS[state.bolsa.itemSelecionadoId];
+  if (!item) {
+    const emptyWrapper = document.createElement("div");
+    emptyWrapper.className = "bag-detail-empty";
+    const promptTitle = document.createElement("p");
+    promptTitle.className = "bag-detail-prompt-title";
+    promptTitle.textContent = "Selecione um item";
+    const promptSub = document.createElement("p");
+    promptSub.className = "bag-detail-prompt-sub";
+    promptSub.textContent = "Escolha um objeto da Bolsa para ver mais informações.";
+    emptyWrapper.appendChild(promptTitle);
+    emptyWrapper.appendChild(promptSub);
+    el.bagDetails.replaceChildren(emptyWrapper);
+    return;
+  }
+
+  const title = document.createElement("h3");
+  title.className = "bag-detail-title";
+  title.textContent = item.label;
+
+  const imageWrapper = document.createElement("div");
+  imageWrapper.className = "bag-detail-image-wrapper";
+  const image = document.createElement("img");
+  image.className = "bag-detail-img";
+  image.src = item.asset || "";
+  image.alt = "";
+  image.draggable = false;
+  imageWrapper.appendChild(image);
+
+  const funcSection = document.createElement("div");
+  funcSection.className = "bag-detail-section";
+  const funcTitle = document.createElement("h4");
+  funcTitle.className = "bag-detail-section-title";
+  funcTitle.textContent = "FUNÇÃO";
+  const funcText = document.createElement("p");
+  funcText.className = "bag-detail-text";
+  funcText.textContent = item.purpose || "—";
+  funcSection.appendChild(funcTitle);
+  funcSection.appendChild(funcText);
+
+  const descSection = document.createElement("div");
+  descSection.className = "bag-detail-section";
+  const descTitle = document.createElement("h4");
+  descTitle.className = "bag-detail-section-title";
+  descTitle.textContent = "DESCRIÇÃO";
+  const descText = document.createElement("p");
+  descText.className = "bag-detail-text";
+  descText.textContent = item.description || "—";
+  descSection.appendChild(descTitle);
+  descSection.appendChild(descText);
+
+  el.bagDetails.replaceChildren(title, imageWrapper, funcSection, descSection);
+}
+
+function renderizarBolsa() {
+  const totalItens = state.inventory.length;
+
+  if (totalItens === 0) {
+    el.bagSearchWrapper.hidden = true;
+    el.bagBody.hidden = true;
+    el.bagNoResults.hidden = true;
+    el.bagEmpty.hidden = false;
+    state.bolsa.itemSelecionadoId = null;
+    return;
+  }
+
+  el.bagEmpty.hidden = true;
+  el.bagSearchWrapper.hidden = false;
+  el.bagSearchClear.hidden = !state.bolsa.pesquisa;
+
+  const itensFiltrados = obterItensFiltradosBolsa();
+
+  if (itensFiltrados.length === 0) {
+    el.bagBody.hidden = true;
+    el.bagNoResults.hidden = false;
+    state.bolsa.itemSelecionadoId = null;
+    return;
+  }
+
+  el.bagNoResults.hidden = true;
+  el.bagBody.hidden = false;
+
+  const totalPaginas = Math.ceil(itensFiltrados.length / 9) || 1;
+  if (state.bolsa.pagina > totalPaginas) state.bolsa.pagina = totalPaginas;
+  if (state.bolsa.pagina < 1) state.bolsa.pagina = 1;
+
+  const inicio = (state.bolsa.pagina - 1) * 9;
+  const itensPagina = itensFiltrados.slice(inicio, inicio + 9);
+
+  const itemNaPagina = itensPagina.find(item => item.id === state.bolsa.itemSelecionadoId);
+  if (!itemNaPagina) {
+    state.bolsa.itemSelecionadoId = itensPagina[0]?.id ?? null;
+  }
+
+  const slots = [];
+  for (let i = 0; i < 9; i++) {
+    const item = itensPagina[i];
+    if (item) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "bag-slot bag-slot--filled";
+      if (item.id === state.bolsa.itemSelecionadoId) {
+        button.classList.add("bag-slot--selected");
+        button.setAttribute("aria-current", "true");
+      }
+      button.setAttribute("aria-label", item.label);
+      button.dataset.itemId = item.id;
+
+      const icon = document.createElement("img");
+      icon.className = "bag-slot-icon";
+      icon.src = item.asset || "";
+      icon.alt = "";
+      icon.draggable = false;
+
+      const label = document.createElement("span");
+      label.className = "bag-slot-label";
+      label.textContent = item.shortLabel ?? item.label;
+
+      button.appendChild(icon);
+      button.appendChild(label);
+
+      button.addEventListener("click", () => {
+        state.bolsa.itemSelecionadoId = item.id;
+        renderizarBolsa();
+      });
+
+      slots.push(button);
+    } else {
+      const emptySlot = document.createElement("div");
+      emptySlot.className = "bag-slot bag-slot--empty";
+      emptySlot.setAttribute("aria-hidden", "true");
+      slots.push(emptySlot);
+    }
+  }
+  el.bagGrid.replaceChildren(...slots);
+
+  renderizarPaginacaoBolsa(totalPaginas);
+  renderizarDetalhesBolsa();
+}
+
+const eventosInteracao = Object.create(null);
