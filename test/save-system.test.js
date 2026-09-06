@@ -134,6 +134,26 @@ function criarFoto(ambiente, nome) {
   return expressao;
 }
 
+test("composição resolve cada expressão fotográfica e mantém o cenário em imagem independente", () => {
+  const ambiente = criarAmbiente();
+  for (let numero = 1; numero <= 10; numero += 1) {
+    const id = `mj__photo__${String(numero).padStart(2, "0")}`;
+    const composicao = ambiente.executar(`criarComposicaoFoto({ sceneId: "beco_entrada", photoExpression: "${id}", saveState: { localizacao: { local: "beco" } } })`);
+    const fundo = composicao.children.find((filho) => filho.className === "photo-background");
+    const mj = composicao.children.find((filho) => filho.className === "photo-mj");
+    assert.equal(mj.src, `assets/sprites/mj/photo/${id}.png`);
+    assert.equal(mj.dataset.photoExpression, id);
+    assert.equal(fundo.src, ambiente.ler('DATA.locais.beco.cenas.beco_entrada.background'));
+  }
+});
+
+test("expressão fotográfica ausente ou desconhecida usa a pose neutra como fallback", () => {
+  const ambiente = criarAmbiente();
+  for (const id of [undefined, null, "", "mj__photo__99", "__proto__", "constructor", "toString"]) {
+    assert.equal(ambiente.executar(`obterSpriteFotografico(${JSON.stringify(id)})`), "assets/sprites/MJ.png");
+  }
+});
+
 test("foto manual persiste snapshot, cenário, data, nome e expressão entre reinicializações", () => {
   const storage = criarStorage();
   const primeiraSessao = criarAmbiente(storage);

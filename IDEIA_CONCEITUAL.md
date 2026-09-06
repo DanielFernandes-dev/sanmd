@@ -897,7 +897,7 @@ Antes de desenvolver a história completa, ainda precisam ser respondidas princi
 
 # 26. Pendências visuais prioritárias
 
-1. Expandir os sprites genéricos de MJ além da pose neutra já implementada.
+1. ~~Expandir os sprites genéricos de MJ além da pose neutra já implementada.~~ **(Concluído: 10 expressões fotográficas integradas em 06/09/2026)**
 2. Criar sprites genéricos de Lulith.
 3. Criar sprites genéricos de James.
 4. Criar cenários genéricos do começo do jogo.
@@ -989,6 +989,8 @@ Esses assets não representam o design final.
 - Gameplay também participa da narrativa.
 - Finais funcionam como perspectivas.
 - Existe um final verdadeiro ligado à compreensão completa.
+- **Sistema de Save/Load fotográfico implementado: até 9 saves manuais, 1 autosave separado, 10 expressões fotográficas da MJ integradas (06/09/2026).**
+- **Galeria funcional com composição 4:3 (cenário + sprite fotográfico), preview, detalhe, flash de 140ms, layout responsivo 3×3.**
 
 ## Ainda pendente
 
@@ -1002,7 +1004,6 @@ Esses assets não representam o design final.
 - Estrutura dos finais.
 - Final verdadeiro.
 - Regras definitivas do terminal.
-- Save por fotografias.
 - Sistema final de progresso.
 - Uso definitivo de ARG.
 - Papel definitivo da influência hentai.

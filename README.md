@@ -66,6 +66,7 @@ Já estão disponíveis:
 - Retorno contextual do celular pelo botão **Voltar** ou pela tecla `Escape`.
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
+- Sistema de Save/Load fotográfico com até 9 saves manuais, autosave separado e 10 expressões da MJ.
 
 > A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
@@ -173,13 +174,13 @@ Cenário
 O celular é a principal interface narrativa planejada. Seus aplicativos simulados são:
 
 - **Mensagens:** primeiro contato anônimo; permanece identificado como `???` durante toda a conversa inicial.
-- **Galeria:** fotografias, gravações e pistas visuais.
+- **Galeria:** fotografias com 10 expressões da MJ, gravações e pistas visuais (implementada com Save/Load fotográfico).
 - **Notas:** informações contextuais.
 - **Arquivos:** quatro registros anteriores ao reset, incluindo o enigma obrigatório `5-12-1`; após a limpeza, o aplicativo continua acessível, mas vazio.
 
 Na direção futura também estão previstos **Câmera**, **Terminal**, **Mapa**, **Progresso** e **Salvamento/replay**.
 
-Na V1 atual, **Mensagens** e o recorte pré-reset de **Arquivos** estão funcionais; Galeria e Notas ainda são elementos provisórios.
+Na V1 atual, **Mensagens**, **Galeria** (com 10 expressões fotográficas da MJ) e o recorte pré-reset de **Arquivos** estão funcionais; Notas permanece como elemento provisório.
 
 ## Escopo da V1
 

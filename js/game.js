@@ -893,7 +893,9 @@ function obterCenaDaFoto(save) {
 }
 
 function obterSpriteFotografico(expressao) {
-  return DATA.personagens.mj.fotografia.sprites[expressao] ?? DATA.personagens.mj.sprites.neutral;
+  const sprites = DATA.personagens.mj.fotografia.sprites;
+  const sprite = Object.hasOwn(sprites, expressao) ? sprites[expressao] : null;
+  return typeof sprite === "string" && sprite.length > 0 ? sprite : DATA.personagens.mj.sprites.neutral;
 }
 
 function criarComposicaoFoto(save) {

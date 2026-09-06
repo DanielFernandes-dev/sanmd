@@ -98,7 +98,18 @@ const DATA = {
       },
       fotografia: {
         expressoes: Array.from({ length: 10 }, (_, indice) => `mj__photo__${String(indice + 1).padStart(2, "0")}`),
-        sprites: {}
+        sprites: {
+          mj__photo__01: "assets/sprites/mj/photo/mj__photo__01.png",
+          mj__photo__02: "assets/sprites/mj/photo/mj__photo__02.png",
+          mj__photo__03: "assets/sprites/mj/photo/mj__photo__03.png",
+          mj__photo__04: "assets/sprites/mj/photo/mj__photo__04.png",
+          mj__photo__05: "assets/sprites/mj/photo/mj__photo__05.png",
+          mj__photo__06: "assets/sprites/mj/photo/mj__photo__06.png",
+          mj__photo__07: "assets/sprites/mj/photo/mj__photo__07.png",
+          mj__photo__08: "assets/sprites/mj/photo/mj__photo__08.png",
+          mj__photo__09: "assets/sprites/mj/photo/mj__photo__09.png",
+          mj__photo__10: "assets/sprites/mj/photo/mj__photo__10.png"
+        }
       }
     }
   },

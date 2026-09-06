@@ -56,7 +56,7 @@ O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato
 
 ## Referências
 
-- [`../../SAVE_LOAD_ATUAL.md#design-atual`](../../SAVE_LOAD_ATUAL.md#design-atual): composição visual e responsividade do celular e da Galeria, sem alteração do contrato de persistência.
+- [Design atual da Galeria](../../ESTRUTURA_GAMING.md#design-atual): composição visual e responsividade do celular e da Galeria, sem alteração do contrato de persistência.
 - [`../../ESTRUTURA_GAMING.md`](../../ESTRUTURA_GAMING.md): controles e contrato arquitetural do menu.
 - [`../../IDEIA_CONCEITUAL.md`](../../IDEIA_CONCEITUAL.md): direção minimalista da interface atual.
 - [`../../TODO.md`](../../TODO.md): implementação e validações pendentes.

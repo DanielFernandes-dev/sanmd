@@ -345,11 +345,13 @@
 
 ## Fase 10 — Produzir arte e apresentação provisórias
 
+Atualização baseada nas seções [Sistema de Save e Load](ESTRUTURA_GAMING.md#sistema-de-save-e-load) e [Expressões fotográficas da MJ](ESTRUTURA_GAMING.md#expressões-fotográficas-da-mj) da estrutura técnica consolidada.
+
 ### Objetivo e limites do recorte atual
 
 - [x] Usar a arte genérica somente para validar presença, escala, leitura e integração técnica.
 - [x] Manter o cenário atual, seu enquadramento e seus elementos visuais intactos durante a criação da primeira MJ.
-- [x] Usar somente uma pose neutra e estática de MJ durante o protótipo atual.
+- [x] Usar somente uma pose neutra e estática de MJ nas cenas narrativas do protótipo atual; as expressões fotográficas pertencem exclusivamente à Galeria.
 - [x] Não implementar animações internas, troca de frames, lip sync, piscadas ou respiração no sprite.
 - [x] Permitir somente transições de interface para a entrada e a saída da personagem na cena (sem animações internas no sprite).
 - [x] Não definir cabelo, roupa, proporções, acessórios ou identidade visual canônica de MJ.
@@ -433,6 +435,8 @@
 
 ### Sprites genéricos
 
+As poses abaixo são narrativas. As dez expressões da Galeria foram concluídas separadamente e não substituem essas entregas.
+
 - [x] Criar MJ neutra.
 - [ ] Criar MJ pensando ou analisando.
 - [ ] Criar MJ surpresa.
@@ -451,7 +455,30 @@
 ### Poses adiadas de MJ
 
 - [x] Não iniciar as poses pensando, surpresa, irritada e cansada antes de validar o sprite neutro.
-- [x] Reutilizar a pose neutra em todo o protótipo atual até uma nova decisão de escopo.
+- [x] Reutilizar a pose neutra nas cenas narrativas do protótipo atual; manter as expressões fotográficas independentes.
+
+### Expressões fotográficas da MJ — concluídas
+
+- [x] Produzir as dez expressões: sorriso, olhar suave, séria, pensativa, surpresa, irritada, alegre, triste, tímida e piscadinha.
+- [x] Entregar dez PNGs RGBA individuais em `assets/sprites/mj/photo/`, com canvas de `512×576`, proporção preservada e alinhamento central inferior.
+- [x] Remover cenário, molduras, labels, números e símbolos decorativos dos sprites, preservando transparência real.
+- [x] Mapear `mj__photo__01` a `mj__photo__10` em `DATA.personagens.mj.fotografia.sprites`, sem alterar os IDs persistidos.
+- [x] Preservar `assets/sprites/MJ.png` como fallback para expressão ausente ou inválida.
+- [x] Compor cenário e MJ como imagens independentes, usando interpolação `auto` no sprite fotográfico.
+- [x] Registrar a produção assistida por IA, os prompts e o contrato dos assets.
+- [x] Inspecionar os dez sprites sobre quadriculado e cenário do jogo no Chromium e verificar uma foto registrada na Galeria.
+- [x] Copiar os dez sprites para `www/` e confirmar a correspondência com os arquivos-fonte.
+
+### Apresentação do celular e da Galeria
+
+- [x] Implementar a identidade rosa/lilás da MJ em HTML/CSS, com wallpaper e painéis escuros translúcidos.
+- [x] Usar `celular.png` e `save.png` somente como referências visuais, mantendo controles reais na interface.
+- [x] Organizar a tela inicial com Mensagens, Galeria e Arquivos, removendo Notas.
+- [x] Criar grade 3×3 com nove posições, contador, espaços livres e fotografias com nome, data e hora.
+- [x] Implementar preview com nome, confirmação e cancelamento, além de detalhe com carregar, excluir e voltar.
+- [x] Reutilizar a composição fotográfica 4:3 na miniatura, no preview e no detalhe.
+- [x] Implementar flash de 140 ms, estados desabilitados, foco visível e mensagens de status acessíveis.
+- [x] Implementar layout responsivo com rolagem interna e suporte a `prefers-reduced-motion` no overlay e no flash.
 
 ### Cenários genéricos — início da produção
 
@@ -503,6 +530,8 @@ Prioridade de criação (validação → fluxo canônico):
 
 ## Fase 11 — Estabilizar e testar
 
+O recorte de Save/Load abaixo está implementado e testado no protótipo atual, conforme [Sistema de Save e Load](ESTRUTURA_GAMING.md#sistema-de-save-e-load) e [Expressões fotográficas da MJ](ESTRUTURA_GAMING.md#expressões-fotográficas-da-mj) em `ESTRUTURA_GAMING.md`. Isso não conclui a validação do fluxo canônico completo do Ato I, de acessibilidade ou de Android.
+
 ### Fluxo narrativo
 
 - [ ] Jogar da escolha do nome até a cutscene final do Ato I.
@@ -527,6 +556,22 @@ Prioridade de criação (validação → fluxo canônico):
 
 ### Estado e persistência
 
+- [x] Separar repositório de armazenamento, snapshot narrativo, metadados fotográficos, Galeria e autosave.
+- [x] Persistir até nove saves manuais e um autosave separado em `localStorage`, com versões de armazenamento e snapshot.
+- [x] Capturar, validar e restaurar o estado existente no protótipo, excluindo DOM, timers e estado transitório da interface.
+- [x] Testar persistência entre inicializações de cena, nome da fotografia, data, expressão e snapshot.
+- [x] Testar criação com flash e preview, cancelamento sem consumo de slot, recusa do décimo save e exclusão com liberação de espaço.
+- [x] Sortear a expressão somente ao criar a captura, evitar repetição imediata e reutilizar o ID persistido ao reabrir ou carregar.
+- [x] Testar restauração de cena, flags, mensagens e progresso sem aplicar a expressão fotográfica à pose narrativa.
+- [x] Rejeitar snapshots corrompidos antes de alterar a sessão, preservando os demais saves.
+- [x] Reconstruir os conjuntos de arquivos vistos e normalizar ou reagendar o reset remoto durante a restauração.
+- [x] Criar/substituir autosave ao encerrar conversa ou concluir reset remoto, sem ocupar posições na Galeria.
+- [x] Testar que carregar uma fotografia manual preserva o autosave existente.
+- [ ] Criar interface dedicada para carregar o autosave.
+- [ ] Implementar migrations quando houver evolução incompatível do formato dos saves.
+
+Validação do Ato I completo ainda pendente (o nome da fotografia não equivale ao nome escolhido pelo jogador):
+
 - [ ] Recarregar o jogo em cada fase e validar a restauração.
 - [ ] Fechar e reabrir durante diálogos, investigação, puzzles e mensagens.
 - [ ] Confirmar persistência do nome escolhido.
@@ -536,6 +581,11 @@ Prioridade de criação (validação → fluxo canônico):
 - [ ] Impedir estados impossíveis ou progressão fora de ordem.
 
 ### Interface e acessibilidade
+
+- [x] Verificar no Chromium a decodificação dos dez PNGs, a composição sobre cenário e a captura/registro de uma foto na Galeria.
+- [x] Implementar navegação interna da Galeria: preview/detalhe → grade → tela inicial → fechar celular.
+- [x] Fechar Galeria e celular após Load e devolver o foco ao botão do celular no gameplay.
+- [x] Disponibilizar confirmações nativas para carregar e excluir fotografias.
 
 - [ ] Validar visualmente o menu Ir para com um destino em `beco_entrada` e `beco_fundo`.
 - [ ] Validar visualmente o menu Ir para com dois destinos em `beco_interior`.
@@ -569,6 +619,11 @@ Prioridade de criação (validação → fluxo canônico):
 - [x] Substituir o `npm test` provisório por uma suíte funcional.
 - [x] Cobrir por testes a navegação de ida e volta, bloqueio de saltos e destinos exibidos nas três cenas do beco.
 - [x] Cobrir por testes a semântica e o contrato visual dos três ícones principais.
+- [x] Cobrir Save/Load, limite de slots, sorteio, corrupção e autosave em `test/save-system.test.js`.
+- [x] Cobrir os dez IDs e caminhos, arquivos distintos, dimensões e transparência dos PNGs em `test/photo-assets.test.js`.
+- [x] Cobrir resolução de sprite, cenário independente e fallback para IDs ausentes ou inválidos.
+- [x] Executar `npm test` após a integração fotográfica, com os seis arquivos de teste aprovados.
+- [x] Executar `npm run copy:web` e verificar sprites, scripts, CSS e README copiados para `www/`.
 - [ ] Corrigir o pacote do teste instrumentado Android.
 - [ ] Executar `npm run sync` em ambiente Android configurado.
 - [ ] Gerar o APK de debug.

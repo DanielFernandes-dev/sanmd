@@ -609,7 +609,7 @@ button:hover:not(:disabled) .action-icon {
   width: auto;
   transform: translateX(-50%);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.8));
-  image-rendering: pixelated;
+  image-rendering: auto;
 }
 
 #gallery-photo-form,

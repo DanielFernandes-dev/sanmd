@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-05
+updated: 2026-09-06
 ---
 
 # Estrutura Gaming
@@ -30,6 +30,8 @@ updated: 2026-09-05
 - [[ESTRUTURA_GAMING#Controles E Botões|Controles E Botões]]
 - [[ESTRUTURA_GAMING#Interface Do Celular|Interface Do Celular]]
 - [[ESTRUTURA_GAMING#Aplicativo Mensagens|Aplicativo Mensagens]]
+- [[ESTRUTURA_GAMING#Sistema de Save e Load|Sistema de Save e Load]]
+- [[ESTRUTURA_GAMING#Expressões fotográficas da MJ|Expressões fotográficas da MJ]]
 - [[ESTRUTURA_GAMING#Timers E Ritmo|Timers E Ritmo]]
 - [[ESTRUTURA_GAMING#Interface E Acessibilidade|Interface E Acessibilidade]]
 - [[ESTRUTURA_GAMING#Execução E Android|Execução E Android]]
@@ -55,6 +57,8 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 - Monólogos condicionados ao progresso da conversa.
 - Tela inicial do celular com relógio e data reais.
 - Aplicativo Mensagens funcional.
+- Galeria com até nove saves manuais, Load e exclusão, além de um autosave separado.
+- Dez expressões fotográficas transparentes da MJ, independentes da pose narrativa.
 - Aplicativo Arquivos com primeiro enigma e registros opcionais anteriores ao reset.
 - Respostas selecionáveis com ramificações curtas.
 - Cooldown antes da primeira resposta do dono.
@@ -112,14 +116,14 @@ O elenco terá no máximo seis personagens principais/relevantes. Não haverá r
 | Aplicativo | Função planejada | Status atual |
 |---|---|---|
 | Mensagens | Conversas com Lulith e escolhas narrativas | Primeiro contato canônico e anônimo funcional |
-| Galeria | Fotografias, gravações e pistas | Placeholder |
-| Câmera | Registro e possível save por fotografia | Não implementado; conceito provisório |
-| Notas | Informações contextuais | Placeholder |
+| Galeria | Fotografias, gravações e pistas | Save/Load fotográfico implementado; gravações e pistas futuras |
+| Câmera | Registro e save por fotografia | Captura integrada à Galeria; sem aplicativo separado ou screenshot real |
+| Notas | Informações contextuais | Removido da tela inicial; sem implementação |
 | Arquivos | Documentos e conteúdo oculto | Quatro registros pré-reset; vazio após a limpeza |
 | Terminal | Puzzles e acesso a informações escondidas | Não implementado |
 | Mapa | Coordenadas, locais e deslocamento | Não implementado |
 | Progresso | Percentual da investigação reconstruída | Não implementado |
-| Salvamento/replay | Retomada e novas perspectivas | Não implementado |
+| Salvamento/replay | Retomada e novas perspectivas | Save/Load manual e autosave implementados; replay pendente |
 
 ### Direção Visual
 
@@ -133,7 +137,7 @@ Este roadmap descreve a sequência que já funciona durante uma partida.
 
 1. `index.html` monta a cena, os três controles sobrepostos e o celular oculto.
 2. `js/data.js` disponibiliza locais, cenas, destinos, monólogos e árvore de mensagens.
-3. `js/game.js` cria o estado inicial em modo `livre`.
+3. `js/save-system.js` disponibiliza o repositório de persistência; `js/game.js` cria o estado inicial em modo `livre`.
 4. **Conversar**, **Ir para** e **Celular** ficam disponíveis conforme o estado e os destinos da cena.
 
 ### Etapa 2 — Cena Livre
@@ -159,10 +163,9 @@ O celular abre sempre na tela inicial e apresenta:
 - Sinal e bateria decorativos.
 - Mensagens.
 - Galeria.
-- Notas.
 - Arquivos.
 
-**Mensagens** e **Arquivos** possuem comportamento implementado. Mensagens fica acessível desde o início. Três arquivos podem liberar opções condicionais durante a conversa; `REMETENTE.enc` aparece somente quando a conversa termina e o cronômetro do reset começa. Após a limpeza, os dois aplicativos continuam acessíveis, mas não exibem conteúdo.
+**Mensagens**, **Galeria** e **Arquivos** possuem comportamento implementado. A Galeria cria, carrega e exclui saves fotográficos. Mensagens fica acessível desde o início. Três arquivos podem liberar opções condicionais durante a conversa; `REMETENTE.enc` aparece somente quando a conversa termina e o cronômetro do reset começa. Após a limpeza, os dois aplicativos continuam acessíveis, mas não exibem conteúdo.
 
 ### Etapa 5 — Primeira Mensagem Do Protagonista
 
@@ -235,7 +238,8 @@ Depois da última resposta do contato:
 ├── styles.css                 # Layout, animações e responsividade
 ├── js/
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
-│   └── game.js                # Estado, regras e renderização
+│   ├── game.js                # Estado, regras, snapshots e renderização
+│   └── save-system.js         # Repositório de saves manuais e autosave
 ├── assets/                    # Arte-fonte provisória
 │   ├── cenario/               # Fundos navegáveis e contrato em README.md
 │   ├── interfaces/            # Ícones principais e contrato em README.md
@@ -488,7 +492,7 @@ Esse contrato permite alterar medidas finas e tratamento responsivo sem acoplar 
 | Controle | Elemento | Função |
 |---|---|---|
 | Mensagens | `#btn-mensagens.app` | Abre o primeiro contato |
-| Galeria e Notas | `.app:disabled` | Placeholders indisponíveis |
+| Galeria | `#btn-galeria.app` | Abre os saves fotográficos |
 | Arquivos | `#btn-arquivos.app` | Abre os registros do aparelho |
 | Respostas | `#messages-choices .message-choice` | Executa `escolherResposta()` |
 | Arquivo | `button.file-entry` | Abre o visualizador |
@@ -513,6 +517,7 @@ Esse contrato permite alterar medidas finas e tratamento responsivo sem acoplar 
 O botão **Voltar** utiliza a tela atual:
 
 - `mensagens` → `inicio`.
+- Galeria: preview/detalhe → grade → `inicio`.
 - `inicio` → fecha o celular.
 
 Ao fechar o aparelho:
@@ -527,8 +532,8 @@ Ao fechar o aparelho:
 | Aplicativo | Status |
 |---|---|
 | Mensagens | Funcional |
-| Galeria | Placeholder sem ação |
-| Notas | Placeholder sem ação |
+| Galeria | Captura, preview, saves manuais, Load e exclusão |
+| Notas | Removido da tela inicial |
 | Arquivos | Quatro registros antes do reset; aplicativo vazio após a limpeza |
 
 ## Aplicativo Mensagens
@@ -646,8 +651,8 @@ const CONFIG = Object.freeze({
 
 Se o celular for fechado durante o cooldown, o timer é cancelado, mas o horário final permanece. Ao retornar a Mensagens, o código calcula o tempo restante.
 
-> [!note] Persistência limitada
-> Histórico, cooldown e progresso sobrevivem à navegação interna, mas não a um recarregamento, fechamento do navegador ou encerramento do aplicativo.
+> [!note] Retomada por snapshot
+> Histórico, deadlines e progresso integram os snapshots persistidos. O Load manual restaura o momento salvo e normaliza ou reagenda timers; não há gravação a cada clique nem interface dedicada para carregar o autosave. Se `localStorage` estiver indisponível, o fallback em memória não sobrevive ao encerramento.
 
 ## Interface E Acessibilidade
 
@@ -736,16 +741,17 @@ Abrir `http://localhost:8000`.
 | Respostas selecionáveis | Implementado | Opções básicas e adicionais liberadas por pistas examinadas |
 | Cooldown inicial | Implementado | 1 minuto |
 | Entrega sequencial | Implementado | Uma mensagem por vez |
-| Histórico na sessão | Implementado | Somente em memória |
+| Histórico | Implementado | Em memória durante a sessão e nos snapshots persistidos |
 | Voltar e Escape | Implementado | Navegação contextual web |
 | Responsividade | Parcial | CSS existe; validação pendente |
 | Capacitor Android | Parcial | Configurado; build pendente |
-| Galeria | Placeholder | Sem ação |
-| Notas | Placeholder | Sem ação |
+| Galeria | Implementado | Nove saves manuais, preview, detalhe, Load e exclusão |
+| Notas | Removido | Ausente da tela inicial |
 | Arquivos | Parcial | Quatro registros pré-reset; acessível e vazio após a limpeza |
 | Reset remoto | Implementado | Arquiva pistas e chat, limpa o acesso normal e restaura a tela inicial |
 | Puzzle de identidade | Implementado | `5-12-1` deve ser decodificado como `ELA` durante o cronômetro |
-| Persistência permanente | Não implementado | Sem save/localStorage |
+| Persistência local | Implementado | `localStorage`, snapshots versionados, até nove saves manuais e um autosave |
+| Expressões fotográficas | Implementado | Dez PNGs transparentes independentes da pose narrativa |
 | Investigação | Não implementado | Planejado no GDD |
 | Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
@@ -768,7 +774,7 @@ Abrir `http://localhost:8000`.
 
 ### Sistemas
 
-- Estado volátil sem save/load.
+- Persistência limitada às estruturas narrativas do protótipo; sem migrations entre versões incompatíveis ou cloud save.
 - Sem gerenciamento de múltiplas partidas.
 - Sem sistema de inventário ou evidências.
 - Sem eventos de cenário.
@@ -777,7 +783,7 @@ Abrir `http://localhost:8000`.
 
 ### Interface
 
-- Galeria e Notas permanecem visíveis como planejamento, mas estão desabilitadas e identificadas como indisponíveis.
+- A Galeria é funcional; faltam interface dedicada para carregar autosave e modais próprios de confirmação. Notas foi removido da tela inicial.
 - O overlay não possui trava completa de foco.
 - O botão físico Voltar do Android não possui tratamento específico.
 - Bateria e sinal são decorativos.
@@ -835,13 +841,17 @@ Status: **planejada**.
 
 ### Fase 3 — Persistência E Aplicativos
 
-Status: **planejada**.
+Status: **parcialmente implementada no protótipo atual**.
 
-- [ ] Salvar histórico e progresso.
-- [ ] Restaurar sessão após fechar o jogo.
-- [ ] Implementar Galeria.
-- [ ] Implementar Câmera e avaliar save por fotografias.
-- [ ] Implementar Notas.
+- [x] Salvar histórico e progresso existentes em snapshots versionados.
+- [x] Restaurar um save manual persistido após fechar o jogo.
+- [x] Implementar Galeria.
+- [x] Implementar captura e save por fotografias dentro da Galeria.
+- [x] Integrar dez expressões fotográficas transparentes da MJ.
+- [x] Implementar autosave separado dos nove saves manuais.
+- [ ] Criar interface para carregar o autosave.
+- [ ] Implementar migrations para futuras versões incompatíveis.
+- [ ] Reavaliar Notas antes de uma eventual implementação; aplicativo removido da tela inicial.
 - [x] Implementar o recorte pré-reset de Arquivos.
 - [ ] Expandir Arquivos para os documentos dos atos posteriores.
 - [ ] Implementar Mapa.
@@ -900,6 +910,977 @@ Status: **planejada para o Protótipo 3**.
 - [ ] Executar `npm run sync` em ambiente Android configurado.
 - [ ] Gerar e instalar o APK de debug.
 
+
+## Sistema de Save e Load
+
+Este documento registra a implementação atual do sistema de persistência e o design visual usado pela Galeria do celular.
+
+### Visão Geral
+
+O sistema usa fotografias como apresentação dos saves manuais, mas mantém o snapshot do estado do jogo como fonte real de verdade.
+
+```text
+SAVE STATE
+  Estado narrativo necessário para restaurar a campanha
+
+PHOTO METADATA
+  ID, nome, data, expressão fotográfica e cena
+
+PHOTO PRESENTATION
+  Cenário + sprite fotográfico da MJ
+
+GALLERY
+  Interface de criação, visualização, load e exclusão
+
+AUTOSAVE
+  Checkpoint único e automático, separado da Galeria
+```
+
+Existem duas categorias independentes:
+
+| Categoria | Quantidade | Aparece na Galeria | Nome | Expressão fotográfica |
+|---|---:|---|---|---|
+| Save manual | Até 9 | Sim | Informado pelo jogador | Sim |
+| Autosave | 1 | Não | Não | Não |
+
+### Arquivos Responsáveis
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `js/save-system.js` | Repositório, leitura e escrita no `localStorage`, limite de saves e separação do autosave |
+| `js/game.js` | Captura, validação e restauração do snapshot; regras e renderização da Galeria; gatilhos de autosave |
+| `js/data.js` | Contrato lógico das dez expressões fotográficas da MJ |
+| `index.html` | Estrutura das telas de grade, preview e detalhe |
+| `styles.css` | Design visual, composição das fotografias, flash e layout 3×3 |
+| `test/save-system.test.js` | Testes de persistência, slots, expressões, load, corrupção e autosave |
+| `docs/SAVE_SYSTEM.md` | Contrato arquitetural resumido da persistência |
+
+O projeto não usa framework, store externo ou roteador. O sistema foi integrado ao objeto `state`, às funções de renderização e ao roteamento manual do celular já existentes.
+
+### Camadas
+
+#### Save Storage
+
+`criarSaveRepository(storage)` em `js/save-system.js` isola a tecnologia física de armazenamento.
+
+A implementação usa:
+
+```text
+localStorage key: sanmd:saves
+storageVersion: 1
+```
+
+Quando `localStorage` não está disponível, o repositório usa memória temporária. Esse fallback atende testes e ambientes sem armazenamento, mas não sobrevive ao encerramento da aplicação.
+
+API atual do repositório:
+
+```js
+listarManuais()
+obterAutosave()
+criarManual(save)
+excluirManual(id)
+salvarAutosave(autosave)
+```
+
+A interface não acessa `localStorage` diretamente.
+
+#### Save State
+
+`capturarEstadoJogo()` cria um DTO serializável. `validarSnapshot()` verifica o DTO antes do load. `restaurarEstadoJogo()` aplica o snapshot validado e recompõe a interface de gameplay.
+
+#### Photo Save
+
+O save manual combina metadados da fotografia e o snapshot:
+
+```js
+{
+  id: "foto-...",
+  name: "Antes do cofre",
+  createdAt: 1788583680000,
+  photoExpression: "mj__photo__04",
+  sceneId: "beco_interior",
+  saveState: { /* snapshot versionado */ }
+}
+```
+
+#### Gallery UI
+
+A Galeria mantém apenas estado transitório em `state.galeria`:
+
+```js
+{
+  saves: [],
+  visualizacao: "grade",
+  capturaPendente: null,
+  selecionadoId: null,
+  flashTimer: null
+}
+```
+
+Esse estado controla a interface e nunca integra o snapshot narrativo.
+
+#### Autosave
+
+`registrarAutosave()` captura o mesmo formato de snapshot, mas salva um registro próprio:
+
+```js
+{
+  id: "autosave",
+  createdAt: 1788583680000,
+  saveState: { /* snapshot versionado */ }
+}
+```
+
+O registro não contém nome, cena fotográfica ou expressão da MJ.
+
+### Estrutura Persistida
+
+A coleção completa no `localStorage` segue este formato:
+
+```js
+{
+  storageVersion: 1,
+  manualSaves: [/* zero a nove PhotoSave */],
+  autosave: null // ou o checkpoint automático mais recente
+}
+```
+
+`storageVersion` versiona o recipiente. `saveVersion` versiona cada snapshot.
+
+### Snapshot Versão 1
+
+```js
+{
+  saveVersion: 1,
+  capturedAt: 1788583680000,
+
+  localizacao: {
+    local: "beco",
+    cena: "beco_interior"
+  },
+
+  dialogo: {
+    faseMonologo: "aposPrimeiroEnvio",
+    rotaMonologoArquivo: null
+  },
+
+  celular: {
+    resetAte: null,
+    resetStatus: "inativo"
+  },
+
+  arquivos: {
+    vistos: ["rota"],
+    vistosAntesReset: [],
+    enigmaIdentidadeResolvido: false,
+    enigmaIdentidadeResolvidoAntesReset: false
+  },
+
+  mensagens: {
+    etapa: "explicar-escolha",
+    historico: [],
+    donoRespondendo: false,
+    donoDigitando: false,
+    fila: [],
+    proximaEtapa: null,
+    cooldownAte: null,
+    historicoAntesReset: []
+  }
+}
+```
+
+#### Estado Não Persistido
+
+Os seguintes dados são transitórios ou derivados e não entram no snapshot:
+
+- handles de `setTimeout` e `setInterval`;
+- `AudioContext`;
+- app/tela atualmente aberta no celular;
+- grade, detalhe, preview e formulário da Galeria;
+- flash e captura ainda não confirmada;
+- foco e posição de scroll;
+- classes CSS e animações em andamento;
+- texto parcialmente digitado;
+- arrays de falas derivados de `DATA`;
+- expressão fotográfica como pose narrativa;
+- referências de elementos do DOM.
+
+### Fluxo do Save Manual
+
+```text
+Gameplay livre
+  -> Celular
+  -> Galeria
+  -> TIRAR FOTO
+  -> criar captura temporária
+  -> sortear expressão fotográfica
+  -> capturar snapshot
+  -> flash de 140 ms
+  -> preview
+  -> informar nome
+  -> CONFIRMAR
+  -> persistir fotografia e snapshot
+  -> retornar à grade
+```
+
+Ao selecionar `CANCELAR`, a captura temporária é descartada. Nenhum slot é consumido.
+
+#### Limite de Slots
+
+A grade sempre possui nove posições:
+
+```text
+[ 1 ] [ 2 ] [ 3 ]
+[ 4 ] [ 5 ] [ 6 ]
+[ 7 ] [ 8 ] [ 9 ]
+```
+
+Com nove saves:
+
+- o contador mostra `9/9`;
+- `TIRAR FOTO` fica desabilitado;
+- uma mensagem informa que a Galeria está cheia;
+- nenhuma fotografia é sobrescrita;
+- excluir um registro libera exatamente uma posição.
+
+Cada fotografia possui ID próprio. Sua identidade não depende da posição visual ocupada na grade.
+
+### Expressões Fotográficas
+
+Os IDs lógicos ficam em `DATA.personagens.mj.fotografia.expressoes`:
+
+```text
+mj__photo__01
+mj__photo__02
+...
+mj__photo__10
+```
+
+Regras atuais:
+
+- uma expressão é sorteada na criação da captura temporária;
+- o ID é persistido nos metadados;
+- a mesma fotografia sempre reutiliza o ID armazenado;
+- a expressão anterior é removida do próximo sorteio quando existem alternativas;
+- abrir a Galeria, reiniciar ou carregar não executa novo sorteio;
+- a expressão nunca altera `state.dialogo` ou a pose narrativa da MJ.
+
+Os dez sprites exclusivos estão integrados em `assets/sprites/mj/photo/`. O renderer consulta `DATA.personagens.mj.fotografia.sprites` e usa `assets/sprites/MJ.png` como fallback para IDs ausentes ou inválidos.
+
+Registro histórico: antes da integração, os dez sprites ainda não existiam e todas as fotografias usavam o fallback neutro.
+
+O mapeamento atual segue este formato (o exemplo anterior usava o caminho provisório `assets/sprites/mj/photo-01.png`):
+
+```js
+DATA.personagens.mj.fotografia.sprites.mj__photo__01 = "assets/sprites/mj/photo/mj__photo__01.png";
+```
+
+Os IDs atuais devem permanecer estáveis para não invalidar saves existentes.
+
+### Fluxo de Load
+
+```text
+Galeria
+  -> selecionar fotografia
+  -> detalhe
+  -> CARREGAR
+  -> confirmação "Voltar para este momento?"
+  -> validar snapshot completo
+  -> cancelar timers ativos
+  -> restaurar estado narrativo
+  -> reconstruir Set de arquivos vistos
+  -> normalizar ou reagendar reset remoto
+  -> resolver cenário pelos IDs de local/cena
+  -> fechar Galeria e celular
+  -> retornar ao gameplay livre
+```
+
+A validação acontece antes da primeira mutação. Um save inválido:
+
+- não altera a sessão atual;
+- apresenta uma mensagem segura na Galeria;
+- não remove nem bloqueia os outros saves;
+- continua podendo ser excluído deliberadamente.
+
+O cenário é restaurado por ID lógico. O sistema não tenta deduzir estado a partir da imagem.
+
+### Fluxo de Exclusão
+
+```text
+Detalhe
+  -> EXCLUIR
+  -> confirmação
+  -> remover somente o ID selecionado
+  -> atualizar contador e grade
+```
+
+A exclusão não modifica:
+
+- o progresso atual da campanha;
+- outras fotografias;
+- o autosave.
+
+### Fluxo de Autosave
+
+Os gatilhos lógicos atuais são:
+
+```text
+encerrarConversa()
+  -> limpar estado transitório do diálogo
+  -> definir modo livre
+  -> registrarAutosave()
+  -> devolver controles
+```
+
+```text
+concluirResetRemoto()
+  -> aplicar limpeza e flags finais
+  -> registrarAutosave()
+  -> liberar navegação do celular
+```
+
+Não criam autosave:
+
+- cada fala ou clique;
+- troca comum de cenário;
+- abertura do celular;
+- abertura da Galeria;
+- criação de fotografia manual;
+- load de fotografia manual.
+
+Carregar um save manual antigo preserva o autosave existente. O checkpoint só é substituído quando outra cutscene termina após o load.
+
+### Design Atual
+
+#### Direção Visual
+
+A tela inicial e a Galeria têm uma identidade pessoal da MJ, com tons rosa/lilás, painéis escuros translúcidos e fotografias de moldura clara. A interface é composta por HTML/CSS, não por uma imagem de mockup aplicada sobre os controles.
+
+| Elemento | Aparência atual |
+|---|---|
+| Fundo de `#phone-screen` | `wallpaper.png` centralizado, `cover`, sem repetição, sob gradiente escuro com opacidades de 0,3 a 0,5 |
+| Fundo da Galeria | Gradiente translúcido de `rgba(17, 18, 36, 0.85)` nas extremidades e `rgba(32, 23, 48, 0.55)` em 55% |
+| Cabeçalho da Galeria | `rgba(20, 20, 40, 0.65)`, divisor `rgba(218, 180, 197, 0.25)` e título `#f3dbe9` |
+| Textos secundários | Subtítulo `#d0c7de`, contador `#f1d9e7`, status `#ffe0ba` e data do detalhe `#e0d0e7` |
+| Destaque e ações | Gradiente rosa `#ad416b` a `#813551`, borda `#efa4c1` e texto `#fff4f8` |
+| Fotografias | Moldura `#efe3da`, nome `#292333` na grade e metadados `#514254` |
+| Exclusão | Borda `#ff667d`, fundo vinho `#35151d` e texto `#ffb0bd` |
+| Tipografia técnica | `Courier New`, monoespaçada |
+| Tipografia geral | `Trebuchet MS`, `Segoe UI`, Verdana |
+| Assinaturas decorativas | MJ com coração, em cursiva itálica rosa e `aria-hidden="true"` |
+
+O frame tem borda de `3px` em `#655367`, raio de `34px`, fundo em gradiente `#423c53`, `#161622` e `#392e49`, além de sombras externa e interna. A tela tem raio de `24px`. O overlay escurece o gameplay com `rgba(4, 6, 12, 0.88)` e desfoque de `3px`.
+
+Na tela inicial, a assinatura fica no alto à direita; data e apps ficam na parte inferior. A grade de apps ocupa toda a largura disponível em duas colunas, com intervalo de `10px`. Os botões têm fundo roxo translúcido no modelo de ícone do mockup (ícone em cima, rótulo embaixo), e Galeria recebe destaque rosa. Apenas Mensagens, Galeria e Arquivos existem; a Notas foi removida. O botão **Voltar** na barra inferior usa a mesma modelagem de ícone do celular: tile quadrado arredondado, translúcido, com seta rosa e rótulo "Voltar". A data aparece em um painel escuro translúcido arredondado.
+
+#### Assets e Referências
+
+Os arquivos permanecem na pasta real `assets/interfaces/`, no plural:
+
+| Arquivo PNG | Dimensões e modo | Uso |
+|---|---|---|
+| `wallpaper.png` | 940×1672, RGB | Único PNG desta pasta usado em runtime pelo redesign; fundo de `#phone-screen` com `center / cover no-repeat` |
+| `celular.png` | 1225×1284, RGBA | Exclusivamente mockup de referência do celular |
+| `save.png` | 1161×1355, RGB | Exclusivamente mockup de referência da Galeria/save |
+
+`celular.png` e `save.png` nunca são usados como UI nem como sprites da MJ. O wallpaper é declarado somente em `#phone-screen`; os painéis translúcidos da Galeria deixam esse fundo aparecer sem repetir o asset. Cenários e sprites fotográficos continuam sendo assets separados.
+
+`copy:web` já copia recursivamente toda a pasta `assets` para `www/`, incluindo `assets/interfaces/` e os mockups. Estar no pacote não significa ser utilizado em runtime; não é necessário alterar o script nem renomear a pasta.
+
+#### Tela da Galeria
+
+A tela é uma coluna flexível formada por:
+
+```text
+┌───────────────────────────┐
+│ GALERIA              MJ   │
+│ Seus momentos salvos.     │
+├───────────────────────────┤
+│ 0/9          TIRAR FOTO   │
+├───────────────────────────┤
+│ mensagem de status        │
+│                           │
+│ [foto] [foto] [vazio]     │
+│ [foto] [vazio] [vazio]    │
+│ [vazio][vazio] [vazio]    │
+├───────────────────────────┤
+│ ◀ VOLTAR                  │
+└───────────────────────────┘
+```
+
+O cabeçalho da Galeria é alinhado à esquerda, com subtítulo e assinatura decorativa à direita; seu acabamento translúcido é específico, diferente dos cabeçalhos de Mensagens e Arquivos. A toolbar separa o contador da ação principal. A barra de status do celular fica acima da Galeria, e a navegação geral fica abaixo, fora da seção `#phone-gallery`.
+
+#### Grade 3×3
+
+`#gallery-grid` usa três colunas `minmax(0, 1fr)` e três linhas `minmax(112px, 1fr)`, com espaçamento de `6px`, padding `0 10px 10px` e rolagem vertical quando não há altura suficiente.
+
+Slots vazios:
+
+- fundo escuro translúcido `rgba(20, 20, 40, 0.55)`;
+- borda tracejada `#bfaabb` e cantos de `4px`;
+- sinal `+`, número de 1 a 9 e legenda `Espaço livre`, centralizados;
+- baixo contraste para não competir com as fotografias.
+
+Slots ocupados:
+
+- funcionam como botões;
+- exibem thumbnail, nome, data e hora;
+- usam moldura clara, padding de `3px` e sombra discreta;
+- truncam nomes longos com reticências, mas permitem quebra de linha nos metadados;
+- recebem borda rosa `#ed9bbc` em hover ou foco, outline de `2px` na mesma cor em hover e outline `#f2b5cd` no foco visível pela regra geral dos botões do celular;
+- preservam dimensões uniformes independentemente do conteúdo.
+
+#### Composição da Fotografia
+
+A composição usa proporção `4:3`:
+
+```text
+photo-composition
+  photo-background   cenário com object-fit: cover
+  photo-mj           MJ centralizada, em primeiro plano
+```
+
+MJ ocupa 92% da altura da composição, fica centralizada horizontalmente com `left: 50%` e `translateX(-50%)`, e tem a base deslocada por `bottom: -10%`. Recebe sombra para separação do cenário. O cenário usa `image-rendering: pixelated`; o sprite fotográfico usa `image-rendering: auto` após a integração. Antes dela, ambos usavam `pixelated`.
+
+O cenário é resolvido por `sceneId` e pelo ID de local contido no snapshot. Caminhos físicos de imagens não são gravados como fonte de verdade no save.
+
+#### Preview e Detalhe
+
+Preview e detalhe reutilizam a mesma composição da thumbnail em tamanho maior. A imagem recebe moldura clara semelhante a uma fotografia impressa:
+
+- fundo `#efe3da`;
+- padding de `7px` no topo e nas laterais, e `20px` embaixo;
+- sombra `0 4px 12px rgba(0, 0, 0, 0.45)`;
+- alinhamento reto, sem rotação (`transform: none`).
+
+Os painéis têm intervalo de `10px`, padding `4px 16px 14px` e rolagem vertical. O campo de nome usa fundo escuro translúcido, borda `#b894b2`, cantos de `4px` e borda/outline rosa `#f2b5cd` ao receber foco.
+
+O preview mostra:
+
+- fotografia capturada;
+- campo de nome;
+- `CONFIRMAR`;
+- `CANCELAR`.
+
+O detalhe mostra:
+
+- fotografia persistida;
+- nome;
+- data e hora em linhas separadas;
+- `CARREGAR`;
+- `EXCLUIR`;
+- `VOLTAR`.
+
+#### Flash
+
+`#gallery-flash` cobre a tela da Galeria com branco e reduz a opacidade durante `140ms`.
+
+```css
+@keyframes gallery-flash {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+```
+
+Com `prefers-reduced-motion: reduce`, a animação é removida. A captura ainda respeita o fluxo lógico e abre o preview normalmente.
+
+#### Botões e Estados
+
+As ações fotográficas usam o gradiente rosa, altura mínima de `44px`, padding `9px 12px` e cantos de `10px`. A ação destrutiva `EXCLUIR` usa o tratamento vinho/vermelho da tabela. `TIRAR FOTO` desabilitado fica com opacidade `0.4` e cursor `not-allowed`. Os grupos de ações permitem quebra de linha, com intervalo de `7px`, e usam `margin-top: auto`.
+
+Os botões dentro de `#phone-screen` recebem outline rosa `#f2b5cd` de `2px`, com offset de `-2px`, no foco visível.
+
+Mensagens de sucesso, erro e Galeria cheia usam `role="status"` e `aria-live="polite"`.
+
+As confirmações de load e exclusão usam atualmente `window.confirm`.
+
+#### Navegação
+
+Estados visuais internos:
+
+```text
+grade
+preview
+detalhe
+```
+
+O botão físico/lógico `VOLTAR` segue esta regra:
+
+- preview ou detalhe -> grade;
+- grade -> tela inicial do celular;
+- tela inicial -> fecha o celular.
+
+Após um load bem-sucedido, o celular é fechado imediatamente e o foco retorna ao botão do celular no gameplay.
+
+#### Responsividade
+
+A Galeria está contida no frame responsivo do celular:
+
+- largura normal: `min(360px, calc(100vw - 20px))`;
+- altura: `min(720px, calc(100dvh - 20px))`, com `aspect-ratio: 9 / 18` declarado e padding de `10px`;
+- em telas até `700px`: largura `min(360px, calc(100vw - 12px))`, padding de `6px` e `max-height: calc(100dvh - 12px)`; a regra de altura normal continua aplicada;
+- grade e painéis usam `min-height: 0` para permitir encolhimento;
+- a grade mantém três colunas e três linhas com mínimo de `112px`, recorrendo à rolagem vertical em vez de reduzir esse mínimo;
+- tela inicial, preview e detalhe também possuem rolagem vertical quando necessário;
+- cabeçalho, toolbar e navegação geral não encolhem (`flex: none`); as ações podem quebrar linha.
+
+Com `prefers-reduced-motion: reduce`, a transição de abertura do overlay e a animação do flash são removidas.
+
+### Tratamento de Tempo
+
+Datas das fotografias usam `Date.now()` e são armazenadas como timestamp. A formatação acontece somente na apresentação:
+
+- data: locale `pt-BR`;
+- hora: duas casas para hora e minuto.
+
+Deadlines narrativos também são timestamps absolutos:
+
+- `cooldownAte` para mensagens;
+- `resetAte` para o reset remoto.
+
+No load, timers antigos não são reutilizados. O sistema calcula o tempo restante e cria novos timers. Um reset já expirado é normalizado sem criar autosave durante a restauração.
+
+### Regras de Integridade
+
+- A coleção aceita no máximo nove saves manuais.
+- O autosave nunca integra `manualSaves`.
+- A expressão fotográfica nunca altera diálogo ou pose narrativa.
+- A remoção usa ID, não índice visual.
+- Todo snapshot é validado antes do load.
+- O estado atual não é destruído quando a validação falha.
+- Load não chama `registrarAutosave()`.
+- Imagens são resolvidas por IDs lógicos.
+- Estado transitório da interface não é serializado.
+
+### Cobertura Automatizada Atual
+
+`test/save-system.test.js` valida:
+
+- persistência entre duas inicializações;
+- cenário, nome, timestamp e expressão;
+- flash e preview;
+- cancelamento sem consumo de slot;
+- sorteio dentro dos IDs permitidos;
+- ausência de repetição imediata;
+- limite de nove saves;
+- recusa do décimo save;
+- exclusão e reutilização do espaço;
+- restauração de cena, flags, mensagens e progresso;
+- separação entre expressão fotográfica e estado narrativo;
+- rejeição segura de snapshot corrompido;
+- criação e substituição do autosave;
+- preservação do autosave durante load manual.
+
+### Limitações Atuais
+
+- Limitação resolvida em 06/09/2026: os dez sprites fotográficos finais estão integrados; o neutro é apenas fallback. O registro anterior indicava que todos usavam o neutro.
+- Não existe interface dedicada para carregar o autosave.
+- Não existem migrations entre versões; dados incompatíveis são recusados.
+- As confirmações usam o diálogo nativo do navegador, sem modal visual próprio.
+- O sistema persiste somente estruturas narrativas que existem no protótipo atual.
+- Não há cloud save, compartilhamento, screenshot real, replay ou seleção de capítulos.
+
+### Extensão Futura
+
+Ao adicionar novos sistemas narrativos, o snapshot deve crescer explicitamente. O fluxo recomendado é:
+
+1. Adicionar o novo estado persistente ao DTO de `capturarEstadoJogo()`.
+2. Validar sua estrutura em `validarSnapshot()`.
+3. Restaurá-lo em `restaurarEstadoJogo()`.
+4. Incrementar `SAVE_VERSION` se o formato deixar de ser compatível.
+5. Criar migration antes de aceitar versões antigas.
+6. Adicionar testes de round-trip e corrupção para o novo campo.
+
+Não adicionar estado de interface ao snapshot apenas para reproduzir visualmente a tela que estava aberta.
+
+## Expressões fotográficas da MJ
+
+Este documento registra o trabalho realizado até agora para integrar as dez expressões fotográficas da MJ ao sistema de Save/Load.
+
+### Estado atual — integração concluída em 06/09/2026
+
+Os dez PNGs estão em `assets/sprites/mj/photo/`, mapeados em
+`DATA.personagens.mj.fotografia.sprites` e copiados para `www/`.
+Todos possuem canvas RGBA de `512×576`, proporção preservada, margens
+transparentes e alinhamento central inferior. O save continua armazenando
+apenas o ID lógico em `photoExpression`.
+
+Na retomada, o arquivo `mj-photo-birefnet/mj__photo__01.png` tinha **0 bytes**.
+Portanto, não havia saída válida do modelo para inspecionar. Nenhum dos
+candidatos anteriores foi promovido a asset final.
+
+Foi usada a ferramenta integrada `image_gen`, com uma chamada de edição por
+recorte-fonte. Os resultados preservam visualmente a identidade, as poses e as
+expressões da referência, mas são derivados gerados com IA, não extrações
+pixel a pixel. Fundo, molduras, labels, números e símbolos rosa não aparecem
+nos sprites finais. Depois da geração, Pillow foi usado somente para a
+padronização de canvas/tamanho prevista no plano, preservando o alpha.
+O interior da personagem tem alpha predominantemente entre 250 e 254.
+
+#### Alterações concluídas
+
+- Dez arquivos `mj__photo__01.png` a `mj__photo__10.png` adicionados ao diretório final.
+- Mapa explícito dos dez caminhos em `js/data.js`; lista de IDs mantida.
+- `obterSpriteFotografico()` preserva o fallback neutro e também rejeita
+  propriedades herdadas do objeto e entradas que não sejam strings válidas.
+- `.photo-mj` usa interpolação `auto`; posição e composição mantidas.
+- Testes verificam os IDs, os caminhos, PNGs distintos, canvas, pixels alpha,
+  cenário independente e fallback para expressões ausentes ou inválidas.
+- Contrato e mapeamento documentados em `assets/sprites/README.md`.
+- `js/save-system.js`, sorteio, Load, snapshots, datas, autosave, limite de
+  nove saves manuais e pose narrativa mantidos.
+
+#### Validação final
+
+- `npm test`: passou nos seis arquivos de teste, incluindo os dois arquivos
+  com cobertura desta integração.
+- `npm run copy:web`: concluído.
+- Chromium/Playwright: os dez PNGs decodificaram; composição verificada
+  sobre quadriculado e cenário do jogo, seguida de captura e registro de foto na Galeria.
+- Pranchas locais: `/tmp/mj-photo-validation-final.png` e
+  `/tmp/mj-photo-gallery-final.png`. São evidências temporárias, sem uso em runtime.
+- Node.js 22.14.0 instalado somente em `/tmp` para os comandos de validação;
+  nenhuma dependência adicionada ao projeto.
+
+#### Prompts de produção
+
+Modo: ferramenta integrada `image_gen`, edição `background-extraction`.
+Entrada de cada chamada: o recorte-fonte correspondente listado no histórico abaixo.
+
+Prompt da expressão 01:
+
+```text
+Use case: background-extraction. Edit target: attached MJ portrait. Produce one individual PNG character sprite with genuine transparent alpha background. Remove only the alley/background, preserve MJ's exact anime appearance, smiling eyes-closed expression, peace-sign hand, dark hoodie, brown hair, original colors and linework. No scenery pixels, no frame, no labels, no decorative symbols, no checkerboard drawn into image. Portrait canvas, character centered bottom aligned, full existing head and hand visible, preserve original bust framing. This is sprite mj__photo__01 (Sorriso) for a game.
+```
+
+Template aplicado às expressões 02–10, substituindo `{expressao}` e `{id}`:
+
+```text
+Use case: background-extraction. Edit target: attached MJ portrait. Produce ONE individual PNG character sprite with genuine transparent alpha background. Remove only alley/background and any pink decorative graphics (heart, anger icon, surprise rays); preserve MJ's exact anime identity, {expressao} expression, original pose and hands, dark hoodie, brown hair, colors and linework. No scenery pixels, frame, labels, symbols, or drawn checkerboard. Portrait canvas, character centered bottom aligned, preserve entire existing head, hands and bust framing. Sprite mj__photo__{id}.
+```
+
+| id | expressao |
+|---|---|
+| 02 | Olhar suave, gentle gaze |
+| 03 | Séria, serious |
+| 04 | Pensativa, thoughtful hand at chin |
+| 05 | Surpresa, surprised open mouth |
+| 06 | Irritada, irritated cheek resting in hand |
+| 07 | Alegre, joyful laughing eyes closed |
+| 08 | Triste, sad downcast gaze |
+| 09 | Tímida, shy hands covering mouth |
+| 10 | Piscadinha, winking |
+
+### Histórico anterior à retomada
+
+As seções abaixo preservam o diagnóstico e as tentativas anteriores. As
+pendências e descrições de mapas vazios nelas registradas foram resolvidas
+pela integração descrita acima.
+
+### Objetivo
+
+Associar os IDs lógicos existentes abaixo a dez sprites PNG individuais da MJ com transparência real:
+
+| ID | Expressão |
+|---|---|
+| `mj__photo__01` | Sorriso |
+| `mj__photo__02` | Olhar suave |
+| `mj__photo__03` | Séria |
+| `mj__photo__04` | Pensativa |
+| `mj__photo__05` | Surpresa |
+| `mj__photo__06` | Irritada |
+| `mj__photo__07` | Alegre |
+| `mj__photo__08` | Triste |
+| `mj__photo__09` | Tímida |
+| `mj__photo__10` | Piscadinha |
+
+A folha `assets/interfaces/save-aleatorio.png` é usada somente como referência e fonte de produção. Ela não será utilizada em runtime como sprite sheet, atlas, background, thumbnail ou recorte por CSS.
+
+### Contrato Atual Localizado
+
+#### IDs e mapa de sprites
+
+Arquivo: `js/data.js`
+
+- `DATA.personagens.mj.fotografia.expressoes` já gera exatamente os IDs `mj__photo__01` até `mj__photo__10`.
+- `DATA.personagens.mj.fotografia.sprites` existe e está vazio.
+- O sprite narrativo neutro continua em `DATA.personagens.mj.sprites.neutral`, com caminho `assets/sprites/MJ.png`.
+
+Não é necessário criar IDs, renomear IDs ou modificar o formato persistido.
+
+#### Renderer fotográfico
+
+Arquivo: `js/game.js`
+
+- `obterSpriteFotografico(expressao)` resolve primeiro `DATA.personagens.mj.fotografia.sprites[expressao]`.
+- Quando o ID não possui asset válido no mapa, o renderer usa `DATA.personagens.mj.sprites.neutral` como fallback.
+- `criarComposicaoFoto(save)` mantém duas imagens independentes:
+  - `.photo-background`: cenário armazenado no save;
+  - `.photo-mj`: sprite resolvido por `save.photoExpression`.
+- O elemento da MJ recebe `data-photo-expression` com o ID persistido.
+
+O fallback e a composição existente devem ser preservados.
+
+#### Sorteio e persistência
+
+Arquivo: `js/game.js`
+
+- `sortearExpressaoFotografica()` utiliza a lista existente de dez IDs.
+- A expressão anterior é excluída das candidatas quando existem alternativas.
+- O sorteio acontece somente em `tirarFoto()` ao criar `state.galeria.capturaPendente`.
+- `photoExpression` continua contendo somente um ID como `mj__photo__06`.
+- Abrir a Galeria, reabrir um save ou executar Load não sorteia outra expressão.
+
+Arquivo: `js/save-system.js`
+
+- Não foi identificada necessidade de alterar o contrato do save.
+- Caminhos de PNG, nomes emocionais, base64 e objetos DOM não devem entrar no save.
+
+#### Testes existentes
+
+Arquivo: `test/save-system.test.js`
+
+Os testes atuais já cobrem:
+
+- persistência de `photoExpression` entre sessões;
+- ausência de repetição imediata;
+- limite de nove saves manuais;
+- Load sem aplicar expressão fotográfica à pose narrativa;
+- preservação do autosave;
+- recuperação de snapshots e saves inválidos.
+
+Ainda falta adicionar a validação explícita do mapa dos dez IDs para os dez PNGs e do fallback para ID inválido.
+
+### Convenção de Assets
+
+Arquivo consultado: `assets/sprites/README.md`
+
+A convenção atual estabelece que:
+
+- sprites de personagem ficam em `assets/sprites/`;
+- IDs narrativos são independentes do caminho físico;
+- o mapa entre ID e arquivo pertence a `js/data.js`;
+- sprites devem preservar transparência.
+
+A extensão planejada para as fotografias é:
+
+```text
+assets/
+  sprites/
+    mj/
+      photo/
+        mj__photo__01.png
+        mj__photo__02.png
+        mj__photo__03.png
+        mj__photo__04.png
+        mj__photo__05.png
+        mj__photo__06.png
+        mj__photo__07.png
+        mj__photo__08.png
+        mj__photo__09.png
+        mj__photo__10.png
+```
+
+Essa pasta ainda não foi criada no repositório porque os recortes finais ainda estão em validação.
+
+### Análise da Folha de Referência
+
+Arquivo: `assets/interfaces/save-aleatorio.png`
+
+- Dimensão: `1536x1024`.
+- Formato: PNG RGBA de 8 bits.
+- Organização: cinco colunas por duas linhas.
+- A ordem visual é sequencial:
+  - primeira linha: expressões 01 a 05;
+  - segunda linha: expressões 06 a 10.
+- Foram detectadas dez células opacas independentes.
+- Os recortes internos das fotografias foram separados sem título, número, label ou moldura de polaroid.
+- Cada recorte-fonte tem aproximadamente `261x295` a `262x298` pixels.
+
+Caixas utilizadas para extrair apenas o conteúdo de cada fotografia:
+
+```text
+01: (47, 136, 308, 434)
+02: (343, 136, 604, 434)
+03: (638, 136, 900, 434)
+04: (935, 136, 1196, 434)
+05: (1230, 136, 1491, 434)
+06: (47, 525, 308, 820)
+07: (343, 525, 604, 820)
+08: (638, 525, 900, 820)
+09: (935, 525, 1196, 820)
+10: (1230, 525, 1491, 820)
+```
+
+Os recortes-fonte temporários estão em:
+
+```text
+/tmp/opencode/mj-photo-crops/
+```
+
+### Ferramentas Preparadas
+
+As seguintes ferramentas foram instaladas apenas no ambiente local de desenvolvimento, sem alterar as dependências do projeto:
+
+- Pillow;
+- OpenCV;
+- ambiente virtual em `/tmp/opencode/rembg-venv`;
+- `rembg` com suporte a CPU e CLI.
+
+Modelos baixados para o cache local do `rembg`:
+
+- `isnet-anime`;
+- `u2net_human_seg`;
+- `birefnet-portrait`.
+
+Esses modelos e o ambiente virtual não fazem parte do repositório.
+
+### Tentativas de Remoção de Fundo
+
+#### Quantização de cores
+
+Foi testada uma segmentação por quantização e componentes conectados.
+
+Resultado:
+
+- a paleta escura do cabelo e da roupa se mistura à iluminação noturna dos cenários;
+- o método removeu partes da própria MJ;
+- a abordagem foi descartada.
+
+#### GrabCut do OpenCV
+
+Foram testadas duas inicializações:
+
+- retângulo ao redor do conteúdo;
+- máscara com bordas marcadas como fundo e rosto marcado como personagem.
+
+Resultado:
+
+- com retângulo, quase toda a fotografia foi classificada como personagem;
+- com máscara, algumas poses ficaram incompletas ou conservaram blocos de cenário;
+- a abordagem foi descartada para os assets finais.
+
+#### `isnet-anime`
+
+Resultado:
+
+- preservou melhor cabelo, rosto, mãos e roupa;
+- em algumas poses reteve partes ilustradas do cenário por interpretá-las como arte de primeiro plano;
+- serviu como comparação, mas os resultados não foram aceitos como finais.
+
+Saída temporária:
+
+```text
+/tmp/opencode/mj-photo-cutouts/
+```
+
+#### `u2net_human_seg`
+
+Resultado:
+
+- produziu contornos mais limpos em algumas poses;
+- removeu partes importantes do rosto e cabelo nas poses 02, 08 e 09;
+- ainda preservou regiões retangulares do cenário atrás da cabeça em outras poses;
+- não foi aceito como resultado final.
+
+Saída temporária:
+
+```text
+/tmp/opencode/mj-photo-human-cutouts/
+```
+
+#### Limpeza de símbolos gráficos
+
+Foi preparada uma etapa de inpainting por HSV para remover da fonte elementos gráficos rosa separados da personagem, especialmente:
+
+- marca gráfica da pose 06;
+- coração da pose 10;
+- possíveis marcas decorativas da pose 05.
+
+Os pixels magenta foram detectados principalmente entre os matizes HSV 164 e 179, dilatados e reconstruídos pelo OpenCV antes de uma nova segmentação.
+
+As fontes temporárias limpas estão em:
+
+```text
+/tmp/opencode/mj-photo-preclean-human/
+/tmp/opencode/mj-photo-preclean-anime/
+```
+
+#### `birefnet-portrait`
+
+Foi baixado o modelo de retrato de maior qualidade, com aproximadamente 973 MB, e executado inicialmente sobre `mj__photo__01.png`.
+
+Saída temporária:
+
+```text
+/tmp/opencode/mj-photo-birefnet/mj__photo__01.png
+```
+
+O resultado ainda precisa ser inspecionado individualmente. O lote das dez poses não foi gerado para evitar produzir arquivos grandes ou incorretos antes dessa validação.
+
+### Artefatos Temporários de Validação
+
+As pranchas abaixo foram criadas somente em `/tmp`; nenhuma delas será usada em runtime:
+
+```text
+/tmp/opencode/mj-photo-validation.png
+/tmp/opencode/mj-photo-cleaned-validation.png
+/tmp/opencode/mj-photo-human-validation.png
+/tmp/opencode/mj-photo-production-validation.png
+```
+
+Também existem candidatos intermediários em:
+
+```text
+/tmp/opencode/mj-photo-cleaned/
+/tmp/opencode/mj-photo-final/
+/tmp/opencode/mj-photo-mixed/
+/tmp/opencode/mj-photo-production/
+```
+
+Esses candidatos não devem ser copiados automaticamente para `assets/` porque a inspeção individual mostrou cenário residual atrás da cabeça, apesar de algumas pranchas coletivas parecerem corretas sobre fundo quadriculado.
+
+### Mudanças no Repositório
+
+Até a criação deste documento:
+
+- nenhum arquivo JavaScript foi alterado para esta integração;
+- nenhum teste foi alterado para esta integração;
+- nenhum sprite fotográfico foi adicionado à árvore final de assets;
+- `assets/interfaces/save-aleatorio.png` está presente como arquivo de referência ainda não rastreado pelo Git;
+- somente este documento de andamento foi adicionado.
+
+Isso evita registrar no mapa assets que ainda não atendam ao requisito de transparência real.
+
+### Próximos Passos
+
+1. Inspecionar `birefnet-portrait` na pose 01 sobre fundo quadriculado e sobre um cenário do jogo.
+2. Se a separação estiver correta, executar o modelo para as dez poses usando as fontes com símbolos removidos nas poses 05, 06 e 10.
+3. Padronizar os dez canvases no mesmo tamanho, alinhando a MJ ao centro inferior.
+4. Validar que não existem moldura, labels, números, coração ou pixels de cenário.
+5. Criar `assets/sprites/mj/photo/` e copiar apenas os dez PNGs aprovados.
+6. Preencher `DATA.personagens.mj.fotografia.sprites` em `js/data.js` sem alterar `expressoes`.
+7. Ajustar `.photo-mj` para interpolação adequada aos novos sprites se necessário, sem modificar a composição da Galeria.
+8. Adicionar testes para os dez caminhos, existência dos arquivos, transparência e fallback.
+9. Atualizar `assets/sprites/README.md` com o contrato e o mapeamento das dez expressões.
+10. Executar `npm run copy:web` para copiar os assets para `www/`.
+11. Executar `npm test` e confirmar toda a suíte existente.
+
+### Regras que Permanecem Inalteradas
+
+- máximo de nove saves manuais;
+- autosave;
+- `createdAt`;
+- nome das fotografias;
+- `sceneId`;
+- snapshots;
+- Load;
+- sorteio das expressões;
+- prevenção de repetição imediata;
+- pose narrativa da MJ;
+- IDs `mj__photo__01` até `mj__photo__10`;
+- fallback para `assets/sprites/MJ.png`.
+
 ## Referências
 
 - [[README]] — visão geral e execução.
@@ -910,6 +1891,8 @@ Status: **planejada para o Protótipo 3**.
 - [styles.css](styles.css) — apresentação atual.
 - [js/data.js](js/data.js) — dados narrativos atuais.
 - [js/game.js](js/game.js) — regras e estado atuais.
+- [js/save-system.js](js/save-system.js) — repositório de persistência.
+- [docs/SAVE_SYSTEM.md](docs/SAVE_SYSTEM.md) — contrato resumido de Save/Load.
 - [assets/cenario/README.md](assets/cenario/README.md) — contrato dos fundos de cena.
 - [assets/interfaces/README.md](assets/interfaces/README.md) — contrato dos ícones e assets de interface.
 - [assets/sprites/README.md](assets/sprites/README.md) — contrato dos sprites de personagem.
