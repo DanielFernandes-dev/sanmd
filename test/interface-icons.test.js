@@ -28,7 +28,7 @@ test("botões principais preservam semântica e usam ícones decorativos", () =>
   ];
 
   for (const [id, rotulo] of botoes) {
-    const trecho = html.match(new RegExp(`<button id="${id}" type="button" aria-label="${rotulo}">([\\s\\S]*?)<\\/button>`));
+    const trecho = html.match(new RegExp(`<button id="${id}" type="button" aria-label="${rotulo}"(?: hidden)?>([\\s\\S]*?)<\\/button>`));
     assert.ok(trecho, `${id} deve continuar sendo um button com nome acessível`);
     assert.match(trecho[1], /<svg class="action-icon"[^>]*aria-hidden="true">/);
     assert.equal(trecho[1].replace(/<[^>]+>/g, "").trim(), "");
@@ -59,7 +59,7 @@ test("tela inicial usa grade 4x2 de apps com ícones SVG e botão Voltar", () =>
     assert.match(html, new RegExp(`<button id="${id}" class="phone-app phone-app--[a-z]+" type="button"[^>]*disabled`));
   }
   assert.equal((html.match(/class="phone-app phone-app--/g) || []).length, 8);
-  assert.match(html, /data-phone-theme="mj"/);
+  assert.match(html, /data-phone-theme="lulith"/);
   assert.doesNotMatch(html, /class="app"/);
   assert.doesNotMatch(html, /<span class="app-icon">/);
   assert.match(html, /<button id="btn-voltar" type="button" aria-label="Voltar"><span class="back-icon" aria-hidden="true">[^<]+<\/span><\/button>/);

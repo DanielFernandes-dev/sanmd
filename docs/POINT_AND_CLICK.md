@@ -128,3 +128,27 @@ Os testes em `test/save-system.test.js` cobrem os três estados, snapshots isola
 retorno à cena, restauração em ambiente novo, saves antigos, dados inválidos,
 unicidade, item exigido, consumo e remoção sem respawn. A suíte existente cobre
 Conversar, navegação, Celular, mensagens, arquivos, Galeria e saves.
+
+## Ações diretas e aparelho ativo
+
+`lulith_phone` é o **Celular de Lulith**. Coletar apenas grava
+`sceneState.beco_fundo.lulithPhoneCollected` e adiciona o ID à Bolsa.
+O celular original de MJ começa quebrado; `state.aparelho` mantém
+`originalPhoneStatus: "broken"`, `activePhone: null` e `phoneTheme: "lulith"`.
+
+A definição do item declara `inventoryAction` com tipo `activate_phone`, rótulo,
+aparelho, tema e reação curta. O painel mostra **USAR** apenas para uma ação
+válida. `executarAcaoInventario` valida posse, modo e handler, bloqueia repetição,
+fecha a Bolsa e inicia o diálogo existente. Ao concluir, o handler transforma o
+item em aparelho ativo, remove o ID e atualiza a Bolsa. O encerramento normal do
+diálogo registra o autosave com o estado final. Abrir ou selecionar na Bolsa não
+salva nem ativa o aparelho. Um load cancela qualquer ação pendente.
+
+A interface deriva a visibilidade do botão CELULAR de `activePhone`, sem reservar
+uma linha vazia quando ele está oculto. O mesmo sistema de celular abre o aparelho
+ativo. O tema Lulith usa fundo sóbrio sem assinatura MJ; o tema MJ permanece
+suportado para a personalização futura, sem evento novo de personalização.
+Mensagens, arquivos, galeria e progresso não são alterados pela ativação.
+
+Ações diretas possuem handlers próprios e não mudam o uso automático de chaves
+nos hotspots. Itens sem `inventoryAction` continuam apenas com seus detalhes.

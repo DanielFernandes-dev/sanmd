@@ -116,6 +116,15 @@ function criarAmbiente() {
   const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
   const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
   vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(`
+    function prepararCelularTeste() {
+      if (state.aparelho.activePhone !== null) return;
+      state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+      state.aparelho.activePhone = "lulith";
+      state.inventory = state.inventory.filter(id => id !== "lulith_phone");
+      definirBotoes();
+    }
+  `, contexto);
 
   return { contexto, elementos, executarProximoTimeout, timeouts };
 }
@@ -137,7 +146,7 @@ function controlarAmbiente() {
 test("Fase 8 libera o enigma após a rota nova e preserva a solução antes do reset", () => {
   const { elementos, executar, executarAte, executarProximoTimeout, ler, timeouts } = controlarAmbiente();
 
-  executar("abrirCelular(); abrirArquivos();");
+  executar("prepararCelularTeste(); abrirCelular(); abrirArquivos();");
   assert.equal(
     ler('Array.from(el.filesList.children).some((item) => item.dataset.fileId === "identidade")'),
     false
@@ -206,7 +215,7 @@ test("Fase 8 libera o enigma após a rota nova e preserva a solução antes do r
 test("rota condicional longa converge no enigma e respeita o prazo de reset", () => {
   const { executar, executarAte, executarProximoTimeout, ler, timeouts } = controlarAmbiente();
 
-  executar("abrirCelular(); abrirMensagens();");
+  executar("prepararCelularTeste(); abrirCelular(); abrirMensagens();");
   assert.equal(
     ler('Array.from(el.messagesChoices.children).some((item) => item.dataset.optionId === "questionar-origem-aparelho")'),
     false
@@ -276,7 +285,7 @@ test("rota condicional longa converge no enigma e respeita o prazo de reset", ()
   test(`primeira resposta condicional fixa o monólogo ${rota}`, () => {
     const { executar, ler } = controlarAmbiente();
 
-    executar(`abrirCelular(); abrirArquivos(); visualizarArquivo("${arquivo}"); voltarCelular(); abrirMensagens();`);
+    executar(`prepararCelularTeste(); abrirCelular(); abrirArquivos(); visualizarArquivo("${arquivo}"); voltarCelular(); abrirMensagens();`);
     executar(`escolherResposta("${opcao}");`);
 
     assert.equal(ler("state.dialogo.rotaMonologoArquivo"), rota);
@@ -293,7 +302,7 @@ test("quatro arquivos resolvidos substituem a rota individual pelo monólogo com
   const { executar, ler } = controlarAmbiente();
 
   executar(`
-    abrirCelular();
+    prepararCelularTeste(); abrirCelular();
     abrirArquivos();
     visualizarArquivo("candidatos");
     visualizarArquivo("rota");
@@ -380,7 +389,7 @@ test("todas as opções cadastradas aplicam texto, resposta e próxima etapa", (
 test("opção condicional não pode ser escolhida sem examinar seu arquivo", () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar('abrirCelular(); abrirMensagens(); escolherResposta("questionar-origem-aparelho");');
+  executar('prepararCelularTeste(); abrirCelular(); abrirMensagens(); escolherResposta("questionar-origem-aparelho");');
 
   assert.equal(ler("state.mensagens.historico.length"), 0);
   assert.equal(ler("state.mensagens.etapa"), "celular-encontrado");
@@ -398,7 +407,7 @@ test("cronômetro formata minutos e segundos", () => {
 test("reset conclui em segundo plano quando o celular está fechado", () => {
   const { executar, executarProximoTimeout, ler } = controlarAmbiente();
 
-  executar('abrirCelular(); state.mensagens.historico.push({ autor: "protagonista", texto: "teste" }); agendarResetRemoto(); fecharCelular();');
+  executar('prepararCelularTeste(); abrirCelular(); state.mensagens.historico.push({ autor: "protagonista", texto: "teste" }); agendarResetRemoto(); fecharCelular();');
   executarProximoTimeout();
 
   assert.equal(ler("state.celular.resetStatus"), "concluido");
@@ -408,6 +417,6 @@ test("reset conclui em segundo plano quando o celular está fechado", () => {
   assert.equal(ler("state.celular.resetInterval"), null);
   assert.equal(ler("state.mensagens.timer"), null);
 
-  executar("abrirCelular(); abrirArquivos();");
+  executar("prepararCelularTeste(); abrirCelular(); abrirArquivos();");
   assert.equal(ler('el.filesList.children[0].textContent'), "Nenhum arquivo encontrado.");
 });

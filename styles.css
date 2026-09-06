@@ -1861,3 +1861,84 @@ button:hover:not(:disabled) .action-icon {
 /* Photos are 4:3 with a centered cover crop of the same 1672:941 world. */
 .photo-objects { position: absolute; top: 0; height: 100%; width: calc(100% * 1672 / 941 * 3 / 4); left: 50%; transform: translateX(-50%); pointer-events: none; }
 .scene-hotspot { min-width: 44px; min-height: 44px; }
+
+/* Sem aparelho ativo, as três ações restantes ocupam linhas consecutivas. */
+#btn-celular[hidden] { display: none !important; }
+#app:has(#btn-celular[hidden]) {
+  grid-template-rows: minmax(0, 1fr) repeat(3, minmax(44px, 60px)) minmax(0, 1fr);
+}
+#app:has(#btn-celular[hidden]) #btn-bolsa { grid-row: 4; }
+
+#phone-screen[data-phone-theme="lulith"] {
+  background: linear-gradient(160deg, #111c30, #29334c 55%, #121827);
+}
+[data-phone-theme="lulith"] .phone-personal-mark { visibility: hidden; }
+[data-phone-theme="lulith"] .phone-app {
+  --app-grad: linear-gradient(180deg, #64748c, #35435c);
+  --app-symbol: #edf0f6;
+  --app-tint: #35435c;
+}
+
+/* Tema anterior da MJ permanece nas regras base para uso após a cutscene.
+   O tema atual de Lulith mantém a Galeria na mesma paleta dos demais apps. */
+[data-phone-theme="lulith"] #phone-gallery {
+  background: var(--cor-tela);
+}
+
+[data-phone-theme="lulith"] #gallery-header {
+  background: #1c2747;
+  border-color: #38446d;
+  color: var(--cor-texto);
+}
+
+[data-phone-theme="lulith"] .gallery-signature { display: none; }
+
+[data-phone-theme="lulith"] #gallery-toolbar {
+  border-color: #38446d;
+  color: var(--cor-texto);
+}
+
+[data-phone-theme="lulith"] .gallery-slot-empty {
+  background: #151e38;
+  border-color: #596993;
+  color: #c6cde4;
+}
+
+[data-phone-theme="lulith"] #btn-tirar-foto,
+[data-phone-theme="lulith"] .gallery-actions button {
+  background: #222e50;
+  border-color: #596993;
+  color: #f4f6ff;
+}
+
+[data-phone-theme="lulith"] #gallery-photo-name {
+  background: #0c1324;
+  border-color: #596993;
+}
+
+[data-phone-theme="lulith"] #btn-excluir-foto {
+  background: #35151d;
+  border-color: #ff667d;
+  color: #ffb0bd;
+}
+
+.bag-item-action {
+  min-height: 44px;
+  width: 100%;
+  padding: 12px 20px;
+  border: 1px solid var(--bolsa-accent);
+  border-radius: 6px;
+  background: #39304f;
+  color: #eee5ff;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.bag-item-action:hover { background: #4b3b69; }
+.bag-item-action:focus-visible { outline: 3px solid #cdb5f5; outline-offset: 3px; }
+.bag-item-action:disabled { opacity: .6; cursor: default; }
+
+/* Mantém título e fechamento acessíveis ao rolar os detalhes em telas baixas. */
+.bag-body { overflow-y: auto; }
+.bag-header, .bag-search-wrapper { flex-shrink: 0; }

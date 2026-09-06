@@ -22,6 +22,8 @@ const RESET_STATUS = Object.freeze({
 });
 
 const state = {
+  aparelho: { originalPhoneStatus: "broken", activePhone: null, phoneTheme: "lulith" },
+  inventoryActionPending: null,
   inventory: [],
   bolsa: {
     pagina: 1,
@@ -105,6 +107,7 @@ const el = {
   btnIrPara: document.getElementById("btn-ir-para"),
   irParaMenu: document.getElementById("ir-para-menu"),
   btnCelular: document.getElementById("btn-celular"),
+  phoneScreen: document.getElementById("phone-screen"),
   phoneOverlay: document.getElementById("phone-overlay"),
   phoneHome: document.getElementById("phone-home"),
   phoneMessages: document.getElementById("phone-messages"),
@@ -158,6 +161,7 @@ function copiarDados(dados) {
 
 function capturarEstadoJogo() {
   return {
+    aparelho: { ...state.aparelho },
     inventory: [...state.inventory],
     sceneState: copiarDados(state.sceneState),
     saveVersion: SAVE_VERSION,
@@ -239,7 +243,39 @@ function validarSnapshot(candidato) {
 
   const exploration = validarExploracao(candidato);
   if (!exploration) return null;
-  return { ...copiarDados(candidato), ...exploration };
+  const aparelho = validarAparelho(candidato, exploration);
+  if (!aparelho) return null;
+  return { ...copiarDados(candidato), ...exploration, aparelho };
+}
+
+// Saves anteriores à aquisição funcional não possuíam estado do aparelho.
+function validarAparelho(snapshot, exploration) {
+  let aparelho = snapshot.aparelho;
+  if (aparelho === undefined) {
+    const usouCelular = snapshot.mensagens.historico.length > 0
+      || snapshot.mensagens.historicoAntesReset.length > 0
+      || snapshot.arquivos.vistos.length > 0
+      || snapshot.celular.resetStatus !== RESET_STATUS.INATIVO;
+    aparelho = { originalPhoneStatus: "broken", activePhone: usouCelular ? "lulith" : null,
+      phoneTheme: usouCelular ? "mj" : "lulith" };
+    if (usouCelular) {
+      exploration.inventory = exploration.inventory.filter(id => id !== "lulith_phone");
+      exploration.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+    }
+  }
+  if (!aparelho || aparelho.originalPhoneStatus !== "broken"
+    || ![null, "lulith"].includes(aparelho.activePhone)
+    || !["lulith", "mj"].includes(aparelho.phoneTheme)) return null;
+  const collected = exploration.sceneState.beco_fundo?.lulithPhoneCollected;
+  if (aparelho.activePhone === "lulith" && (!collected
+    || !exploration.sceneState.beco_fundo.safeOpened
+    || exploration.inventory.includes("lulith_phone"))) return null;
+  return { ...aparelho };
+}
+
+function renderizarAparelho() {
+  el.btnCelular.hidden = state.aparelho.activePhone === null;
+  el.phoneScreen.dataset.phoneTheme = state.aparelho.phoneTheme;
 }
 
 function concluirResetRestaurado() {
@@ -269,6 +305,8 @@ function restaurarEstadoJogo(candidato) {
   cancelarEnvioDono();
 
   state.modo = "livre";
+  state.inventoryActionPending = null;
+  state.aparelho = snapshot.aparelho;
   state.localizacao = snapshot.localizacao;
   state.inventory = snapshot.inventory;
   state.sceneState = snapshot.sceneState;
@@ -321,7 +359,7 @@ function restaurarEstadoJogo(candidato) {
   fecharMenuIrPara();
   atualizarCabecalhoMensagens();
   definirBotoes();
-  el.btnCelular.focus();
+  (state.aparelho.activePhone ? el.btnCelular : el.btnBolsa).focus();
 }
 
 function registrarAutosave() {
@@ -377,6 +415,7 @@ function mostrarPersonagem(id, pose, slot) {
 }
 
 function definirBotoes() {
+  renderizarAparelho();
   if (state.modo !== "livre") fecharMenuIrPara();
   const livre = state.modo === "livre";
   el.btnConversar.disabled = !livre;
@@ -599,6 +638,8 @@ function avancarDialogo() {
 }
 
 function encerrarConversa() {
+  if (state.modo !== "dialogo") return;
+  concluirAcaoInventario();
   clearInterval(state.dialogo.timer);
   state.dialogo.timer = null;
   state.dialogo.digitando = false;
@@ -619,7 +660,8 @@ function atualizarRelogio() {
 }
 
 function abrirCelular() {
-  if (state.modo !== "livre") return;
+  if (state.modo !== "livre" || state.aparelho.activePhone === null || el.bagDialog.open) return;
+  renderizarAparelho();
 
   clearTimeout(state.celular.transicao);
   state.celular.transicao = null;
@@ -1366,10 +1408,6 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
-aplicarCena(obterCenaAtual());
-atualizarCabecalhoMensagens();
-renderizarBolsa();
-
 function estadoDaCena(cena, source = state.sceneState) {
   return { ...cena.initialState, ...source[cena.id] };
 }
@@ -1396,7 +1434,8 @@ function validarExploracao(snapshot) {
 }
 
 function adicionarItem(id) {
-  if (!Object.hasOwn(ITEMS, id) || state.inventory.includes(id)) return false;
+  if (!Object.hasOwn(ITEMS, id) || state.inventory.includes(id)
+    || (ITEMS[id].inventoryAction?.device === state.aparelho.activePhone)) return false;
   state.inventory.push(id);
   renderizarBolsa();
   return true;
@@ -1585,7 +1624,8 @@ function renderizarPaginacaoBolsa(totalPaginas) {
 }
 
 function renderizarDetalhesBolsa() {
-  const item = ITEMS[state.bolsa.itemSelecionadoId];
+  const item = state.inventory.includes(state.bolsa.itemSelecionadoId)
+    ? ITEMS[state.bolsa.itemSelecionadoId] : null;
   if (!item) {
     const emptyWrapper = document.createElement("div");
     emptyWrapper.className = "bag-detail-empty";
@@ -1637,6 +1677,17 @@ function renderizarDetalhesBolsa() {
   descSection.appendChild(descText);
 
   el.bagDetails.replaceChildren(title, imageWrapper, funcSection, descSection);
+  if (acaoInventarioDisponivel(item.id)) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "bag-item-action";
+    button.textContent = item.inventoryAction.label.toUpperCase();
+    button.setAttribute("aria-label", `${item.inventoryAction.label} ${item.label}`);
+    button.addEventListener("click", () => {
+      if (executarAcaoInventario(item.id)) button.disabled = true;
+    });
+    el.bagDetails.appendChild(button);
+  }
 }
 
 function renderizarBolsa() {
@@ -1648,6 +1699,11 @@ function renderizarBolsa() {
     el.bagNoResults.hidden = true;
     el.bagEmpty.hidden = false;
     state.bolsa.itemSelecionadoId = null;
+    state.bolsa.pagina = 1;
+    el.bagGrid.replaceChildren();
+    el.bagDetails.replaceChildren();
+    el.bagPagination.replaceChildren();
+    el.bagPagination.hidden = true;
     return;
   }
 
@@ -1661,6 +1717,11 @@ function renderizarBolsa() {
     el.bagBody.hidden = true;
     el.bagNoResults.hidden = false;
     state.bolsa.itemSelecionadoId = null;
+    state.bolsa.pagina = 1;
+    el.bagGrid.replaceChildren();
+    el.bagDetails.replaceChildren();
+    el.bagPagination.replaceChildren();
+    el.bagPagination.hidden = true;
     return;
   }
 
@@ -1726,3 +1787,57 @@ function renderizarBolsa() {
 }
 
 const eventosInteracao = Object.create(null);
+
+// Ações diretas são independentes do uso contextual de itens nos hotspots.
+function obterHandlerInventario(item) {
+  return item?.inventoryAction ? inventoryActionHandlers[item.inventoryAction.type] : null;
+}
+
+function acaoInventarioDisponivel(itemId) {
+  const item = ITEMS[itemId];
+  return state.inventory.includes(itemId) && !state.inventoryActionPending
+    && Boolean(obterHandlerInventario(item)?.validar(item));
+}
+
+function executarAcaoInventario(itemId) {
+  if (state.modo !== "livre" || !el.bagDialog.open || !acaoInventarioDisponivel(itemId)) return false;
+  state.inventoryActionPending = itemId;
+  el.bagDialog.close();
+  fecharMenuIrPara();
+  state.dialogo.falas = ITEMS[itemId].inventoryAction.reaction;
+  state.dialogo.linha = 0;
+  state.modo = "dialogo";
+  mostrarPersonagem("mj", "neutral", "center");
+  el.dialogueBox.classList.remove("oculto");
+  definirBotoes();
+  mostrarLinha();
+  return true;
+}
+
+function concluirAcaoInventario() {
+  const itemId = state.inventoryActionPending;
+  state.inventoryActionPending = null;
+  if (!itemId || !state.inventory.includes(itemId)) return;
+  const item = ITEMS[itemId];
+  const handler = obterHandlerInventario(item);
+  if (handler?.validar(item)) handler.concluir(item);
+}
+
+const inventoryActionHandlers = {
+  activate_phone: {
+    validar: item => state.aparelho.activePhone === null
+      && item.inventoryAction.device === "lulith"
+      && Boolean(state.sceneState.beco_fundo?.safeOpened)
+      && Boolean(state.sceneState.beco_fundo?.lulithPhoneCollected),
+    concluir: item => {
+      state.aparelho.activePhone = item.inventoryAction.device;
+      state.aparelho.phoneTheme = item.inventoryAction.theme;
+      removerItem(item.id);
+      el.interactionStatus.textContent = "Celular disponível.";
+    }
+  }
+};
+
+aplicarCena(obterCenaAtual());
+atualizarCabecalhoMensagens();
+renderizarBolsa();

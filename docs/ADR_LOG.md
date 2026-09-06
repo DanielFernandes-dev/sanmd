@@ -1,5 +1,19 @@
 # Registro de decisões
 
+## 2026-09-06 — Fundos atuais e visuais após a cutscene
+
+Status: aceito.
+
+Decisão: alinhar a Galeria à paleta de Mensagens e Arquivos apenas no tema
+`lulith`. Preservar no tema `mj` a aparência anterior da tela inicial e de cada
+app, destinada ao momento posterior à cutscene. A Galeria mantém integralmente
+o sistema de Save/Load. A troca narrativa de tema não é antecipada neste ajuste.
+
+Referência: [Visuais do celular](PHONE_THEMES.md).
+
+Validação antes do commit: 61 testes passaram com `node --test`, incluindo
+ativação pela Bolsa e regressões de Save/Load. `git diff --check` sem erros.
+
 ## 2026-09-06 — Objetos interativos e Bolsa da MJ
 
 Status: aceito.
@@ -23,3 +37,28 @@ Decisão: remover borda, arredondamento, fundo e sombra do botão. Na tela inici
 Consequências: a seta rosa e a navegação contextual existente são preservadas; o botão não ocupa o espaço da grade de apps.
 
 Validação do conjunto: 56 testes passaram usando Node.js v26.7.0 (`node --test`); `git diff --check` sem erros. O teste existente de aparência foi atualizado para o botão sem moldura. Essa execução não inclui inspeção visual em navegador.
+
+## 2026-09-06 — Da Bolsa ao aparelho ativo
+
+Status: aceito.
+
+Contexto: coletar o celular não deve desbloquear automaticamente sua função. MJ
+está com o aparelho original quebrado e precisa decidir usar o aparelho encontrado.
+
+Decisão: separar `aparelho.activePhone` do inventário e de `phoneTheme`, mantendo
+`originalPhoneStatus: "broken"`. A coleta existente permanece intermediária. Uma
+`inventoryAction` declarada pelo item aciona um handler após uma reação curta;
+a conclusão remove o item, ativa Lulith e usa o autosave do diálogo. O botão
+CELULAR reflete exclusivamente a presença de aparelho ativo e o layout se compacta
+quando está oculto. O tema inicial Lulith não exibe a personalização MJ.
+
+Consequências: a Bolsa passa a suportar ações diretas opcionais sem misturá-las aos
+hotspots. Dados do celular e Galeria são preservados. Load cancela ações pendentes;
+a migração de saves anteriores preserva progresso já realizado no celular, conforme
+[contrato de persistência](SAVE_SYSTEM.md). Nenhuma nova função de aparelho ou
+personalização foi adicionada.
+
+Validação: testes automatizados cobrem A/B/C entre sessões, duplo clique, autosave,
+preservação de conteúdo, migração, cancelamento por load e atualização da Bolsa.
+O fluxo também foi exercitado em Chromium com mouse e toque em 1440×900, 390×844
+e 844×390.

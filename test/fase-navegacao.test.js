@@ -78,6 +78,15 @@ function criarAmbiente() {
   const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
   const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
   vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(`
+    function prepararCelularTeste() {
+      if (state.aparelho.activePhone !== null) return;
+      state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+      state.aparelho.activePhone = "lulith";
+      state.inventory = state.inventory.filter(id => id !== "lulith_phone");
+      definirBotoes();
+    }
+  `, contexto);
 
   return { contexto, elementos };
 }
@@ -224,7 +233,7 @@ test("Celular continua funcionando depois de navegar entre cenas", () => {
   const { executar, ler } = controlarAmbiente();
 
   executar('irPara("beco_interior"); irPara("beco_fundo");');
-  executar("abrirCelular();");
+  executar("prepararCelularTeste(); abrirCelular();");
   assert.equal(ler("state.modo"), "celular");
   assert.equal(ler("state.celular.tela"), "inicio");
 

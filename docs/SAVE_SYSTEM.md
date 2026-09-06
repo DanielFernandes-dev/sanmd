@@ -94,3 +94,27 @@ Falhas de escrita também não devem derrubar o jogo. O autosave registra aviso 
 ## Objetos e Bolsa
 
 O snapshot v1 também aceita `inventory` (IDs únicos) e `sceneState` (flags por cena). Saves anteriores recebem inventário vazio e estados iniciais. A restauração substitui esses dados por cópias independentes. Veja [POINT_AND_CLICK.md](POINT_AND_CLICK.md).
+
+## Aquisição funcional do celular
+
+O snapshot v1 inclui `aparelho: { originalPhoneStatus, activePhone, phoneTheme }`.
+O original permanece `broken`; o aparelho ativo é `null` ou `lulith`, e o tema é
+`lulith` ou `mj`. A coleta já é registrada em `sceneState.beco_fundo`; a ativação
+é derivada de `activePhone`, sem flags redundantes de disponibilidade.
+
+Os estados restauráveis são: aparelho no cofre, aparelho coletado na Bolsa e
+aparelho ativo fora da Bolsa. O load restaura aparelho e inventário antes de
+renderizar a interface, cancela a reação pendente e não gera autosave.
+Snapshots com aparelho ativo simultaneamente na Bolsa ou sem coleta/cofre aberto
+são rejeitados antes de alterar a sessão.
+
+Migração de saves sem `aparelho`: sem histórico de mensagens, arquivos vistos ou
+reset iniciado, o aparelho permanece inativo e o inventário é preservado. Havendo
+esse progresso anterior no celular, a migração conserva o acesso com aparelho
+Lulith ativo e o antigo tema MJ; normaliza a coleta e retira eventual cópia da
+Bolsa. A migração usa somente o snapshot, nunca o estado da sessão atual. Saves
+novos começam com tema Lulith e não antecipam a personalização.
+
+A coleta mantém o autosave existente dos hotspots. A ativação salva ao concluir
+a reação, depois da mudança de estado. Os saves manuais continuam na Galeria,
+acessível após ativar o aparelho; nenhuma interface nova de Save/Load foi criada.

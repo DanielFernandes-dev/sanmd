@@ -35,7 +35,7 @@ const CENAS_BECO = {
         message: "O cofre abriu. Há um celular dentro." },
       { id: "lulith_phone", rect: [46.5, 47, 8, 14], ariaLabel: "Coletar celular",
         type: "collect", itemId: "lulith_phone", conditions: { safeOpened: true, lulithPhoneCollected: false },
-        changes: { lulithPhoneCollected: true }, message: "Celular guardado na Bolsa." }
+        changes: { lulithPhoneCollected: true }, message: "Celular de Lulith guardado na Bolsa." }
     ],
     destinos: ["beco_interior"],
     personagensVisuais: [{ id: "mj", pose: "neutral", slot: "center" }],
@@ -84,7 +84,9 @@ function monologoBecoFundo() {
   if (phoneCollected) {
     return [
       { autor: "MJ", texto: "(Este é o fundo do beco. O cofre agora está vazio.)" },
-      { autor: "MJ", texto: "(O aparelho misterioso já está na minha bolsa. Preciso descobrir quem armou tudo isso.)" }
+      { autor: "MJ", texto: state.aparelho.activePhone === "lulith"
+        ? "(O aparelho está funcionando. Preciso descobrir quem armou tudo isso.)"
+        : "(O aparelho está na minha bolsa. Preciso colocá-lo em uso.)" }
     ];
   }
   if (safeOpened) {
@@ -373,11 +375,18 @@ const DATA = {
 const ITEMS = {
   lulith_phone: {
     id: "lulith_phone",
-    label: "Celular Misterioso",
+    label: "Celular de Lulith",
     shortLabel: "Celular",
-    description: "Celular encontrado no cofre do fundo do beco. Guardado pela MJ para investigar posteriormente.",
-    purpose: "Pode conter pistas importantes para descobrir quem preparou este enigma.",
+    description: "Celular encontrado no cofre do fundo do beco.",
+    purpose: "Pode conter informações importantes sobre Lulith.",
     asset: "assets/cenario/beco/objects/lulith_phone_item.png",
+    inventoryAction: {
+      type: "activate_phone", label: "Usar", device: "lulith", theme: "lulith",
+      reaction: [
+        { autor: "MJ", texto: "(Está funcionando... O meu quebrou, mas este parece intacto.)" },
+        { autor: "MJ", texto: "(Vou usá-lo. Talvez o conteúdo explique por que estava no cofre.)" }
+      ]
+    },
     consumable: false
   }
 };

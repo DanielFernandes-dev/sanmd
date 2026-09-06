@@ -191,15 +191,15 @@ test("TESTE — 1 ITEM: celular no primeiro slot, 8 slots vazios, detalhes exibi
   }
 
   // Detalhes exibidos
-  assert.equal(a.ler("el.bagDetails.children[0].textContent"), "Celular Misterioso");
+  assert.equal(a.ler("el.bagDetails.children[0].textContent"), "Celular de Lulith");
   // Imagem maior
   assert.equal(a.ler("el.bagDetails.children[1].children[0].src"), "assets/cenario/beco/objects/lulith_phone_item.png");
   // FUNÇÃO
   assert.equal(a.ler("el.bagDetails.children[2].children[0].textContent"), "FUNÇÃO");
-  assert.equal(a.ler("el.bagDetails.children[2].children[1].textContent"), "Pode conter pistas importantes para descobrir quem preparou este enigma.");
+  assert.equal(a.ler("el.bagDetails.children[2].children[1].textContent"), "Pode conter informações importantes sobre Lulith.");
   // DESCRIÇÃO
   assert.equal(a.ler("el.bagDetails.children[3].children[0].textContent"), "DESCRIÇÃO");
-  assert.equal(a.ler("el.bagDetails.children[3].children[1].textContent"), "Celular encontrado no cofre do fundo do beco. Guardado pela MJ para investigar posteriormente.");
+  assert.equal(a.ler("el.bagDetails.children[3].children[1].textContent"), "Celular encontrado no cofre do fundo do beco.");
 
   // Sem página 2 (paginação oculta)
   assert.equal(a.ler("el.bagPagination.hidden"), true);
@@ -249,7 +249,7 @@ test("TESTE — 10 ITENS: 2 páginas automáticas, navegação 1 <-> 2 funcional
   }
   // Auto-selecionou o primeiro item da página 2
   assert.equal(a.ler("state.bolsa.itemSelecionadoId"), "lulith_phone");
-  assert.equal(a.ler("el.bagDetails.children[0].textContent"), "Celular Misterioso");
+  assert.equal(a.ler("el.bagDetails.children[0].textContent"), "Celular de Lulith");
 
   // Voltar para página 1
   a.executar("state.bolsa.pagina = 1; renderizarBolsa();");
@@ -463,5 +463,134 @@ test("TESTE — SAVE/LOAD: persiste apenas IDs e restaura tudo ao carregar", () 
   assert.deepEqual([...b.ler("state.inventory")], ["lulith_phone", "doc_teste"]);
   assert.equal(b.ler("el.bagGrid.children[0].dataset.itemId"), "lulith_phone");
   assert.equal(b.ler("el.bagGrid.children[1].dataset.itemId"), "doc_teste");
-  assert.equal(b.ler("el.bagDetails.children[0].textContent"), "Celular Misterioso");
+  assert.equal(b.ler("el.bagDetails.children[0].textContent"), "Celular de Lulith");
+});
+
+function coletarAparelho(a) {
+  a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe"); executarHotspot("lulith_phone");');
+}
+
+function concluirReacao(a) {
+  a.executar('while (state.modo === "dialogo") avancarDialogo();');
+}
+
+test("aparelho: coleta e seleção não desbloqueiam; USAR conclui uma única transição e autosave", () => {
+  const a = criarAmbiente();
+  assert.equal(a.ler('state.aparelho.originalPhoneStatus'), 'broken');
+  assert.equal(a.ler('el.btnCelular.hidden'), true);
+  a.executar('abrirCelular();');
+  assert.equal(a.ler('state.modo'), 'livre');
+  assert.equal(a.ler('executarAcaoInventario("lulith_phone")'), false);
+  coletarAparelho(a);
+  const before = a.ler('JSON.stringify(saveRepository.obterAutosave())');
+  a.executar('el.btnBolsa.click(); el.bagGrid.firstElementChild.click();');
+  assert.equal(a.ler('el.btnCelular.hidden'), true);
+  assert.equal(a.ler('JSON.stringify(saveRepository.obterAutosave())'), before);
+  const button = a.ler('el.bagDetails.children[4]');
+  assert.equal(button.getAttribute('aria-label'), 'Usar Celular de Lulith');
+  // Dados existentes sobrevivem à mudança de categoria do objeto.
+  a.executar(`state.mensagens.historico.push({autor: "dono", texto: "Conteúdo preservado"});
+    state.arquivos.vistos.add("candidatos");
+    saveRepository.criarManual({id: "foto-preservada"});`);
+  button.click();
+  button.click();
+  assert.equal(button.disabled, true);
+  assert.equal(a.ler('state.modo'), 'dialogo');
+  assert.equal(a.ler('state.dialogo.linha'), 0);
+  assert.equal(a.ler('state.inventory.includes("lulith_phone")'), true);
+  assert.equal(a.ler('state.aparelho.activePhone'), null);
+  assert.equal(a.ler('el.btnCelular.hidden'), true);
+  assert.equal(a.ler('JSON.stringify(saveRepository.obterAutosave())'), before);
+  concluirReacao(a);
+  assert.equal(a.ler('state.aparelho.activePhone'), 'lulith');
+  assert.equal(a.ler('state.aparelho.originalPhoneStatus'), 'broken');
+  assert.equal(a.ler('state.aparelho.phoneTheme'), 'lulith');
+  assert.equal(a.ler('el.phoneScreen.dataset.phoneTheme'), 'lulith');
+  assert.equal(a.ler('el.btnCelular.hidden'), false);
+  assert.equal(a.ler('state.inventory.length'), 0);
+  assert.equal(a.ler('el.bagEmpty.hidden'), false);
+  assert.equal(a.ler('el.bagDetails.children.length'), 0);
+  assert.equal(a.ler('el.bagGrid.children.length'), 0);
+  assert.equal(a.ler('saveRepository.obterAutosave().saveState.aparelho.activePhone'), 'lulith');
+  assert.equal(a.ler('state.mensagens.historico[0].texto'), 'Conteúdo preservado');
+  assert.equal(a.ler('state.arquivos.vistos.has("candidatos")'), true);
+  assert.equal(a.ler('saveRepository.listarManuais()[0].id'), 'foto-preservada');
+  assert.equal(a.ler('adicionarItem("lulith_phone")'), false);
+  assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
+  assert.equal(a.ler('executarAcaoInventario("lulith_phone")'), false);
+  a.executar('el.btnCelular.click();');
+  assert.equal(a.ler('state.modo'), 'celular');
+});
+
+test("aparelho: snapshots A/B/C restauram cofre, Bolsa e dispositivo entre sessões sem vazamento", () => {
+  const a = criarAmbiente();
+  a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe");');
+  const snapshots = [a.ler('JSON.stringify(capturarEstadoJogo())')];
+  a.executar('executarHotspot("lulith_phone");');
+  snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
+  a.executar('el.btnBolsa.click(); executarAcaoInventario("lulith_phone");');
+  concluirReacao(a);
+  snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
+  snapshots.forEach((snapshot, i) => a.executar(`saveRepository.criarManual({id: "${i}", saveState: ${snapshot}});`));
+  const b = criarAmbiente(a.storage);
+  for (const i of [2, 0, 1, 2, 1, 0]) {
+    b.executar(`restaurarEstadoJogo(saveRepository.listarManuais()[${i}].saveState);`);
+    assert.equal(b.ler('state.aparelho.activePhone'), i === 2 ? 'lulith' : null);
+    assert.equal(b.ler('state.inventory.includes("lulith_phone")'), i === 1);
+    assert.equal(b.ler('el.btnCelular.hidden'), i !== 2);
+    assert.equal(b.ler('el.hotspotLayer.children.length'), i === 0 ? 1 : 0);
+    assert.equal(b.ler('el.objectLayer.children.length'), i === 0 ? 2 : 1);
+    b.executar('el.btnBolsa.click();');
+    assert.equal(b.ler('el.bagDetails.children.some(e => e.className === "bag-item-action")'), i === 1);
+    b.executar('el.bagDialog.close(); abrirCelular();');
+    assert.equal(b.ler('state.modo'), i === 2 ? 'celular' : 'livre');
+  }
+});
+
+test("aparelho: load durante reação cancela ativação; snapshots inválidos não alteram a sessão", () => {
+  const a = criarAmbiente();
+  const initial = a.ler('JSON.stringify(capturarEstadoJogo())');
+  coletarAparelho(a);
+  a.executar('el.btnBolsa.click(); executarAcaoInventario("lulith_phone");');
+  a.executar(`restaurarEstadoJogo(${initial}); encerrarConversa();`);
+  assert.equal(a.ler('state.inventoryActionPending'), null);
+  assert.equal(a.ler('state.aparelho.activePhone'), null);
+  for (const patch of ['{activePhone: "other"}', '{phoneTheme: null}', '{originalPhoneStatus: "missing"}', '{activePhone: "lulith"}']) {
+    a.executar(`var invalid = capturarEstadoJogo(); Object.assign(invalid.aparelho, ${patch});`);
+    assert.throws(() => a.executar('restaurarEstadoJogo(invalid);'), /corrompido/);
+    assert.equal(a.ler('state.aparelho.activePhone'), null);
+  }
+});
+
+test("aparelho: migração v1 distingue exploração de progresso no celular e mantém tema independente", () => {
+  const a = criarAmbiente();
+  coletarAparelho(a);
+  a.executar('var old = capturarEstadoJogo(); delete old.aparelho; restaurarEstadoJogo(old);');
+  assert.equal(a.ler('state.aparelho.activePhone'), null);
+  assert.equal(a.ler('state.inventory[0]'), 'lulith_phone');
+  a.executar(`old.mensagens.historico.push({autor: "dono", texto: "Legado"}); restaurarEstadoJogo(old);`);
+  assert.equal(a.ler('state.aparelho.activePhone'), 'lulith');
+  assert.equal(a.ler('state.inventory.length'), 0);
+  assert.equal(a.ler('state.aparelho.phoneTheme'), 'mj');
+  a.executar('restaurarEstadoJogo(capturarEstadoJogo());');
+  assert.equal(a.ler('el.phoneScreen.dataset.phoneTheme'), 'mj');
+  assert.equal(a.ler('state.aparelho.activePhone'), 'lulith');
+});
+
+test("ação direta: item sem ação não ganha USAR; ativação recalcula página, seleção e pesquisa", () => {
+  const a = criarAmbiente();
+  a.executar(`for (let i = 0; i < 9; i++) {
+    ITEMS['note'+i] = {id: 'note'+i, label: 'Bilhete '+i}; adicionarItem('note'+i);
+  }`);
+  assert.equal(a.ler('el.bagDetails.children.length'), 4);
+  coletarAparelho(a);
+  a.executar('el.btnBolsa.click(); state.bolsa.pagina = 2; renderizarBolsa(); executarAcaoInventario("lulith_phone");');
+  concluirReacao(a);
+  assert.equal(a.ler('state.bolsa.pagina'), 1);
+  assert.equal(a.ler('el.bagPagination.hidden'), true);
+  assert.equal(a.ler('state.bolsa.itemSelecionadoId'), 'note0');
+  a.executar('state.bolsa.pesquisa = "Lulith"; renderizarBolsa();');
+  assert.equal(a.ler('obterItensFiltradosBolsa().length'), 0);
+  assert.equal(a.ler('el.bagNoResults.hidden'), false);
+  assert.equal(a.ler('el.bagDetails.children.length'), 0);
 });

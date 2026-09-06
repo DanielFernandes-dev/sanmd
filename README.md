@@ -78,6 +78,7 @@ A interface separa as conversas presenciais das mensagens digitais:
 - As mensagens do dono são exibidas à esquerda e as do protagonista à direita.
 - O botão **Conversar** é usado para interações presenciais.
 - Quando o protagonista está sozinho, **Conversar** apresenta um pensamento ou monólogo.
+- O celular original da MJ começa quebrado e o ícone CELULAR fica oculto. Colete o Celular de Lulith no cofre e escolha **USAR** na Bolsa; ao concluir a reação, o aparelho fica ativo com o tema Lulith.
 - O botão **Voltar**, sem borda ou fundo, fica no canto inferior esquerdo da tela inicial do celular e no canto superior esquerdo dentro dos apps.
 - Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
 - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.

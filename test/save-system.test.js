@@ -115,6 +115,15 @@ function criarAmbiente(storage = criarStorage()) {
   const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
   const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
   vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(`
+    function prepararCelularTeste() {
+      if (state.aparelho.activePhone !== null) return;
+      state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+      state.aparelho.activePhone = "lulith";
+      state.inventory = state.inventory.filter(id => id !== "lulith_phone");
+      definirBotoes();
+    }
+  `, contexto);
 
   return {
     elementos,
@@ -136,7 +145,7 @@ function criarFoto(ambiente, nome) {
 
 test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sessões", () => {
   const ambiente = criarAmbiente();
-  ambiente.executar("abrirCelular(); abrirGaleria();");
+  ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Antes do reset");
   const fotosAntes = ambiente.ler("JSON.stringify(saveRepository.listarManuais())");
 
@@ -158,7 +167,7 @@ test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sess�
   const novaSessao = criarAmbiente(ambiente.storage);
   novaSessao.executar(`
     restaurarEstadoJogo(saveRepository.obterAutosave().saveState);
-    abrirCelular();
+    prepararCelularTeste(); abrirCelular();
     abrirGaleria();
   `);
   assert.equal(novaSessao.ler("state.celular.resetStatus"), "concluido");
@@ -193,7 +202,7 @@ test("foto manual persiste snapshot, cenário, data, nome e expressão entre rei
     irPara("beco_interior");
     state.arquivos.vistos.add("rota");
     state.dialogo.faseMonologo = "aposPrimeiroEnvio";
-    abrirCelular();
+    prepararCelularTeste(); abrirCelular();
     abrirGaleria();
     tirarFoto();
   `);
@@ -208,7 +217,7 @@ test("foto manual persiste snapshot, cenário, data, nome e expressão entre rei
   assert.equal(primeiraSessao.ler("saveRepository.listarManuais()[0].saveState.arquivos.vistos[0]"), "rota");
 
   const segundaSessao = criarAmbiente(storage);
-  segundaSessao.executar("abrirCelular(); abrirGaleria();");
+  segundaSessao.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   assert.equal(segundaSessao.ler("state.galeria.saves.length"), 1);
   assert.equal(segundaSessao.ler("state.galeria.saves[0].name"), "Antes do cofre");
   assert.equal(segundaSessao.ler("state.galeria.saves[0].photoExpression"), expressao);
@@ -217,7 +226,7 @@ test("foto manual persiste snapshot, cenário, data, nome e expressão entre rei
 
 test("cancelar não cria save e a expressão seguinte evita repetição imediata", () => {
   const ambiente = criarAmbiente();
-  ambiente.executar("abrirCelular(); abrirGaleria(); tirarFoto(); mostrarPreviewFoto(); cancelarFoto();");
+  ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria(); tirarFoto(); mostrarPreviewFoto(); cancelarFoto();");
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 0);
   assert.equal(ambiente.ler("state.galeria.capturaPendente"), null);
 
@@ -230,7 +239,7 @@ test("cancelar não cria save e a expressão seguinte evita repetição imediata
 
 test("galeria limita nove slots, não sobrescreve e libera somente o save excluído", () => {
   const ambiente = criarAmbiente();
-  ambiente.executar("abrirCelular(); abrirGaleria();");
+  ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   for (let indice = 1; indice <= 9; indice++) criarFoto(ambiente, `Foto ${indice}`);
 
   assert.equal(ambiente.ler("state.galeria.saves.length"), 9);
@@ -256,7 +265,7 @@ test("load restaura o estado narrativo, fecha o celular e não aplica expressão
     state.dialogo.faseMonologo = "arquivoCandidatos";
     state.mensagens.etapa = "antes-reset";
     state.mensagens.historico.push({ autor: "protagonista", texto: "Eu já memorizei." });
-    abrirCelular();
+    prepararCelularTeste(); abrirCelular();
     abrirGaleria();
   `);
   criarFoto(ambiente, "Pista");
@@ -285,7 +294,7 @@ test("load restaura o estado narrativo, fecha o celular e não aplica expressão
 
 test("snapshot inválido não altera a sessão nem impede outros saves", () => {
   const ambiente = criarAmbiente();
-  ambiente.executar("abrirCelular(); abrirGaleria();");
+  ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Válida");
   ambiente.executar(`
     const corrompida = { ...state.galeria.saves[0], id: "corrompida", name: "Corrompida", saveState: { saveVersion: 999 } };
@@ -303,7 +312,7 @@ test("snapshot inválido não altera a sessão nem impede outros saves", () => {
 
 test("fim de cutscene substitui autosave, mas load manual não", () => {
   const ambiente = criarAmbiente();
-  ambiente.executar("abrirCelular(); abrirGaleria();");
+  ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Início");
   assert.equal(ambiente.ler("saveRepository.obterAutosave()"), null);
   ambiente.executar("mostrarTelaInicial(); fecharCelular(); irPara('beco_interior'); iniciarConversa(); encerrarConversa();");
@@ -313,7 +322,7 @@ test("fim de cutscene substitui autosave, mas load manual não", () => {
   assert.equal(ambiente.ler('Object.hasOwn(saveRepository.obterAutosave(), "photoExpression")'), false);
 
   ambiente.executar(`
-    abrirCelular();
+    prepararCelularTeste(); abrirCelular();
     abrirGaleria();
     state.galeria.selecionadoId = state.galeria.saves[0].id;
     carregarFotoSelecionada();
@@ -351,7 +360,7 @@ test("point-and-click: snapshots isolados nos três estados e navegação", () =
   assert.equal(a.ler('state.inventory[0]'), 'lulith_phone');
   assert.equal(a.ler('el.hotspotLayer.children.length'), 0);
   assert.equal(a.ler('el.bagGrid.children[0].children[1].textContent'), 'Celular');
-  assert.equal(a.ler('el.bagDetails.children[0].textContent'), 'Celular Misterioso');
+  assert.equal(a.ler('el.bagDetails.children[0].textContent'), 'Celular de Lulith');
   const b = criarAmbiente(a.storage);
   b.executar('restaurarEstadoJogo(saveRepository.obterAutosave().saveState);');
   assert.equal(b.ler('state.inventory[0]'), 'lulith_phone');
