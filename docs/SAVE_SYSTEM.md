@@ -7,6 +7,7 @@ O snapshot do jogo é a fonte de verdade. A fotografia é somente a identidade v
 - `js/game.js` captura, valida e restaura o estado narrativo real.
 - `js/save-system.js` isola a persistência física e mantém a coleção versionada no `localStorage`.
 - A Galeria apresenta e administra somente saves manuais.
+- A Galeria é a única exceção à limpeza do celular: o reset remoto preserva suas fotografias e saves manuais, enquanto limpa Mensagens e o conteúdo visível de Arquivos.
 - O autosave mantém um único checkpoint separado.
 - A composição da foto resolve cenário e sprite a partir de IDs lógicos; imagens não são incorporadas ao save.
 

@@ -134,6 +134,37 @@ function criarFoto(ambiente, nome) {
   return expressao;
 }
 
+test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sessões", () => {
+  const ambiente = criarAmbiente();
+  ambiente.executar("abrirCelular(); abrirGaleria();");
+  criarFoto(ambiente, "Antes do reset");
+  const fotosAntes = ambiente.ler("JSON.stringify(saveRepository.listarManuais())");
+
+  ambiente.executar(`
+    state.mensagens.historico.push({ autor: "protagonista", texto: "Teste" });
+    agendarResetRemoto();
+    iniciarResetRemoto();
+  `);
+  const timer = ambiente.ler("state.celular.resetTimer");
+  timer.callback();
+  assert.equal(ambiente.ler("state.celular.resetStatus"), "concluido");
+  assert.equal(ambiente.ler("state.mensagens.historico.length"), 0);
+  ambiente.executar("abrirArquivos();");
+  assert.equal(ambiente.ler("el.filesList.children.length"), 1);
+  assert.equal(ambiente.ler("el.filesList.firstElementChild.textContent"), "Nenhum arquivo encontrado.");
+  ambiente.executar("mostrarTelaInicial(); abrirGaleria();");
+  assert.equal(ambiente.ler("JSON.stringify(state.galeria.saves)"), fotosAntes);
+
+  const novaSessao = criarAmbiente(ambiente.storage);
+  novaSessao.executar(`
+    restaurarEstadoJogo(saveRepository.obterAutosave().saveState);
+    abrirCelular();
+    abrirGaleria();
+  `);
+  assert.equal(novaSessao.ler("state.celular.resetStatus"), "concluido");
+  assert.equal(novaSessao.ler("JSON.stringify(state.galeria.saves)"), fotosAntes);
+});
+
 test("composição resolve cada expressão fotográfica e mantém o cenário em imagem independente", () => {
   const ambiente = criarAmbiente();
   for (let numero = 1; numero <= 10; numero += 1) {

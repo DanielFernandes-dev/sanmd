@@ -1192,7 +1192,7 @@ function iniciarResetRemoto() {
   cancelarEnvioDono();
   ocultarTelasCelular();
   el.phoneReset.classList.remove("oculto");
-  el.resetStatus.textContent = "Apagando dados locais...";
+  el.resetStatus.textContent = "Apagando dados locais, exceto a galeria...";
   el.btnVoltar.disabled = true;
   state.celular.resetTimer = setTimeout(concluirResetRemoto, CONFIG.duracaoReset);
 }
