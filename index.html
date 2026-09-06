@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
-  <link rel="stylesheet" href="styles.css?v=ir-para-minimal-v1">
+  <link rel="stylesheet" href="styles.css?v=mj-gallery-v2">
 </head>
 <body>
   <div id="app">
@@ -44,7 +44,7 @@
 
   <div id="phone-overlay" class="oculto">
     <div id="phone-frame">
-      <div id="phone-screen">
+      <div id="phone-screen" data-phone-theme="mj">
         <div id="status-bar">
           <span id="phone-signal">▂▄▆</span>
           <span id="reset-countdown" class="oculto" role="timer" aria-label="Tempo até o reset">01:00</span>
@@ -52,12 +52,87 @@
           <span>100%</span>
         </div>
         <div id="phone-home">
+          <div class="phone-personal-mark" aria-hidden="true">MJ <span>♡</span></div>
           <p id="phone-date"></p>
           <div id="apps-grid">
-            <button id="btn-mensagens" class="app" type="button" aria-label="Abrir Mensagens"><span class="app-icon">💬</span><span>Mensagens</span></button>
-            <button id="btn-galeria" class="app" type="button" aria-label="Abrir Galeria"><span class="app-icon">🖼️</span><span>Galeria</span></button>
-            <button class="app" type="button" aria-label="Notas indisponíveis" disabled><span class="app-icon">📝</span><span>Notas</span></button>
-            <button id="btn-arquivos" class="app" type="button" aria-label="Abrir Arquivos"><span class="app-icon">📁</span><span>Arquivos</span></button>
+            <button id="btn-galeria" class="phone-app phone-app--galeria" type="button" aria-label="Abrir Galeria">
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <circle cx="16" cy="16" r="4"/>
+                  <circle cx="16" cy="9" r="5.5"/>
+                  <circle cx="24.5" cy="13.5" r="5.5"/>
+                  <circle cx="23" cy="23.5" r="5.5"/>
+                  <circle cx="9" cy="23.5" r="5.5"/>
+                  <circle cx="7.5" cy="13.5" r="5.5"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-mensagens" class="phone-app phone-app--mensagens" type="button" aria-label="Abrir Mensagens">
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <path d="M7 5h18v14H14l-5 5v-5H7z"/>
+                </svg>
+              </span>
+              <span class="phone-app__badge" aria-hidden="true"></span>
+            </button>
+            <button id="btn-telefone" class="phone-app phone-app--telefone" type="button" aria-label="Abrir Telefone" disabled>
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <g transform="rotate(45 16 16)">
+                    <rect x="13" y="2" width="6" height="12" rx="3"/>
+                    <rect x="13" y="18" width="6" height="12" rx="3"/>
+                  </g>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-notas" class="phone-app phone-app--notas" type="button" aria-label="Abrir Notas" disabled>
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <path d="M9 4h9l5 5v17a2 2 0 01-2 2H9a2 2 0 01-2-2V6a2 2 0 012-2z"/>
+                  <path fill="var(--app-tint)" d="M18 4l5 5h-5z"/>
+                  <rect x="11" y="14" width="8" height="2" fill="var(--app-tint)"/>
+                  <rect x="11" y="18" width="6" height="2" fill="var(--app-tint)"/>
+                  <rect x="11" y="22" width="7" height="2" fill="var(--app-tint)"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-config" class="phone-app phone-app--config" type="button" aria-label="Abrir Configurações" disabled>
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <circle cx="16" cy="16" r="4.5" fill="none" stroke="currentColor" stroke-width="4.5"/>
+                  <rect x="14.5" y="4" width="3" height="8"/>
+                  <rect x="14.5" y="20" width="3" height="8"/>
+                  <rect x="4" y="14.5" width="8" height="3"/>
+                  <rect x="20" y="14.5" width="8" height="3"/>
+                  <circle cx="16" cy="16" r="2.2" fill="var(--app-tint)"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-arquivos" class="phone-app phone-app--arquivos" type="button" aria-label="Abrir Arquivos">
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <path d="M4 8h7l3 4h10v2H4z"/>
+                  <path d="M4 14h20v9a3 3 0 01-3 3H7a3 3 0 01-3-3z"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-mapas" class="phone-app phone-app--mapas" type="button" aria-label="Abrir Mapas" disabled>
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <path d="M16 4c-4.5 0-8 3.3-8 7.7C8 16.8 16 28 16 28s8-11.2 8-16.3C24 7.3 20.5 4 16 4z"/>
+                  <circle cx="16" cy="11.5" r="3" fill="var(--app-tint)"/>
+                </svg>
+              </span>
+            </button>
+            <button id="btn-musica" class="phone-app phone-app--musica" type="button" aria-label="Abrir Música" disabled>
+              <span class="phone-app__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" width="32" height="32" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">
+                  <rect x="14.5" y="4" width="4" height="15"/>
+                  <path d="M18.5 5l7 2v5l-7-2z"/>
+                  <circle cx="13" cy="22" r="4.5"/>
+                </svg>
+              </span>
+            </button>
           </div>
         </div>
         <section id="phone-messages" class="oculto" aria-labelledby="messages-header">
@@ -83,7 +158,7 @@
           </article>
         </section>
         <section id="phone-gallery" class="oculto" aria-labelledby="gallery-header">
-          <header id="gallery-header">GALERIA</header>
+          <header id="gallery-header"><span>GALERIA</span><small>Seus momentos salvos.</small><span class="gallery-signature" aria-hidden="true">MJ ♡</span></header>
           <div id="gallery-toolbar">
             <span id="gallery-count">0/9</span>
             <button id="btn-tirar-foto" type="button">TIRAR FOTO</button>
@@ -117,7 +192,7 @@
           <div class="reset-progress" aria-hidden="true"><span></span></div>
         </section>
         <div id="phone-nav">
-          <button id="btn-voltar" type="button">◀ VOLTAR</button>
+          <button id="btn-voltar" type="button" aria-label="Voltar"><span class="back-icon" aria-hidden="true">◀</span></button>
         </div>
       </div>
     </div>

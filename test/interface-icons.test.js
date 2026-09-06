@@ -46,3 +46,39 @@ test("CSS mantém ícones discretos, coloridos por currentColor e sobre o cenár
   assert.match(css, /#vn-area\s*\{[^}]*grid-column:\s*1 \/ -1;[^}]*overflow:\s*hidden;/s);
   assert.match(css, /#btn-conversar,[^}]*#btn-celular\s*\{[^}]*grid-column:\s*2;[^}]*z-index:\s*2;/s);
 });
+
+test("tela inicial usa grade 4x2 de apps com ícones SVG e botão Voltar", () => {
+  const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
+  const css = fs.readFileSync(path.join(raiz, "styles.css"), "utf8");
+  const appsHabilitados = ["btn-mensagens", "btn-galeria", "btn-arquivos"];
+  for (const id of appsHabilitados) {
+    assert.match(html, new RegExp(`<button id="${id}" class="phone-app phone-app--[a-z]+" type="button"`));
+  }
+  const appsDesabilitados = ["btn-telefone", "btn-notas", "btn-config", "btn-mapas", "btn-musica"];
+  for (const id of appsDesabilitados) {
+    assert.match(html, new RegExp(`<button id="${id}" class="phone-app phone-app--[a-z]+" type="button"[^>]*disabled`));
+  }
+  assert.equal((html.match(/class="phone-app phone-app--/g) || []).length, 8);
+  assert.match(html, /data-phone-theme="mj"/);
+  assert.doesNotMatch(html, /class="app"/);
+  assert.doesNotMatch(html, /<span class="app-icon">/);
+  assert.match(html, /<button id="btn-voltar" type="button" aria-label="Voltar"><span class="back-icon" aria-hidden="true">[^<]+<\/span><\/button>/);
+  assert.match(css, /#apps-grid\s*\{[^}]*grid-template-columns:\s*repeat\(4, minmax\(0, 1fr\)\)/s);
+  assert.match(css, /\[data-phone-theme="mj"\] \.phone-app--galeria\s*\{[^}]*#d75d8c/s);
+  assert.match(css, /#btn-voltar\s*\{[^}]*border-radius:\s*12px;[^}]*background:\s*rgba\(40, 33, 61, 0\.9\)/s);
+  assert.match(css, /#btn-voltar \.back-icon\s*\{[^}]*color:\s*#f2b5cd;/s);
+});
+
+test("celular usa wallpaper real sem transformar mockups em interface", () => {
+  const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
+  const css = fs.readFileSync(path.join(raiz, "styles.css"), "utf8");
+  assert.match(css, /#phone-screen\s*\{[^}]*wallpaper\.png[^}]*cover/s);
+  assert.doesNotMatch(html + css, /assets\/interfaces\/(?:save|celular)\.png/);
+  assert.ok(fs.existsSync(path.join(pastaIcones, "..", "wallpaper.png")));
+  for (const id of ["btn-tirar-foto", "btn-carregar-foto", "btn-excluir-foto", "btn-cancelar-foto"]) {
+    assert.match(html, new RegExp(`<button id="${id}"[^>]*type="button"`));
+  }
+  assert.match(html, /<input id="gallery-photo-name"[^>]*maxlength="28"/);
+  assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /#gallery-grid\s*\{[^}]*overflow-y: auto/s);
+});

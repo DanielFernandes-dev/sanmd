@@ -339,18 +339,38 @@ Carregar um save manual antigo preserva o autosave existente. O checkpoint só �
 
 ### Direção Visual
 
-A Galeria reutiliza a linguagem do celular existente: interface escura, tecnológica e compacta, com contraste quente para ações relacionadas às fotografias.
+A tela inicial e a Galeria têm uma identidade pessoal da MJ, com tons rosa/lilás, painéis escuros translúcidos e fotografias de moldura clara. A interface é composta por HTML/CSS, não por uma imagem de mockup aplicada sobre os controles.
 
 | Elemento | Aparência atual |
 |---|---|
-| Fundo da tela | Azul-marinho escuro `#11182d` |
-| Cabeçalho | Azul `#1c2747` com divisor `#38446d` |
-| Texto principal | Bege claro herdado de `--cor-texto` |
-| Texto secundário | Azul dessaturado `#9fb0e8` |
-| Destaque e ações | Dourado `#e8b34b` |
-| Exclusão | Vermelho `#ff667d` sobre fundo vinho `#35151d` |
+| Fundo de `#phone-screen` | `wallpaper.png` centralizado, `cover`, sem repetição, sob gradiente escuro com opacidades de 0,3 a 0,5 |
+| Fundo da Galeria | Gradiente translúcido de `rgba(17, 18, 36, 0.85)` nas extremidades e `rgba(32, 23, 48, 0.55)` em 55% |
+| Cabeçalho da Galeria | `rgba(20, 20, 40, 0.65)`, divisor `rgba(218, 180, 197, 0.25)` e título `#f3dbe9` |
+| Textos secundários | Subtítulo `#d0c7de`, contador `#f1d9e7`, status `#ffe0ba` e data do detalhe `#e0d0e7` |
+| Destaque e ações | Gradiente rosa `#ad416b` a `#813551`, borda `#efa4c1` e texto `#fff4f8` |
+| Fotografias | Moldura `#efe3da`, nome `#292333` na grade e metadados `#514254` |
+| Exclusão | Borda `#ff667d`, fundo vinho `#35151d` e texto `#ffb0bd` |
 | Tipografia técnica | `Courier New`, monoespaçada |
 | Tipografia geral | `Trebuchet MS`, `Segoe UI`, Verdana |
+| Assinaturas decorativas | MJ com coração, em cursiva itálica rosa e `aria-hidden="true"` |
+
+O frame tem borda de `3px` em `#655367`, raio de `34px`, fundo em gradiente `#423c53`, `#161622` e `#392e49`, além de sombras externa e interna. A tela tem raio de `24px`. O overlay escurece o gameplay com `rgba(4, 6, 12, 0.88)` e desfoque de `3px`.
+
+Na tela inicial, a assinatura fica no alto à direita; data e apps ficam na parte inferior. A grade de apps ocupa toda a largura disponível em duas colunas, com intervalo de `10px`. Os botões têm fundo roxo translúcido no modelo de ícone do mockup (ícone em cima, rótulo embaixo), e Galeria recebe destaque rosa. Apenas Mensagens, Galeria e Arquivos existem; a Notas foi removida. O botão **Voltar** na barra inferior usa a mesma modelagem de ícone do celular: tile quadrado arredondado, translúcido, com seta rosa e rótulo "Voltar". A data aparece em um painel escuro translúcido arredondado.
+
+### Assets e Referências
+
+Os arquivos permanecem na pasta real `assets/interfaces/`, no plural:
+
+| Arquivo PNG | Dimensões e modo | Uso |
+|---|---|---|
+| `wallpaper.png` | 940×1672, RGB | Único PNG desta pasta usado em runtime pelo redesign; fundo de `#phone-screen` com `center / cover no-repeat` |
+| `celular.png` | 1225×1284, RGBA | Exclusivamente mockup de referência do celular |
+| `save.png` | 1161×1355, RGB | Exclusivamente mockup de referência da Galeria/save |
+
+`celular.png` e `save.png` nunca são usados como UI nem como sprites da MJ. O wallpaper é declarado somente em `#phone-screen`; os painéis translúcidos da Galeria deixam esse fundo aparecer sem repetir o asset. Cenários e sprites fotográficos continuam sendo assets separados.
+
+`copy:web` já copia recursivamente toda a pasta `assets` para `www/`, incluindo `assets/interfaces/` e os mockups. Estar no pacote não significa ser utilizado em runtime; não é necessário alterar o script nem renomear a pasta.
 
 ### Tela da Galeria
 
@@ -358,7 +378,8 @@ A tela é uma coluna flexível formada por:
 
 ```text
 ┌───────────────────────────┐
-│          GALERIA          │
+│ GALERIA              MJ   │
+│ Seus momentos salvos.     │
 ├───────────────────────────┤
 │ 0/9          TIRAR FOTO   │
 ├───────────────────────────┤
@@ -372,25 +393,26 @@ A tela é uma coluna flexível formada por:
 └───────────────────────────┘
 ```
 
-O cabeçalho segue exatamente o mesmo padrão visual de Mensagens e Arquivos. A toolbar separa o contador da ação principal.
+O cabeçalho da Galeria é alinhado à esquerda, com subtítulo e assinatura decorativa à direita; seu acabamento translúcido é específico, diferente dos cabeçalhos de Mensagens e Arquivos. A toolbar separa o contador da ação principal. A barra de status do celular fica acima da Galeria, e a navegação geral fica abaixo, fora da seção `#phone-gallery`.
 
 ### Grade 3×3
 
-`#gallery-grid` usa três colunas e três linhas com espaçamento de `6px`.
+`#gallery-grid` usa três colunas `minmax(0, 1fr)` e três linhas `minmax(112px, 1fr)`, com espaçamento de `6px`, padding `0 10px 10px` e rolagem vertical quando não há altura suficiente.
 
 Slots vazios:
 
-- fundo escuro;
-- borda tracejada;
-- número central de 1 a 9;
+- fundo escuro translúcido `rgba(20, 20, 40, 0.55)`;
+- borda tracejada `#bfaabb` e cantos de `4px`;
+- sinal `+`, número de 1 a 9 e legenda `Espaço livre`, centralizados;
 - baixo contraste para não competir com as fotografias.
 
 Slots ocupados:
 
 - funcionam como botões;
 - exibem thumbnail, nome, data e hora;
-- truncam textos longos com reticências;
-- recebem borda e outline dourados em hover ou foco;
+- usam moldura clara, padding de `3px` e sombra discreta;
+- truncam nomes longos com reticências, mas permitem quebra de linha nos metadados;
+- recebem borda rosa `#ed9bbc` em hover ou foco, outline de `2px` na mesma cor em hover e outline `#f2b5cd` no foco visível pela regra geral dos botões do celular;
 - preservam dimensões uniformes independentemente do conteúdo.
 
 ### Composição da Fotografia
@@ -403,7 +425,7 @@ photo-composition
   photo-mj           MJ centralizada, em primeiro plano
 ```
 
-MJ ocupa aproximadamente 92% da altura da composição, fica centralizada horizontalmente e recebe sombra para separação do cenário. O renderer usa `image-rendering: pixelated` para preservar a linguagem visual do sprite.
+MJ ocupa 92% da altura da composição, fica centralizada horizontalmente com `left: 50%` e `translateX(-50%)`, e tem a base deslocada por `bottom: -10%`. Recebe sombra para separação do cenário. Cenário e sprite usam `image-rendering: pixelated`.
 
 O cenário é resolvido por `sceneId` e pelo ID de local contido no snapshot. Caminhos físicos de imagens não são gravados como fonte de verdade no save.
 
@@ -411,10 +433,12 @@ O cenário é resolvido por `sceneId` e pelo ID de local contido no snapshot. Ca
 
 Preview e detalhe reutilizam a mesma composição da thumbnail em tamanho maior. A imagem recebe moldura clara semelhante a uma fotografia impressa:
 
-- fundo `#eee9dc`;
-- margem inferior maior;
-- sombra escura;
-- rotação de `-1deg`.
+- fundo `#efe3da`;
+- padding de `7px` no topo e nas laterais, e `20px` embaixo;
+- sombra `0 4px 12px rgba(0, 0, 0, 0.45)`;
+- alinhamento reto, sem rotação (`transform: none`).
+
+Os painéis têm intervalo de `10px`, padding `4px 16px 14px` e rolagem vertical. O campo de nome usa fundo escuro translúcido, borda `#b894b2`, cantos de `4px` e borda/outline rosa `#f2b5cd` ao receber foco.
 
 O preview mostra:
 
@@ -447,7 +471,9 @@ Com `prefers-reduced-motion: reduce`, a animação é removida. A captura ainda 
 
 ### Botões e Estados
 
-As ações fotográficas usam borda e texto dourados sobre fundo marrom escuro. A ação destrutiva `EXCLUIR` usa vermelho para se diferenciar.
+As ações fotográficas usam o gradiente rosa, altura mínima de `44px`, padding `9px 12px` e cantos de `10px`. A ação destrutiva `EXCLUIR` usa o tratamento vinho/vermelho da tabela. `TIRAR FOTO` desabilitado fica com opacidade `0.4` e cursor `not-allowed`. Os grupos de ações permitem quebra de linha, com intervalo de `7px`, e usam `margin-top: auto`.
+
+Os botões dentro de `#phone-screen` recebem outline rosa `#f2b5cd` de `2px`, com offset de `-2px`, no foco visível.
 
 Mensagens de sucesso, erro e Galeria cheia usam `role="status"` e `aria-live="polite"`.
 
@@ -473,13 +499,17 @@ Após um load bem-sucedido, o celular é fechado imediatamente e o foco retorna 
 
 ### Responsividade
 
-A Galeria está contida no frame responsivo já usado pelo celular:
+A Galeria está contida no frame responsivo do celular:
 
-- largura normal: `min(320px, 78vw)`;
-- em telas até `700px`: `min(300px, 76vw)`;
-- altura limitada a `92vh` no layout móvel;
+- largura normal: `min(360px, calc(100vw - 20px))`;
+- altura: `min(720px, calc(100dvh - 20px))`, com `aspect-ratio: 9 / 18` declarado e padding de `10px`;
+- em telas até `700px`: largura `min(360px, calc(100vw - 12px))`, padding de `6px` e `max-height: calc(100dvh - 12px)`; a regra de altura normal continua aplicada;
 - grade e painéis usam `min-height: 0` para permitir encolhimento;
-- preview e detalhe possuem rolagem vertical quando necessário.
+- a grade mantém três colunas e três linhas com mínimo de `112px`, recorrendo à rolagem vertical em vez de reduzir esse mínimo;
+- tela inicial, preview e detalhe também possuem rolagem vertical quando necessário;
+- cabeçalho, toolbar e navegação geral não encolhem (`flex: none`); as ações podem quebrar linha.
+
+Com `prefers-reduced-motion: reduce`, a transição de abertura do overlay e a animação do flash são removidas.
 
 ## Tratamento de Tempo
 
