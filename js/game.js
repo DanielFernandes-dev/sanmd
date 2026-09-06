@@ -1177,13 +1177,9 @@ function selecionarFoto(saveId) {
   el.btnCarregarFoto.focus();
 }
 
-function confirmarAcao(mensagem) {
-  return typeof window !== "undefined" && typeof window.confirm === "function" && window.confirm(mensagem);
-}
-
 function carregarFotoSelecionada() {
   const save = state.galeria.saves.find((item) => item.id === state.galeria.selecionadoId);
-  if (!save || !confirmarAcao("Voltar para este momento?")) return false;
+  if (!save) return false;
 
   try {
     restaurarEstadoJogo(save.saveState);
@@ -1192,6 +1188,10 @@ function carregarFotoSelecionada() {
     definirStatusGaleria(erro.message || "Não foi possível carregar esta fotografia.");
     return false;
   }
+}
+
+function confirmarAcao(mensagem) {
+  return typeof window !== "undefined" && typeof window.confirm === "function" && window.confirm(mensagem);
 }
 
 function excluirFotoSelecionada() {
@@ -1508,7 +1508,7 @@ function executarHotspot(id, selectedItem = null) {
   if (h.requiresItem && (h.consumeItem ?? ITEMS[h.requiresItem]?.consumable)) removerItem(h.requiresItem);
   fecharMenuIrPara();
   renderizarObjetos();
-  el.interactionStatus.textContent = h.message ?? "";
+  el.interactionStatus.textContent = "";
   // Narrative hooks run after the atomic logical transition and may remove inventory items.
   if (h.eventId) eventosInteracao[h.eventId]?.({ sceneId: cena.id, itemId: h.itemId });
   registrarAutosave();
@@ -1833,7 +1833,7 @@ const inventoryActionHandlers = {
       state.aparelho.activePhone = item.inventoryAction.device;
       state.aparelho.phoneTheme = item.inventoryAction.theme;
       removerItem(item.id);
-      el.interactionStatus.textContent = "Celular disponível.";
+      el.interactionStatus.textContent = "";
     }
   }
 };

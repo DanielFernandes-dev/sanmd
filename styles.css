@@ -1942,3 +1942,84 @@ button:hover:not(:disabled) .action-icon {
 /* Mantém título e fechamento acessíveis ao rolar os detalhes em telas baixas. */
 .bag-body { overflow-y: auto; }
 .bag-header, .bag-search-wrapper { flex-shrink: 0; }
+
+/* O APK é paisagem; esta faixa mantém Bolsa e aplicativos legíveis em telas
+   pequenas sem criar uma segunda rolagem para cada painel. */
+@media (orientation: landscape) and (max-height: 600px) {
+  #bag-dialog {
+    width: min(96vw, 760px);
+    max-height: calc(100dvh - 12px);
+    padding: 10px;
+    gap: 8px;
+    border-radius: 8px;
+  }
+
+  .bag-header { padding-bottom: 6px; gap: 6px; }
+  .bag-header-content { gap: 7px; }
+  .bag-icon { font-size: 1rem; }
+  #bag-title { font-size: 1rem; }
+  .bag-subtitle { font-size: .66rem; }
+  .bag-close { width: 28px; height: 28px; font-size: 1.25rem; }
+  #bag-search { height: 30px; font-size: .72rem; padding-left: 28px; }
+
+  .bag-body {
+    grid-template-columns: minmax(0, 1.15fr) minmax(180px, .85fr);
+    gap: 8px;
+    overflow: hidden;
+  }
+  .bag-grid-section { gap: 5px; min-width: 0; }
+  .bag-grid { gap: 5px; }
+  .bag-slot { min-width: 0; min-height: 0; padding: 3px 2px; border-radius: 5px; }
+  .bag-slot-icon { width: 26px; height: 26px; margin-bottom: 2px; }
+  .bag-slot-label { font-size: .58rem; line-height: 1.05; }
+  .bag-pagination { gap: 3px; margin-top: 2px; }
+  .bag-page-btn { min-width: 26px; height: 25px; font-size: .7rem; }
+  .bag-details { min-height: 0; padding: 8px; gap: 6px; border-radius: 6px; }
+  .bag-detail-title { font-size: .82rem; padding-bottom: 5px; }
+  .bag-detail-image-wrapper { padding: 5px; }
+  .bag-detail-img { width: 40px; height: 40px; }
+  .bag-detail-section { gap: 2px; }
+  .bag-detail-section-title { font-size: .58rem; }
+  .bag-detail-text { font-size: .68rem; line-height: 1.2; }
+  .bag-item-action { min-height: 32px; padding: 6px 8px; font-size: .7rem; }
+
+  #phone-frame {
+    width: min(30vw, 220px);
+    height: min(94dvh, 440px);
+    padding: 4px;
+    border-width: 2px;
+    border-radius: 20px;
+  }
+  #phone-screen { border-radius: 14px; }
+  #status-bar { padding: 4px 8px; font-size: 9px; }
+  #phone-home { gap: 8px; padding: 8px 8px 30px; }
+  .phone-personal-mark { font-size: 20px; }
+  .phone-personal-mark span { font-size: 14px; }
+  #phone-date { font-size: 10px; }
+  #phone-home #phone-date { padding: 4px 6px; border-radius: 6px; }
+  #apps-grid { gap: 8px 4px; }
+  .phone-app { max-width: 48px; }
+  .phone-app__icon { width: 34px; height: 34px; border-radius: 11px; }
+  .phone-app__icon svg { width: 18px; height: 18px; }
+  .phone-app__badge { min-width: 13px; height: 13px; font-size: 7px; }
+
+  #messages-header, #files-header, #gallery-header { padding: 8px 10px; font-size: .72rem; }
+  #gallery-header { padding-left: 34px; }
+  #gallery-header small { margin-top: 2px; font-size: 8px; }
+  #gallery-toolbar { padding: 5px 7px; font-size: 8px; }
+  #gallery-grid { grid-template-rows: repeat(3, minmax(54px, 1fr)); gap: 4px; padding: 0 6px 6px; }
+  #gallery-status { min-height: 1.8em; padding: 3px 7px; font-size: 8px; }
+  #files-list { gap: 4px; padding: 6px; }
+  .file-entry { min-height: 30px; padding: 6px 7px; font-size: 9px; }
+  #file-viewer { padding: 8px; }
+  #file-name { margin-bottom: 6px; font-size: 10px; }
+  #file-content { font-size: 9px; line-height: 1.35; }
+  #messages-list { gap: 6px; padding: 8px; }
+  .mensagem { padding: 6px 8px; font-size: 9px; line-height: 1.25; }
+  #messages-choices { gap: 4px; padding: 6px; }
+  .message-choice { min-height: 30px; padding: 6px 8px; font-size: 9px; }
+  #phone-nav { top: 27px; left: 6px; }
+  #phone-screen:has(#phone-home:not(.oculto)) #phone-nav { bottom: 6px; }
+  #btn-voltar { width: 32px; min-height: 32px; padding: 5px; }
+  #btn-voltar .back-icon { font-size: 14px; }
+}

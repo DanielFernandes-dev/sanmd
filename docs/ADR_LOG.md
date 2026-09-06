@@ -1,5 +1,21 @@
 # Registro de decisões
 
+## 2026-09-06 — Layout mobile em paisagem e carregamento direto
+
+Status: aceito.
+
+Decisão: bloquear a Activity Android em paisagem e reduzir proporcionalmente a
+Bolsa, o aparelho e os painéis de Mensagens, Arquivos e Galeria em alturas
+pequenas. Interações com o cofre e o aparelho não exibem mensagens temporárias;
+carregar uma fotografia restaura o save diretamente, sem confirmação.
+
+Consequências: o estado de Save/Load permanece o mesmo, a confirmação de exclusão
+de fotografias continua protegendo uma ação destrutiva e os dados narrativos dos
+apps não são alterados.
+
+Validação: 61 testes automatizados passaram; APK Android será recompilado com a
+orientação fixa em paisagem.
+
 ## 2026-09-06 — Ícone do jogo no launcher Android
 
 Status: aceito.
