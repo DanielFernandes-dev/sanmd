@@ -241,6 +241,14 @@ html, body {
   grid-row: 6;
 }
 
+#btn-conversar,
+#btn-ir-para,
+#btn-celular,
+#btn-bolsa,
+#dialogue-box {
+  -webkit-tap-highlight-color: transparent;
+}
+
 .action-icon {
   display: block;
   width: 40px;
@@ -523,9 +531,11 @@ button:hover:not(:disabled) .action-icon {
   min-height: 0;
   flex: 1;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(3, minmax(112px, 1fr));
+  grid-auto-rows: max-content;
+  align-content: start;
+  align-items: start;
   overflow-y: auto;
-  gap: 6px;
+  gap: 8px 6px;
   padding: 0 10px 10px;
 }
 
@@ -560,8 +570,10 @@ button:hover:not(:disabled) .action-icon {
 }
 
 .gallery-photo {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: auto auto;
+  align-self: start;
+  height: auto;
   padding: 3px;
   background: #efe3da;
   color: #292333;
@@ -578,24 +590,30 @@ button:hover:not(:disabled) .action-icon {
   outline-offset: -2px;
 }
 
-.gallery-photo strong,
-.gallery-photo span {
+.gallery-photo-metadata {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  padding: 3px 1px 1px;
+}
+
+.gallery-photo-metadata strong,
+.gallery-photo-metadata span {
   width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-.gallery-photo strong {
-  margin-top: 3px;
+.gallery-photo-name {
   font-size: 11px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
-.gallery-photo span {
+.gallery-photo-date,
+.gallery-photo-time {
   color: #514254;
   font-size: 10px;
-  white-space: normal;
-  overflow-wrap: anywhere;
+  line-height: 1.2;
 }
 
 .photo-composition {
@@ -1970,8 +1988,8 @@ button:hover:not(:disabled) .action-icon {
   .bag-grid-section { gap: 5px; min-width: 0; }
   .bag-grid { gap: 5px; }
   .bag-slot { min-width: 0; min-height: 0; padding: 3px 2px; border-radius: 5px; }
-  .bag-slot-icon { width: 26px; height: 26px; margin-bottom: 2px; }
-  .bag-slot-label { font-size: .58rem; line-height: 1.05; }
+  .bag-slot-icon { width: 23px; height: 23px; margin-bottom: 1px; }
+  .bag-slot-label { font-size: .66rem; line-height: 1.08; }
   .bag-pagination { gap: 3px; margin-top: 2px; }
   .bag-page-btn { min-width: 26px; height: 25px; font-size: .7rem; }
   .bag-details { min-height: 0; padding: 8px; gap: 6px; border-radius: 6px; }
@@ -1979,12 +1997,12 @@ button:hover:not(:disabled) .action-icon {
   .bag-detail-image-wrapper { padding: 5px; }
   .bag-detail-img { width: 40px; height: 40px; }
   .bag-detail-section { gap: 2px; }
-  .bag-detail-section-title { font-size: .58rem; }
-  .bag-detail-text { font-size: .68rem; line-height: 1.2; }
+  .bag-detail-section-title { font-size: .62rem; }
+  .bag-detail-text { font-size: .76rem; line-height: 1.25; }
   .bag-item-action { min-height: 32px; padding: 6px 8px; font-size: .7rem; }
 
   #phone-frame {
-    width: min(30vw, 220px);
+    width: min(24vw, 180px);
     height: min(94dvh, 440px);
     padding: 4px;
     border-width: 2px;
@@ -1999,26 +2017,43 @@ button:hover:not(:disabled) .action-icon {
   #phone-home #phone-date { padding: 4px 6px; border-radius: 6px; }
   #apps-grid { gap: 8px 4px; }
   .phone-app { max-width: 48px; }
-  .phone-app__icon { width: 34px; height: 34px; border-radius: 11px; }
+  .phone-app__icon { width: 34px; height: 34px; aspect-ratio: 1; border-radius: 11px; }
   .phone-app__icon svg { width: 18px; height: 18px; }
   .phone-app__badge { min-width: 13px; height: 13px; font-size: 7px; }
 
-  #messages-header, #files-header, #gallery-header { padding: 8px 10px; font-size: .72rem; }
-  #gallery-header { padding-left: 34px; }
-  #gallery-header small { margin-top: 2px; font-size: 8px; }
+  #messages-header, #files-header, #gallery-header {
+    padding: 8px 34px;
+    font-size: .78rem;
+    font-family: "Avenir Next", "Trebuchet MS", system-ui, sans-serif;
+  }
+  #gallery-header small { margin-top: 2px; font-size: 9px; }
   #gallery-toolbar { padding: 5px 7px; font-size: 8px; }
-  #gallery-grid { grid-template-rows: repeat(3, minmax(54px, 1fr)); gap: 4px; padding: 0 6px 6px; }
-  #gallery-status { min-height: 1.8em; padding: 3px 7px; font-size: 8px; }
+  #gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: max-content;
+    gap: 8px 6px;
+    padding: 0 6px 6px;
+  }
+  .gallery-slot { aspect-ratio: auto; }
+  .gallery-slot-empty { min-height: 118px; }
+  .gallery-photo { padding: 3px; }
+  .gallery-photo .photo-composition { aspect-ratio: 4 / 3; }
+  .gallery-photo-metadata { padding-top: 3px; }
+  .gallery-photo-name { font-size: 10px; }
+  .gallery-photo-date,
+  .gallery-photo-time { font-size: 9px; line-height: 1.2; }
+  #gallery-status { min-height: 1.8em; padding: 3px 7px; font-size: 9px; }
   #files-list { gap: 4px; padding: 6px; }
-  .file-entry { min-height: 30px; padding: 6px 7px; font-size: 9px; }
+  .file-entry { min-height: 30px; padding: 6px 7px; font: 10px/1.3 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
   #file-viewer { padding: 8px; }
-  #file-name { margin-bottom: 6px; font-size: 10px; }
-  #file-content { font-size: 9px; line-height: 1.35; }
+  #file-type { font-size: 9px; }
+  #file-name { margin-bottom: 6px; font-size: 11px; }
+  #file-content { font: 10px/1.4 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
   #messages-list { gap: 6px; padding: 8px; }
-  .mensagem { padding: 6px 8px; font-size: 9px; line-height: 1.25; }
+  .mensagem { padding: 6px 8px; font: 10px/1.35 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
   #messages-choices { gap: 4px; padding: 6px; }
-  .message-choice { min-height: 30px; padding: 6px 8px; font-size: 9px; }
-  #phone-nav { top: 27px; left: 6px; }
+  .message-choice { min-height: 30px; padding: 6px 8px; font: 10px/1.3 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
+  #phone-nav { top: 15px; left: 6px; }
   #phone-screen:has(#phone-home:not(.oculto)) #phone-nav { bottom: 6px; }
   #btn-voltar { width: 32px; min-height: 32px; padding: 5px; }
   #btn-voltar .back-icon { font-size: 14px; }

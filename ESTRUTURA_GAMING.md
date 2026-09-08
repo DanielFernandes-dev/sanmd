@@ -50,7 +50,7 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 - Sprite genérico e estático de MJ em PNG externo (`assets/sprites/MJ.png`).
 - MJ aparece em cena somente durante os monólogos (sala sem personagens presenciais).
 - Transição animada de entrada e saída de MJ.
-- Comandos por ícone para **Conversar**, **Ir para** e **Celular**, sem sidebar visual.
+- Comandos por ícone para **Conversar**, **Ir para**, **Celular** e **Bolsa**, sem sidebar visual.
 - Menu contextual minimalista de destinos, associado ao ícone **Ir para**.
 - Caixa de diálogo inspirada em *Ace Attorney* (fundo claro, placa de nome com ponta e contorno marcado).
 - Efeito de digitação com som sintetizado por letra.
@@ -70,14 +70,14 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 - Rotas de conversa e monólogos condicionados aos arquivos examinados.
 - Cronômetro vermelho de um minuto antes da limpeza remota.
 - Navegação contextual pelo botão **Voltar** e pela tecla `Escape`.
-- Layout responsivo básico para telas menores que `700px`.
-- Estrutura Capacitor para geração do aplicativo Android.
+- Layout responsivo para telas menores.
+- Projeto Android e comando de build de APK com Capacitor.
 
 ### Escopo Atual
 
 O protótipo valida a base da experiência, não o jogo completo. A interface do celular, a apresentação narrativa e a transição entre estados são o foco desta versão.
 
-A cena ainda é um contexto provisório que começa com o celular em posse de MJ. A conversa, os monólogos, os arquivos anteriores ao reset e a limpeza remota já representam um recorte canônico da Fase 8 do Ato I; as etapas anteriores, da abertura à obtenção do aparelho, ainda não estão implementadas.
+A cena ainda é um contexto provisório que começa com o celular em posse de MJ. A conversa, os monólogos, os arquivos anteriores ao reset, a limpeza remota, a investigação point-and-click, a Bolsa e a ativação do aparelho já representam um recorte canônico da Fase 8 do Ato I; as etapas anteriores, da abertura à obtenção do aparelho, ainda não estão implementadas.
 
 > [!warning] Fonte de verdade
 > O [[IDEIA_CONCEITUAL]] registra as decisões narrativas mais recentes. O [[GDD]] organiza o design do jogo. Investigação, terminal, puzzles, múltiplos atos, finais, replay e ARG fazem parte da visão futura e não estão presentes no código atual.
@@ -278,6 +278,8 @@ stateDiagram-v2
     livre --> livre: Ir para / trocar cena
     livre --> dialogo: Conversar
     dialogo --> livre: Encerrar diálogo
+    livre --> bolsa: Bolsa
+    bolsa --> livre: Fechar Bolsa
     livre --> celular_inicio: Celular
     celular_inicio --> mensagens: Abrir Mensagens
     celular_inicio --> arquivos: Abrir Arquivos
@@ -294,6 +296,7 @@ stateDiagram-v2
 
 - `livre`.
 - `dialogo`.
+- `bolsa`.
 - `celular`.
 
 ### Estado Agrupado
@@ -303,6 +306,15 @@ O estado é dividido por domínio:
 ```js
 const state = {
   modo: "livre",
+  aparelho: { originalPhoneStatus: "broken", activePhone: null, phoneTheme: "lulith" },
+  inventoryActionPending: null,
+  inventory: [],
+  sceneState: {},
+  bolsa: {
+    pagina: 1,
+    pesquisa: "",
+    itemSelecionadoId: null
+  },
   localizacao: {},
   dialogo: {},
   celular: {},
@@ -357,9 +369,19 @@ const state = {
 | `timer` | Timer do cooldown ou do próximo envio |
 | `historicoAntesReset` | Preserva internamente o chat apagado pelo reset |
 
+### Estado Da Bolsa
+
+| Propriedade | Uso |
+|---|---|
+| `pagina` | Página atual da grade de itens |
+| `pesquisa` | Filtro de texto aplicado ao inventário |
+| `itemSelecionadoId` | ID do item em detalhe |
+
+`state.inventory` guarda IDs únicos. `state.inventoryActionPending` armazena a ação direta em execução. `state.sceneState[sceneId]` armazena flags persistentes por cena.
+
 ### Estado Da Localização
 
-`state.localizacao` separa o local atual da cena atual. O local `beco` contém `beco_entrada`, `beco_interior` e `beco_fundo`; cada cena declara seus próprios destinos em `js/data.js`. `obterDestinos()` resolve somente conexões válidas e `irPara()` rejeita saltos que não estejam declarados na cena atual.
+`state.localizacao` separa o local atual da cena atual. O local `beco` contém `beco_entrada`, `beco_interior` e `beco_fundo`; cada cena declara seus próprios destinos em `js/data.js`. `obterDestinos()` resolve somente conexões válidas e `irPara()` rejeita saltos que não estejam declarados na cena atual. `state.sceneState` armazena flags como `safeOpened` e `lulithPhoneCollected`.
 
 ## Visual Novel E Diálogos
 
@@ -434,16 +456,16 @@ Esta seção consolida a referência técnica dos botões do jogo. As fontes de 
 
 | Contexto | Estrutura | Controles |
 |---|---|---|
-| Cena | Segunda coluna do Grid `#app` | **Conversar**, **Ir para** e **Celular** |
+| Cena | Segunda coluna do Grid `#app` | **Conversar**, **Ir para**, **Celular** e **Bolsa** |
 | Destinos | `#ir-para-menu` dentro de `#vn-area` | Botões de destino criados dinamicamente |
 | Celular | `#phone-overlay` | Apps, respostas, arquivos, **Decodificar** e **Voltar** |
 | Diálogo | `#dialogue-box` | Caixa clicável; a seta `▼` é apenas decorativa |
 
-Todos os controles de ação são elementos `button`. Os três comandos principais mantêm seus IDs e handlers, usam `aria-label` e contêm SVGs decorativos com `aria-hidden="true"`. Os SVGs inline reproduzem as fontes em `assets/interfaces/icons/`, usam `currentColor` e não recebem a lógica de clique.
+Todos os controles de ação são elementos `button`. Os quatro comandos principais mantêm seus IDs e handlers, usam `aria-label` e contêm SVGs decorativos com `aria-hidden="true"`. Os SVGs inline reproduzem as fontes em `assets/interfaces/icons/`, usam `currentColor` e não recebem a lógica de clique.
 
 ### Comandos Principais
 
-Não existe `#sidebar`. `#vn-area` atravessa o Grid inteiro e os controles ficam diretamente sobre a faixa direita do cenário no desktop. A ordem vertical é **Conversar**, **Ir para** e **Celular**. Abaixo de `700px`, os três passam para uma linha inferior, com touch targets de `60px × 60px`.
+Não existe `#sidebar`. `#vn-area` atravessa o Grid inteiro e os controles ficam diretamente sobre a faixa direita do cenário no desktop. A ordem vertical é **Conversar**, **Ir para**, **Celular** e **Bolsa**. Abaixo de `700px`, os quatro passam para uma linha inferior, com touch targets de `60px × 60px`.
 
 | Estado | Apresentação |
 |---|---|
@@ -453,7 +475,7 @@ Não existe `#sidebar`. `#vn-area` atravessa o Grid inteiro e os controles ficam
 | Ativo | Deslocamento curto de `2px` |
 | Desabilitado | Opacidade reduzida; sem ação |
 
-`definirBotoes()` habilita **Conversar** e **Celular** apenas no modo `livre`. **Ir para** também exige pelo menos um destino válido. Abrir diálogo ou celular fecha o menu de destinos.
+`definirBotoes()` habilita **Conversar**, **Celular** e **Bolsa** apenas no modo `livre`. **Ir para** também exige pelo menos um destino válido. Abrir diálogo, Bolsa ou celular fecha o menu de destinos.
 
 ### Menu Ir Para
 
@@ -499,6 +521,30 @@ Esse contrato permite alterar medidas finas e tratamento responsivo sem acoplar 
 | Decodificar | `.puzzle-input-row button[type="submit"]` | Resolve o enigma de identidade |
 | Voltar | `#btn-voltar` | Retorna à tela anterior ou fecha o celular |
 
+## Bolsa Da MJ
+
+### Abertura
+
+`abrirBolsa()`:
+
+- Verifica se o modo é `livre`.
+- Fecha o menu **Ir para**.
+- Reseta página, pesquisa e item selecionado.
+- Renderiza a Bolsa com os itens atuais.
+- Abre o `<dialog>` nativo com `showModal()`.
+
+### Inventário
+
+`state.inventory` guarda IDs únicos. `ITEMS[id]` contém `label`, `description`, `asset` e `consumable`. `adicionarItem(id)` e `removerItem(id)` retornam booleano e atualizam a interface.
+
+### Ação Direta
+
+Itens podem declarar `inventoryAction` com `type: "activate_phone"`, rótulo, dispositivo, tema e reação. O painel de detalhes mostra **USAR** apenas quando a ação é válida. `executarAcaoInventario()` valida posse, modo e handler, bloqueia repetição, fecha a Bolsa e inicia o diálogo. Ao concluir, o handler transforma o item em aparelho ativo, remove o ID e atualiza a Bolsa. Um load cancela qualquer ação pendente.
+
+### Estado De Cena E Objetos
+
+`state.sceneState[sceneId]` contém flags persistentes por cena. `beco_fundo` usa `safeOpened` e `lulithPhoneCollected`. Objetos e hotspots compartilham a área lógica `1672:941` e são posicionados por percentuais. O foco por teclado tem contorno para acessibilidade.
+
 ## Interface Do Celular
 
 ### Abertura
@@ -535,6 +581,7 @@ Ao fechar o aparelho:
 | Galeria | Captura, preview, saves manuais, Load e exclusão |
 | Notas | Removido da tela inicial |
 | Arquivos | Quatro registros antes do reset; aplicativo vazio após a limpeza |
+| Bolsa | Inventário narrativo com pesquisa, paginação e ação direta USAR |
 
 ## Aplicativo Mensagens
 
@@ -752,7 +799,9 @@ Abrir `http://localhost:8000`.
 | Puzzle de identidade | Implementado | `5-12-1` deve ser decodificado como `ELA` durante o cronômetro |
 | Persistência local | Implementado | `localStorage`, snapshots versionados, até nove saves manuais e um autosave |
 | Expressões fotográficas | Implementado | Dez PNGs transparentes independentes da pose narrativa |
-| Investigação | Não implementado | Planejado no GDD |
+| Investigação point-and-click | Parcial | Hotspots, objetos interativos e Bolsa implementados no beco; sistema geral ainda planejado |
+| Bolsa | Implementado | Inventário narrativo com pesquisa, paginação, detalhe e ação direta USAR |
+| Ativação do aparelho | Implementado | Coleta do celular no cofre, ativação pela Bolsa e reação narrativa |
 | Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
 | Estrutura de múltiplas cenas | Parcial | Três cenas do beco implementadas; Ato I completo ainda planejado |
@@ -813,6 +862,10 @@ Status: **implementada**.
 - [x] Cooldown e entrega sequencial.
 - [x] Monólogos por progresso.
 - [x] Configuração Capacitor.
+- [x] Investigação point-and-click com hotspots acessíveis.
+- [x] Bolsa da MJ com inventário narrativo e ação direta.
+- [x] Ativação do aparelho pela Bolsa.
+- [x] Layout mobile paisagem e otimizações de toque.
 
 ### Fase 1 — Estabilização Da V1
 
@@ -838,6 +891,7 @@ Status: **planejada**.
 - [ ] Implementar coordenadas, deslocamento, cofre e obtenção do celular.
 - [x] Adaptar o chat atual para o primeiro contato com Lulith.
 - [x] Implementar o reset remoto do aparelho.
+- [x] Prototipar point-and-click, Bolsa e ativação do aparelho no beco.
 
 ### Fase 3 — Persistência E Aplicativos
 

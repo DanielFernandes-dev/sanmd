@@ -172,7 +172,7 @@ Como regra de design, o menu não deve competir com a cena: não possui título,
 Apps simulados que funcionam como canal narrativo:
 
 - **💬 Mensagens:** Comunicação principal com Lulith; o primeiro contato permanece anônimo e possui opções condicionadas às pistas examinadas.
-- **🖼️ Galeria:** Fotografias com 10 expressões da MJ, gravações e pistas visuais — **implementada com Save/Load fotográfico (até 9 saves manuais, autosave, flash 140ms, composição 4:3, preview/detalhe, layout 3×3 responsivo)**.
+- **🖼️ Galeria:** Fotografias com 10 expressões da MJ, save/load fotográfico com até 9 saves manuais + autosave, composição 4:3, preview/detalhe, flash de 140ms e layout responsivo 3×3.
 - **📷 Câmera:** Registro de pistas e possível sistema diegético de salvamento.
 - **📝 Notas:** Informações contextuais.
 - **📁 Arquivos:** Documentos, dados corrompidos, informações ocultas e gatilhos para rotas de conversa e monólogos.
@@ -468,13 +468,14 @@ A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como
 ### Estado atual do protótipo
 
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
-- **Estrutura:** Separada em `js/data.js` (conteúdo) e `js/game.js` (motor) — ver ADR-0003.
-- **Interface implementada:** Cena em tela cheia com três comandos por ícones pixelados, menu contextual de destinos, smartphone sobreposto com **Galeria funcional (10 expressões fotográficas da MJ, Save/Load fotográfico com até 9 saves manuais + autosave, composição 4:3, flash 140ms, preview/detalhe, layout 3×3 responsivo)**.
-- **Conteúdo implementado:** Três cenas provisórias conectadas no beco, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos, **persistência completa em localStorage (snapshots versionados, saves manuais, autosave, expressões fotográficas)**.
-- **Ainda não implementado:** Investigação point-and-click, terminal, sistema geral de puzzles, mapa completo, cenas canônicas do início do Ato I, atos completos, finais, progresso, replay persistente e ARG.
+- **Estrutura:** Separada em `js/data.js` (conteúdo), `js/game.js` (motor, Bolsa, Galeria) e `js/save-system.js` (persistência) — ver ADR-0003.
+- **Interface implementada:** Cena em tela cheia com três comandos por ícones pixelados, menu contextual de destinos, investigação point-and-click com hotspots acessíveis, inventário narrativo pela **Bolsa da MJ** e smartphone sobreposto com **Galeria funcional (10 expressões fotográficas da MJ, Save/Load fotográfico com até 9 saves manuais + autosave, composição 4:3, flash 140ms, preview/detalhe, layout 3×3 responsivo, metadados estruturados)**.
+- **Conteúdo implementado:** Três cenas provisórias conectadas no beco, cofre interativo com abertura e coleta do Celular de Lulith, ativação do aparelho pela Bolsa com reação narrativa, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos, **persistência completa em localStorage (snapshots versionados, saves manuais, autosave, expressões fotográficas, inventário, estado de cena)**.
+- **Acessibilidade e mobile:** Destaque de toque removido dos controles principais, layout mobile paisagem com frame reduzido, tipografia ajustada e galeria com linhas dimensionadas pelo conteúdo.
+- **Ainda não implementado:** Investigação point-and-click completa com evidências, terminal, sistema geral de puzzles, mapa completo, cenas canônicas do início do Ato I, atos completos, finais, progresso, replay persistente e ARG.
 - **Compatibilidade narrativa:** O recorte do celular segue a direção atual do Ato I; a cena inicial ainda é provisória e começa depois de etapas narrativas não implementadas.
 
-O estado atual persiste em `localStorage` (snapshots versionados, até 9 saves manuais, 1 autosave, 10 expressões fotográficas). Arquivos vistos, solução, histórico, rota de monólogo e saves fotográficos sobrevivem ao recarregamento e fechamento. Replay persistente entre partidas ainda é planejamento.
+O estado atual persiste em `localStorage` (snapshots versionados, até 9 saves manuais, 1 autosave, 10 expressões fotográficas, inventário e estado de cena). Arquivos vistos, solução, histórico, rota de monólogo e saves fotográficos sobrevivem ao recarregamento e fechamento. Replay persistente entre partidas ainda é planejamento.
 
 ---
 

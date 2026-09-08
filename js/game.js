@@ -1037,13 +1037,24 @@ function criarSlotFoto(save, indice) {
   botao.dataset.saveId = save.id;
   botao.appendChild(criarComposicaoFoto(save));
 
+  const metadados = document.createElement("span");
+  metadados.className = "gallery-photo-metadata";
+
   const nome = document.createElement("strong");
+  nome.className = "gallery-photo-name";
   nome.textContent = save.name;
   const data = document.createElement("span");
+  data.className = "gallery-photo-date";
   const formatada = formatarDataFoto(save.createdAt);
-  data.textContent = `${formatada.data} · ${formatada.hora}`;
-  botao.appendChild(nome);
-  botao.appendChild(data);
+  data.textContent = formatada.data;
+  const hora = document.createElement("span");
+  hora.className = "gallery-photo-time";
+  hora.textContent = formatada.hora;
+
+  metadados.appendChild(nome);
+  metadados.appendChild(data);
+  metadados.appendChild(hora);
+  botao.appendChild(metadados);
   return botao;
 }
 

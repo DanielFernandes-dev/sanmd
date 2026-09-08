@@ -67,6 +67,13 @@ Já estão disponíveis:
 - Layout responsivo para telas menores.
 - Projeto Android e comando de build de APK com Capacitor.
 - Sistema de Save/Load fotográfico com até 9 saves manuais, autosave separado e 10 expressões da MJ.
+- Investigação point-and-click com hotspots acessíveis, objetos interativos e inventário narrativo pela Bolsa da MJ.
+- Cofre interativo no fundo do beco com abertura e coleta do Celular de Lulith.
+- Ativação do aparelho pela Bolsa com reação narrativa e transição de tema.
+- Layout da Galeria com linhas dimensionadas pelo conteúdo, metadados estruturados e suporte a nomes longos.
+- Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
+- Projeto Android e comando de build de APK com Capacitor.
+- 27 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos e layout da Galeria.
 
 > A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
@@ -82,6 +89,8 @@ A interface separa as conversas presenciais das mensagens digitais:
 - O botão **Voltar**, sem borda ou fundo, fica no canto inferior esquerdo da tela inicial do celular e no canto superior esquerdo dentro dos apps.
 - Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
 - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
+- A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
+- A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
 
 ## Como executar
 
@@ -121,6 +130,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 | Escolher destino | Opção do menu **Ir para** |
 | Avançar ou completar uma fala | Clique na caixa, `Enter` ou espaço |
 | Abrir o celular | Botão **Celular** |
+| Abrir a Bolsa | Botão **Bolsa** |
 | Fechar destinos ou voltar no celular | `Escape` |
 | Voltar ou fechar o celular | Botão **Voltar** |
 
@@ -132,7 +142,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── styles.css       # Aparência, animações e responsividade
 ├── js/
 │   ├── data.js      # Locais, cenas, personagem e conteúdo narrativo
-│   └── game.js      # Estado, diálogos e navegação
+│   ├── game.js      # Estado, diálogos, navegação, Bolsa e Galeria
+│   └── save-system.js # Persistência de saves manuais e autosave
 ├── assets/
 │   ├── cenario/     # Fundos e README do contrato de cenários
 │   ├── interfaces/  # Ícones e README do contrato de interface
@@ -169,34 +180,41 @@ Cenário
    │
    ├── Ir para ──> Destinos conectados ──> Outra cena
    │
+   ├── Bolsa ──> Inventário e ação USAR ──> Cenário
+   │
    └── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
 ```
 
-O celular é a principal interface narrativa planejada. Seus aplicativos simulados são:
+O protótipo combina exploração point-and-click no cenário com a interface do celular:
+
+- **Hotspots:** objetos clicáveis no beco (cofre, celular) com feedback visual e acessibilidade por teclado.
+- **Bolsa:** inventário narrativo que registra o Celular de Lulith e permite a ação **USAR** para ativar o aparelho.
+- **Celular:** principal interface narrativa com relógio, data e apps simulados.
+
+Os aplicativos do celular são:
 
 - **Mensagens:** primeiro contato anônimo; permanece identificado como `???` durante toda a conversa inicial.
-- **Galeria:** fotografias com 10 expressões da MJ, gravações e pistas visuais (implementada com Save/Load fotográfico).
-- **Notas:** informações contextuais.
+- **Galeria:** fotografias com 10 expressões da MJ, save/load fotográfico com até 9 saves manuais, preview, detalhe e flash de 140ms.
 - **Arquivos:** quatro registros anteriores ao reset, incluindo o enigma obrigatório `5-12-1`; após a limpeza, o aplicativo continua acessível, mas vazio.
 
 Na direção futura também estão previstos **Câmera**, **Terminal**, **Mapa**, **Progresso** e **Salvamento/replay**.
 
-Na V1 atual, **Mensagens**, **Galeria** (com 10 expressões fotográficas da MJ) e o recorte pré-reset de **Arquivos** estão funcionais; Notas permanece como elemento provisório.
+Na V1 atual, **Mensagens**, **Galeria** (com 10 expressões fotográficas da MJ) e o recorte pré-reset de **Arquivos** estão funcionais; **Notas** foi removida da tela inicial.
 
 ## Escopo da V1
 
-A V1 busca validar somente a base da interface e das interações. Permanecem fora deste protótipo inicial:
+A V1 busca validar a base da interface, das interações e dos sistemas centrais. Permanecem fora deste protótipo inicial:
 
-- Sistema completo de investigação.
+- Sistema completo de investigação point-and-click.
 - Exame e apresentação de evidências.
 - Navegação por mapa.
 - Puzzles e terminal hacker.
 - ARG e integrações externas.
 - Sistema de finais e progresso de 100%.
-- Replay narrativo.
+- Replay narrativo persistente.
 - Arte e narrativa definitivas.
 
-Esses recursos fazem parte da visão de longo prazo descrita no [`GDD.md`](GDD.md), mas não são necessários para validar a estrutura atual.
+A investigação point-and-click com hotspots, Bolsa e ativação do celular já está prototipada no recorte atual do beco. Esses recursos fazem parte da visão de longo prazo descrita no [`GDD.md`](GDD.md), mas não são necessários para validar a estrutura atual.
 
 ## Fluxo narrativo planejado do Ato I
 
@@ -220,6 +238,24 @@ Nota: jogar fora → final imediato com progresso mínimo
 
 O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. O caso introdutório, o texto da cutscene, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos.
 
+## Testes
+
+O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos e layout da Galeria:
+
+```bash
+npm test
+```
+
+Arquivos de teste:
+- `test/bolsa.test.js` — inventário, ações diretas e ativação do aparelho.
+- `test/fase-navegacao.test.js` — destinos e bloqueio de saltos entre cenas.
+- `test/fase10-mj.test.js` — sprite e presença visual de MJ.
+- `test/fase8.test.js` — fluxo do primeiro contato, reset remoto e monólogos.
+- `test/gallery-layout.test.js` — grade da Galeria e metadados das fotografias.
+- `test/interface-icons.test.js` — ícones principais e contrato visual.
+- `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
+- `test/save-system.test.js` — persistência, validação, load e autosave.
+
 ## Critérios de validação
 
 A estrutura básica da V1 será considerada funcional quando for possível:
@@ -235,7 +271,14 @@ A estrutura básica da V1 será considerada funcional quando for possível:
 - [x] Retornar à interface principal.
 - [x] Repetir a navegação sem quebrar o estado da interface.
 - [x] Conversar com o dono pelo aplicativo **Mensagens**.
-- [x] Usar **Conversar** como monólogo quando o protagonista estiver sozinho.
+- [x] Usar **Conversar** como monólogo quando o protagonista estiver sozinha.
 - [x] Posicionar o botão **Voltar** dentro do celular.
+- [x] Examinar hotspots point-and-click no cenário.
+- [x] Abrir o cofre e coletar o Celular de Lulith.
+- [x] Abrir a Bolsa e ver o item coletado.
+- [x] Ativar o celular pela Bolsa com reação narrativa.
+- [x] Tirar fotografias na Galeria com flash, preview e detalhe.
+- [x] Carregar e excluir saves fotográficos.
+- [x] Utilizar o celular em layout mobile paisagem.
 
 > A V1 não precisa representar o jogo final. Ela precisa mostrar se essa estrutura é a direção certa para o projeto.

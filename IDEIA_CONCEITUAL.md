@@ -898,17 +898,19 @@ Antes de desenvolver a história completa, ainda precisam ser respondidas princi
 # 26. Pendências visuais prioritárias
 
 1. ~~Expandir os sprites genéricos de MJ além da pose neutra já implementada.~~ **(Concluído: 10 expressões fotográficas integradas em 06/09/2026)**
-2. Criar sprites genéricos de Lulith.
-3. Criar sprites genéricos de James.
-4. Criar cenários genéricos do começo do jogo.
-5. Testar a leitura das cenas em pixel art.
-6. Definir resolução-base da pixel art.
-7. Definir proporção aproximada dos sprites na tela.
-8. Definir quanto do corpo dos personagens aparece.
-9. Testar poses e expressões.
-10. Decidir posteriormente se os cenários finais serão 2D, 3D ou híbridos.
-11. Definir o design final apenas no Protótipo 3.
-12. Validar os ícones principais e o menu contextual de destinos em desktop e celular.
+2. ~~Validar layout da Galeria com metadados estruturados e suporte a nomes longos.~~ **(Concluído em 08/09/2026)**
+3. ~~Validar otimizações mobile: remoção de destaque de toque e redução do frame em paisagem.~~ **(Concluído em 08/09/2026)**
+4. Criar sprites genéricos de Lulith.
+5. Criar sprites genéricos de James.
+6. Criar cenários genéricos do começo do jogo.
+7. Testar a leitura das cenas em pixel art.
+8. Definir resolução-base da pixel art.
+9. Definir proporção aproximada dos sprites na tela.
+10. Definir quanto do corpo dos personagens aparece.
+11. Testar poses e expressões.
+12. Decidir posteriormente se os cenários finais serão 2D, 3D ou híbridos.
+13. Definir o design final apenas no Protótipo 3.
+14. Validar os ícones principais e o menu contextual de destinos em desktop e celular.
 
 ---
 
@@ -990,7 +992,12 @@ Esses assets não representam o design final.
 - Finais funcionam como perspectivas.
 - Existe um final verdadeiro ligado à compreensão completa.
 - **Sistema de Save/Load fotográfico implementado: até 9 saves manuais, 1 autosave separado, 10 expressões fotográficas da MJ integradas (06/09/2026).**
-- **Galeria funcional com composição 4:3 (cenário + sprite fotográfico), preview, detalhe, flash de 140ms, layout responsivo 3×3.**
+- **Galeria funcional com composição 4:3 (cenário + sprite fotográfico), preview, detalhe, flash de 140ms, layout responsivo 3×3 e metadados estruturados (nome, data, hora).**
+- **Investigação point-and-click implementada no beco: hotspots acessíveis, objetos interativos (cofre, celular), feedback visual e suporte a mouse, toque e teclado.**
+- **Bolsa da MJ implementada como inventário narrativo: pesquisa, paginação, detalhe do item e ação direta USAR para ativar o celular.**
+- **Aquisição funcional do celular implementada: cofre aberto por hotspot, coleta do Celular de Lulith, ativação pela Bolsa com reação narrativa e transição de tema.**
+- **Snapshots versionados incluem inventário (`inventory`) e estado de cena (`sceneState`), com validação, migração de saves antigos e restauração completa.**
+- **Otimizações mobile: remoção de `-webkit-tap-highlight-color`, redução do frame do celular em paisagem e ajustes tipográficos na Galeria e na Bolsa.**
 
 ## Ainda pendente
 

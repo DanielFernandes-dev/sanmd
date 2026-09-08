@@ -44,11 +44,16 @@ A captura é temporária até a confirmação do nome. Cancelar descarta ID, exp
 
 O formato versão 1 persiste somente estruturas existentes no jogo:
 
+- `aparelho`: `originalPhoneStatus`, `activePhone` e `phoneTheme`;
+- `inventory`: IDs únicos de itens coletados;
+- `sceneState`: flags persistentes por cena, como `safeOpened` e `lulithPhoneCollected`;
 - `localizacao`: IDs de local e cena;
 - `dialogo`: fase do monólogo e rota narrativa escolhida;
 - `celular`: estado semântico e prazo absoluto do reset remoto;
 - `arquivos`: IDs vistos, snapshot pré-reset e flags do enigma de identidade;
 - `mensagens`: etapa, histórico, fila, próxima etapa, flags de entrega, cooldown absoluto e histórico pré-reset.
+
+Saves anteriores a essas extensões recebem valores iniciais: `inventory` vazio e `sceneState` derivado de `initialState`. A restauração substitui esses dados por cópias independentes.
 
 Não são serializados objetos ou estados transitórios:
 

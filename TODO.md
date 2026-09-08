@@ -26,7 +26,7 @@
 - [x] Criar cena base de Visual Novel.
 - [x] Criar caixa de diálogo com efeito de digitação.
 - [x] Permitir avanço por clique, `Enter` e espaço.
-- [x] Implementar os modos livre, diálogo e celular.
+- [x] Implementar os modos livre, diálogo, celular e bolsa.
 - [x] Implementar o botão Conversar para diálogos presenciais ou monólogos.
 - [x] Implementar celular com tela inicial e navegação contextual.
 - [x] Implementar o aplicativo Mensagens.
@@ -36,9 +36,14 @@
 - [x] Implementar retorno contextual pelo botão Voltar e pela tecla `Escape`.
 - [x] Criar três cenas provisórias conectadas: entrada, interior e fundo do beco.
 - [x] Implementar o comando Ir para com destinos válidos por cena.
-- [x] Substituir a sidebar visual por três controles com ícones pixelados.
+- [x] Substituir a sidebar visual por quatro controles com ícones pixelados.
 - [x] Implementar o menu Ir para pequeno, contextual e específico, sem alterar as respostas do celular.
 - [x] Criar estrutura Capacitor para Android.
+- [x] Implementar investigação point-and-click com hotspots acessíveis.
+- [x] Implementar Bolsa da MJ com inventário narrativo e ação direta USAR.
+- [x] Implementar cofre interativo com abertura e coleta do Celular de Lulith.
+- [x] Implementar ativação do aparelho pela Bolsa com reação narrativa.
+- [x] Implementar layout mobile paisagem e otimizações de toque.
 
 ### Preparação para o conteúdo canônico
 
@@ -307,8 +312,8 @@
 
 - [x] Apresentar Mensagens como canal principal com o contato ainda identificado como `???` antes do reset.
 - [x] Implementar Arquivos para os quatro documentos e pistas pré-reset.
-- [ ] Definir a ordem diegética em que MJ descobre Galeria, Câmera, Notas, Terminal, Mapa, Progresso e salvamento/replay depois do reset.
-- [ ] Implementar Galeria com ao menos uma pista visual ou gravação contextual do Ato I, examinável e registrada como descoberta opcional.
+- [x] Implementar Galeria com save/load fotográfico, 10 expressões da MJ, preview, detalhe, flash e layout responsivo.
+- [ ] Definir a ordem diegética em que MJ descobre Câmera, Notas, Terminal, Mapa, Progresso e salvamento/replay depois do reset.
 - [ ] Implementar Notas como registro contextual consultável, sem converter automaticamente as interpretações provisórias de MJ em fatos da história.
 - [ ] Integrar Mapa ao destino já visitado pelas coordenadas, permitindo consultar o local e deixando claro que deslocamentos futuros dependerão de locais descobertos.
 - [ ] Criar uma tela de Progresso acessível pelo controle central do celular, com marcos do Ato I encontrados e percentual explicitamente provisório.
@@ -318,8 +323,9 @@
 
 ### Salvamento e replay mínimos
 
-- [ ] Definir os dados mínimos persistidos: nome de MJ, cena e marcos do Ato I, evidências, arquivos vistos, solução de `ELA`, rota de monólogo, histórico e estado do reset.
-- [ ] Implementar persistência local independente da Câmera e restaurar a partida sem permitir cenas, opções ou conteúdos fora de ordem.
+- [x] Definir os dados mínimos persistidos: nome de MJ, cena e marcos do Ato I, evidências, arquivos vistos, solução de `ELA`, rota de monólogo, histórico e estado do reset.
+- [x] Implementar persistência local com snapshots versionados, saves manuais e autosave.
+- [x] Restaurar a partida após recarregar ou fechar o jogo, preservando inventário, estado de cena e progresso.
 - [ ] Definir o comportamento ao carregar uma partida durante cooldown, cronômetro ou animação de reset e restaurá-la por um estado estável e equivalente.
 - [ ] Separar o save da partida atual do registro de descobertas para replay; não implementar ainda o acesso a perspectivas de atos posteriores.
 - [ ] Definir reinício do Ato I preservando somente as descobertas que o sistema de replay realmente deve reutilizar.
@@ -413,8 +419,8 @@ Atualização baseada nas seções [Sistema de Save e Load](ESTRUTURA_GAMING.md#
 
 - [x] Aumentar `velocidadeDigitacao` para 65 ms e manter o avanço por clique, `Enter` e espaço.
 - [x] Sintetizar o blip de digitação via Web Audio API para letras não-espaço, com fallback silencioso.
-- [x] Remover a sidebar visível e manter Conversar, Ir para e Celular como botões reais com SVGs pixelados.
-- [x] Criar estados normal, hover, foco visível, ativo e desabilitado para os três comandos principais.
+- [x] Remover a sidebar visível e manter Conversar, Ir para, Celular e Bolsa como botões reais com SVGs pixelados.
+- [x] Criar estados normal, hover, foco visível, ativo e desabilitado para os quatro comandos principais.
 - [x] Restringir o estilo minimalista de destinos a `#ir-para-menu .message-choice`, preservando `.message-choice` no celular.
 - [x] Posicionar o menu Ir para à esquerda do ícone no desktop e acima dele no celular.
 - [x] Documentar o menu Ir para como camada visual independente da lógica de destinos e da estrutura de cenas.
@@ -567,6 +573,9 @@ O recorte de Save/Load abaixo está implementado e testado no protótipo atual, 
 - [x] Reconstruir os conjuntos de arquivos vistos e normalizar ou reagendar o reset remoto durante a restauração.
 - [x] Criar/substituir autosave ao encerrar conversa ou concluir reset remoto, sem ocupar posições na Galeria.
 - [x] Testar que carregar uma fotografia manual preserva o autosave existente.
+- [x] Persistir inventário (`inventory`) e estado de cena (`sceneState`) nos snapshots.
+- [x] Migrar saves antigos sem `aparelho` ou `inventory` para o formato atual.
+- [x] Validar layout da Galeria com metadados estruturados e suporte a nomes longos.
 - [ ] Criar interface dedicada para carregar o autosave.
 - [ ] Implementar migrations quando houver evolução incompatível do formato dos saves.
 
@@ -648,7 +657,10 @@ Validação do Ato I completo ainda pendente (o nome da fotografia não equivale
 - [ ] Mensagens, Galeria, Câmera, Notas, Arquivos, Terminal, Mapa, Progresso e salvamento/replay são apresentados de forma clara.
 - [ ] O terminal possui ao menos um tutorial jogável.
 - [ ] O ato funciona do início ao fim em desktop, mobile e APK Android.
-- [ ] O progresso pode ser salvo e restaurado sem quebrar a sequência.
+- [x] O progresso pode ser salvo e restaurado sem quebrar a sequência.
+- [x] A investigação point-and-click com hotspots e Bolsa funciona no beco.
+- [x] A ativação do celular pela Bolsa funciona com reação narrativa.
+- [x] O layout mobile paisagem e as otimizações de toque estão implementadas.
 - [ ] O conteúdo jogável não depende da premissa antiga.
 - [ ] Feedback da primeira experiência foi registrado.
 - [ ] Pendências encontradas foram classificadas para correção ou para atos posteriores.

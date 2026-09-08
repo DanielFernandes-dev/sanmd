@@ -67,6 +67,7 @@ test("tela inicial usa grade 4x2 de apps com ícones SVG e botão Voltar", () =>
   assert.match(css, /\[data-phone-theme="mj"\] \.phone-app--galeria\s*\{[^}]*#d75d8c/s);
   assert.match(css, /#btn-voltar\s*\{[^}]*border:\s*0;[^}]*border-radius:\s*0;[^}]*background:\s*transparent;/s);
   assert.match(css, /#btn-voltar \.back-icon\s*\{[^}]*color:\s*#f2b5cd;/s);
+  assert.match(css, /#btn-conversar,\s*#btn-ir-para,\s*#btn-celular,\s*#btn-bolsa,\s*#dialogue-box\s*\{[^}]*-webkit-tap-highlight-color:\s*transparent;/s);
 });
 
 test("celular usa wallpaper real sem transformar mockups em interface", () => {
