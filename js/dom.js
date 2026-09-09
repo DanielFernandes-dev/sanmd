@@ -68,7 +68,16 @@ function criarElementos(document) {
       phoneSignal: buscar("phone-signal"),
       clock: buscar("clock"),
       phoneDate: buscar("phone-date"),
-      btnVoltar: buscar("btn-voltar")
+      btnVoltar: buscar("btn-voltar"),
+      messagesComposer: buscar("messages-composer"),
+      messagesComposerField: buscar("messages-composer-field"),
+      textEntryDock: buscar("text-entry"),
+      textEntryField: buscar("text-entry-field"),
+      textEntryCount: buscar("text-entry-count"),
+      textEntrySend: buscar("text-entry-send"),
+      textEntryCancel: buscar("text-entry-cancel"),
+      textEntryAccents: buscar("text-entry-accents"),
+      gameKeyboard: buscar("game-keyboard")
     },
     gallery: {
       galleryGrid: buscar("gallery-grid"),

@@ -62,6 +62,7 @@ function criarSistemaEventos(context) {
       if (botao) services.escolherResposta(botao.dataset.optionId);
     });
     el.gallery.btnTirarFoto.addEventListener("click", services.tirarFoto);
+    el.gallery.galleryPhotoName.addEventListener("click", services.abrirEditorNomeFoto);
     el.gallery.btnCancelarFoto.addEventListener("click", services.cancelarFoto);
     el.gallery.btnVoltarGaleria.addEventListener("click", () => services.mostrarGradeGaleria(true));
     el.gallery.btnCarregarFoto.addEventListener("click", services.carregarFotoSelecionada);
@@ -70,13 +71,21 @@ function criarSistemaEventos(context) {
       const botao = event.target.closest("button[data-save-id]");
       if (botao) services.selecionarFoto(botao.dataset.saveId);
     });
-    el.gallery.galleryPhotoForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-      services.confirmarFoto(el.gallery.galleryPhotoName.value);
+    el.phone.messagesComposerField.addEventListener("click", services.abrirEditorMensagem);
+    el.phone.textEntrySend.addEventListener("click", services.confirmarEntradaTexto);
+    el.phone.textEntryCancel.addEventListener("click", services.cancelarEntradaTexto);
+    el.phone.gameKeyboard.addEventListener("click", (event) => {
+      const tecla = event.target.closest("button[data-key]");
+      if (tecla) services.pressionarTecla(tecla.dataset.key);
+    });
+    el.phone.textEntryAccents.addEventListener("click", (event) => {
+      const tecla = event.target.closest("button[data-key]");
+      if (tecla) services.pressionarTecla(tecla.dataset.key);
     });
     el.dialogue.dialogueBox.addEventListener("click", services.avancarDialogo);
 
     document.addEventListener("keydown", (event) => {
+      if (services.entradaTextoAberta() && services.tratarTecladoFisico(event)) return;
       if (event.key === "Escape" && state.modo === "livre" && services.menuIrParaAberto()) {
         services.fecharMenuIrPara();
         el.scene.btnIrPara.focus();

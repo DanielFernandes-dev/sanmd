@@ -12,6 +12,7 @@ const CONFIG = Object.freeze({
   intervaloRelogio: 1000,
   intervaloCronometroReset: 250,
   tamanhoNomeFoto: 28,
+  tamanhoMensagem: 160,
   limiteBotoesPaginacao: 7
 });
 

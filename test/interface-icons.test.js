@@ -79,7 +79,8 @@ test("celular usa wallpaper real sem transformar mockups em interface", () => {
   for (const id of ["btn-tirar-foto", "btn-carregar-foto", "btn-excluir-foto", "btn-cancelar-foto"]) {
     assert.match(html, new RegExp(`<button id="${id}"[^>]*type="button"`));
   }
-  assert.match(html, /<input id="gallery-photo-name"[^>]*maxlength="28"/);
+  assert.match(html, /<button id="gallery-photo-name"[^>]*type="button"[^>]*>Toque para nomear<\/button>/);
+  assert.match(html, /<div id="text-entry"[^>]*>/);
   assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(css, /#gallery-grid\s*\{[^}]*overflow-y: auto/s);
 });

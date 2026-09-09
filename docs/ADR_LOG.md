@@ -1,5 +1,37 @@
 # Registro de decisões
 
+## 2026-09-09 — Teclado virtual próprio e entrada de texto sem IME
+
+Status: aceito.
+
+Contexto: nomear fotografias e responder mensagens precisa de digitação, mas
+campos `input` nativos abrem o teclado IME do Android, que sobrepõe o celular do
+jogo e quebra o layout fixo em paisagem. Para manter a identidade visual e o
+controle total da interface, o jogo não pode depender do teclado do sistema.
+
+Decisão: criar um teclado virtual próprio dentro do celular (`js/keyboard.js`)
+e um controlador compartilhado de entrada de texto (`js/text-entry.js`) com
+estado transitório `state.texto` (buffer, cursor, shift, layout, painel de
+acentos). A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})`
+com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e
+confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e
+`#messages-composer-field` viraram botões e o compositor envia mensagens
+diretamente pelo sistema de celular. Enquanto edita, `#phone-screen` ganha
+`texto-aberto` com as seções bloqueadas por CSS; o listener global de `keydown`
+desvia o teclado físico (digitar, Backspace, setas, Enter, Esc). O estado do
+teclado não é persistido: `capturarEstadoJogo` usa chaves explícitas e restaurar
+fecha a edição.
+
+Consequências: `CONFIG.tamanhoMensagem` (160) complementa `tamanhoNomeFoto`
+(28); o teclado nativo nunca abre para o texto do jogo. A Galeria e Mensagens
+reutilizam o mesmo editor, que permanece indisponível para regressões de
+Save/Load. Sem o IME, não há mais dependência de comportamento após
+toque/seletor de idioma do sistema.
+
+Validação: suíte com 71 testes existentes mais 12 novos (`test/text-input.test.js`),
+total de 83 aprovados com `node --test`, cobrindo Galeria, Mensagens, limites,
+shift, layouts, acentos, teclado físico e snapshot.
+
 ## 2026-09-09 — Refatoração em fábrica e fim dos diálogos nativos
 
 Status: aceito.
@@ -25,8 +57,6 @@ snapshots não capturam a galeria.
 
 Validação: `node --test` com 71 testes aprovados; APK debug recompilado com
 sucesso e instalado via ADB no dispositivo conectado.
-
-Refatoração documentada em [REFATORACAO.md](../REFATORACAO.md).
 
 ## 2026-09-06 — Layout mobile em paisagem e carregamento direto
 

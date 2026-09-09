@@ -182,6 +182,9 @@
           <header id="messages-header">???</header>
           <div id="messages-list" aria-live="polite"></div>
           <div id="messages-choices" class="oculto" role="group" aria-label="Escolha uma resposta"></div>
+          <div id="messages-composer" class="oculto">
+            <button id="messages-composer-field" type="button">Toque para escrever…</button>
+          </div>
         </section>
         <section id="phone-files" class="oculto" aria-labelledby="files-header">
           <header id="files-header">ARQUIVOS RECENTES</header>
@@ -208,15 +211,14 @@
           </div>
           <p id="gallery-status" role="status" aria-live="polite"></p>
           <div id="gallery-grid" aria-label="Fotografias salvas"></div>
-          <form id="gallery-photo-form" class="oculto">
+          <div id="gallery-photo-form" class="oculto">
             <div id="gallery-preview"></div>
             <label for="gallery-photo-name">Nome da fotografia</label>
-            <input id="gallery-photo-name" type="text" maxlength="28" autocomplete="off" required>
+            <button id="gallery-photo-name" type="button">Toque para nomear</button>
             <div class="gallery-actions">
-              <button type="submit">CONFIRMAR</button>
               <button id="btn-cancelar-foto" type="button">CANCELAR</button>
             </div>
-          </form>
+          </div>
           <article id="gallery-detail" class="oculto">
             <div id="gallery-detail-photo"></div>
             <h2 id="gallery-detail-name"></h2>
@@ -234,6 +236,18 @@
           <p id="reset-status">Conexão remota detectada...</p>
           <div class="reset-progress" aria-hidden="true"><span></span></div>
         </section>
+        <div id="text-entry" class="oculto">
+          <div id="text-entry-bar">
+            <div id="text-entry-field" role="textbox" aria-label="Texto a confirmar" tabindex="0"></div>
+            <span id="text-entry-count">0/28</span>
+            <div id="text-entry-actions">
+              <button id="text-entry-send" type="button">OK</button>
+              <button id="text-entry-cancel" type="button" aria-label="Cancelar edição">✕</button>
+            </div>
+          </div>
+          <div id="text-entry-accents" class="oculto" role="group" aria-label="Acentos"></div>
+          <div id="game-keyboard" role="group" aria-label="Teclado"></div>
+        </div>
         <div id="phone-nav">
           <button id="btn-voltar" type="button" aria-label="Voltar"><span class="back-icon" aria-hidden="true">◀</span></button>
         </div>
@@ -253,6 +267,8 @@
   <script src="js/phone.js?v=refatoracao-2"></script>
   <script src="js/bag.js?v=refatoracao-2"></script>
   <script src="js/gallery.js?v=refatoracao-2"></script>
+  <script src="js/keyboard.js?v=refatoracao-2"></script>
+  <script src="js/text-entry.js?v=refatoracao-2"></script>
   <script src="js/interface.js?v=refatoracao-2"></script>
   <script src="js/events.js?v=refatoracao-2"></script>
   <script src="js/game.js?v=refatoracao-2"></script>

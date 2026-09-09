@@ -24,6 +24,8 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     phone: criarSistemaCelular(context),
     gallery: criarSistemaGaleria(context),
     bag: criarSistemaBolsa(context),
+    keyboard: criarSistemaTeclado(context),
+    textentry: criarSistemaEntradaTexto(context),
     interface: criarSistemaInterface(context),
     events: criarSistemaEventos(context)
   };

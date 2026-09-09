@@ -191,8 +191,27 @@ function criarSistemaGaleria(context) {
     el.gallery.galleryDetail.classList.add("oculto");
     el.gallery.galleryPreview.replaceChildren(criarComposicaoFoto(state.galeria.capturaPendente));
     el.gallery.galleryPhotoForm.classList.remove("oculto");
-    el.gallery.galleryPhotoName.value = "";
+    el.gallery.galleryPhotoName.textContent = "Toque para nomear";
     el.gallery.galleryPhotoName.focus();
+  }
+
+  /** Abrir editor do nome da foto.
+   */
+  function abrirEditorNomeFoto() {
+    if (state.modo !== "celular" || state.celular.tela !== "galeria") return false;
+    if (!state.galeria.capturaPendente || state.galeria.visualizacao !== "preview") return false;
+    return services.abrirEntradaTexto({
+      confirmLabel: "OK",
+      maxLength: CONFIG.tamanhoNomeFoto,
+      allowEmpty: false,
+      aoConfirmar: confirmarFoto,
+      aoCancelar: () => {
+        el.gallery.galleryPhotoName.textContent = "Toque para nomear";
+      },
+      aoAlterar: (valor) => {
+        el.gallery.galleryPhotoName.textContent = valor || "Toque para nomear";
+      }
+    });
   }
 
   /** Tirar foto.
@@ -222,10 +241,9 @@ function criarSistemaGaleria(context) {
    */
   function confirmarFoto(nome) {
     if (!state.galeria.capturaPendente) return false;
-    const nomeSeguro = nome.trim().slice(0, el.gallery.galleryPhotoName.maxLength || CONFIG.tamanhoNomeFoto);
+    const nomeSeguro = nome.trim().slice(0, CONFIG.tamanhoNomeFoto);
     if (!nomeSeguro) {
       definirStatusGaleria("Informe um nome para a fotografia.");
-      el.gallery.galleryPhotoName.focus();
       return false;
     }
 
@@ -317,6 +335,7 @@ function criarSistemaGaleria(context) {
     sortearExpressaoFotografica,
     gerarIdSave,
     mostrarPreviewFoto,
+    abrirEditorNomeFoto,
     tirarFoto,
     confirmarFoto,
     cancelarFoto,

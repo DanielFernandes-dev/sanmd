@@ -246,6 +246,7 @@ function criarSistemaPersistencia(context) {
     state.arquivos = { ...snapshot.arquivos, vistos: new Set(snapshot.arquivos.vistos) };
     state.mensagens = { ...criarEstadoMensagens(), ...snapshot.mensagens, timer: null };
     state.galeria = criarEstadoGaleria();
+    state.texto = criarEstadoTexto();
   }
 
   /** Sincroniza a interface e devolve o foco após carregar um snapshot.

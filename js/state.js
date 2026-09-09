@@ -33,6 +33,12 @@ function criarEstadoGaleria() {
     selecionadoId: null, flashTimer: null };
 }
 
+/** @returns {TextInputState} Estado transitório do editor de texto e do teclado. */
+function criarEstadoTexto() {
+  return { aberto: false, layout: "qwerty", shift: false, buffer: "", cursor: 0,
+    painelAcentos: false, config: null };
+}
+
 /** @returns {GameState} Uma instância independente do estado de todos os componentes. */
 function criarEstadoJogo() {
   return {
@@ -48,6 +54,7 @@ function criarEstadoJogo() {
     celular: criarEstadoCelular(),
     arquivos: criarEstadoArquivos(),
     mensagens: criarEstadoMensagens(),
-    galeria: criarEstadoGaleria()
+    galeria: criarEstadoGaleria(),
+    texto: criarEstadoTexto()
   };
 }

@@ -65,6 +65,7 @@ function criarSistemaCelular(context) {
   function fecharCelular() {
     if (state.modo !== "celular") return;
 
+    services.fecharEntradaTexto();
     state.modo = "livre";
     el.phone.phoneOverlay.classList.remove("aberto");
     clearInterval(state.celular.relogio);
@@ -165,6 +166,11 @@ function criarSistemaCelular(context) {
     }
 
     renderizarEscolhas(moverFoco);
+    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) {
+      el.phone.messagesComposer.classList.add("oculto");
+    } else {
+      el.phone.messagesComposer.classList.remove("oculto");
+    }
     rolarMensagens();
   }
 
@@ -312,6 +318,36 @@ function criarSistemaCelular(context) {
     iniciarMensagens();
     renderizarMensagens(!state.mensagens.donoRespondendo);
     agendarEnvioDono();
+  }
+
+  /** Enviar mensagem do jogador.
+   * @param {string} texto
+   */
+  function enviarMensagemJogador(texto) {
+    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return;
+    adicionarMensagem("protagonista", texto);
+    renderizarMensagens();
+    el.phone.messagesComposerField.textContent = "Toque para escrever…";
+    el.phone.messagesComposerField.focus();
+  }
+
+  /** Abrir editor de mensagem.
+   */
+  function abrirEditorMensagem() {
+    if (state.modo !== "celular" || state.celular.tela !== "mensagens") return false;
+    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return false;
+    return services.abrirEntradaTexto({
+      confirmLabel: "Enviar",
+      maxLength: CONFIG.tamanhoMensagem,
+      allowEmpty: false,
+      aoConfirmar: enviarMensagemJogador,
+      aoCancelar: () => {
+        el.phone.messagesComposerField.textContent = "Toque para escrever…";
+      },
+      aoAlterar: (valor) => {
+        el.phone.messagesComposerField.textContent = valor || "Toque para escrever…";
+      }
+    });
   }
 
   /** Renderizar arquivos.
@@ -517,6 +553,7 @@ function criarSistemaCelular(context) {
     el.phone.phoneFiles.classList.add("oculto");
     el.phone.phoneGallery.classList.add("oculto");
     el.phone.phoneReset.classList.add("oculto");
+    services.fecharEntradaTexto();
   }
 
   /** Mostrar tela inicial.
@@ -534,6 +571,10 @@ function criarSistemaCelular(context) {
   function voltarCelular() {
     if (state.modo !== "celular") return;
     if (state.celular.resetStatus === RESET_STATUS.EXECUTANDO) return;
+    if (services.entradaTextoAberta()) {
+      services.cancelarEntradaTexto();
+      return;
+    }
     if (state.celular.tela === "galeria" && state.galeria.visualizacao !== "grade") {
       services.mostrarGradeGaleria(true);
       return;
@@ -568,6 +609,8 @@ function criarSistemaCelular(context) {
     cancelarEnvioDono,
     escolherResposta,
     abrirMensagens,
+    enviarMensagemJogador,
+    abrirEditorMensagem,
     renderizarArquivos,
     visualizarArquivo,
     resolverEnigmaIdentidade,
