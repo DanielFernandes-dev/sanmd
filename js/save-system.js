@@ -2,6 +2,10 @@ const SAVE_STORAGE_VERSION = 1;
 const SAVE_STORAGE_KEY = "sanmd:saves";
 const MAX_MANUAL_SAVES = 9;
 
+/**
+ * @param {Storage|null} storage Armazenamento persistente; null usa memória.
+ * @returns {Object} Repositório de saves manuais e autosave.
+ */
 function criarSaveRepository(storage) {
   let memoria = null;
 

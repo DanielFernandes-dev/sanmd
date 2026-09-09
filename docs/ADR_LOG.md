@@ -1,5 +1,33 @@
 # Registro de decisões
 
+## 2026-09-09 — Refatoração em fábrica e fim dos diálogos nativos
+
+Status: aceito.
+
+Contexto: `game.js` centralizava quase 2 mil linhas, impedindo testes isolados e
+tornando a suíte frágil após mudanças pontuais. A Galeria dependia de
+`window.confirm`, diálogo nativo do sistema operacional, para confirmar a
+exclusão de fotografias.
+
+Decisão: dividir `js/game.js` em fábricas independentes por componente
+(`config`, `data`, `state`, `dom`, `bag`, `dialogue`, `monologues`, `phone`,
+`scene`, `gallery`, `persistence`, `save-system`, `interface`, `events`,
+`bootstrap`). `criarJogo()` compõe os serviços e injeta dependências de banco
+local; o DOM é exposto por `dom.js` de forma agrupada por componente. O harness
+`test/load-game.cjs` acessa a instância criada pelo bootstrap. A exclusão via
+`excluirFotoSelecionada()` passou a agir imediatamente, sem o `window.confirm`,
+eliminando o último diálogo nativo do jogo.
+
+Consequências: a suíte cobre agora 71 testes isolados, todos verdes. Não há mais
+uso de `alert`, `confirm` ou `prompt` do sistema no código do jogo. O estado do
+diálogo de exclusão transitório (`exclusaoIdPendente`) não é persistido porque os
+snapshots não capturam a galeria.
+
+Validação: `node --test` com 71 testes aprovados; APK debug recompilado com
+sucesso e instalado via ADB no dispositivo conectado.
+
+Refatoração documentada em [REFATORACAO.md](../REFATORACAO.md).
+
 ## 2026-09-06 — Layout mobile em paisagem e carregamento direto
 
 Status: aceito.

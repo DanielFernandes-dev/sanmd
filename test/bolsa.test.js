@@ -144,10 +144,7 @@ function criarAmbiente(storage = criarStorage()) {
     window
   });
 
-  const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
-  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
-  const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(require("./load-game.cjs")(raiz), contexto);
 
   return {
     elementos,
@@ -158,6 +155,12 @@ function criarAmbiente(storage = criarStorage()) {
     window
   };
 }
+
+test("inicializar eventos novamente não duplica os listeners", () => {
+  const a = criarAmbiente();
+  a.executar('el.btnBolsa.addEventListener = () => { throw new Error("Listener duplicado"); }; inicializarEventos();');
+  assert.equal(a.ler("state.modo"), "livre");
+});
 
 test("Bolsa vazia: exibe estado vazio elegante e oculta a barra de busca", () => {
   const a = criarAmbiente();

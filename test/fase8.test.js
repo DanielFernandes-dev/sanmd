@@ -112,10 +112,7 @@ function criarAmbiente() {
     setTimeout
   });
 
-  const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
-  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
-  const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(require("./load-game.cjs")(raiz), contexto);
   vm.runInContext(`
     function prepararCelularTeste() {
       if (state.aparelho.activePhone !== null) return;
@@ -332,9 +329,9 @@ test("dados narrativos mantêm referências válidas e identificadores únicos",
   const { ler } = controlarAmbiente();
   const raiz = path.resolve(__dirname, "..");
   const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
-  const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
+  const game = fs.readFileSync(path.join(raiz, "js/dom.js"), "utf8");
   const idsHtml = [...html.matchAll(/id="([^"]+)"/g)].map((match) => match[1]);
-  const idsReferenciados = [...game.matchAll(/getElementById\("([^"]+)"\)/g)].map((match) => match[1]);
+  const idsReferenciados = [...game.matchAll(/buscar\("([^"]+)"\)/g)].map((match) => match[1]);
 
   assert.equal(ler("new Set(DATA.celular.arquivosAntesReset.map((item) => item.id)).size"), 4);
   assert.equal(ler("Object.values(DATA.mensagens.dono.etapas).flatMap((etapa) => etapa.opcoes).length"), 14);

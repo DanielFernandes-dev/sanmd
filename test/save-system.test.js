@@ -111,10 +111,7 @@ function criarAmbiente(storage = criarStorage()) {
     window
   });
 
-  const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
-  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
-  const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(require("./load-game.cjs")(raiz), contexto);
   vm.runInContext(`
     function prepararCelularTeste() {
       if (state.aparelho.activePhone !== null) return;
@@ -375,6 +372,42 @@ test("point-and-click: saves antigos, dados inválidos e IDs únicos", () => {
   assert.equal(a.ler('validarSnapshot({...antigo, inventory: null})'), null);
   assert.equal(a.ler('validarSnapshot({...antigo, sceneState: {beco_fundo: {safeOpened: "true"}}})'), null);
   assert.equal(a.ler('validarSnapshot({...antigo, inventory: ["lulith_phone", "lulith_phone"]}).inventory.length'), 1);
+});
+
+test("snapshots rejeitam identificadores herdados e formatos inválidos sem alterar o jogo", () => {
+  const a = criarAmbiente();
+  a.executar("const baseValidacao = capturarEstadoJogo();");
+  for (const alteracao of [
+    's.localizacao.local = "toString"',
+    's.localizacao.cena = "constructor"',
+    's.mensagens.etapa = "toString"',
+    's.mensagens.proximaEtapa = "__proto__"',
+    's.mensagens.etapa = ["celular-encontrado"]',
+    's.dialogo.faseMonologo = ["inicial"]',
+    's.dialogo.rotaMonologoArquivo = "constructor"',
+    's.arquivos.enigmaIdentidadeResolvido = 1',
+    's.arquivos.enigmaIdentidadeResolvidoAntesReset = null',
+    's.celular.resetStatus = "agendado"; s.celular.resetAte = null'
+  ]) {
+    assert.equal(a.ler(`(() => {
+      const s = copiarDados(baseValidacao);
+      ${alteracao};
+      return validarSnapshot(s);
+    })()`), null, alteracao);
+  }
+  assert.equal(a.ler("state.localizacao.cena"), "beco_entrada");
+  assert.equal(a.ler("state.mensagens.etapa"), null);
+});
+
+test("validação preserva o candidato e aceita um reset agendado com prazo válido", () => {
+  const a = criarAmbiente();
+  assert.equal(a.ler(`(() => {
+    const s = capturarEstadoJogo();
+    s.celular = {resetStatus: "agendado", resetAte: Date.now() + 60000};
+    const antes = JSON.stringify(s);
+    const validado = validarSnapshot(s);
+    return validado !== null && validado !== s && JSON.stringify(s) === antes;
+  })()`), true);
 });
 
 test("point-and-click: exige item, consumo automático e remoção narrativa", () => {

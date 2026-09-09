@@ -74,10 +74,7 @@ function criarAmbiente() {
     setTimeout: () => ({})
   });
 
-  const data = fs.readFileSync(path.join(raiz, "js/data.js"), "utf8");
-  const saves = fs.readFileSync(path.join(raiz, "js/save-system.js"), "utf8");
-  const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
-  vm.runInContext(`${data}\n${saves}\n${game}`, contexto);
+  vm.runInContext(require("./load-game.cjs")(raiz), contexto);
   vm.runInContext(`
     function prepararCelularTeste() {
       if (state.aparelho.activePhone !== null) return;

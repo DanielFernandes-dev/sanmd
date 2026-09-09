@@ -43,117 +43,54 @@ const CENAS_BECO = {
   }
 };
 
-function monologoBecoEntrada() {
-  const phoneCollected = typeof state !== "undefined"
-    && (state.inventory?.includes("lulith_phone") || Boolean(state.sceneState?.beco_fundo?.lulithPhoneCollected));
-
-  if (phoneCollected) {
-    return [
-      { autor: "MJ", texto: "(De volta à entrada do beco. Já peguei o aparelho dentro do cofre.)" },
-      { autor: "MJ", texto: "(Agora preciso analisar o conteúdo dele com cuidado.)" }
-    ];
-  }
-  return [
-    { autor: "MJ", texto: "(A nota que encontrei me trouxe até este beco. Quem a deixou mencionou um cofre por aqui.)" },
-    { autor: "MJ", texto: "(O lugar parece isolado e deserto. Preciso avançar com cuidado e ver o que está escondido.)" }
-  ];
-}
-
-function monologoBecoInterior() {
-  const phoneCollected = typeof state !== "undefined"
-    && (state.inventory?.includes("lulith_phone") || Boolean(state.sceneState?.beco_fundo?.lulithPhoneCollected));
-
-  if (phoneCollected) {
-    return [
-      { autor: "MJ", texto: "(O corredor do beco segue em silêncio absoluto.)" },
-      { autor: "MJ", texto: "(Já explorei o fundo do beco e peguei o aparelho. Não há mais nada por aqui.)" }
-    ];
-  }
-  return [
-    { autor: "MJ", texto: "(O beco se estreita e fica mais escuro por aqui.)" },
-    { autor: "MJ", texto: "(Se as pistas estiverem certas, o que procuro deve estar mais adiante.)" }
-  ];
-}
-
-function monologoBecoFundo() {
-  const safeOpened = typeof state !== "undefined"
-    && Boolean(state.sceneState?.beco_fundo?.safeOpened);
-  const phoneCollected = typeof state !== "undefined"
-    && (state.inventory?.includes("lulith_phone") || Boolean(state.sceneState?.beco_fundo?.lulithPhoneCollected));
-
-  if (phoneCollected) {
-    return [
-      { autor: "MJ", texto: "(Este é o fundo do beco. O cofre agora está vazio.)" },
-      { autor: "MJ", texto: state.aparelho.activePhone === "lulith"
-        ? "(O aparelho está funcionando. Preciso descobrir quem armou tudo isso.)"
-        : "(O aparelho está na minha bolsa. Preciso colocá-lo em uso.)" }
-    ];
-  }
-  if (safeOpened) {
-    return [
-      { autor: "MJ", texto: "(No fundo do beco, o cofre finalmente se abriu.)" },
-      { autor: "MJ", texto: "(Há um celular ativo lá dentro. Devo recolhê-lo para investigar.)" }
-    ];
-  }
-  return [
-    { autor: "MJ", texto: "(Cheguei ao fundo do beco. Há um cofre metálico fixado na parede.)" },
-    { autor: "MJ", texto: "(As coordenadas me trouxeram exatamente até aqui. Preciso inspecionar este cofre.)" }
-  ];
-}
-
-function monologosDeBeco(inicial) {
-  return {
-    get inicial() {
-      return typeof inicial === "function" ? inicial() : inicial;
-    },
-    identidadeResolvida: [
-      { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
-      { autor: "MJ", texto: "(Então quem preparou o aparelho é uma mulher. Ela queria que eu descobrisse isso.)" }
+const MONOLOGOS_BECO = {
+  identidadeResolvida: [
+    { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
+    { autor: "MJ", texto: "(Então quem preparou o aparelho é uma mulher. Ela queria que eu descobrisse isso.)" }
+  ],
+  aposPrimeiroEnvio: [
+    { autor: "MJ", texto: "(Mensagem enviada. Quem está do outro lado sabia que eu chegaria até o cofre.)" },
+    { autor: "MJ", texto: "(Ainda não sei com quem estou falando.)" }
+  ],
+  arquivoCandidatos: {
+    masculino: [
+      { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
+      { autor: "MJ", texto: "(Quem está por trás deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
     ],
-    aposPrimeiroEnvio: [
-      { autor: "MJ", texto: "(Mensagem enviada. Quem está do outro lado sabia que eu chegaria até o cofre.)" },
-      { autor: "MJ", texto: "(Ainda não sei com quem estou falando.)" }
-    ],
-    arquivoCandidatos: {
-      masculino: [
-        { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
-        { autor: "MJ", texto: "(Quem está por trás deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
-      ],
-      feminino: [
-        { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
-        { autor: "MJ", texto: "(A pessoa por trás deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
-      ]
-    },
-    arquivoRota: {
-      masculino: [
-        { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Quem planejou isso previu cada etapa antes de eu começar.)" },
-        { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
-      ],
-      feminino: [
-        { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ela planejou cada etapa antes de eu começar.)" },
-        { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
-      ]
-    },
-    arquivoRecuperar: {
-      masculino: [
-        { autor: "MJ", texto: "(A mensagem diz que não quer destruir o que fizeram. Quer recuperar o que tiraram de alguém.)" },
-        { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
-      ],
-      feminino: [
-        { autor: "MJ", texto: "(Ela escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dela.)" },
-        { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
-      ]
-    },
-    todosArquivos: [
-      { autor: "MJ", texto: "(Candidatos, rota, recuperação e a assinatura: ELA.)" },
-      { autor: "MJ", texto: "(Os quatro arquivos formam uma mensagem. Ela queria medir não só minha lógica, mas o que eu escolheria investigar.)" }
-    ],
-    conversaConcluida: [
-      { autor: "MJ", texto: "(Ela apagou tudo antes que eu pudesse comparar os arquivos.)" },
-      { autor: "MJ", texto: "(Mas eu vi o bastante para saber que não sou a única.)" }
+    feminino: [
+      { autor: "MJ", texto: "(Quatro perfis compatíveis em São Paulo. Eu sou a candidata 03.)" },
+      { autor: "MJ", texto: "(A pessoa por trás deste celular está testando outras pessoas. Preciso descobrir quem são as outras três.)" }
     ]
-  };
-}
+  },
+  arquivoRota: {
+    masculino: [
+      { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Quem planejou isso previu cada etapa antes de eu começar.)" },
+      { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
+    ],
+    feminino: [
+      { autor: "MJ", texto: "(Nota, coordenadas, cofre, aparelho. Ela planejou cada etapa antes de eu começar.)" },
+      { autor: "MJ", texto: "(Se minhas escolhas estavam previstas, talvez a rota esconda mais do que um destino.)" }
+    ]
+  },
+  arquivoRecuperar: {
+    masculino: [
+      { autor: "MJ", texto: "(A mensagem diz que não quer destruir o que fizeram. Quer recuperar o que tiraram de alguém.)" },
+      { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
+    ],
+    feminino: [
+      { autor: "MJ", texto: "(Ela escreveu que não quer destruir o que fizeram. Quer recuperar o que tiraram dela.)" },
+      { autor: "MJ", texto: "(Ainda não sei o que foi tirado, mas isso parece ser o motivo de todo o teste.)" }
+    ]
+  },
+  todosArquivos: [
+    { autor: "MJ", texto: "(Candidatos, rota, recuperação e a assinatura: ELA.)" },
+    { autor: "MJ", texto: "(Os quatro arquivos formam uma mensagem. Ela queria medir não só minha lógica, mas o que eu escolheria investigar.)" }
+  ],
+  conversaConcluida: [
+    { autor: "MJ", texto: "(Ela apagou tudo antes que eu pudesse comparar os arquivos.)" },
+    { autor: "MJ", texto: "(Mas eu vi o bastante para saber que não sou a única.)" }
+  ]
+};
 
 const DATA = {
   locais: {
@@ -227,9 +164,53 @@ const DATA = {
   },
 
   monologos: {
-    beco_entrada: monologosDeBeco(monologoBecoEntrada),
-    beco_interior: monologosDeBeco(monologoBecoInterior),
-    beco_fundo: monologosDeBeco(monologoBecoFundo)
+    beco_entrada: {
+      ...MONOLOGOS_BECO,
+      inicial: {
+        pendente: [
+          { autor: "MJ", texto: "(A nota que encontrei me trouxe até este beco. Quem a deixou mencionou um cofre por aqui.)" },
+          { autor: "MJ", texto: "(O lugar parece isolado e deserto. Preciso avançar com cuidado e ver o que está escondido.)" }
+        ],
+        coletado: [
+          { autor: "MJ", texto: "(De volta à entrada do beco. Já peguei o aparelho dentro do cofre.)" },
+          { autor: "MJ", texto: "(Agora preciso analisar o conteúdo dele com cuidado.)" }
+        ]
+      }
+    },
+    beco_interior: {
+      ...MONOLOGOS_BECO,
+      inicial: {
+        pendente: [
+          { autor: "MJ", texto: "(O beco se estreita e fica mais escuro por aqui.)" },
+          { autor: "MJ", texto: "(Se as pistas estiverem certas, o que procuro deve estar mais adiante.)" }
+        ],
+        coletado: [
+          { autor: "MJ", texto: "(O corredor do beco segue em silêncio absoluto.)" },
+          { autor: "MJ", texto: "(Já explorei o fundo do beco e peguei o aparelho. Não há mais nada por aqui.)" }
+        ]
+      }
+    },
+    beco_fundo: {
+      ...MONOLOGOS_BECO,
+      inicial: {
+        pendente: [
+          { autor: "MJ", texto: "(Cheguei ao fundo do beco. Há um cofre metálico fixado na parede.)" },
+          { autor: "MJ", texto: "(As coordenadas me trouxeram exatamente até aqui. Preciso inspecionar este cofre.)" }
+        ],
+        aberto: [
+          { autor: "MJ", texto: "(No fundo do beco, o cofre finalmente se abriu.)" },
+          { autor: "MJ", texto: "(Há um celular ativo lá dentro. Devo recolhê-lo para investigar.)" }
+        ],
+        coletado: [
+          { autor: "MJ", texto: "(Este é o fundo do beco. O cofre agora está vazio.)" },
+          { autor: "MJ", texto: "(O aparelho está na minha bolsa. Preciso colocá-lo em uso.)" }
+        ],
+        ativo: [
+          { autor: "MJ", texto: "(Este é o fundo do beco. O cofre agora está vazio.)" },
+          { autor: "MJ", texto: "(O aparelho está funcionando. Preciso descobrir quem armou tudo isso.)" }
+        ]
+      }
+    }
   },
 
   mensagens: {

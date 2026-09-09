@@ -5,7 +5,7 @@ const test = require("node:test");
 
 const raiz = path.resolve(__dirname, "..");
 const css = fs.readFileSync(path.join(raiz, "styles.css"), "utf8");
-const game = fs.readFileSync(path.join(raiz, "js/game.js"), "utf8");
+const galeria = fs.readFileSync(path.join(raiz, "js/gallery.js"), "utf8");
 
 test("grade da galeria dimensiona cada linha pelo conteúdo completo dos cards", () => {
   assert.match(css, /#gallery-grid\s*\{[^}]*grid-auto-rows:\s*max-content;[^}]*align-content:\s*start;[^}]*align-items:\s*start;/s);
@@ -14,11 +14,11 @@ test("grade da galeria dimensiona cada linha pelo conteúdo completo dos cards",
 });
 
 test("thumbnail e metadados pertencem ao fluxo normal do card preenchido", () => {
-  assert.match(game, /botao\.appendChild\(criarComposicaoFoto\(save\)\)/);
-  assert.match(game, /metadados\.className = "gallery-photo-metadata"/);
-  assert.match(game, /nome\.className = "gallery-photo-name"/);
-  assert.match(game, /data\.className = "gallery-photo-date"/);
-  assert.match(game, /hora\.className = "gallery-photo-time"/);
-  assert.match(game, /metadados\.appendChild\(nome\);[\s\S]*metadados\.appendChild\(data\);[\s\S]*metadados\.appendChild\(hora\);[\s\S]*botao\.appendChild\(metadados\);/);
+  assert.match(galeria, /botao\.appendChild\(criarComposicaoFoto\(save\)\)/);
+  assert.match(galeria, /metadados\.className = "gallery-photo-metadata"/);
+  assert.match(galeria, /nome\.className = "gallery-photo-name"/);
+  assert.match(galeria, /data\.className = "gallery-photo-date"/);
+  assert.match(galeria, /hora\.className = "gallery-photo-time"/);
+  assert.match(galeria, /metadados\.appendChild\(nome\);[\s\S]*metadados\.appendChild\(data\);[\s\S]*metadados\.appendChild\(hora\);[\s\S]*botao\.appendChild\(metadados\);/);
   assert.match(css, /\.gallery-photo-name\s*\{[^}]*overflow-wrap:\s*anywhere;[^}]*white-space:\s*normal;/s);
 });
