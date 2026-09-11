@@ -104,11 +104,11 @@ html, body {
 }
 
 #personagem.personagem-entrando {
-  animation: mj-entrar 320ms ease-out forwards;
+  animation: mj-entrar var(--duracao-personagem-entrada, 320ms) ease-out forwards;
 }
 
 #personagem.personagem-saindo {
-  animation: mj-sair 280ms ease-in forwards;
+  animation: mj-sair var(--duracao-personagem-saida, 280ms) ease-in forwards;
 }
 
 @keyframes mj-entrar {
@@ -354,7 +354,7 @@ button:hover:not(:disabled) .action-icon {
   background: rgba(4, 6, 12, 0.88);
   backdrop-filter: blur(3px);
   transform: translateY(100%);
-  transition: transform 0.28s ease;
+  transition: transform var(--duracao-celular, 280ms) ease;
 }
 
 #phone-overlay.aberto {
@@ -740,7 +740,7 @@ button:hover:not(:disabled) .action-icon {
   inset: 0;
   z-index: 5;
   background: #fff;
-  animation: gallery-flash 140ms ease-out forwards;
+  animation: gallery-flash var(--duracao-foto-flash, 140ms) ease-out forwards;
   pointer-events: none;
 }
 
@@ -919,7 +919,7 @@ button:hover:not(:disabled) .action-icon {
   height: 100%;
   background: #d63f58;
   transform-origin: left;
-  animation: progresso-reset 2.8s linear forwards;
+  animation: progresso-reset var(--duracao-reset, 2800ms) linear forwards;
 }
 
 @keyframes progresso-reset {

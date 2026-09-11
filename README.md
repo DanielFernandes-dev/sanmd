@@ -177,6 +177,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 │   ├── interface.js # Fábrica da interface principal (botões, menus)
 │   ├── keyboard.js  # Teclado virtual próprio do jogo
 │   ├── text-entry.js # Controlador compartilhado de entrada de texto
+│   ├── animation.js # Serviço de animação e tempos visuais
+│   ├── mechanics.js # Estratégias de interação e registro de tipos
 │   └── scene-transition.js # Fade global entre cenas e bloqueio de input
 ├── assets/
 │   ├── cenario/     # Fundos e README do contrato de cenários
@@ -216,6 +218,9 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
    | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
    | [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
    | [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
+
+O padrão implementado para mecânicas e animações está em
+[`docs/MECHANICS_PATTERN.md`](docs/MECHANICS_PATTERN.md).
 
 ## Fluxo do protótipo atual
 

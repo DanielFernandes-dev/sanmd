@@ -81,3 +81,10 @@ inspeção visual em WebView Android real.
   percurso Entrada → Interior → Fundo validados. O fade suave (saída 320 ms,
   composição 100 ms, entrada 400 ms) cobre e descobre a cena sem flash,
   resize ou touch atravessando; a fluidez foi confirmada no aparelho.
+
+## Organização do código
+
+A execução visual do fade e a consulta de movimento reduzido são delegadas a
+`animation.js`. O controlador de cena mantém exclusividade, carregamento de
+assets, bloqueio de input e recuperação de erros. O timer de proteção do fade é
+limpo ao concluir ou falhar. Veja [Padrão das mecânicas](MECHANICS_PATTERN.md).

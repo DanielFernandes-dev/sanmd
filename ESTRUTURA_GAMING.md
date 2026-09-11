@@ -1999,3 +1999,11 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
 
 > [!tip] Uso No Obsidian
 > Use esta nota como índice técnico principal. As seções podem ser transformadas em notas independentes no futuro e conectadas por links wiki sem alterar a organização conceitual.
+
+## Padrão das mecânicas e apresentação (2026-09-11)
+
+`js/animation.js` centraliza a execução visual do fade, reduced motion e a ligação
+entre CONFIG e durações CSS. `js/mechanics.js` fornece o registro Strategy usado
+pelos hotspots e pelas ações de inventário. A composição permanece em
+`criarJogo`; regras narrativas e persistência permanecem nos sistemas atuais.
+Consulte [o contrato de extensão](docs/MECHANICS_PATTERN.md).

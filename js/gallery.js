@@ -233,7 +233,7 @@ function criarSistemaGaleria(context) {
     };
     definirStatusGaleria();
     el.gallery.galleryFlash.classList.remove("oculto");
-    state.galeria.flashTimer = setTimeout(mostrarPreviewFoto, CONFIG.duracaoFlashFoto);
+    state.galeria.flashTimer = setTimeout(mostrarPreviewFoto, services.duracaoVisual(CONFIG.duracaoFlashFoto));
   }
 
   /** Confirmar foto.

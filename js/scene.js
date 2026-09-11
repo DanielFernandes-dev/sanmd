@@ -7,6 +7,7 @@ function criarSistemaCenas(context) {
   const { state, el, document, data: DATA, items: ITEMS, config: CONFIG, services } = context;
 
   const eventosInteracao = context.eventosInteracao;
+  const mecanicas = criarMecanicasHotspot(context);
 
   /** Ocultar personagem.
    */
@@ -32,7 +33,7 @@ function criarSistemaCenas(context) {
       el.scene.personagem.dataset.pose = "";
       el.scene.personagem.dataset.slot = "";
       state.cena.personagemSaidaTimer = null;
-    }, CONFIG.transicaoPersonagemSaida);
+    }, services.duracaoVisual(CONFIG.transicaoPersonagemSaida));
   }
 
   /** Mostrar personagem.
@@ -285,14 +286,15 @@ function criarSistemaCenas(context) {
     if (services.isSceneTransitioning() || state.modo !== "livre" || el.bag.bagDialog.open) return false;
     const cena = obterCenaAtual();
     const h = cena.hotspots?.find(hotspot => hotspot.id === id);
-    if (!h || !["examine", "interact", "collect", "use_item", "trigger"].includes(h.type)
+    const executarMecanica = h && mecanicas.obter(h.type);
+    if (!executarMecanica
       || !condicoesAtendidas(h.conditions, estadoDaCena(cena))) return false;
     if (h.requiresItem && (!state.inventory.includes(h.requiresItem)
       || (selectedItem !== null && selectedItem !== h.requiresItem))) {
       el.scene.interactionStatus.textContent = h.missingItemMessage ?? "Preciso de outro item para isso.";
       return false;
     }
-    if (h.type === "collect" && !services.adicionarItem(h.itemId)) return false;
+    if (!executarMecanica(h)) return false;
     state.sceneState[cena.id] = { ...estadoDaCena(cena), ...h.changes };
     if (h.requiresItem && (h.consumeItem ?? ITEMS[h.requiresItem]?.consumable)) services.removerItem(h.requiresItem);
     fecharMenuIrPara();

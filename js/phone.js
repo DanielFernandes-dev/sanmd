@@ -77,7 +77,7 @@ function criarSistemaCelular(context) {
       el.phone.phoneOverlay.classList.add("oculto");
       state.celular.transicao = null;
       el.phone.btnCelular.focus();
-    }, CONFIG.transicaoCelular);
+    }, services.duracaoVisual(CONFIG.transicaoCelular));
     services.definirBotoes();
   }
 

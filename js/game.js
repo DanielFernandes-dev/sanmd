@@ -18,6 +18,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
   const context = { state, el, services, document, window, data, items, config,
     saveRepository, eventosInteracao: Object.create(null) };
   const systems = {
+    animation: criarSistemaAnimacoes(context),
     persistence: criarSistemaPersistencia(context),
     transition: criarSceneTransitionController(context),
     scene: criarSistemaCenas(context),
@@ -37,6 +38,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
   /** Inicia os componentes uma única vez depois de ligar todas as dependências. */
   function iniciar() {
     if (iniciado) return;
+    services.configurarAnimacoes();
     services.inicializarEventos();
     services.aplicarCena(services.obterCenaAtual());
     services.atualizarCabecalhoMensagens();

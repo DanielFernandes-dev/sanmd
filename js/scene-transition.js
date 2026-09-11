@@ -4,7 +4,7 @@ function criarSceneTransitionController({ el, services, document, window, config
   const timing = config.sceneTransition;
   let transitioning = false;
   const cache = new Map();
-  const wait = ms => new Promise(resolve => (window.setTimeout?.bind(window) ?? setTimeout)(resolve, ms));
+
 
   function blockInput(event) {
     if (!transitioning) return;
@@ -14,19 +14,6 @@ function criarSceneTransitionController({ el, services, document, window, config
   // Capture também protege teclado e elementos fora da área visual (Bolsa/celular).
   for (const type of ["click", "dblclick", "pointerdown", "pointerup", "touchstart", "touchend", "keydown", "keyup", "submit"]) {
     document.addEventListener(type, blockInput, { capture: true, passive: false });
-  }
-
-  async function fade(from, to, duration) {
-    overlay.style.opacity = String(to);
-    if (!overlay.animate) { await wait(duration); return; }
-    const animation = overlay.animate([{ opacity: from }, { opacity: to }],
-      { duration, easing: "ease-in-out" });
-    try {
-      // O limite também libera WebViews que não concluam a animação.
-      await Promise.race([animation.finished, wait(duration + 100)]);
-    } finally {
-      animation.cancel();
-    }
   }
 
   function prepareSceneImages(sources) {
@@ -57,7 +44,7 @@ function criarSceneTransitionController({ el, services, document, window, config
   async function runSceneTransition(loadScene) {
     if (transitioning) return false;
     transitioning = true;
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const reduced = services.movimentoReduzido();
     const activeElement = document.activeElement;
     try {
       services.fecharMenuIrPara();
@@ -65,11 +52,11 @@ function criarSceneTransitionController({ el, services, document, window, config
       activeElement?.blur?.();
       overlay.classList.add("transitioning");
       services.definirBotoes();
-      await fade(0, 1, reduced ? timing.reduced : timing.out);
+      await services.animarFade(overlay, 0, 1, reduced ? timing.reduced : timing.out);
       await loadScene();
       // Deixa layout/composição da nova cena ocorrerem sob a cobertura opaca.
-      await wait(reduced ? 0 : timing.hold);
-      await fade(1, 0, reduced ? timing.reduced : timing.in);
+      await services.esperarAnimacao(reduced ? 0 : timing.hold);
+      await services.animarFade(overlay, 1, 0, reduced ? timing.reduced : timing.in);
       return true;
     } catch (error) {
       console.error("Falha na transição de cena", error);

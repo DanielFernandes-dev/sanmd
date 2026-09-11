@@ -151,3 +151,21 @@ Validação: testes automatizados cobrem A/B/C entre sessões, duplo clique, aut
 preservação de conteúdo, migração, cancelamento por load e atualização da Bolsa.
 O fluxo também foi exercitado em Chromium com mouse e toque em 1440×900, 390×844
 e 844×390.
+
+## 2026-09-11 — Facade de animação e Strategy para interações
+
+Status: aceito.
+
+Contexto: o fade executava sua própria animação e os tempos de CSS duplicavam
+CONFIG. Hotspots tinham uma lista de tipos e um desvio exclusivo para coleta,
+enquanto a Bolsa já usava handlers por tipo.
+
+Decisão: extrair `animation.js` e `mechanics.js`, mantendo fábricas e injeção de
+dependências. Compartilhar o registro de estratégias entre hotspots e Bolsa;
+preservar validação, mutações, eventos narrativos e autosave nos seus sistemas.
+Centralizar durações CSS em CONFIG e eliminar esperas decorativas quando o
+jogador pede movimento reduzido. Limpar o timer de proteção após cada fade.
+
+Consequências: novas interações têm um ponto explícito de extensão, os efeitos
+visuais ficam separados das regras narrativas e o formato de saves não muda.
+Contrato e extensão: [Padrão das mecânicas](MECHANICS_PATTERN.md).

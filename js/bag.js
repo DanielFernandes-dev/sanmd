@@ -204,7 +204,7 @@ function criarSistemaBolsa(context) {
    * @param {ItemDefinition} item
    */
   function obterHandlerInventario(item) {
-    return item?.inventoryAction ? inventoryActionHandlers[item.inventoryAction.type] : null;
+    return item?.inventoryAction ? inventoryActionHandlers.obter(item.inventoryAction.type) : null;
   }
 
   /** Acao inventario disponivel.
@@ -359,7 +359,7 @@ function criarSistemaBolsa(context) {
     return botao;
   }
 
-  const inventoryActionHandlers = {
+  const inventoryActionHandlers = criarRegistroMecanicas({
     activate_phone: {
       validar: item => state.aparelho.activePhone === null
         && item.inventoryAction.device === "lulith"
@@ -372,7 +372,7 @@ function criarSistemaBolsa(context) {
         el.scene.interactionStatus.textContent = "";
       }
     }
-  };
+  });
 
   return Object.freeze({
     adicionarItem,
