@@ -10,11 +10,34 @@ module.exports = function carregarScripts(raiz) {
   // O bootstrap cria a instância (const game) no mesmo script. O harness expõe
   // a API da instância nos globals para os testes continuarem usando o formato antigo,
   // achatando el por componente (scene/bag/dialogue/phone/gallery).
-  return `${scripts}
+  return `
+globalThis.window ??= {};
+window.setTimeout = callback => Promise.resolve().then(callback);
+window.Image = class {
+  set src(value) { Promise.resolve().then(() => this.onload?.()); }
+  decode() { return Promise.resolve(); }
+};
+document.getElementById('scene-transition-overlay').style = {};
+${scripts}
 globalThis.state = game.state;
 globalThis.el = Object.assign({}, ...Object.values(game.el));
 globalThis.saveRepository = game.saveRepository;
 globalThis.eventosInteracao = game.eventosInteracao;
 for (const [nome, fn] of Object.entries(game.services)) globalThis[nome] = fn;
 `;
+};
+
+// Executa trechos síncronos no mesmo escopo global e aguarda somente navegações.
+module.exports.executar = function(contexto, codigo) {
+  const vm = require("node:vm");
+  if (!/\birPara(?:Local)?\(/.test(codigo)) return vm.runInContext(codigo, contexto);
+  return (async () => {
+    let offset = 0;
+    for (const match of codigo.matchAll(/\birPara(?:Local)?\([^)]*\);?/g)) {
+      vm.runInContext(codigo.slice(offset, match.index), contexto);
+      await vm.runInContext(match[0], contexto);
+      offset = match.index + match[0].length;
+    }
+    return vm.runInContext(codigo.slice(offset), contexto);
+  })();
 };

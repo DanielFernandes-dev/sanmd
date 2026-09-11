@@ -11,7 +11,7 @@ function criarSistemaInterface(context) {
   function definirBotoes() {
     services.renderizarAparelho();
     if (state.modo !== "livre") services.fecharMenuIrPara();
-    const livre = state.modo === "livre";
+    const livre = state.modo === "livre" && !services.isSceneTransitioning();
     el.dialogue.btnConversar.disabled = !livre;
     el.scene.btnIrPara.disabled = !livre || !services.temDestinos();
     el.phone.btnCelular.disabled = !livre;

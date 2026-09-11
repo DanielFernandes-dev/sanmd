@@ -19,6 +19,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     saveRepository, eventosInteracao: Object.create(null) };
   const systems = {
     persistence: criarSistemaPersistencia(context),
+    transition: criarSceneTransitionController(context),
     scene: criarSistemaCenas(context),
     dialogue: criarSistemaDialogos(context),
     phone: criarSistemaCelular(context),

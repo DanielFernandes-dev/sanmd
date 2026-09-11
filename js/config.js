@@ -1,4 +1,5 @@
 const CONFIG = Object.freeze({
+  sceneTransition: Object.freeze({ out: 320, hold: 100, in: 400, reduced: 10, assetTimeout: 10000 }),
   velocidadeDigitacao: 65,
   intervaloMensagemDono: 1200,
   cooldownPrimeiraResposta: 60 * 1000,

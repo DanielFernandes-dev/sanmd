@@ -73,8 +73,9 @@ Já estão disponíveis:
 - Layout da Galeria com linhas dimensionadas pelo conteúdo, metadados estruturados e suporte a nomes longos.
    - Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
    - Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
+   - Transição de cena com fade global, bloqueio de input durante o efeito e suporte a `prefers-reduced-motion`.
    - Projeto Android e comando de build de APK com Capacitor.
-   - 83 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos, layout da Galeria, teclado virtual e entrada de texto.
+   - 85 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos, layout da Galeria, teclado virtual, entrada de texto e transições de cena.
 
 > A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
@@ -175,7 +176,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 │   ├── save-system.js # Sistema de saves manuais e autosave
 │   ├── interface.js # Fábrica da interface principal (botões, menus)
 │   ├── keyboard.js  # Teclado virtual próprio do jogo
-│   └── text-entry.js # Controlador compartilhado de entrada de texto
+│   ├── text-entry.js # Controlador compartilhado de entrada de texto
+│   └── scene-transition.js # Fade global entre cenas e bloqueio de input
 ├── assets/
 │   ├── cenario/     # Fundos e README do contrato de cenários
 │   ├── interfaces/  # Ícones e README do contrato de interface
@@ -192,6 +194,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 │   ├── PHONE_THEMES.md # Contrato de temas visuais do celular
 │   ├── POINT_AND_CLICK.md # Guia de point-and-click e Bolsa
 │   ├── SAVE_SYSTEM.md # Contrato de persistência e saves
+│   ├── SCENE_TRANSITIONS.md # Contrato das transições globais de cena
 │   └── TEXT_INPUT.md # Documentação do teclado virtual e entrada de texto
 └── README.md        # Visão geral e instruções de execução
 ```
@@ -208,6 +211,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
    | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
    | [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
    | [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
+   | [`docs/SCENE_TRANSITIONS.md`](docs/SCENE_TRANSITIONS.md) | Contrato das transições globais de cena |
    | [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
    | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
    | [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
@@ -298,6 +302,7 @@ O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior 
    - `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
    - `test/save-system.test.js` — persistência, validação, load e autosave.
    - `test/text-input.test.js` — teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
+   - `test/scene-transition.test.js` — fases da transição, concorrência, bloqueio de input, estados e reduced motion.
 
 ## Critérios de validação
 

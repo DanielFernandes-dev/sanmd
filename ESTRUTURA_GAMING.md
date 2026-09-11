@@ -271,6 +271,7 @@ Depois da última resposta do contato:
 │   ├── PHONE_THEMES.md        # Contrato de temas visuais do celular
 │   ├── POINT_AND_CLICK.md     # Guia de point-and-click e Bolsa
 │   ├── SAVE_SYSTEM.md         # Contrato de persistência e saves
+│   ├── SCENE_TRANSITIONS.md   # Contrato das transições globais de cena
 │   └── TEXT_INPUT.md          # Documentação do teclado virtual e entrada de texto
 └── ESTRUTURA_GAMING.md        # Esta nota central
 ```
@@ -875,7 +876,7 @@ Abrir `http://localhost:8000`.
 
 ### Qualidade
 
-   - A suíte automatizada possui 83 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ, ícones principais, teclado virtual e entrada de texto; validações visuais e sistemas futuros ainda não possuem cobertura completa.
+   - A suíte automatizada possui 85 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ, ícones principais, teclado virtual, entrada de texto e transições de cena; validações visuais e sistemas futuros ainda não possuem cobertura completa.
    - Não existe CI.
    - Responsividade e acessibilidade dependem de validação manual.
    - O APK foi gerado e validado ponta a ponta com ADB.
@@ -1990,6 +1991,7 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
    - [js/text-entry.js](js/text-entry.js) — controlador de entrada de texto.
    - [js/save-system.js](js/save-system.js) — repositório de persistência.
    - [docs/SAVE_SYSTEM.md](docs/SAVE_SYSTEM.md) — contrato resumido de Save/Load.
+   - [docs/SCENE_TRANSITIONS.md](docs/SCENE_TRANSITIONS.md) — contrato das transições globais de cena e do fade.
    - [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md) — contrato do teclado virtual e entrada de texto.
    - [assets/cenario/README.md](assets/cenario/README.md) — contrato dos fundos de cena.
    - [assets/interfaces/README.md](assets/interfaces/README.md) — contrato dos ícones e assets de interface.

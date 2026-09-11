@@ -174,6 +174,7 @@ function criarSistemaPersistencia(context) {
    * @param {unknown} candidato
    */
   function restaurarEstadoJogo(candidato) {
+    if (services.isSceneTransitioning()) return false;
     const snapshot = validarSnapshot(candidato);
     if (!snapshot) throw new Error("Este ponto de salvamento está corrompido ou é incompatível.");
     cancelarTemporizadores();

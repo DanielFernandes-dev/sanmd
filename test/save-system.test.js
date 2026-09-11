@@ -124,7 +124,7 @@ function criarAmbiente(storage = criarStorage()) {
 
   return {
     elementos,
-    executar: (codigo) => vm.runInContext(codigo, contexto),
+    executar: (codigo) => require("./load-game.cjs").executar(contexto, codigo),
     ler: (expressao) => vm.runInContext(expressao, contexto),
     storage,
     timeouts,
@@ -140,7 +140,7 @@ function criarFoto(ambiente, nome) {
   return expressao;
 }
 
-test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sessões", () => {
+test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sessões", async () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Antes do reset");
@@ -171,7 +171,7 @@ test("reset remoto limpa mensagens e arquivos, preservando a galeria entre sess�
   assert.equal(novaSessao.ler("JSON.stringify(state.galeria.saves)"), fotosAntes);
 });
 
-test("composição resolve cada expressão fotográfica e mantém o cenário em imagem independente", () => {
+test("composição resolve cada expressão fotográfica e mantém o cenário em imagem independente", async () => {
   const ambiente = criarAmbiente();
   for (let numero = 1; numero <= 10; numero += 1) {
     const id = `mj__photo__${String(numero).padStart(2, "0")}`;
@@ -184,18 +184,18 @@ test("composição resolve cada expressão fotográfica e mantém o cenário em 
   }
 });
 
-test("expressão fotográfica ausente ou desconhecida usa a pose neutra como fallback", () => {
+test("expressão fotográfica ausente ou desconhecida usa a pose neutra como fallback", async () => {
   const ambiente = criarAmbiente();
   for (const id of [undefined, null, "", "mj__photo__99", "__proto__", "constructor", "toString"]) {
-    assert.equal(ambiente.executar(`obterSpriteFotografico(${JSON.stringify(id)})`), "assets/sprites/MJ.png");
+    assert.equal(await ambiente.executar(`obterSpriteFotografico(${JSON.stringify(id)})`), "assets/sprites/MJ.png");
   }
 });
 
-test("foto manual persiste snapshot, cenário, data, nome e expressão entre reinicializações", () => {
+test("foto manual persiste snapshot, cenário, data, nome e expressão entre reinicializações", async () => {
   const storage = criarStorage();
   const primeiraSessao = criarAmbiente(storage);
 
-  primeiraSessao.executar(`
+  await primeiraSessao.executar(`
     irPara("beco_interior");
     state.arquivos.vistos.add("rota");
     state.dialogo.faseMonologo = "aposPrimeiroEnvio";
@@ -221,7 +221,7 @@ test("foto manual persiste snapshot, cenário, data, nome e expressão entre rei
   assert.equal(segundaSessao.ler("el.galleryGrid.children.length"), 9);
 });
 
-test("cancelar não cria save e a expressão seguinte evita repetição imediata", () => {
+test("cancelar não cria save e a expressão seguinte evita repetição imediata", async () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria(); tirarFoto(); mostrarPreviewFoto(); cancelarFoto();");
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 0);
@@ -234,7 +234,7 @@ test("cancelar não cria save e a expressão seguinte evita repetição imediata
   assert.equal(ambiente.ler("DATA.personagens.mj.fotografia.expressoes.includes(state.galeria.saves[1].photoExpression)"), true);
 });
 
-test("galeria limita nove slots, não sobrescreve e libera somente o save excluído", () => {
+test("galeria limita nove slots, não sobrescreve e libera somente o save excluído", async () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   for (let indice = 1; indice <= 9; indice++) criarFoto(ambiente, `Foto ${indice}`);
@@ -254,9 +254,9 @@ test("galeria limita nove slots, não sobrescreve e libera somente o save exclu�
   assert.equal(ambiente.ler("state.galeria.saves.length"), 9);
 });
 
-test("load restaura o estado narrativo, fecha o celular e não aplica expressão fotográfica", () => {
+test("load restaura o estado narrativo, fecha o celular e não aplica expressão fotográfica", async () => {
   const ambiente = criarAmbiente();
-  ambiente.executar(`
+  await ambiente.executar(`
     irPara("beco_interior");
     state.arquivos.vistos.add("candidatos");
     state.dialogo.faseMonologo = "arquivoCandidatos";
@@ -289,7 +289,7 @@ test("load restaura o estado narrativo, fecha o celular e não aplica expressão
   assert.notEqual(ambiente.ler("state.dialogo.faseMonologo"), expressao);
 });
 
-test("snapshot inválido não altera a sessão nem impede outros saves", () => {
+test("snapshot inválido não altera a sessão nem impede outros saves", async () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Válida");
@@ -307,12 +307,12 @@ test("snapshot inválido não altera a sessão nem impede outros saves", () => {
   assert.equal(ambiente.ler('state.galeria.saves.some((save) => save.name === "Válida")'), true);
 });
 
-test("fim de cutscene substitui autosave, mas load manual não", () => {
+test("fim de cutscene substitui autosave, mas load manual não", async () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirGaleria();");
   criarFoto(ambiente, "Início");
   assert.equal(ambiente.ler("saveRepository.obterAutosave()"), null);
-  ambiente.executar("mostrarTelaInicial(); fecharCelular(); irPara('beco_interior'); iniciarConversa(); encerrarConversa();");
+  await ambiente.executar("mostrarTelaInicial(); fecharCelular(); irPara('beco_interior'); iniciarConversa(); encerrarConversa();");
   const autosaveAntesLoad = ambiente.ler("JSON.stringify(saveRepository.obterAutosave())");
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 1);
   assert.equal(ambiente.ler("saveRepository.obterAutosave().saveState.localizacao.cena"), "beco_interior");
@@ -333,9 +333,9 @@ test("fim de cutscene substitui autosave, mas load manual não", () => {
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 1);
 });
 
-test("point-and-click: snapshots isolados nos três estados e navegação", () => {
+test("point-and-click: snapshots isolados nos três estados e navegação", async () => {
   const a = criarAmbiente();
-  a.executar('irPara("beco_interior"); irPara("beco_fundo"); const fechado = capturarEstadoJogo();');
+  await a.executar('irPara("beco_interior"); irPara("beco_fundo"); const fechado = capturarEstadoJogo();');
   assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
   assert.equal(a.ler('executarHotspot("safe")'), true);
   assert.equal(a.ler('executarHotspot("safe")'), false);
@@ -344,7 +344,7 @@ test("point-and-click: snapshots isolados nos três estados e navegação", () =
   assert.equal(a.ler('executarHotspot("lulith_phone")'), true);
   assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
   assert.equal(a.ler('state.inventory.length'), 1);
-  a.executar('const coletado = capturarEstadoJogo(); irPara("beco_interior"); irPara("beco_fundo");');
+  await a.executar('const coletado = capturarEstadoJogo(); irPara("beco_interior"); irPara("beco_fundo");');
   assert.equal(a.ler('el.objectLayer.children.length'), 1);
   assert.equal(a.ler('el.hotspotLayer.children.length'), 0);
   a.executar('restaurarEstadoJogo(fechado);');
@@ -364,7 +364,7 @@ test("point-and-click: snapshots isolados nos três estados e navegação", () =
   assert.equal(b.ler('el.hotspotLayer.children.length'), 0);
 });
 
-test("point-and-click: saves antigos, dados inválidos e IDs únicos", () => {
+test("point-and-click: saves antigos, dados inválidos e IDs únicos", async () => {
   const a = criarAmbiente();
   a.executar('const antigo = capturarEstadoJogo(); delete antigo.inventory; delete antigo.sceneState; adicionarItem("lulith_phone"); restaurarEstadoJogo(antigo);');
   assert.equal(a.ler('state.inventory.length'), 0);
@@ -374,7 +374,7 @@ test("point-and-click: saves antigos, dados inválidos e IDs únicos", () => {
   assert.equal(a.ler('validarSnapshot({...antigo, inventory: ["lulith_phone", "lulith_phone"]}).inventory.length'), 1);
 });
 
-test("snapshots rejeitam identificadores herdados e formatos inválidos sem alterar o jogo", () => {
+test("snapshots rejeitam identificadores herdados e formatos inválidos sem alterar o jogo", async () => {
   const a = criarAmbiente();
   a.executar("const baseValidacao = capturarEstadoJogo();");
   for (const alteracao of [
@@ -399,7 +399,7 @@ test("snapshots rejeitam identificadores herdados e formatos inválidos sem alte
   assert.equal(a.ler("state.mensagens.etapa"), null);
 });
 
-test("validação preserva o candidato e aceita um reset agendado com prazo válido", () => {
+test("validação preserva o candidato e aceita um reset agendado com prazo válido", async () => {
   const a = criarAmbiente();
   assert.equal(a.ler(`(() => {
     const s = capturarEstadoJogo();
@@ -410,9 +410,9 @@ test("validação preserva o candidato e aceita um reset agendado com prazo vál
   })()`), true);
 });
 
-test("point-and-click: exige item, consumo automático e remoção narrativa", () => {
+test("point-and-click: exige item, consumo automático e remoção narrativa", async () => {
   const a = criarAmbiente();
-  a.executar(`
+  await a.executar(`
     ITEMS.test_key = { id: "test_key", label: "Chave", description: "Teste", asset: "", consumable: true };
     irPara("beco_interior"); irPara("beco_fundo");
     DATA.cena.hotspots.push({id: "test_door", type: "use_item", requiresItem: "test_key",
@@ -423,7 +423,7 @@ test("point-and-click: exige item, consumo automático e remoção narrativa", (
   assert.equal(a.ler('executarHotspot("test_door", "lulith_phone")'), false);
   assert.equal(a.ler('executarHotspot("test_door")'), true);
   assert.equal(a.ler('state.inventory.length'), 0);
-  a.executar('executarHotspot("lulith_phone"); removerItem("lulith_phone"); irPara("beco_interior"); irPara("beco_fundo");');
+  await a.executar('executarHotspot("lulith_phone"); removerItem("lulith_phone"); irPara("beco_interior"); irPara("beco_fundo");');
   assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
   assert.equal(a.ler('state.inventory.length'), 0);
 });

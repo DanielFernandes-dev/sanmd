@@ -9,6 +9,7 @@ function criarSistemaDialogos(context) {
   /** Iniciar conversa.
    */
   function iniciarConversa() {
+    if (services.isSceneTransitioning()) return false;
     if (state.modo !== "livre") return;
 
     const personagemPresente = services.obterCenaAtual().personagensPresentes[0];

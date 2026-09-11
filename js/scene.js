@@ -111,7 +111,7 @@ function criarSistemaCenas(context) {
   /** Abrir menu ir para.
    */
   function abrirMenuIrPara() {
-    if (state.modo !== "livre") return;
+    if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     renderizarMenuIrPara();
     el.scene.irParaMenu.classList.remove("oculto");
     el.scene.irParaMenu.firstElementChild?.focus();
@@ -127,7 +127,7 @@ function criarSistemaCenas(context) {
   /** Alternar menu ir para.
    */
   function alternarMenuIrPara() {
-    if (state.modo !== "livre") return;
+    if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     if (menuIrParaAberto()) {
       fecharMenuIrPara();
       el.scene.btnIrPara.focus();
@@ -162,24 +162,54 @@ function criarSistemaCenas(context) {
    * @param {string} destinoId
    */
   function irPara(destinoId) {
-    if (state.modo !== "livre") return;
+    if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     const cena = obterCenaAtual();
     if (!cena?.destinos.includes(destinoId)) return;
     const destino = obterLocal()?.cenas[destinoId];
     if (!destino) return;
-    aplicarCena(destino);
+    return transitionToScene(obterLocal().id, destino.id);
   }
 
   /** Ir para local.
    * @param {string} localId
    */
   function irParaLocal(localId) {
-    if (state.modo !== "livre") return;
+    if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     if (typeof localId !== "string" || !Object.hasOwn(DATA.locais, localId)) return;
     const local = DATA.locais[localId];
     if (!local) return;
-    state.localizacao.local = local.id;
-    aplicarCena(local.cenas[local.cenaInicial]);
+    return transitionToScene(local.id, local.cenaInicial);
+  }
+
+  /** Carrega um destino já autorizado por navegação/mapa/cutscene. */
+  function transitionToScene(localId, cenaId) {
+    if (services.isSceneTransitioning()) return Promise.resolve(false);
+    const local = Object.hasOwn(DATA.locais, localId) && DATA.locais[localId];
+    const destino = local && Object.hasOwn(local.cenas, cenaId) && local.cenas[cenaId];
+    if (!destino || (state.localizacao.local === localId && state.localizacao.cena === cenaId)) {
+      return Promise.resolve(false);
+    }
+    const anterior = { ...state.localizacao };
+    return services.runSceneTransition(async () => {
+      const objetos = criarObjetos(destino);
+      await services.prepareSceneImages([destino.background, ...objetos.map(o => o.src)]);
+      try {
+        state.localizacao.local = localId;
+        aplicarCena(destino);
+        clearTimeout(state.cena.personagemSaidaTimer);
+        state.cena.personagemSaidaTimer = null;
+        el.scene.personagem.classList.add("oculto");
+        el.scene.personagem.classList.remove("personagem-entrando", "personagem-saindo");
+        el.scene.personagem.src = "";
+        el.scene.personagem.dataset.characterId = "";
+        await services.prepareSceneImages([el.scene.cenario.src,
+          ...Array.from(el.scene.objectLayer.children).map(o => o.src)]);
+      } catch (error) {
+        Object.assign(state.localizacao, anterior);
+        aplicarCena(obterCenaAtual());
+        throw error;
+      }
+    });
   }
 
   /** Estado da cena.
@@ -252,7 +282,7 @@ function criarSistemaCenas(context) {
    * @param {string|null} [selectedItem]
    */
   function executarHotspot(id, selectedItem = null) {
-    if (state.modo !== "livre" || el.bag.bagDialog.open) return false;
+    if (services.isSceneTransitioning() || state.modo !== "livre" || el.bag.bagDialog.open) return false;
     const cena = obterCenaAtual();
     const h = cena.hotspots?.find(hotspot => hotspot.id === id);
     if (!h || !["examine", "interact", "collect", "use_item", "trigger"].includes(h.type)
@@ -292,6 +322,7 @@ function criarSistemaCenas(context) {
     aplicarCena,
     irPara,
     irParaLocal,
+    transitionToScene,
     estadoDaCena,
     condicoesAtendidas,
     posicionarObjeto,

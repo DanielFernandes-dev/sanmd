@@ -11,6 +11,7 @@ function criarElementos(document) {
   };
   return {
     scene: {
+      transitionOverlay: buscar("scene-transition-overlay"),
       objectLayer: buscar("object-layer"),
       hotspotLayer: buscar("hotspot-layer"),
       interactionStatus: buscar("interaction-status"),

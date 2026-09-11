@@ -42,6 +42,7 @@ function criarSistemaCelular(context) {
   /** Abrir celular.
    */
   function abrirCelular() {
+    if (services.isSceneTransitioning()) return false;
     if (state.modo !== "livre" || state.aparelho.activePhone === null || el.bag.bagDialog.open) return;
     renderizarAparelho();
 

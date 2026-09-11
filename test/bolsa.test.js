@@ -148,7 +148,7 @@ function criarAmbiente(storage = criarStorage()) {
 
   return {
     elementos,
-    executar: (codigo) => vm.runInContext(codigo, contexto),
+    executar: (codigo) => require("./load-game.cjs").executar(contexto, codigo),
     ler: (expressao) => vm.runInContext(expressao, contexto),
     storage,
     timeouts,
@@ -156,13 +156,13 @@ function criarAmbiente(storage = criarStorage()) {
   };
 }
 
-test("inicializar eventos novamente não duplica os listeners", () => {
+test("inicializar eventos novamente não duplica os listeners", async () => {
   const a = criarAmbiente();
   a.executar('el.btnBolsa.addEventListener = () => { throw new Error("Listener duplicado"); }; inicializarEventos();');
   assert.equal(a.ler("state.modo"), "livre");
 });
 
-test("Bolsa vazia: exibe estado vazio elegante e oculta a barra de busca", () => {
+test("Bolsa vazia: exibe estado vazio elegante e oculta a barra de busca", async () => {
   const a = criarAmbiente();
   assert.equal(a.ler("state.inventory.length"), 0);
   assert.equal(a.ler("el.bagEmpty.hidden"), false);
@@ -172,7 +172,7 @@ test("Bolsa vazia: exibe estado vazio elegante e oculta a barra de busca", () =>
   assert.equal(a.ler("state.bolsa.itemSelecionadoId"), null);
 });
 
-test("TESTE — 1 ITEM: celular no primeiro slot, 8 slots vazios, detalhes exibidos e sem página 2", () => {
+test("TESTE — 1 ITEM: celular no primeiro slot, 8 slots vazios, detalhes exibidos e sem página 2", async () => {
   const a = criarAmbiente();
   a.executar('adicionarItem("lulith_phone");');
   assert.equal(a.ler("state.inventory.length"), 1);
@@ -208,7 +208,7 @@ test("TESTE — 1 ITEM: celular no primeiro slot, 8 slots vazios, detalhes exibi
   assert.equal(a.ler("el.bagPagination.hidden"), true);
 });
 
-test("TESTE — 9 ITENS: grade 3x3 completa, exatamente 1 página, sem página 2", () => {
+test("TESTE — 9 ITENS: grade 3x3 completa, exatamente 1 página, sem página 2", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 8; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc ${i}", purpose: "Fun ${i}", asset: "" };`);
@@ -225,7 +225,7 @@ test("TESTE — 9 ITENS: grade 3x3 completa, exatamente 1 página, sem página 2
   assert.equal(a.ler("el.bagPagination.hidden"), true);
 });
 
-test("TESTE — 10 ITENS: 2 páginas automáticas, navegação 1 <-> 2 funcional", () => {
+test("TESTE — 10 ITENS: 2 páginas automáticas, navegação 1 <-> 2 funcional", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 9; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc ${i}", purpose: "Fun ${i}", asset: "" };`);
@@ -260,7 +260,7 @@ test("TESTE — 10 ITENS: 2 páginas automáticas, navegação 1 <-> 2 funcional
   assert.equal(a.ler("state.bolsa.itemSelecionadoId"), "item_1");
 });
 
-test("TESTE — 18 ITENS: duas páginas completas 3x3", () => {
+test("TESTE — 18 ITENS: duas páginas completas 3x3", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 18; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc ${i}", purpose: "Fun ${i}", asset: "" };`);
@@ -278,7 +278,7 @@ test("TESTE — 18 ITENS: duas páginas completas 3x3", () => {
   assert.equal(a.ler("el.bagGrid.children[8].dataset.itemId"), "item_18");
 });
 
-test("TESTE — 19 ITENS: página 3 criada automaticamente", () => {
+test("TESTE — 19 ITENS: página 3 criada automaticamente", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 19; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc ${i}", purpose: "Fun ${i}", asset: "" };`);
@@ -294,7 +294,7 @@ test("TESTE — 19 ITENS: página 3 criada automaticamente", () => {
   }
 });
 
-test("TESTE — INVENTÁRIO GRANDE: 30 itens, paginação compacta sem limite", () => {
+test("TESTE — INVENTÁRIO GRANDE: 30 itens, paginação compacta sem limite", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 30; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc ${i}", purpose: "Fun ${i}", asset: "" };`);
@@ -320,7 +320,7 @@ test("TESTE — INVENTÁRIO GRANDE: 30 itens, paginação compacta sem limite", 
   assert.equal(a.ler("el.bagPagination.children.some(c => c.textContent === '…')"), true);
 });
 
-test("TESTE — PESQUISA GLOBAL: item na página 4 é encontrado e começa na página 1", () => {
+test("TESTE — PESQUISA GLOBAL: item na página 4 é encontrado e começa na página 1", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 28; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Documento ${i}", shortLabel: "Doc ${i}", description: "Registro", purpose: "Arquivo", asset: "" };`);
@@ -338,7 +338,7 @@ test("TESTE — PESQUISA GLOBAL: item na página 4 é encontrado e começa na p�
   assert.equal(a.ler("el.bagPagination.hidden"), true);
 });
 
-test("TESTE — PESQUISA POR FUNÇÃO: pesquisa termo no purpose do item", () => {
+test("TESTE — PESQUISA POR FUNÇÃO: pesquisa termo no purpose do item", async () => {
   const a = criarAmbiente();
   a.executar(`
     ITEMS.storage_key = {
@@ -362,7 +362,7 @@ test("TESTE — PESQUISA POR FUNÇÃO: pesquisa termo no purpose do item", () =>
   assert.equal(a.ler("el.bagGrid.children[0].dataset.itemId"), "storage_key");
 });
 
-test("TESTE — PESQUISA APENAS NA BOLSA: não revela itens de ITEMS que não foram coletados", () => {
+test("TESTE — PESQUISA APENAS NA BOLSA: não revela itens de ITEMS que não foram coletados", async () => {
   const a = criarAmbiente();
   a.executar(`
     ITEMS.chave_secreta = {
@@ -382,7 +382,7 @@ test("TESTE — PESQUISA APENAS NA BOLSA: não revela itens de ITEMS que não fo
   assert.equal(a.ler("el.bagBody.hidden"), true);
 });
 
-test("TESTE — PESQUISA SEM RESULTADOS: exibe 'Nenhum item encontrado' sem dizer que a bolsa está vazia", () => {
+test("TESTE — PESQUISA SEM RESULTADOS: exibe 'Nenhum item encontrado' sem dizer que a bolsa está vazia", async () => {
   const a = criarAmbiente();
   a.executar('adicionarItem("lulith_phone");');
   a.executar('el.bagSearch.value = "xyz_inexistente"; el.bagSearch.dispatchEvent({ type: "input" });');
@@ -391,7 +391,7 @@ test("TESTE — PESQUISA SEM RESULTADOS: exibe 'Nenhum item encontrado' sem dize
   assert.equal(a.ler("el.bagBody.hidden"), true);
 });
 
-test("TESTE — LIMPAR PESQUISA: botão [X] restaura todos os itens e reseta página", () => {
+test("TESTE — LIMPAR PESQUISA: botão [X] restaura todos os itens e reseta página", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 10; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc", purpose: "Fun", asset: "" };`);
@@ -409,7 +409,7 @@ test("TESTE — LIMPAR PESQUISA: botão [X] restaura todos os itens e reseta pá
   assert.equal(a.ler("el.bagSearchClear.hidden"), true);
 });
 
-test("TESTE — ITEM CONSUMIDO: removerItem recalcula páginas e ajusta seleção", () => {
+test("TESTE — ITEM CONSUMIDO: removerItem recalcula páginas e ajusta seleção", async () => {
   const a = criarAmbiente();
   for (let i = 1; i <= 10; i++) {
     a.executar(`ITEMS["item_${i}"] = { id: "item_${i}", label: "Item ${i}", shortLabel: "I${i}", description: "Desc", purpose: "Fun", asset: "" };`);
@@ -430,7 +430,7 @@ test("TESTE — ITEM CONSUMIDO: removerItem recalcula páginas e ajusta seleçã
   assert.equal(a.ler("state.bolsa.itemSelecionadoId"), "item_1");
 });
 
-test("TESTE — SAVE/LOAD: persiste apenas IDs e restaura tudo ao carregar", () => {
+test("TESTE — SAVE/LOAD: persiste apenas IDs e restaura tudo ao carregar", async () => {
   const a = criarAmbiente();
   a.executar(`
     ITEMS.doc_teste = {
@@ -469,22 +469,22 @@ test("TESTE — SAVE/LOAD: persiste apenas IDs e restaura tudo ao carregar", () 
   assert.equal(b.ler("el.bagDetails.children[0].textContent"), "Celular de Lulith");
 });
 
-function coletarAparelho(a) {
-  a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe"); executarHotspot("lulith_phone");');
+async function coletarAparelho(a) {
+  await a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe"); executarHotspot("lulith_phone");');
 }
 
 function concluirReacao(a) {
   a.executar('while (state.modo === "dialogo") avancarDialogo();');
 }
 
-test("aparelho: coleta e seleção não desbloqueiam; USAR conclui uma única transição e autosave", () => {
+test("aparelho: coleta e seleção não desbloqueiam; USAR conclui uma única transição e autosave", async () => {
   const a = criarAmbiente();
   assert.equal(a.ler('state.aparelho.originalPhoneStatus'), 'broken');
   assert.equal(a.ler('el.btnCelular.hidden'), true);
   a.executar('abrirCelular();');
   assert.equal(a.ler('state.modo'), 'livre');
   assert.equal(a.ler('executarAcaoInventario("lulith_phone")'), false);
-  coletarAparelho(a);
+  await coletarAparelho(a);
   const before = a.ler('JSON.stringify(saveRepository.obterAutosave())');
   a.executar('el.btnBolsa.click(); el.bagGrid.firstElementChild.click();');
   assert.equal(a.ler('el.btnCelular.hidden'), true);
@@ -525,9 +525,9 @@ test("aparelho: coleta e seleção não desbloqueiam; USAR conclui uma única tr
   assert.equal(a.ler('state.modo'), 'celular');
 });
 
-test("aparelho: snapshots A/B/C restauram cofre, Bolsa e dispositivo entre sessões sem vazamento", () => {
+test("aparelho: snapshots A/B/C restauram cofre, Bolsa e dispositivo entre sessões sem vazamento", async () => {
   const a = criarAmbiente();
-  a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe");');
+  await a.executar('irPara("beco_interior"); irPara("beco_fundo"); executarHotspot("safe");');
   const snapshots = [a.ler('JSON.stringify(capturarEstadoJogo())')];
   a.executar('executarHotspot("lulith_phone");');
   snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
@@ -550,10 +550,10 @@ test("aparelho: snapshots A/B/C restauram cofre, Bolsa e dispositivo entre sess�
   }
 });
 
-test("aparelho: load durante reação cancela ativação; snapshots inválidos não alteram a sessão", () => {
+test("aparelho: load durante reação cancela ativação; snapshots inválidos não alteram a sessão", async () => {
   const a = criarAmbiente();
   const initial = a.ler('JSON.stringify(capturarEstadoJogo())');
-  coletarAparelho(a);
+  await coletarAparelho(a);
   a.executar('el.btnBolsa.click(); executarAcaoInventario("lulith_phone");');
   a.executar(`restaurarEstadoJogo(${initial}); encerrarConversa();`);
   assert.equal(a.ler('state.inventoryActionPending'), null);
@@ -565,9 +565,9 @@ test("aparelho: load durante reação cancela ativação; snapshots inválidos n
   }
 });
 
-test("aparelho: migração v1 distingue exploração de progresso no celular e mantém tema independente", () => {
+test("aparelho: migração v1 distingue exploração de progresso no celular e mantém tema independente", async () => {
   const a = criarAmbiente();
-  coletarAparelho(a);
+  await coletarAparelho(a);
   a.executar('var old = capturarEstadoJogo(); delete old.aparelho; restaurarEstadoJogo(old);');
   assert.equal(a.ler('state.aparelho.activePhone'), null);
   assert.equal(a.ler('state.inventory[0]'), 'lulith_phone');
@@ -580,13 +580,13 @@ test("aparelho: migração v1 distingue exploração de progresso no celular e m
   assert.equal(a.ler('state.aparelho.activePhone'), 'lulith');
 });
 
-test("ação direta: item sem ação não ganha USAR; ativação recalcula página, seleção e pesquisa", () => {
+test("ação direta: item sem ação não ganha USAR; ativação recalcula página, seleção e pesquisa", async () => {
   const a = criarAmbiente();
   a.executar(`for (let i = 0; i < 9; i++) {
     ITEMS['note'+i] = {id: 'note'+i, label: 'Bilhete '+i}; adicionarItem('note'+i);
   }`);
   assert.equal(a.ler('el.bagDetails.children.length'), 4);
-  coletarAparelho(a);
+  await coletarAparelho(a);
   a.executar('el.btnBolsa.click(); state.bolsa.pagina = 2; renderizarBolsa(); executarAcaoInventario("lulith_phone");');
   concluirReacao(a);
   assert.equal(a.ler('state.bolsa.pagina'), 1);

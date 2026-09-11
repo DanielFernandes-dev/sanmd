@@ -92,7 +92,7 @@ function controlarAmbiente() {
   const ambiente = criarAmbiente();
   return {
     ...ambiente,
-    executar: (codigo) => vm.runInContext(codigo, ambiente.contexto),
+    executar: (codigo) => require("./load-game.cjs").executar(ambiente.contexto, codigo),
     ler: (expressao) => vm.runInContext(expressao, ambiente.contexto)
   };
 }
@@ -101,7 +101,7 @@ function rotulosMenu(ler) {
   return JSON.parse(ler('JSON.stringify(Array.from(el.irParaMenu.children).map((botao) => botao.textContent))'));
 }
 
-test("início: local beco na cena beco_entrada", () => {
+test("início: local beco na cena beco_entrada", async () => {
   const { ler } = controlarAmbiente();
 
   assert.equal(ler("state.localizacao.local"), "beco");
@@ -111,60 +111,60 @@ test("início: local beco na cena beco_entrada", () => {
   assert.equal(ler("el.cenario.src"), "assets/cenario/beco/entrada.png");
 });
 
-test("IR PARA navega linearmente entrada <-> interior <-> fundo", () => {
+test("IR PARA navega linearmente entrada <-> interior <-> fundo", async () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar('irPara("beco_interior");');
+  await executar('irPara("beco_interior");');
   assert.equal(ler("state.localizacao.cena"), "beco_interior");
   assert.equal(ler("DATA.cena.id"), "beco_interior");
   assert.equal(ler("el.cenario.src"), "assets/cenario/beco/corredor.png");
   assert.equal(ler("JSON.stringify(DATA.cena.destinos)"), '["beco_entrada","beco_fundo"]');
 
-  executar('irPara("beco_entrada");');
+  await executar('irPara("beco_entrada");');
   assert.equal(ler("state.localizacao.cena"), "beco_entrada");
   assert.equal(ler("el.cenario.src"), "assets/cenario/beco/entrada.png");
 
-  executar('irPara("beco_interior"); irPara("beco_fundo");');
+  await executar('irPara("beco_interior"); irPara("beco_fundo");');
   assert.equal(ler("state.localizacao.cena"), "beco_fundo");
   assert.equal(ler("DATA.cena.id"), "beco_fundo");
   assert.equal(ler("el.cenario.src"), "assets/cenario/beco/background.png");
   assert.equal(ler("JSON.stringify(DATA.cena.destinos)"), '["beco_interior"]');
 
-  executar('irPara("beco_interior"); irPara("beco_entrada"); irPara("beco_interior");');
+  await executar('irPara("beco_interior"); irPara("beco_entrada"); irPara("beco_interior");');
   assert.equal(ler("state.localizacao.cena"), "beco_interior");
   assert.equal(ler("DATA.cena.id"), "beco_interior");
 });
 
-test("IR PARA não permite salto direto entre entrada e fundo", () => {
+test("IR PARA não permite salto direto entre entrada e fundo", async () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar('irPara("beco_fundo");');
+  await executar('irPara("beco_fundo");');
   assert.equal(ler("state.localizacao.cena"), "beco_entrada");
 
-  executar('irPara("beco_interior"); irPara("beco_fundo");');
+  await executar('irPara("beco_interior"); irPara("beco_fundo");');
   assert.equal(ler("state.localizacao.cena"), "beco_fundo");
-  executar('irPara("beco_entrada");');
+  await executar('irPara("beco_entrada");');
   assert.equal(ler("state.localizacao.cena"), "beco_fundo");
 });
 
-test("menu exibe somente os destinos disponíveis da cena atual", () => {
+test("menu exibe somente os destinos disponíveis da cena atual", async () => {
   const { executar, ler } = controlarAmbiente();
 
   executar("abrirMenuIrPara();");
   assert.deepEqual(rotulosMenu(ler), ["Interior do beco"]);
   assert.equal(ler('el.irParaMenu.classList.contains("oculto")'), false);
 
-  executar("fecharMenuIrPara(); irPara('beco_interior'); abrirMenuIrPara();");
+  await executar("fecharMenuIrPara(); irPara('beco_interior'); abrirMenuIrPara();");
   assert.deepEqual(rotulosMenu(ler), ["Entrada do beco", "Fundo do beco"]);
 
-  executar("fecharMenuIrPara(); irPara('beco_fundo'); abrirMenuIrPara();");
+  await executar("fecharMenuIrPara(); irPara('beco_fundo'); abrirMenuIrPara();");
   assert.deepEqual(rotulosMenu(ler), ["Interior do beco"]);
 });
 
-test("navegação não altera estado do celular, das mensagens nem do progresso", () => {
+test("navegação não altera estado do celular, das mensagens nem do progresso", async () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar(`
+  await executar(`
     state.mensagens.etapa = "antes-reset";
     state.arquivos.vistos.add("candidatos");
     state.celular.resetStatus = RESET_STATUS.AGENDADO;
@@ -179,11 +179,11 @@ test("navegação não altera estado do celular, das mensagens nem do progresso"
   assert.equal(ler("state.mensagens.historico.length"), 0);
 });
 
-test("irParaLocal (mapa) redefine a cena para a entrada do local", () => {
+test("irParaLocal (mapa) redefine a cena para a entrada do local", async () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar('irPara("beco_interior"); irPara("beco_fundo");');
-  executar('irParaLocal("beco");');
+  await executar('irPara("beco_interior"); irPara("beco_fundo");');
+  await executar('irParaLocal("beco");');
 
   assert.equal(ler("state.localizacao.local"), "beco");
   assert.equal(ler("state.localizacao.cena"), "beco_entrada");
@@ -191,7 +191,7 @@ test("irParaLocal (mapa) redefine a cena para a entrada do local", () => {
   assert.equal(ler("el.cenario.src"), "assets/cenario/beco/entrada.png");
 });
 
-test("locais separam local, cena, label, background e destinos", () => {
+test("locais separam local, cena, label, background e destinos", async () => {
   const { ler } = controlarAmbiente();
 
   assert.equal(ler("DATA.locais.beco.id"), "beco");
@@ -211,25 +211,25 @@ test("locais separam local, cena, label, background e destinos", () => {
   assert.equal(valido, true);
 });
 
-test("Conversar continua funcionando em cada cena do beco", () => {
+test("Conversar continua funcionando em cada cena do beco", async () => {
   const { executar, ler } = controlarAmbiente();
 
   executar("iniciarConversa();");
   assert.equal(ler('state.dialogo.falas[0].texto.includes("cofre")'), true);
 
-  executar('encerrarConversa(); irPara("beco_interior"); iniciarConversa();');
+  await executar('encerrarConversa(); irPara("beco_interior"); iniciarConversa();');
   assert.equal(ler('state.dialogo.falas[0].autor'), "MJ");
   assert.equal(ler("state.dialogo.falas.length"), 2);
 
-  executar('encerrarConversa(); irPara("beco_fundo"); iniciarConversa();');
+  await executar('encerrarConversa(); irPara("beco_fundo"); iniciarConversa();');
   assert.equal(ler('state.dialogo.falas[0].texto.includes("fundo do beco")'), true);
   assert.equal(ler('state.dialogo.falas[0].texto.includes("cofre")'), true);
 });
 
-test("Celular continua funcionando depois de navegar entre cenas", () => {
+test("Celular continua funcionando depois de navegar entre cenas", async () => {
   const { executar, ler } = controlarAmbiente();
 
-  executar('irPara("beco_interior"); irPara("beco_fundo");');
+  await executar('irPara("beco_interior"); irPara("beco_fundo");');
   executar("prepararCelularTeste(); abrirCelular();");
   assert.equal(ler("state.modo"), "celular");
   assert.equal(ler("state.celular.tela"), "inicio");
@@ -239,7 +239,7 @@ test("Celular continua funcionando depois de navegar entre cenas", () => {
   assert.equal(ler("state.localizacao.cena"), "beco_fundo");
 });
 
-test("botão IR PARA segue o padrão de habilitação dos outros controles", () => {
+test("botão IR PARA segue o padrão de habilitação dos outros controles", async () => {
   const { executar, ler } = controlarAmbiente();
 
   assert.equal(ler("el.btnIrPara.disabled"), false);
