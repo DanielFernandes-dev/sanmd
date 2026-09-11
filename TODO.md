@@ -632,13 +632,27 @@ Validação do Ato I completo ainda pendente (o nome da fotografia não equivale
 - [x] Cobrir os dez IDs e caminhos, arquivos distintos, dimensões e transparência dos PNGs em `test/photo-assets.test.js`.
 - [x] Cobrir resolução de sprite, cenário independente e fallback para IDs ausentes ou inválidos.
 - [x] Executar `npm test` após a integração fotográfica, com os seis arquivos de teste aprovados.
+   - [x] Cobrir teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot em `test/text-input.test.js`.
+   - [x] Executar `npm test` após a integração do teclado virtual, com os oito arquivos de teste aprovados (total de 83 testes).
 - [x] Executar `npm run copy:web` e verificar sprites, scripts, CSS e README copiados para `www/`.
-- [ ] Corrigir o pacote do teste instrumentado Android.
-- [ ] Executar `npm run sync` em ambiente Android configurado.
-- [ ] Gerar o APK de debug.
-- [ ] Instalar e jogar o Ato I completo em um aparelho Android.
-- [ ] Tratar o botão físico Voltar no Android.
-- [ ] Validar retorno após o aplicativo ir para segundo plano.
+   - [x] Gerar o APK de debug.
+   - [x] Instalar o APK via ADB no dispositivo conectado.
+   - [x] Validar que o APK de debug é idêntico ao gerado localmente (checksum MD5).
+   - [ ] Corrigir o pacote do teste instrumentado Android.
+   - [ ] Executar `npm run sync` em ambiente Android configurado.
+   - [ ] Tratar o botão físico Voltar no Android.
+   - [ ] Validar retorno após o aplicativo ir para segundo plano.
+
+   ### Teclado virtual e entrada de texto
+
+   - [x] Implementar teclado virtual próprio (`js/keyboard.js`) com layouts QWERTY e Números.
+   - [x] Implementar controlador compartilhado de entrada de texto (`js/text-entry.js`).
+   - [x] Substituir campos `input` nativos por botões em `#gallery-photo-name` e `#messages-composer-field`.
+   - [x] Desviar teclado físico (digitar, Backspace, setas, Enter, Esc) enquanto a edição está aberta.
+   - [x] Implementar painel de acentos (ÁÇ) com á, à, â, ã, é, ê, í, ó, ô, õ, ú, ç.
+   - [x] Implementar shift temporário e bloqueio de maxLength.
+   - [x] Garantir que o estado de edição não é persistido (restaurar um save fecha a edição).
+   - [x] Cobrir por testes Galeria, Mensagens, limites, shift, layouts, acentos, teclado físico e snapshot em `test/text-input.test.js`.
 
 ## Fase 12 — Critérios de conclusão do Ato I
 

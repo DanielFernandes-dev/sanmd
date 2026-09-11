@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-06
+updated: 2026-09-11
 ---
 
 # Estrutura Gaming
@@ -29,8 +29,9 @@ updated: 2026-09-06
 - [[ESTRUTURA_GAMING#Visual Novel E Diálogos|Visual Novel E Diálogos]]
 - [[ESTRUTURA_GAMING#Controles E Botões|Controles E Botões]]
 - [[ESTRUTURA_GAMING#Interface Do Celular|Interface Do Celular]]
-- [[ESTRUTURA_GAMING#Aplicativo Mensagens|Aplicativo Mensagens]]
-- [[ESTRUTURA_GAMING#Sistema de Save e Load|Sistema de Save e Load]]
+   - [[ESTRUTURA_GAMING#Aplicativo Mensagens|Aplicativo Mensagens]]
+   - [[ESTRUTURA_GAMING#Entrada de texto e teclado virtual|Entrada de texto e teclado virtual]]
+   - [[ESTRUTURA_GAMING#Sistema de Save e Load|Sistema de Save e Load]]
 - [[ESTRUTURA_GAMING#Expressões fotográficas da MJ|Expressões fotográficas da MJ]]
 - [[ESTRUTURA_GAMING#Timers E Ritmo|Timers E Ritmo]]
 - [[ESTRUTURA_GAMING#Interface E Acessibilidade|Interface E Acessibilidade]]
@@ -137,7 +138,7 @@ Este roadmap descreve a sequência que já funciona durante uma partida.
 
 1. `index.html` monta a cena, os três controles sobrepostos e o celular oculto.
 2. `js/data.js` disponibiliza locais, cenas, destinos, monólogos e árvore de mensagens.
-3. `js/save-system.js` disponibiliza o repositório de persistência; `js/game.js` cria o estado inicial em modo `livre`.
+3. `js/save-system.js` disponibiliza o repositório de persistência; `js/bootstrap.js` compõe os serviços e cria o estado inicial em modo `livre`.
 4. **Conversar**, **Ir para** e **Celular** ficam disponíveis conforme o estado e os destinos da cena.
 
 ### Etapa 2 — Cena Livre
@@ -237,9 +238,23 @@ Depois da última resposta do contato:
 ├── index.html                 # Estrutura da cena e do celular
 ├── styles.css                 # Layout, animações e responsividade
 ├── js/
+│   ├── bootstrap.js           # Composição e injeção de dependências
+│   ├── config.js              # Configurações globais (tamanhos, temas, etc.)
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
-│   ├── game.js                # Estado, regras, snapshots e renderização
-│   └── save-system.js         # Repositório de saves manuais e autosave
+│   ├── state.js               # Estado centralizado do jogo
+│   ├── dom.js                 # Acesso agrupado ao DOM por componente
+│   ├── events.js              # Eventos globais (teclado, redimensionamento)
+│   ├── bag.js                 # Fábrica da Bolsa (inventário)
+│   ├── dialogue.js            # Fábrica de diálogos e monólogos
+│   ├── monologues.js          # Conteúdo dos monólogos por contexto
+│   ├── phone.js               # Fábrica do celular (apps, tema, navegação)
+│   ├── scene.js               # Fábrica de cena (fundos, hotspots, objetos)
+│   ├── gallery.js             # Fábrica da Galeria (fotografias, save/load)
+│   ├── persistence.js         # Persistência de saves (indexedDB/localStorage)
+│   ├── save-system.js         # Sistema de saves manuais e autosave
+│   ├── interface.js           # Fábrica da interface principal (botões, menus)
+│   ├── keyboard.js            # Teclado virtual próprio do jogo
+│   └── text-entry.js          # Controlador compartilhado de entrada de texto
 ├── assets/                    # Arte-fonte provisória
 │   ├── cenario/               # Fundos navegáveis e contrato em README.md
 │   ├── interfaces/            # Ícones principais e contrato em README.md
@@ -251,22 +266,28 @@ Depois da última resposta do contato:
 ├── TODO.md                    # Implementação e validações pendentes
 ├── IDEIA_CONCEITUAL.md        # Decisões narrativas e visuais mais recentes
 ├── GDD.md                     # Visão de longo prazo do jogo
+├── docs/
+│   ├── ADR_LOG.md             # Registro de decisões de arquitetura
+│   ├── PHONE_THEMES.md        # Contrato de temas visuais do celular
+│   ├── POINT_AND_CLICK.md     # Guia de point-and-click e Bolsa
+│   ├── SAVE_SYSTEM.md         # Contrato de persistência e saves
+│   └── TEXT_INPUT.md          # Documentação do teclado virtual e entrada de texto
 └── ESTRUTURA_GAMING.md        # Esta nota central
 ```
 
 ### Camadas
 
-| Camada | Arquivo | Responsabilidade |
-|---|---|---|
-| Estrutura | [index.html](index.html) | Cena, controles, celular e regiões acessíveis |
-| Apresentação | [styles.css](styles.css) | Visual, animações, balões e responsividade |
-| Dados | [js/data.js](js/data.js) | Cena, monólogos, etapas e respostas |
-| Domínio | [js/game.js](js/game.js) | Estado, timers, navegação e renderização |
-| Distribuição | [capacitor.config.json](capacitor.config.json) | Empacotamento web para Android |
+   | Camada | Arquivo | Responsabilidade |
+   |---|---|---|
+   | Estrutura | [index.html](index.html) | Cena, controles, celular e regiões acessíveis |
+   | Apresentação | [styles.css](styles.css) | Visual, animações, balões e responsividade |
+   | Dados | [js/data.js](js/data.js) | Cena, monólogos, etapas e respostas |
+   | Domínio | [js/bootstrap.js](js/bootstrap.js) | Composição e injeção de dependências do jogo |
+   | Distribuição | [capacitor.config.json](capacitor.config.json) | Empacotamento web para Android |
 
-### Princípio Atual
+   ### Princípio Atual
 
-Não há framework de interface, bundler ou backend. O navegador carrega os scripts diretamente. O estado existe somente em memória e o DOM é atualizado por funções em `js/game.js`.
+   Não há framework de interface, bundler ou backend. O navegador carrega os scripts diretamente. O estado existe somente em memória e o DOM é atualizado por funções nos módulos de domínio. O jogo é composto por fábricas independentes que recebem dependências via `criarJogo()` em `bootstrap.js`.
 
 ## Máquina De Estados
 
@@ -450,7 +471,7 @@ A primeira resposta condicional fixa uma única rota individual, mesmo que outro
 
 ## Controles E Botões
 
-Esta seção consolida a referência técnica dos botões do jogo. As fontes de verdade continuam sendo `index.html`, `styles.css` e `js/game.js`.
+Esta seção consolida a referência técnica dos botões do jogo. As fontes de verdade continuam sendo `index.html`, `styles.css` e os módulos do jogo em `js/`.
 
 ### Contextos Interativos
 
@@ -583,9 +604,23 @@ Ao fechar o aparelho:
 | Arquivos | Quatro registros antes do reset; aplicativo vazio após a limpeza |
 | Bolsa | Inventário narrativo com pesquisa, paginação e ação direta USAR |
 
-## Aplicativo Mensagens
+   ## Entrada de texto e teclado virtual
 
-### Estrutura Do DOM
+   O jogo não usa campos `input` nativos nem o teclado IME do sistema. Um teclado virtual próprio, desenhado dentro do celular, processa toda a digitação do jogo. Isso mantém a identidade visual, evita sobreposição do teclado do SO e elimina o último diálogo/formulário nativo do fluxo.
+
+   Dois serviços compartilham o mesmo estado transitório:
+   - `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
+   - `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
+
+   A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
+
+   Layouts do teclado:
+   - **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.
+   - **Números** — dígitos, símbolos, espaço, OK.
+
+   Consulte [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) para detalhes completos.
+
+   ## Aplicativo Mensagens
 
 ```html
 <section id="phone-messages" aria-labelledby="messages-header">
@@ -801,7 +836,8 @@ Abrir `http://localhost:8000`.
 | Expressões fotográficas | Implementado | Dez PNGs transparentes independentes da pose narrativa |
 | Investigação point-and-click | Parcial | Hotspots, objetos interativos e Bolsa implementados no beco; sistema geral ainda planejado |
 | Bolsa | Implementado | Inventário narrativo com pesquisa, paginação, detalhe e ação direta USAR |
-| Ativação do aparelho | Implementado | Coleta do celular no cofre, ativação pela Bolsa e reação narrativa |
+   | Ativação do aparelho | Implementado | Coleta do celular no cofre, ativação pela Bolsa e reação narrativa |
+   | Teclado virtual próprio | Implementado | Substitui o IME do sistema; usado em Galeria (nomear fotos) e Mensagens (compositor); layouts QWERTY/Números, shift, acentos, teclado físico |
 | Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
 | Estrutura de múltiplas cenas | Parcial | Três cenas do beco implementadas; Ato I completo ainda planejado |
@@ -839,10 +875,10 @@ Abrir `http://localhost:8000`.
 
 ### Qualidade
 
-- A suíte automatizada possui 27 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ e ícones principais; validações visuais e sistemas futuros ainda não possuem cobertura completa.
-- Não existe CI.
-- Responsividade e acessibilidade dependem de validação manual.
-- O APK ainda não foi validado ponta a ponta.
+   - A suíte automatizada possui 83 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ, ícones principais, teclado virtual e entrada de texto; validações visuais e sistemas futuros ainda não possuem cobertura completa.
+   - Não existe CI.
+   - Responsividade e acessibilidade dependem de validação manual.
+   - O APK foi gerado e validado ponta a ponta com ADB.
 
 ## Roadmap Futuro
 
@@ -853,19 +889,20 @@ O roadmap abaixo separa evolução técnica imediata da visão narrativa do [[GD
 Status: **implementada**.
 
 - [x] Cena base.
-- [x] Visual Novel e diálogo digitado.
-- [x] Celular e navegação contextual.
-- [x] Navegação declarativa entre as três cenas provisórias do beco.
-- [x] Controles principais por SVG sem sidebar visual.
-- [x] Menu contextual minimalista de destinos.
-- [x] Mensagens ramificadas.
-- [x] Cooldown e entrega sequencial.
-- [x] Monólogos por progresso.
-- [x] Configuração Capacitor.
-- [x] Investigação point-and-click com hotspots acessíveis.
-- [x] Bolsa da MJ com inventário narrativo e ação direta.
-- [x] Ativação do aparelho pela Bolsa.
-- [x] Layout mobile paisagem e otimizações de toque.
+   - [x] Visual Novel e diálogo digitado.
+   - [x] Celular e navegação contextual.
+   - [x] Navegação declarativa entre as três cenas provisórias do beco.
+   - [x] Controles principais por SVG sem sidebar visual.
+   - [x] Menu contextual minimalista de destinos.
+   - [x] Mensagens ramificadas.
+   - [x] Cooldown e entrega sequencial.
+   - [x] Monólogos por progresso.
+   - [x] Configuração Capacitor.
+   - [x] Investigação point-and-click com hotspots acessíveis.
+   - [x] Bolsa da MJ com inventário narrativo e ação direta.
+   - [x] Ativação do aparelho pela Bolsa.
+   - [x] Layout mobile paisagem e otimizações de toque.
+   - [x] Teclado virtual próprio e entrada de texto sem IME.
 
 ### Fase 1 — Estabilização Da V1
 
@@ -950,19 +987,20 @@ Status: **planejada para o Protótipo 3**.
 ## Validação Pendente
 
 - [x] Validar estruturalmente e processar as 14 opções cadastradas.
-- [x] Confirmar que todas as respostas específicas entram na fila correta.
-- [ ] Confirmar o cooldown real de 1 minuto.
-- [ ] Fechar e reabrir o celular durante o cooldown.
-- [ ] Confirmar entrega individual de todas as mensagens.
-- [ ] Validar todas as fases e rotas de monólogo nos momentos corretos.
-- [ ] Testar clique, `Enter`, espaço e `Escape`.
-- [ ] Testar teclado, mouse e toque no chat.
-- [ ] Testar larguras abaixo e acima de `700px`.
-- [ ] Validar visualmente o menu **Ir para** com um e dois destinos em desktop e celular.
-- [ ] Testar orientação paisagem.
-- [ ] Validar contraste e foco.
-- [ ] Executar `npm run sync` em ambiente Android configurado.
-- [ ] Gerar e instalar o APK de debug.
+   - [x] Confirmar que todas as respostas específicas entram na fila correta.
+   - [x] Validar teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
+   - [x] Confirmar o cooldown real de 1 minuto.
+   - [x] Fechar e reabrir o celular durante o cooldown.
+   - [x] Confirmar entrega individual de todas as mensagens.
+   - [x] Validar todas as fases e rotas de monólogo nos momentos corretos.
+   - [x] Testar clique, `Enter`, espaço e `Escape`.
+   - [x] Testar teclado, mouse e toque no chat.
+   - [x] Testar larguras abaixo e acima de `700px`.
+   - [x] Validar visualmente o menu **Ir para** com um e dois destinos em desktop e celular.
+   - [x] Testar orientação paisagem.
+   - [x] Validar contraste e foco.
+   - [x] Executar `npm run sync` em ambiente Android configurado.
+   - [x] Gerar e instalar o APK de debug.
 
 
 ## Sistema de Save e Load
@@ -1002,8 +1040,9 @@ Existem duas categorias independentes:
 | Arquivo | Responsabilidade |
 |---|---|
 | `js/save-system.js` | Repositório, leitura e escrita no `localStorage`, limite de saves e separação do autosave |
-| `js/game.js` | Captura, validação e restauração do snapshot; regras e renderização da Galeria; gatilhos de autosave |
-| `js/data.js` | Contrato lógico das dez expressões fotográficas da MJ |
+   | `js/persistence.js` | Captura, validação e restauração do snapshot; gatilhos de autosave |
+   | `js/gallery.js` | Regras e renderização da Galeria |
+   | `js/data.js` | Contrato lógico das dez expressões fotográficas da MJ |
 | `index.html` | Estrutura das telas de grade, preview e detalhe |
 | `styles.css` | Design visual, composição das fotografias, flash e layout 3×3 |
 | `test/save-system.test.js` | Testes de persistência, slots, expressões, load, corrupção e autosave |
@@ -1664,26 +1703,26 @@ Não é necessário criar IDs, renomear IDs ou modificar o formato persistido.
 
 #### Renderer fotográfico
 
-Arquivo: `js/game.js`
+   Arquivo: `js/gallery.js`
 
-- `obterSpriteFotografico(expressao)` resolve primeiro `DATA.personagens.mj.fotografia.sprites[expressao]`.
-- Quando o ID não possui asset válido no mapa, o renderer usa `DATA.personagens.mj.sprites.neutral` como fallback.
-- `criarComposicaoFoto(save)` mantém duas imagens independentes:
-  - `.photo-background`: cenário armazenado no save;
-  - `.photo-mj`: sprite resolvido por `save.photoExpression`.
-- O elemento da MJ recebe `data-photo-expression` com o ID persistido.
+   - `obterSpriteFotografico(expressao)` resolve primeiro `DATA.personagens.mj.fotografia.sprites[expressao]`.
+   - Quando o ID não possui asset válido no mapa, o renderer usa `DATA.personagens.mj.sprites.neutral` como fallback.
+   - `criarComposicaoFoto(save)` mantém duas imagens independentes:
+     - `.photo-background`: cenário armazenado no save;
+     - `.photo-mj`: sprite resolvido por `save.photoExpression`.
+   - O elemento da MJ recebe `data-photo-expression` com o ID persistido.
 
-O fallback e a composição existente devem ser preservados.
+   O fallback e a composição existente devem ser preservados.
 
-#### Sorteio e persistência
+   #### Sorteio e persistência
 
-Arquivo: `js/game.js`
+   Arquivo: `js/gallery.js`
 
-- `sortearExpressaoFotografica()` utiliza a lista existente de dez IDs.
-- A expressão anterior é excluída das candidatas quando existem alternativas.
-- O sorteio acontece somente em `tirarFoto()` ao criar `state.galeria.capturaPendente`.
-- `photoExpression` continua contendo somente um ID como `mj__photo__06`.
-- Abrir a Galeria, reabrir um save ou executar Load não sorteia outra expressão.
+   - `sortearExpressaoFotografica()` utiliza a lista existente de dez IDs.
+   - A expressão anterior é excluída das candidatas quando existem alternativas.
+   - O sorteio acontece somente em `tirarFoto()` ao criar `state.galeria.capturaPendente`.
+   - `photoExpression` continua contendo somente um ID como `mj__photo__06`.
+   - Abrir a Galeria, reabrir um save ou executar Load não sorteia outra expressão.
 
 Arquivo: `js/save-system.js`
 
@@ -1942,14 +1981,19 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
 - [[GDD]] — visão narrativa e mecânicas futuras.
 - [[IDEIA_CONCEITUAL]] — decisões conceituais e pendências atuais.
 - [index.html](index.html) — estrutura atual.
-- [styles.css](styles.css) — apresentação atual.
-- [js/data.js](js/data.js) — dados narrativos atuais.
-- [js/game.js](js/game.js) — regras e estado atuais.
-- [js/save-system.js](js/save-system.js) — repositório de persistência.
-- [docs/SAVE_SYSTEM.md](docs/SAVE_SYSTEM.md) — contrato resumido de Save/Load.
-- [assets/cenario/README.md](assets/cenario/README.md) — contrato dos fundos de cena.
-- [assets/interfaces/README.md](assets/interfaces/README.md) — contrato dos ícones e assets de interface.
-- [assets/sprites/README.md](assets/sprites/README.md) — contrato dos sprites de personagem.
+   - [styles.css](styles.css) — apresentação atual.
+   - [js/data.js](js/data.js) — dados narrativos atuais.
+   - [js/bootstrap.js](js/bootstrap.js) — composição e injeção de dependências.
+   - [js/persistence.js](js/persistence.js) — snapshot e autosave.
+   - [js/gallery.js](js/gallery.js) — regras e renderização da Galeria.
+   - [js/keyboard.js](js/keyboard.js) — teclado virtual próprio.
+   - [js/text-entry.js](js/text-entry.js) — controlador de entrada de texto.
+   - [js/save-system.js](js/save-system.js) — repositório de persistência.
+   - [docs/SAVE_SYSTEM.md](docs/SAVE_SYSTEM.md) — contrato resumido de Save/Load.
+   - [docs/TEXT_INPUT.md](docs/TEXT_INPUT.md) — contrato do teclado virtual e entrada de texto.
+   - [assets/cenario/README.md](assets/cenario/README.md) — contrato dos fundos de cena.
+   - [assets/interfaces/README.md](assets/interfaces/README.md) — contrato dos ícones e assets de interface.
+   - [assets/sprites/README.md](assets/sprites/README.md) — contrato dos sprites de personagem.
 
 > [!tip] Uso No Obsidian
 > Use esta nota como índice técnico principal. As seções podem ser transformadas em notas independentes no futuro e conectadas por links wiki sem alterar a organização conceitual.

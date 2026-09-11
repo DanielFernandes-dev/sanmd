@@ -71,9 +71,10 @@ Já estão disponíveis:
 - Cofre interativo no fundo do beco com abertura e coleta do Celular de Lulith.
 - Ativação do aparelho pela Bolsa com reação narrativa e transição de tema.
 - Layout da Galeria com linhas dimensionadas pelo conteúdo, metadados estruturados e suporte a nomes longos.
-- Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
-- Projeto Android e comando de build de APK com Capacitor.
-- 27 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos e layout da Galeria.
+   - Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
+   - Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
+   - Projeto Android e comando de build de APK com Capacitor.
+   - 83 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos, layout da Galeria, teclado virtual e entrada de texto.
 
 > A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
@@ -87,10 +88,27 @@ A interface separa as conversas presenciais das mensagens digitais:
 - Quando o protagonista está sozinho, **Conversar** apresenta um pensamento ou monólogo.
 - O celular original da MJ começa quebrado e o ícone CELULAR fica oculto. Colete o Celular de Lulith no cofre e escolha **USAR** na Bolsa; ao concluir a reação, o aparelho fica ativo com o tema Lulith.
 - O botão **Voltar**, sem borda ou fundo, fica no canto inferior esquerdo da tela inicial do celular e no canto superior esquerdo dentro dos apps.
-- Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
-- Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
-- A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
-- A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
+   - Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
+   - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
+   - A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
+   - A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
+   - O jogo possui um **teclado virtual próprio** que substitui o IME do sistema. Ele é usado para nomear fotografias na Galeria e para compor mensagens em Mensagens, mantendo a identidade visual e evitando sobreposição do teclado do Android em paisagem.
+
+   ## Entrada de texto e teclado virtual
+
+   O jogo não usa campos `input` nativos nem o teclado IME do sistema. Um teclado virtual próprio, desenhado dentro do celular, processa toda a digitação do jogo. Isso mantém a identidade visual, evita sobreposição do teclado do SO e elimina o último diálogo/formulário nativo do fluxo.
+
+   Dois serviços compartilham o mesmo estado transitório:
+   - `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
+   - `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
+
+   A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
+
+   Layouts do teclado:
+   - **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.
+   - **Números** — dígitos, símbolos, espaço, OK.
+
+   Consulte [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) para detalhes completos.
 
 ## Como executar
 
@@ -141,9 +159,23 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── index.html       # Estrutura da Visual Novel e do celular
 ├── styles.css       # Aparência, animações e responsividade
 ├── js/
+│   ├── bootstrap.js # Composição e injeção de dependências do jogo
+│   ├── config.js    # Configurações globais (tamanhos, temas, etc.)
 │   ├── data.js      # Locais, cenas, personagem e conteúdo narrativo
-│   ├── game.js      # Estado, diálogos, navegação, Bolsa e Galeria
-│   └── save-system.js # Persistência de saves manuais e autosave
+│   ├── state.js     # Estado centralizado do jogo
+│   ├── dom.js       # Acesso agrupado ao DOM por componente
+│   ├── events.js    # Eventos globais (teclado, redimensionamento)
+│   ├── bag.js       # Fábrica da Bolsa (inventário)
+│   ├── dialogue.js  # Fábrica de diálogos e monólogos
+│   ├── monologues.js# Conteúdo dos monólogos por contexto
+│   ├── phone.js     # Fábrica do celular (apps, tema, navegação)
+│   ├── scene.js     # Fábrica de cena (fundos, hotspots, objetos)
+│   ├── gallery.js   # Fábrica da Galeria (fotografias, save/load)
+│   ├── persistence.js # Persistência de saves (indexedDB/localStorage)
+│   ├── save-system.js # Sistema de saves manuais e autosave
+│   ├── interface.js # Fábrica da interface principal (botões, menus)
+│   ├── keyboard.js  # Teclado virtual próprio do jogo
+│   └── text-entry.js # Controlador compartilhado de entrada de texto
 ├── assets/
 │   ├── cenario/     # Fundos e README do contrato de cenários
 │   ├── interfaces/  # Ícones e README do contrato de interface
@@ -153,23 +185,33 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── package.json      # Dependências e comandos de build
 ├── GDD.md           # Visão completa do jogo e da narrativa
 ├── IDEIA_CONCEITUAL.md # Decisões conceituais e pendências atuais
-├── ESTRUTURA_GAMING.md # Estado técnico e roadmap do protótipo
+├── ESTRUTURA_GAMING.md # Arquitetura, estado implementado e contratos técnicos
 ├── TODO.md          # Lista de tarefas do protótipo
-├── test/            # Testes automatizados dos fluxos implementados
+├── docs/
+│   ├── ADR_LOG.md   # Registro de decisões de arquitetura
+│   ├── PHONE_THEMES.md # Contrato de temas visuais do celular
+│   ├── POINT_AND_CLICK.md # Guia de point-and-click e Bolsa
+│   ├── SAVE_SYSTEM.md # Contrato de persistência e saves
+│   └── TEXT_INPUT.md # Documentação do teclado virtual e entrada de texto
 └── README.md        # Visão geral e instruções de execução
 ```
 
 ## Documentação
 
-| Documento | Responsabilidade |
-|---|---|
-| [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
-| [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
-| [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
-| [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
-| [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
-| [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
-| [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
+   | Documento | Responsabilidade |
+   |---|---|
+   | [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
+   | [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
+   | [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
+   | [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
+   | [`docs/ADR_LOG.md`](docs/ADR_LOG.md) | Registro de decisões de arquitetura |
+   | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
+   | [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
+   | [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
+   | [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
+   | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
+   | [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
+   | [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
 
 ## Fluxo do protótipo atual
 
@@ -240,21 +282,22 @@ O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior 
 
 ## Testes
 
-O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos e layout da Galeria:
+   O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos, layout da Galeria, teclado virtual e entrada de texto:
 
-```bash
-npm test
-```
+   ```bash
+   npm test
+   ```
 
-Arquivos de teste:
-- `test/bolsa.test.js` — inventário, ações diretas e ativação do aparelho.
-- `test/fase-navegacao.test.js` — destinos e bloqueio de saltos entre cenas.
-- `test/fase10-mj.test.js` — sprite e presença visual de MJ.
-- `test/fase8.test.js` — fluxo do primeiro contato, reset remoto e monólogos.
-- `test/gallery-layout.test.js` — grade da Galeria e metadados das fotografias.
-- `test/interface-icons.test.js` — ícones principais e contrato visual.
-- `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
-- `test/save-system.test.js` — persistência, validação, load e autosave.
+   Arquivos de teste:
+   - `test/bolsa.test.js` — inventário, ações diretas e ativação do aparelho.
+   - `test/fase-navegacao.test.js` — destinos e bloqueio de saltos entre cenas.
+   - `test/fase10-mj.test.js` — sprite e presença visual de MJ.
+   - `test/fase8.test.js` — fluxo do primeiro contato, reset remoto e monólogos.
+   - `test/gallery-layout.test.js` — grade da Galeria e metadados das fotografias.
+   - `test/interface-icons.test.js` — ícones principais e contrato visual.
+   - `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
+   - `test/save-system.test.js` — persistência, validação, load e autosave.
+   - `test/text-input.test.js` — teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
 
 ## Critérios de validação
 
