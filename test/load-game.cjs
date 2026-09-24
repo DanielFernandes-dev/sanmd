@@ -27,13 +27,13 @@ for (const [nome, fn] of Object.entries(game.services)) globalThis[nome] = fn;
 `;
 };
 
-// Executa trechos síncronos no mesmo escopo global e aguarda somente navegações.
+// Executa trechos síncronos no mesmo escopo global e aguarda navegações e interações animadas.
 module.exports.executar = function(contexto, codigo) {
   const vm = require("node:vm");
-  if (!/\birPara(?:Local)?\(/.test(codigo)) return vm.runInContext(codigo, contexto);
+  if (!/\b(?:irPara(?:Local)?|executarHotspot)\(/.test(codigo)) return vm.runInContext(codigo, contexto);
   return (async () => {
     let offset = 0;
-    for (const match of codigo.matchAll(/\birPara(?:Local)?\([^)]*\);?/g)) {
+    for (const match of codigo.matchAll(/\b(?:irPara(?:Local)?|executarHotspot)\([^)]*\);?/g)) {
       vm.runInContext(codigo.slice(offset, match.index), contexto);
       await vm.runInContext(match[0], contexto);
       offset = match.index + match[0].length;

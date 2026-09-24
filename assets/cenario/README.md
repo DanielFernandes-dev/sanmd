@@ -14,7 +14,7 @@ Os três fundos disponíveis pertencem ao local lógico `beco`:
 
 Os fundos de entrada e corredor possuem `3344×1882`; o fundo independente `background.png` possui `1672×941`. O palco preserva a proporção `1672:941`, sem recortar objetos interativos. `cofre.png` é referência histórica e não é carregado pelo jogo.
 
-Os sprites RGBA independentes ficam em `beco/objects/`: `safe_closed.png`, `safe_open.png` e `lulith_phone.png`. Ver [POINT_AND_CLICK](../../docs/POINT_AND_CLICK.md).
+Os sprites RGBA independentes ficam em `beco/objects/`: `safe_closed.png`, `safe_opening_01.png` a `safe_opening_04.png`, `safe_open.png` e `lulith_phone.png`. Os seis frames do cofre compartilham canvas 1254×1254. Ver [POINT_AND_CLICK](../../docs/POINT_AND_CLICK.md).
 
 ## Contrato
 

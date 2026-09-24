@@ -75,7 +75,7 @@ test('troca apenas no escuro, bloqueia concorrência/input e preserva objetos na
     assert.equal(services.isSceneTransitioning(), false);
     assert.equal(scene.transitionOverlay.style.opacity, '0');
     if (destination === 'beco_fundo' && !state.sceneState.beco_fundo?.safeOpened) {
-      services.executarHotspot('safe');
+      await services.executarHotspot('safe');
       services.executarHotspot('lulith_phone');
     }
   }
@@ -101,4 +101,66 @@ test('mapa genérico, reduced motion e falha de asset deixam o jogo recuperável
   assert.equal(env.services.isSceneTransitioning(), false);
   assert.equal(env.scene.transitionOverlay.style.opacity, '0');
   assert.equal(await env.services.runSceneTransition(() => { throw Error('loader'); }).then(v => v), false);
+});
+
+test('cofre mantém sprite, bloqueia cliques e só libera celular após 420 ms', async () => {
+  const { services, state, scene } = setup();
+  state.localizacao.cena = 'beco_fundo';
+  services.aplicarCena(services.obterCenaAtual());
+  const sprite = scene.objectLayer.children[0];
+  const waits = [];
+  services.esperarAnimacao = duration => new Promise(resolve => waits.push({ duration, resolve }));
+  const opening = services.executarHotspot('safe');
+  assert.equal(services.executarHotspot('safe'), false);
+  assert.equal(services.executarHotspot('lulith_phone'), false);
+  for (let frame = 1; frame <= 5; frame++) {
+    await tick();
+    assert.equal(scene.objectLayer.children[0], sprite);
+    assert.equal(scene.objectLayer.children.length, 1);
+    assert.equal(services.estadoDaCena(services.obterCenaAtual()).safeOpened, false);
+    assert.ok(scene.hotspotLayer.children.every(h => h.disabled));
+    assert.ok(sprite.src.endsWith(frame < 5 ? `safe_opening_0${frame}.png` : 'safe_open.png'));
+    assert.equal(waits[frame - 1].duration, frame < 5 ? 80 : 100);
+    waits[frame - 1].resolve();
+  }
+  assert.equal(await opening, true);
+  assert.equal(state.sceneState.beco_fundo.safeOpened, true);
+  assert.deepEqual(Object.keys(state.sceneState.beco_fundo).sort(), ['lulithPhoneCollected', 'safeOpened']);
+  assert.equal(scene.objectLayer.children[0], sprite);
+  assert.equal(scene.objectLayer.children.length, 2);
+  assert.equal(scene.hotspotLayer.children[0].dataset.hotspot, 'lulith_phone');
+  assert.equal(scene.hotspotLayer.children[0].disabled, false);
+  assert.equal(services.executarHotspot('safe'), false);
+});
+
+test('Load/troca cancela abertura pendente e estado aberto não repete animação', async () => {
+  const { services, state, scene } = setup();
+  state.localizacao.cena = 'beco_fundo';
+  services.aplicarCena(services.obterCenaAtual());
+  let resume;
+  services.esperarAnimacao = () => new Promise(resolve => { resume = resolve; });
+  const opening = services.executarHotspot('safe');
+  await tick();
+  services.trocarCenario(services.obterCenaAtual());
+  resume();
+  assert.equal(await opening, false);
+  assert.ok(scene.objectLayer.children[0].src.endsWith('safe_closed.png'));
+  assert.equal(services.estadoDaCena(services.obterCenaAtual()).safeOpened, false);
+  state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: false };
+  services.trocarCenario(services.obterCenaAtual());
+  assert.ok(scene.objectLayer.children[0].src.endsWith('safe_open.png'));
+  assert.equal(scene.objectLayer.children.length, 2);
+});
+
+test('falha de preload mantém cofre fechado e permite tentar novamente', async () => {
+  const { services, state, scene } = setup();
+  state.localizacao.cena = 'beco_fundo';
+  services.aplicarCena(services.obterCenaAtual());
+  const prepare = services.prepareSceneImages;
+  services.prepareSceneImages = () => Promise.reject(new Error('offline'));
+  assert.equal(await services.executarHotspot('safe'), false);
+  assert.ok(scene.objectLayer.children[0].src.endsWith('safe_closed.png'));
+  assert.equal(scene.hotspotLayer.children[0].disabled, false);
+  services.prepareSceneImages = prepare;
+  assert.equal(await services.executarHotspot('safe'), true);
 });

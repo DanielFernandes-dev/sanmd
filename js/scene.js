@@ -8,6 +8,13 @@ function criarSistemaCenas(context) {
 
   const eventosInteracao = context.eventosInteracao;
   const mecanicas = criarMecanicasHotspot(context);
+  // Transitório e privado: nunca faz parte de state/snapshot.
+  let objectAnimation = null;
+
+  function assetsDaCena(cena) {
+    return [cena.background, ...(cena.objects ?? []).flatMap(o => o.variants.map(v => v.asset)),
+      ...(cena.hotspots ?? []).flatMap(h => h.animation?.frames ?? [])];
+  }
 
   /** Ocultar personagem.
    */
@@ -141,10 +148,16 @@ function criarSistemaCenas(context) {
    * @param {SceneDefinition} cena
    */
   function trocarCenario(cena) {
+    objectAnimation = null; // Troca de cena ou Load invalida qualquer continuação pendente.
     state.localizacao.cena = cena.id;
     DATA.cena = cena;
     el.scene.cenario.src = cena.background;
     renderizarObjetos();
+    if (cena.hotspots?.some(h => h.animation)) {
+      services.prepareSceneImages(assetsDaCena(cena)).catch(() => {
+        // O clique tenta novamente; o sprite estático continua visível.
+      });
+    }
     el.scene.interactionStatus.textContent = "";
   }
 
@@ -192,8 +205,7 @@ function criarSistemaCenas(context) {
     }
     const anterior = { ...state.localizacao };
     return services.runSceneTransition(async () => {
-      const objetos = criarObjetos(destino);
-      await services.prepareSceneImages([destino.background, ...objetos.map(o => o.src)]);
+      await services.prepareSceneImages(assetsDaCena(destino));
       try {
         state.localizacao.local = localId;
         aplicarCena(destino);
@@ -262,7 +274,13 @@ function criarSistemaCenas(context) {
    */
   function renderizarObjetos() {
     const cena = obterCenaAtual();
-    el.scene.objectLayer.replaceChildren(...criarObjetos(cena));
+    const previous = Array.from(el.scene.objectLayer.children);
+    el.scene.objectLayer.replaceChildren(...criarObjetos(cena).map(sprite => {
+      const existing = previous.find(o => o.dataset.objectId === sprite.dataset.objectId);
+      if (!existing) return sprite;
+      if (objectAnimation?.objectId !== sprite.dataset.objectId) existing.src = sprite.src;
+      return existing;
+    }));
     const values = estadoDaCena(cena);
     el.scene.hotspotLayer.replaceChildren(...(cena.hotspots ?? [])
       .filter(h => condicoesAtendidas(h.conditions, values))
@@ -272,6 +290,7 @@ function criarSistemaCenas(context) {
         button.className = "scene-hotspot";
         button.ariaLabel = h.ariaLabel;
         button.dataset.hotspot = h.id;
+        button.disabled = Boolean(objectAnimation);
         posicionarObjeto(button, h.rect);
         button.addEventListener("click", () => executarHotspot(h.id));
         return button;
@@ -283,7 +302,7 @@ function criarSistemaCenas(context) {
    * @param {string|null} [selectedItem]
    */
   function executarHotspot(id, selectedItem = null) {
-    if (services.isSceneTransitioning() || state.modo !== "livre" || el.bag.bagDialog.open) return false;
+    if (objectAnimation || services.isSceneTransitioning() || state.modo !== "livre" || el.bag.bagDialog.open) return false;
     const cena = obterCenaAtual();
     const h = cena.hotspots?.find(hotspot => hotspot.id === id);
     const executarMecanica = h && mecanicas.obter(h.type);
@@ -294,6 +313,42 @@ function criarSistemaCenas(context) {
       el.scene.interactionStatus.textContent = h.missingItemMessage ?? "Preciso de outro item para isso.";
       return false;
     }
+    if (h.animation) return animarObjeto(cena, h, executarMecanica);
+    return concluirHotspot(cena, h, executarMecanica);
+  }
+
+  async function animarObjeto(cena, h, executarMecanica) {
+    const animation = h.animation;
+    const sprite = Array.from(el.scene.objectLayer.children).find(o => o.dataset.objectId === animation.objectId);
+    if (!sprite) return false;
+    const token = { objectId: animation.objectId };
+    objectAnimation = token;
+    fecharMenuIrPara();
+    renderizarObjetos();
+    try {
+      await services.prepareSceneImages(assetsDaCena(cena));
+      if (objectAnimation !== token) return false;
+      // O primeiro frame já está visível; quatro intermediários de 80 ms.
+      for (const frame of animation.frames.slice(1, -1)) {
+        sprite.src = frame;
+        await services.esperarAnimacao(animation.frameDuration);
+        if (objectAnimation !== token) return false;
+      }
+      sprite.src = animation.frames.at(-1);
+      await services.esperarAnimacao(animation.finalHold);
+      if (objectAnimation !== token) return false;
+      objectAnimation = null;
+      return concluirHotspot(cena, h, executarMecanica);
+    } catch (error) {
+      if (objectAnimation !== token) return false;
+      objectAnimation = null;
+      renderizarObjetos();
+      el.scene.interactionStatus.textContent = "Não foi possível abrir o cofre. Tente novamente.";
+      return false;
+    }
+  }
+
+  function concluirHotspot(cena, h, executarMecanica) {
     if (!executarMecanica(h)) return false;
     state.sceneState[cena.id] = { ...estadoDaCena(cena), ...h.changes };
     if (h.requiresItem && (h.consumeItem ?? ITEMS[h.requiresItem]?.consumable)) services.removerItem(h.requiresItem);

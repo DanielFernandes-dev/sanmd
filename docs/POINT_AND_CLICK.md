@@ -58,6 +58,30 @@ As condições são igualdades combinadas por AND, relativas à cena atual. `cha
 - `consumeItem`: sobrescreve a política `consumable` do item exigido.
 - `missingItemMessage`: feedback quando falta o item.
 - `eventId`: callback registrado em `eventosInteracao`, executado após a alteração lógica.
+- `animation`: `{objectId, frames, frameDuration, finalHold}`; sequência visual antes
+  de aplicar a mecânica e suas mudanças persistentes.
+
+### Abertura do cofre
+
+A sequência usa `safe_closed.png`, quatro `safe_opening_01..04.png` e
+`safe_open.png`, todos RGBA 1254×1254 em `assets/cenario/beco/objects/`.
+Os intermediários duram 80 ms cada; o aberto permanece 100 ms antes da revelação
+do celular (420 ms no total). O mesmo elemento de imagem permanece na cena.
+Todos os sprites e frames são pré-carregados e decodificados ao entrar na cena;
+o clique também aguarda esse carregamento antes de começar a sequência.
+
+O controlador transitório vive na closure de `criarSistemaCenas`, fora de `state`.
+Enquanto ativo, bloqueia os hotspots; apenas ao terminar aplica `safeOpened: true`,
+revela o celular e registra o autosave. Troca de cena ou Load invalida a animação
+pendente; saves abertos mostram diretamente o sprite final. Falha no carregamento
+preserva o fechado e permite tentar novamente. Fotografias usam somente as flags
+persistentes. O inventário e o formato do save continuam iguais.
+
+Arte intermediária produzida com a ferramenta integrada `imagegen`, usando os
+sprites fechado/aberto como referências. Prompts: preservar canvas, corpo, âncora,
+texturas e alpha; girar somente a porta pela dobradiça direita em quatro etapas;
+interior vazio e sem celular. Os dois primeiros frames receberam instruções de
+posição da borda livre para conservar uma abertura gradual.
 
 Tipos aceitos: `examine` (comentário), `interact` (alteração de objeto), `collect`
 (coleta única), `use_item` (uso de item) e `trigger` (gancho narrativo). Comentários

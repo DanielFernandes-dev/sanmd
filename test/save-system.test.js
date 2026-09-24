@@ -337,7 +337,7 @@ test("point-and-click: snapshots isolados nos três estados e navegação", asyn
   const a = criarAmbiente();
   await a.executar('irPara("beco_interior"); irPara("beco_fundo"); const fechado = capturarEstadoJogo();');
   assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
-  assert.equal(a.ler('executarHotspot("safe")'), true);
+  assert.equal(await a.ler('executarHotspot("safe")'), true);
   assert.equal(a.ler('executarHotspot("safe")'), false);
   a.executar('const aberto = capturarEstadoJogo();');
   assert.equal(a.ler('el.hotspotLayer.children[0].dataset.hotspot'), 'lulith_phone');

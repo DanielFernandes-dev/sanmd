@@ -31,6 +31,9 @@ const CENAS_BECO = {
     ],
     hotspots: [
       { id: "safe", rect: [42, 29, 19, 35], ariaLabel: "Abrir cofre",
+        animation: { objectId: "safe", frameDuration: 80, finalHold: 100,
+          frames: ["safe_closed", "safe_opening_01", "safe_opening_02", "safe_opening_03", "safe_opening_04", "safe_open"]
+            .map(name => `assets/cenario/beco/objects/${name}.png`) },
         type: "interact", conditions: { safeOpened: false }, changes: { safeOpened: true },
         message: "O cofre abriu. Há um celular dentro." },
       { id: "lulith_phone", rect: [46.5, 47, 8, 14], ariaLabel: "Coletar celular",
