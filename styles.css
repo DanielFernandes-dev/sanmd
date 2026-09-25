@@ -2273,3 +2273,61 @@ button:hover:not(:disabled) .action-icon {
   pointer-events: none;
 }
 #scene-transition-overlay.transitioning { pointer-events: auto; }
+
+/* A composição mantém a proporção da arte; áreas de toque acompanham a capa. */
+#title-menu { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; background: #090705; overflow: hidden; }
+#title-menu[hidden], #notebook-stage[hidden], #notebook-open[hidden] { display: none; }
+#title-menu.entering-game { background: transparent; }
+#notebook-stage { position: relative; width: min(100vw, 177.68dvh); aspect-ratio: 1672 / 941; container-type: inline-size; background: url('assets/interfaces/menu.png') center / 100% 100% no-repeat; }
+#notebook-cover, #notebook-open { position: absolute; inset: 0; background: url('assets/interfaces/menu.png') center / 100% 100% no-repeat; }
+#notebook-cover { transform-origin: 33% 50%; clip-path: polygon(24% 14%, 72% 13%, 77% 88%, 22% 90%); }
+#notebook-open { background-image: url('assets/interfaces/save-menu.png'); }
+/* As áreas de toque acompanham exatamente os rótulos gravados na arte, em qualquer
+   tamanho de tela: nada de deslocamentos, para a capa continuar idêntica a menu.png.
+   Em telas baixas as faixas ficam menores que 44px porque a arte reserva 7,4% da altura
+   por rótulo; a folga entre os dois textos (64,9%-65,6%) é o que separa as opções. */
+#notebook-cover button { position: absolute; left: 43%; width: 29%; border: 0; background: transparent; cursor: pointer; border-radius: 8%; }
+#notebook-new { top: 57.2%; bottom: 34.6%; }
+#notebook-load { top: 65.4%; bottom: 26.6%; }
+/* O realce dourado só existe para ponteiro fino: em toque, o Android deixa :hover
+   preso depois do tap e pintaria um retângulo dourado sobre os rótulos gravados. */
+@media (hover: hover) and (pointer: fine) {
+  #notebook-cover button:hover { background: #ffd38522; box-shadow: 0 0 18px #edb56044; }
+}
+#title-menu button:focus-visible { outline: 3px solid #ffe0a0; outline-offset: 3px; }
+/* Os rótulos da capa são arte impressa: o anel dourado acima sobrescreveria
+   "Novo jogo" e "Carregar" ao tocar ou navegar por teclado. Esta regra precisa
+   ficar DEPOIS da anterior porque ambas têm a mesma especificidade (1,1,1) e o
+   desempate é pela ordem do arquivo. Os botões seguem sendo <button> com
+   aria-label, então leitores de tela os anunciam normalmente. */
+#notebook-cover button:focus-visible { outline: none; }
+/* O miolo do papel na referência ocupa x 18,4-78,7% e y 19,5-87,5%, com a costura em x 47,5-48,8%. */
+#notebook-pages { position: absolute; left: 18.4%; top: 19.5%; width: 60.3%; height: 68%; padding: 1.2% 3%; color: #362313; background: linear-gradient(90deg, #c39359, #ddb47c 45%, #7e532e 48.3%, #bc8b51 50.4%, #d3a66c 57%, #ba8955); box-shadow: inset 0 0 24px #59371688; border-radius: 3% 3% 1% 1%; transform: perspective(1800px) rotateX(3deg); display: flex; flex-direction: column; font-family: Georgia, serif; }
+#notebook-pages header, #notebook-pages nav { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 8px; }
+#notebook-pages h1 { font-size: clamp(16px, 2.4cqw, 36px); font-weight: normal; }
+#notebook-pages button { color: inherit; font-family: inherit; cursor: pointer; }
+#notebook-pages header button, #notebook-pages nav button { background: transparent; border: 0; min-height: 44px; min-width: 44px; font-size: clamp(14px, 1.6cqw, 24px); }
+#notebook-pages button:disabled { opacity: .35; cursor: default; }
+#notebook-status:empty { display: none; }
+#notebook-status { font-size: clamp(12px, 1.4cqw, 20px); text-align: center; }
+#notebook-saves { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(105px, 1fr) minmax(105px, 1fr); gap: 4% 9%; padding: 1% 1%; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; }
+.notebook-photo, .notebook-empty { min-height: 0; min-width: 0; border: 1px solid #60402055; padding: 2%; background: #e6c593; }
+.notebook-photo { position: relative; display: flex; flex-direction: column; text-align: left; box-shadow: 1px 2px 4px #452b2066; transform: rotate(-1deg); }
+.notebook-photo:nth-child(even) { transform: rotate(1deg); }
+.notebook-photo:hover { filter: brightness(1.1); }
+.notebook-photo strong, .notebook-photo > span { display: block; font-size: clamp(12px, 1.4cqw, 20px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+.notebook-photo .photo-composition, .notebook-auto-thumbnail { flex: 1; min-height: 0; width: 100%; aspect-ratio: auto; object-fit: cover; margin: 0 0 2%; }
+.notebook-empty { border: 1px dashed #64462755; background: #593e2420; }
+#notebook-page { font-size: clamp(12px, 1.4cqw, 20px); }
+#notebook-fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; }
+#title-menu[data-state='opening'], #title-menu[data-state='closing'], #title-menu[data-state='startingGame'] { pointer-events: none; }
+
+/* Papel opaco cobre também os registros fictícios impressos na referência. */
+#notebook-open::before { content: ''; position: absolute; left: 18%; top: 19%; width: 61.5%; height: 69%; background: linear-gradient(90deg, #d3a469, #deb37b 45%, #90613b 49%, #cc9e66 53%, #c3935d); clip-path: polygon(3% 0, 94% 1%, 100% 100%, 0 100%); }
+.notebook-photo::after { content: ''; position: absolute; width: 21%; height: 9%; top: -2%; right: -2%; background: #b48b5477; transform: rotate(22deg); pointer-events: none; }
+@media (max-height: 500px) and (orientation: landscape) {
+  #notebook-pages { padding-top: .5%; padding-bottom: .5%; }
+  #notebook-pages h1 { font-size: 18px; }
+  #notebook-saves { grid-template-rows: minmax(80px, 1fr); }
+  .notebook-photo strong, .notebook-photo > span { font-size: 12px; }
+}

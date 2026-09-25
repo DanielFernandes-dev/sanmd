@@ -45,6 +45,29 @@
 - [x] Implementar ativação do aparelho pela Bolsa com reação narrativa.
 - [x] Implementar layout mobile paisagem e otimizações de toque.
 
+### Tela inicial e Carregar
+
+Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/menu.png` e `save-menu.png`.
+
+- [x] Mostrar a tela inicial antes de qualquer cena narrativa.
+- [x] Compor mesa escura, cidade noturna, lâmpada e caderno fechado no centro.
+- [x] Usar o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` gravados na arte, com áreas de toque sobrepostas.
+- [x] `Novo jogo`: animação de abertura perceptível, fade, reinício do estado e só então a cutscene.
+- [x] `Carregar`: a própria página aberta do caderno é a tela de Load, sem menu externo.
+- [x] Reutilizar os saves reais do sistema atual; nenhum formato novo.
+- [x] Mostrar thumbnail, nome, data e horário de cada registro.
+- [x] Clicar na fotografia restaura o snapshot pela mesma função da Galeria.
+- [x] Exibir áreas vazias discretas e `Nenhum registro disponível.` sem bloquear o Carregar.
+- [x] `Voltar` fecha o caderno e devolve à capa.
+- [x] Uma única animação de abertura/fechamento, compartilhada por `Novo jogo` e `Carregar`.
+- [x] Estados `menu`, `opening`, `load`, `closing` e `startingGame`, fora do snapshot.
+- [x] Reutilizar o fade global do jogo nas transições.
+- [x] Reaproveitar o autosave existente na saída, sem tocar nas fotografias manuais.
+- [x] Manter o caderno centralizado e os alvos confortáveis em paisagem, sem resolução fixa.
+- [x] Validar contra a geometria medida nas artes e contra o DOM publicado (`test/tela-inicial.test.js`).
+- [ ] Validar visualmente no APK Android landscape.
+- [ ] Substituir a entrada narrativa provisória pela cutscene inicial planejada.
+
 ### Preparação para o conteúdo canônico
 
 - [ ] Identificar e remover da experiência jogável a premissa antiga do celular encontrado em casa.

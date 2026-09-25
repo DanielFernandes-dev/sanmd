@@ -239,6 +239,7 @@ Depois da última resposta do contato:
 ├── styles.css                 # Layout, animações e responsividade
 ├── js/
 │   ├── bootstrap.js           # Composição e injeção de dependências
+│   ├── title-menu.js          # Tela inicial: capa do caderno e páginas de registros
 │   ├── config.js              # Configurações globais (tamanhos, temas, etc.)
 │   ├── data.js                # Conteúdo narrativo e árvore do chat
 │   ├── state.js               # Estado centralizado do jogo
@@ -1002,6 +1003,61 @@ Status: **planejada para o Protótipo 3**.
    - [x] Validar contraste e foco.
    - [x] Executar `npm run sync` em ambiente Android configurado.
    - [x] Gerar e instalar o APK de debug.
+
+
+## Tela Inicial
+
+O jogo abre em um caderno sobre a mesa escura, com a cidade noturna ao fundo. A tela é parte do universo do jogo, não um menu web: o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` são gravados em `assets/interfaces/menu.png`, e os controles são áreas de toque transparentes sobrepostas a eles.
+
+### Composição
+
+| Peça | Elemento | Papel |
+|---|---|---|
+| Capa fechada | `#notebook-cover` | Mesa, cidade, lâmpada e a capa do caderno |
+| Página aberta | `#notebook-open` | Miolo do caderno com a grade de registros |
+| Opções | `#notebook-new`, `#notebook-load` | Áreas de toque sobre os rótulos da arte |
+| Registros | `#notebook-saves` | Fotografias coladas, com nome, data e hora |
+| Corte de entrada | `#notebook-fade` | Fade sobre a tela antes de entregar o jogo |
+
+`js/title-menu.js` monta a apresentação e é a única camada que conhece o caderno. Ela **não** possui regras de Save/Load: delega para `services.restaurarEstadoJogo()` e lê `saveRepository`, exatamente como a Galeria. `game.iniciar()` só é chamado depois da escolha, então nenhuma cena narrativa roda antes do jogador decidir.
+
+### Estados Transitorios
+
+`#title-menu` carrega `data-state` com um destes valores, todos voláteis:
+
+| Estado | Significado |
+|---|---|
+| `menu` | Capa fechada; `#app` está `inert` |
+| `opening` | Lombada girando, capa e páginas inertes |
+| `load` | Página aberta com os registros; capa inerte |
+| `closing` | Fechando, com capa e páginas inertes |
+| `startingGame` | Fade em curso; a tela já está saindo |
+
+Nenhum desses valores entra no snapshot: `capturarEstadoJogo()` em `js/persistence.js` não conhece a tela inicial.
+
+### Fluxos
+
+- **Novo jogo** — `animateBook(true)` → `animarFade` até opaco → `cancelarTemporizadores()` + `Object.assign(state, criarEstadoJogo())` + `restaurarInterface()` → `game.iniciar()` → fade de volta. A animação de abertura é sempre awaited antes do fade, então nunca é pulada.
+- **Carregar** — `animateBook(true)` e permanece visível, com os registros renderizados nas páginas. Clicar numa fotografia executa a mesma restauração da Galeria.
+- **Voltar** — `animateBook(false)` devolve o caderno à capa fechada.
+
+`animateBook(open)` é a única implementação de abertura e fechamento, compartilhada por `Novo jogo` e `Carregar`; `movimentoReduzido()` encurta os tempos sem pular a etapa visível.
+
+### Registros
+
+Cada registro aparece como uma fotografia colada no caderno, com thumbnail, nome, data e horário vindos do próprio save (`criarComposicaoFoto`, `formatarDataFoto`). O autosave entra como `Último progresso · automático`, com o cenário do snapshot como thumbnail, porque não é uma fotografia. Slots sem registro são áreas discretas com `aria-hidden` e não recebem clique. Sem nenhum registro, a página abre normalmente e exibe `Nenhum registro disponível.`
+
+A paginação usa 4 slots por página e 2 em telas compactas (`max-height: 500px` em paisagem).
+
+### Saída do Jogo
+
+A tela inicial não cria um autosave próprio. `saveOnExit` reutiliza `services.registrarAutosave()` — o mesmo autosave que a Galeria, o celular e o fim de cutscene já gravam — apenas quando o jogo está em andamento e nenhuma transição de cena está correndo, para não capturar estado pela metade. Fotografias manuais nunca são tocadas. O registro acontece em `visibilitychange` e em `pagehide`; como o fechamento forçado do app não é garantido, o autosave continua sendo uma conveniência e não um ponto de recuperação obrigatório.
+
+### Geometria e Responsividade
+
+`#notebook-stage` usa `width: min(100vw, 177.68vh)` com `aspect-ratio: 1672 / 941`, então o caderno fica centralizado e sem distorção em qualquer viewport. `container-type: inline-size` expõe `cqw` para tipografia fluente, sem resolução fixa de aparelho. As opções da capa declaram `top` e `bottom` juntos, o que resolve a altura pelo contêiner e impede sobreposição entre as duas áreas de toque em qualquer tamanho.
+
+As medidas da arte e o contrato dos assets estão em [assets/interfaces/README.md](assets/interfaces/README.md).
 
 
 ## Sistema de Save e Load
@@ -1985,6 +2041,7 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
    - [styles.css](styles.css) — apresentação atual.
    - [js/data.js](js/data.js) — dados narrativos atuais.
    - [js/bootstrap.js](js/bootstrap.js) — composição e injeção de dependências.
+   - [js/title-menu.js](js/title-menu.js) — tela inicial, capa do caderno e páginas de registros.
    - [js/persistence.js](js/persistence.js) — snapshot e autosave.
    - [js/gallery.js](js/gallery.js) — regras e renderização da Galeria.
    - [js/keyboard.js](js/keyboard.js) — teclado virtual próprio.

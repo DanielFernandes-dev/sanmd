@@ -7,7 +7,24 @@
   <link rel="stylesheet" href="styles.css?v=mobile-landscape-v1">
 </head>
 <body>
-  <div id="app">
+  <section id="title-menu" aria-label="Sanmd — início" data-state="menu">
+    <div id="notebook-stage">
+      <div id="notebook-open" hidden>
+        <div id="notebook-pages">
+          <header><h1>Carregar</h1><button id="notebook-back" type="button">← Voltar</button></header>
+          <p id="notebook-status" role="status" aria-live="polite"></p>
+          <div id="notebook-saves"></div>
+          <nav aria-label="Páginas de registros"><button id="notebook-prev" type="button">←</button><span id="notebook-page"></span><button id="notebook-next" type="button">→</button></nav>
+        </div>
+      </div>
+      <div id="notebook-cover">
+        <button id="notebook-new" type="button" aria-label="Novo jogo"></button>
+        <button id="notebook-load" type="button" aria-label="Carregar"></button>
+      </div>
+    </div>
+    <div id="notebook-fade" aria-hidden="true"></div>
+  </section>
+  <div id="app" inert>
     <main id="vn-area">
       <div id="scene">
         <img id="cenario" src="assets/cenario/beco/entrada.png" alt="Entrada do beco" aria-hidden="true" draggable="false">
@@ -276,6 +293,7 @@
   <script src="js/interface.js?v=refatoracao-2"></script>
   <script src="js/events.js?v=refatoracao-2"></script>
   <script src="js/game.js?v=refatoracao-2"></script>
+  <script src="js/title-menu.js?v=1"></script>
   <script src="js/bootstrap.js?v=refatoracao-2"></script>
 </body>
 </html>

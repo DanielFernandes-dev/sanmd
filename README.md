@@ -43,6 +43,7 @@ O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e J
 
 Já estão disponíveis:
 
+- Tela inicial em caderno fechado sobre a mesa escura, com capa, animação de abertura e páginas internas mostrando os registros como fotografias.
 - Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
 - Personagem de MJ em PNG (`assets/sprites/MJ.png`), mostrada em cena somente durante os monólogos.
 - Comandos por ícones pixelados para **Conversar**, **Ir para** e **Celular**, sem sidebar visual.
@@ -161,6 +162,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── styles.css       # Aparência, animações e responsividade
 ├── js/
 │   ├── bootstrap.js # Composição e injeção de dependências do jogo
+│   ├── title-menu.js # Tela inicial: capa do caderno e páginas de registros
 │   ├── config.js    # Configurações globais (tamanhos, temas, etc.)
 │   ├── data.js      # Locais, cenas, personagem e conteúdo narrativo
 │   ├── state.js     # Estado centralizado do jogo
@@ -225,6 +227,18 @@ O padrão implementado para mecânicas e animações está em
 ## Fluxo do protótipo atual
 
 ```text
+Caderno sobre a mesa
+   │
+   ├── Novo jogo ──> Abre o caderno ──> Fade ──> Cutscene inicial
+   │
+   └── Carregar ──> Abre o caderno ──> Páginas com os registros ──> Selecionar ──> Load
+                          ▲
+                          └── Voltar fecha o caderno
+```
+
+Depois disso o protótipo combina exploração point-and-click no cenário com a interface do celular:
+
+```text
 Cenário
    │
    ├── Conversar ──> Diálogo ou monólogo ──> Cenário
@@ -236,7 +250,7 @@ Cenário
    └── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
 ```
 
-O protótipo combina exploração point-and-click no cenário com a interface do celular:
+- **Tela inicial:** caderno fechado sobre a mesa escura. `Novo jogo` e `Carregar` são rótulos gravados na arte, com áreas de toque sobrepostas. A página aberta do próprio caderno é a tela de Load, e **Carregar** nunca abre um menu externo. A tela inicial apenas apresenta e seleciona o registro: o Save System continua sendo a fonte de verdade, sem formato próprio.
 
 - **Hotspots:** objetos clicáveis no beco (cofre, celular) com feedback visual e acessibilidade por teclado.
 - **Bolsa:** inventário narrativo que registra o Celular de Lulith e permite a ação **USAR** para ativar o aparelho.
@@ -291,7 +305,7 @@ O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior 
 
 ## Testes
 
-   O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos, layout da Galeria, teclado virtual e entrada de texto:
+   O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos, layout da Galeria, teclado virtual, entrada de texto e a tela inicial:
 
    ```bash
    npm test
@@ -308,6 +322,8 @@ O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior 
    - `test/save-system.test.js` — persistência, validação, load e autosave.
    - `test/text-input.test.js` — teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
    - `test/scene-transition.test.js` — fases da transição, concorrência, bloqueio de input, estados e reduced motion.
+   - `test/title-menu.test.js` — estados, animação, paginação e delegação de carga da tela inicial.
+   - `test/tela-inicial.test.js` — bootstrap real contra o DOM publicado e geometria conferida contra `assets/interfaces/menu.png` e `save-menu.png`.
 
 ## Critérios de validação
 
