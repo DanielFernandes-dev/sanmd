@@ -2294,6 +2294,11 @@ button:hover:not(:disabled) .action-icon {
 @media (hover: hover) and (pointer: fine) {
   #notebook-cover button:hover { background: #ffd38522; box-shadow: 0 0 18px #edb56044; }
 }
+/* O WebView Android pinta o tap highlight (véu azulado) sobre o elemento pressionado:
+   nos rótulos impressos da arte ele vira um retângulo visível, e nas fotos do caderno
+   um retângulo fora do lugar. Vale para a capa e para a página de registros, porque
+   os dois ficam dentro de #title-menu. Mesmo ajuste já usado nos botões do gameplay. */
+#title-menu button { -webkit-tap-highlight-color: transparent; }
 #title-menu button:focus-visible { outline: 3px solid #ffe0a0; outline-offset: 3px; }
 /* Os rótulos da capa são arte impressa: o anel dourado acima sobrescreveria
    "Novo jogo" e "Carregar" ao tocar ou navegar por teclado. Esta regra precisa
