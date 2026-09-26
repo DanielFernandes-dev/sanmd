@@ -169,3 +169,44 @@ jogador pede movimento reduzido. Limpar o timer de proteção após cada fade.
 Consequências: novas interações têm um ponto explícito de extensão, os efeitos
 visuais ficam separados das regras narrativas e o formato de saves não muda.
 Contrato e extensão: [Padrão das mecânicas](MECHANICS_PATTERN.md).
+
+## 2026-09-26 — Regras gerais de design na raiz e contratos específicos nos assets
+
+Status: aceito.
+
+Contexto: as regras de design estavam dispersas. A direção artística vivia em
+`IDEIA_CONCEITUAL.md`, a arquitetura e o estado atual em `ESTRUTURA_GAMING.md`,
+os contratos de tempo em `docs/MECHANICS_PATTERN.md` e as medidas de arte em três
+README dentro de `assets/`. Não havia lugar que declarasse o que vale para toda
+cena, toda interface e todo asset, e `styles.css` já carregava 166 hexes distintos,
+sete variáveis declaradas e nunca usadas, dois nomes para o mesmo roxo e uma
+regra de toque de `60×60px` em documento que o código não usa.
+
+Decisão: criar `REGRAS_DE_DESIGN.md` na raiz como canon das regras transversais,
+declarando tokens, composição de tela, movimento, estados de interação,
+acessibilidade, naming, contrato comum de arte, pipeline e validação. O
+documento declara o canon em vez de descrever o código: onde a implementação
+divergir, a divergência é registrada como pendência com arquivo e linha, não
+normalizada em silêncio. As regras específicas de cada tipo de arte permanecem
+nos README de `assets/cenario`, `assets/interfaces` e `assets/sprites`, e a raiz
+os referencia por link sem duplicar medida. Duas regras de hierarquia sustentam
+a separação: um asset não redefine regra geral, e regra geral não duplica medida
+de asset. Nenhum arquivo de código foi alterado; `README.md` e
+`ESTRUTURA_GAMING.md` passaram a referenciar o novo documento.
+
+Consequências: existe um único lugar para deciding regra de design, e a
+separação entre transversal e específico fica explícita em vez de implícita na
+estrutura de pastas. A seção de pendências registra o que o código viola, entre
+elas a ausência de `env(safe-area-inset-*)`, a cobertura parcial de
+`prefers-reduced-motion`, o foco removido da capa do caderno, alvos abaixo de
+`44px` e a versão mínima de WebView não declarada, que é o que impede decidir se
+o uso de `:has()` no layout é seguro. As regras específicas de assets não foram
+alteradas, e a promoção delas para a raiz permanece em aberto. O registro formal
+de voz do texto do jogo continua pendente: o projeto tem personagem e princípio
+narrativo, mas nenhum documento declara idioma, cadência ou comprimento de linha.
+Contrato e extensão: [Regras de design](../REGRAS_DE_DESIGN.md).
+
+Validação: os 108 testes existentes seguem aprovados com `node --test`, sem
+alteração de código. Os 16 links relativos e as 14 âncoras internas do novo
+documento foram conferidos contra o repositório, e as citações de linha usadas
+na seção de pendências foram verificadas em `styles.css`.

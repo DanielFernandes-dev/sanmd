@@ -192,6 +192,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── GDD.md           # Visão completa do jogo e da narrativa
 ├── IDEIA_CONCEITUAL.md # Decisões conceituais e pendências atuais
 ├── ESTRUTURA_GAMING.md # Arquitetura, estado implementado e contratos técnicos
+├── REGRAS_DE_DESIGN.md # Regras gerais de design e índice dos contratos de assets
 ├── TODO.md          # Lista de tarefas do protótipo
 ├── docs/
 │   ├── ADR_LOG.md   # Registro de decisões de arquitetura
@@ -209,6 +210,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
    |---|---|
    | [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
    | [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
+   | [`REGRAS_DE_DESIGN.md`](REGRAS_DE_DESIGN.md) | Regras gerais de design e índice dos contratos de assets |
    | [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
    | [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
    | [`docs/ADR_LOG.md`](docs/ADR_LOG.md) | Registro de decisões de arquitetura |

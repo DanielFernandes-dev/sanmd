@@ -2037,6 +2037,7 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
 - [[TODO]] — tarefas concluídas e pendentes.
 - [[GDD]] — visão narrativa e mecânicas futuras.
 - [[IDEIA_CONCEITUAL]] — decisões conceituais e pendências atuais.
+- [[REGRAS_DE_DESIGN]] — regras gerais de design e índice dos contratos de assets.
 - [index.html](index.html) — estrutura atual.
    - [styles.css](styles.css) — apresentação atual.
    - [js/data.js](js/data.js) — dados narrativos atuais.
