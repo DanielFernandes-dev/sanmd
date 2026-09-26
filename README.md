@@ -43,6 +43,8 @@ O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e J
 
 Já estão disponíveis:
 
+- Abertura com revelação central do título e iluminação do menu; Skip por duplo clique/toque (som do interruptor pendente).
+
 - Tela inicial em caderno fechado sobre a mesa escura, com capa, animação de abertura e páginas internas mostrando os registros como fotografias.
 - Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
 - Personagem de MJ em PNG (`assets/sprites/MJ.png`), mostrada em cena somente durante os monólogos.
@@ -145,6 +147,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 
 | Ação | Controle |
 |---|---|
+| Pular cutscene | Duplo clique / duplo toque |
 | Iniciar conversa | Botão **Conversar** |
 | Mostrar destinos | Botão **Ir para** |
 | Escolher destino | Opção do menu **Ir para** |
@@ -217,6 +220,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
    | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
    | [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
    | [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
+   | [`docs/cutscenes.md`](docs/cutscenes.md) | Ciclo de vida, Skip e apresentação da abertura |
    | [`docs/SCENE_TRANSITIONS.md`](docs/SCENE_TRANSITIONS.md) | Contrato das transições globais de cena |
    | [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
    | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
@@ -229,9 +233,9 @@ O padrão implementado para mecânicas e animações está em
 ## Fluxo do protótipo atual
 
 ```text
-Caderno sobre a mesa
+Preto → SANMD → significado → subida → luz → Caderno sobre a mesa
    │
-   ├── Novo jogo ──> Abre o caderno ──> Fade ──> Cutscene inicial
+   ├── Novo jogo ──> Abre o caderno ──> Fade ──> Entrada narrativa provisória
    │
    └── Carregar ──> Abre o caderno ──> Páginas com os registros ──> Selecionar ──> Load
                           ▲

@@ -77,7 +77,7 @@ function criarTelaInicial({ game, document, window }) {
     get('notebook-next').disabled = page === total - 1;
   }
   async function openLoad() {
-    if (mode !== 'menu') return;
+    if (menu.inert || mode !== 'menu') return;
     page = 0;
     render();
     await animateBook(true);
@@ -121,7 +121,7 @@ function criarTelaInicial({ game, document, window }) {
     }
   }
   async function newGame() {
-    if (mode !== 'menu') return;
+    if (menu.inert || mode !== 'menu') return;
     // Não mostrar registros antigos durante a abertura de uma partida nova.
     get('notebook-saves').replaceChildren();
     status.textContent = '';
@@ -144,12 +144,13 @@ function criarTelaInicial({ game, document, window }) {
     if (!playing || services.isSceneTransitioning()) return;
     services.registrarAutosave();
   }
-  function iniciar() {
+  function iniciar({ bloqueado = false } = {}) {
     if (initialized) return;
     initialized = true;
     services.configurarAnimacoes();
     app.inert = true;
     setMode('menu');
+    menu.inert = bloqueado;
     get('notebook-new').addEventListener('click', newGame);
     get('notebook-load').addEventListener('click', openLoad);
     get('notebook-back').addEventListener('click', close);
@@ -161,7 +162,7 @@ function criarTelaInicial({ game, document, window }) {
     });
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') saveOnExit(); });
     window.addEventListener('pagehide', saveOnExit);
-    get('notebook-new').focus();
+    if (!bloqueado) get('notebook-new').focus();
   }
   return Object.freeze({ iniciar, newGame, openLoad, close, load, saveOnExit, getMode: () => mode });
 }

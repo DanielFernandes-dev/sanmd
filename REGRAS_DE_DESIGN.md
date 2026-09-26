@@ -358,7 +358,7 @@ sustenta.
 - Overlay de tela cheia usa `inset: 0` e z-index próprio.
 - Camadas de cena têm ordem fixa: cenário `0`, objeto `1`, personagem `2`,
   hotspot `3`, status `3`, diálogo `5`, menu `6`, fade `7`, celular `50`, tela
-  inicial `1000`. Novo elemento entra nessa ordem, não no topo por conveniência.
+  inicial `1000`, cutscene `1001`. Novo elemento entra nessa ordem, não no topo por conveniência.
 - `pointer-events` é explícito: camada que não recebe toque declara
   `pointer-events: none`; área invisível sobre arte declara `pointer-events: auto`
   e `touch-action: manipulation`.
@@ -931,3 +931,5 @@ Contratos de sistema:
 - [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) — slots, autosave e snapshot.
 - [`docs/ADR_LOG.md`](docs/ADR_LOG.md) — decisões de arquitetura e apresentação.
 - [`TODO.md`](TODO.md) — roadmap executável, incluindo pendências de validação.
+A abertura usa títulos de apresentação de `7cqw` e `2.4cqw`, conforme a decisão
+local registrada em [ADR_LOG](docs/ADR_LOG.md) e no [sistema de Cutscene](docs/cutscenes.md).

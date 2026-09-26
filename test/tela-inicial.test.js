@@ -75,7 +75,7 @@ class Element {
     this.classList = new ClassList();
     this.dataset = {};
     this.attributes = {};
-    this.style = {};
+    this.style = { setProperty() {} };
     this.ouvintes = new Map();
     this.disabled = false;
     this.hidden = false;
@@ -222,6 +222,7 @@ test("Novo jogo abre o caderno, faz fade, reinicia o estado e só então chama a
   const { contexto, elementos } = criarAmbiente();
   vm.runInContext("game.state.inventory.push('sobra-da-partida-anterior');"
     + "game.state.sceneState.beco_entrada = { visited: true };", contexto);
+  await concluirIntro(contexto);
   await vm.runInContext("menu.newGame()", contexto);
 
   assert.equal(vm.runInContext("game.state.inventory.length", contexto), 0, "o estado anterior não pode vazar");
@@ -243,6 +244,7 @@ test("Carregar abre a página, usa os registros reais e volta para a capa fechad
       saveState: { saveVersion: 1, capturedAt: 1, localizacao: { local: "beco", cena: "beco_entrada" } } }
   }));
 
+  await concluirIntro(contexto);
   await vm.runInContext("menu.openLoad()", contexto);
   assert.equal(elementos.get("title-menu").dataset.state, "load");
   const slots = elementos.get("notebook-saves").children;
@@ -255,6 +257,7 @@ test("Carregar abre a página, usa os registros reais e volta para a capa fechad
   assert.equal(slots[2].getAttribute("aria-hidden"), "true");
   assert.equal(elementos.get("notebook-status").textContent, "");
 
+  await concluirIntro(contexto);
   await vm.runInContext("menu.close()", contexto);
   assert.equal(elementos.get("title-menu").dataset.state, "menu");
   assert.equal(elementos.get("notebook-open").hidden, true, "o caderno fecha de novo");
@@ -262,6 +265,7 @@ test("Carregar abre a página, usa os registros reais e volta para a capa fechad
 
 test("Carregar sem registros abre normalmente e avisa discretamente", async () => {
   const { contexto, elementos } = criarAmbiente();
+  await concluirIntro(contexto);
   await vm.runInContext("menu.openLoad()", contexto);
   assert.equal(elementos.get("title-menu").dataset.state, "load", "a tela não é bloqueada por estar vazia");
   assert.equal(elementos.get("notebook-status").textContent, "Nenhum registro disponível.");
@@ -276,6 +280,7 @@ test("a saída reaproveita o autosave existente e não cria nem sobrescreve foto
     photoExpression: "sorriso", saveState: { saveVersion: 1, capturedAt: 1 } };
   storage.setItem("sanmd:saves", JSON.stringify({
     storageVersion: 1, manualSaves: [manual], autosave: null }));
+  await concluirIntro(contexto);
   await vm.runInContext("menu.newGame()", contexto);
   vm.runInContext("game.state.inventory.push('progresso')", contexto);
 
@@ -294,9 +299,30 @@ test("a saída reaproveita o autosave existente e não cria nem sobrescreve foto
 
 test("movimento reduzido encurta a animação sem pular a etapa visível", async () => {
   const { contexto, elementos } = criarAmbiente({ movimentoReduzido: true });
+  await concluirIntro(contexto);
   const abertura = vm.runInContext("menu.openLoad()", contexto);
   assert.equal(elementos.get("title-menu").dataset.state, "opening");
   assert.equal(elementos.get("notebook-open").hidden, false, "o caderno já aparece abrindo");
   await abertura;
   assert.equal(elementos.get("title-menu").dataset.state, "load");
+});
+
+async function concluirIntro(contexto) {
+  while (vm.runInContext('game.services.isCutsceneActive()', contexto)) await Promise.resolve();
+}
+
+test('intro precede controle do menu e snapshot ignora apresentação', async () => {
+  const { contexto, elementos } = criarAmbiente();
+  assert.equal(elementos.get('title-menu').inert, true);
+  assert.equal(elementos.get('cutscene-overlay').hidden, false);
+  await vm.runInContext('menu.newGame(); menu.openLoad();', contexto);
+  assert.equal(elementos.get('title-menu').dataset.state, 'menu');
+  const before = vm.runInContext('JSON.stringify(game.services.capturarEstadoJogo())', contexto);
+  await concluirIntro(contexto);
+  assert.equal(elementos.get('title-menu').inert, false);
+  assert.equal(elementos.get('cutscene-overlay').hidden, true);
+  const after = vm.runInContext('JSON.stringify(game.services.capturarEstadoJogo())', contexto);
+  const normalize = value => { const data = JSON.parse(value); delete data.capturedAt; return data; };
+  assert.deepEqual(normalize(before), normalize(after));
+  assert.doesNotMatch(after, /cutscene|intro_abertura|skipDoubleInput|pausa-titulo/);
 });

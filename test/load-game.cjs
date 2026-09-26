@@ -6,7 +6,9 @@ module.exports = function carregarScripts(raiz) {
   const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
   const scripts = [...html.matchAll(/<script src="([^"?]+)(?:\?[^\"]*)?"><\/script>/g)]
     .map(([, arquivo]) => fs.readFileSync(path.join(raiz, arquivo), "utf8"))
-    .join("\n").replace("titleMenu.iniciar();", "game.iniciar();");
+    .join("\n")
+    .replace("titleMenu.iniciar({ bloqueado: true });", "game.iniciar();")
+    .replace("game.services.iniciarCutscene('intro_abertura');", "");
   // O bootstrap cria a instância (const game) no mesmo script. O harness expõe
   // a API da instância nos globals para os testes continuarem usando o formato antigo,
   // achatando el por componente (scene/bag/dialogue/phone/gallery).

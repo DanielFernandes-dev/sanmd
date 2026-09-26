@@ -2336,3 +2336,37 @@ button:hover:not(:disabled) .action-icon {
   #notebook-saves { grid-template-rows: minmax(80px, 1fr); }
   .notebook-photo strong, .notebook-photo > span { font-size: 12px; }
 }
+
+/* Cutscene: camada 1001 cobre o menu 1000, no mesmo lock de composição. */
+:root {
+  --cutscene-black: #000;
+  --cutscene-title-size: 7cqw;
+  --cutscene-subtitle-size: 2.4cqw;
+}
+#cutscene-overlay { position: fixed; inset: 0; z-index: 1001; display: grid; place-items: center; overflow: hidden; pointer-events: auto; touch-action: none; }
+#cutscene-overlay[hidden] { display: none; }
+#cutscene-stage { position: relative; width: min(100vw, 177.68dvh); aspect-ratio: 1672 / 941; container-type: inline-size; overflow: hidden; box-shadow: 0 0 0 100vmax var(--cutscene-black); }
+#cutscene-darkness, #cutscene-darkness::after { position: absolute; inset: 0; background: var(--cutscene-black); pointer-events: none; }
+#cutscene-darkness::after { content: ''; background: radial-gradient(ellipse at 50% 0%, transparent 0%, var(--cutscene-black) 75%); }
+#cutscene-titles { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3cqw; color: var(--cor-texto); font-family: var(--fonte); line-height: 1.2; pointer-events: none; }
+#cutscene-title { font-size: var(--cutscene-title-size); font-weight: 700; letter-spacing: .08em; }
+#cutscene-subtitle { font-size: var(--cutscene-subtitle-size); font-weight: 400; }
+#cutscene-title, #cutscene-subtitle { clip-path: inset(0 50%); }
+#cutscene-stage[data-phase='titulo'] #cutscene-title,
+#cutscene-stage[data-phase='subtitulo'] #cutscene-subtitle { animation: intro-revelar-titulo var(--cutscene-duration) steps(40, end) both; }
+@keyframes intro-revelar-titulo { from { clip-path: inset(0 50%); } to { clip-path: inset(0 0); } }
+#cutscene-stage[data-phase='pausa-titulo'] #cutscene-title,
+#cutscene-stage[data-phase='subtitulo'] #cutscene-title,
+#cutscene-stage[data-phase='pausa-completa'] #cutscene-title,
+#cutscene-stage[data-phase='pausa-completa'] #cutscene-subtitle,
+#cutscene-stage[data-phase='subida'] #cutscene-title,
+#cutscene-stage[data-phase='subida'] #cutscene-subtitle { clip-path: inset(0 0); }
+#cutscene-stage[data-phase='subida'] #cutscene-titles { animation: intro-subir-titulo var(--cutscene-duration) steps(60, end) both; }
+@keyframes intro-subir-titulo { from { transform: translateY(0); } to { transform: translateY(-100%); } }
+#cutscene-stage[data-phase='luz'] #cutscene-darkness { background: transparent; animation: intro-acender-luz var(--cutscene-duration) ease-in both; }
+#cutscene-stage[data-phase='luz'] #cutscene-darkness::after { animation: intro-abrir-luz var(--cutscene-duration) ease-out both; }
+@keyframes intro-acender-luz { from { opacity: 1; } to { opacity: 0; } }
+@keyframes intro-abrir-luz { from { background-color: var(--cutscene-black); } 45%, to { background-color: transparent; } }
+#cutscene-stage[data-reduced='true'] #cutscene-title,
+#cutscene-stage[data-reduced='true'] #cutscene-subtitle { animation-timing-function: step-start; }
+#cutscene-stage[data-reduced='true'][data-phase='subida'] #cutscene-titles { animation: none; visibility: hidden; }

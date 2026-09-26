@@ -1007,7 +1007,9 @@ Status: **planejada para o Protótipo 3**.
 
 ## Tela Inicial
 
-O jogo abre em um caderno sobre a mesa escura, com a cidade noturna ao fundo. A tela é parte do universo do jogo, não um menu web: o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` são gravados em `assets/interfaces/menu.png`, e os controles são áreas de toque transparentes sobrepostas a eles.
+A [Cutscene 01](docs/cutscenes.md) começa em preto, apresenta o título e revela
+pela luz o menu já preparado, bloqueado até a finalização ou Skip.
+O menu mostra um caderno sobre a mesa escura, com a cidade noturna ao fundo. A tela é parte do universo do jogo, não um menu web: o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` são gravados em `assets/interfaces/menu.png`, e os controles são áreas de toque transparentes sobrepostas a eles.
 
 ### Composição
 

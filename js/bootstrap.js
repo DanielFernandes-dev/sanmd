@@ -1,7 +1,8 @@
 // O navegador cria uma instância; testes podem criar outras com dependências próprias.
 const game = criarJogo({ document, storage: obterStorageDisponivel() });
 const titleMenu = criarTelaInicial({ game, document, window });
-titleMenu.iniciar();
+titleMenu.iniciar({ bloqueado: true });
+game.services.iniciarCutscene('intro_abertura');
 
 /** @returns {Storage|null} Alguns navegadores bloqueiam até o acesso a localStorage. */
 function obterStorageDisponivel() {

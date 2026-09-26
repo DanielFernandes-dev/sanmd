@@ -210,3 +210,20 @@ Validação: os 108 testes existentes seguem aprovados com `node --test`, sem
 alteração de código. Os 16 links relativos e as 14 âncoras internas do novo
 documento foram conferidos contra o repositório, e as citações de linha usadas
 na seção de pendências foram verificadas em `styles.css`.
+
+## 2026-09-26 — Abertura e controlador reutilizável de Cutscene
+
+Status: aceito.
+
+Decisão: compor um controlador por jogo, com sequência declarada em `js/data.js`,
+tempos em CONFIG e visual separado. A abertura antecede o controle do menu, sem
+recriar o caderno. Skip por dois inputs primários usa o mesmo finalizador do
+fim natural, invalida callbacks e consome eventos sintetizados do gesto.
+
+Consequências: estado visual fica em closures, fora do Save System; nenhuma flag
+persistente impede repetição da intro. O novo overlay ocupa 1001 acima do menu
+1000; o fade global continua responsável por navegação e fornece o preparo de
+imagens. A tipografia de apresentação usa tokens de 7cqw/2.4cqw, exceção local à
+escala de títulos de interface, para hierarquia no palco 1672:941. Movimento
+reduzido preserva conteúdo e corta deslocamento. O efeito de interruptor tem
+integração opcional; asset final pendente. Ver [Cutscenes](cutscenes.md).

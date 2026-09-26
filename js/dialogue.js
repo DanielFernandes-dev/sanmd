@@ -70,6 +70,17 @@ function criarSistemaDialogos(context) {
     digitarTexto(fala.texto);
   }
 
+  /** Efeito curto opcional. Ausência/rejeição de autoplay não atrasa apresentação. */
+  function tocarEfeitoTransitorio(source) {
+    if (!source || !window.Audio) return () => {};
+    let audio;
+    try {
+      audio = new window.Audio(source);
+      audio.play()?.catch(() => {});
+    } catch { /* WebView sem áudio: apresentação segue em silêncio. */ }
+    return () => { if (audio) { audio.pause(); audio.removeAttribute('src'); audio.load(); } };
+  }
+
   /** Tocar blip texto.
    */
   function tocarBlipTexto() {
@@ -170,6 +181,7 @@ function criarSistemaDialogos(context) {
     obterFalasMonologo,
     mostrarLinha,
     tocarBlipTexto,
+    tocarEfeitoTransitorio,
     digitarTexto,
     finalizarDigitacao,
     avancarDialogo,

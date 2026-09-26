@@ -374,3 +374,21 @@ const ITEMS = {
     consumable: false
   }
 };
+
+// IDs narrativos independentes dos caminhos dos assets. Som final ainda pendente.
+const CUTSCENES = Object.freeze({
+  intro_abertura: Object.freeze({
+    title: 'SANMD', subtitle: 'Sim, Acredite Nas Mentiras Dele kk',
+    assets: ['assets/interfaces/menu.png'], lampAudio: null,
+    steps: [
+      { phase: 'preto', duration: 'introBlackHold' },
+      { phase: 'titulo', duration: 'titleReveal', reduced: 'reducedMotion' },
+      { phase: 'pausa-titulo', duration: 'titleHold' },
+      { phase: 'subtitulo', duration: 'subtitleReveal', reduced: 'reducedMotion' },
+      { phase: 'pausa-completa', duration: 'completeTitleHold' },
+      { phase: 'subida', duration: 'titleExit', reduced: 'reducedMotion' },
+      { phase: 'preto-final', duration: 'postTitleBlackHold' },
+      { phase: 'luz', duration: 'lampReveal', reduced: 'reducedMotion', sound: true }
+    ]
+  })
+});
