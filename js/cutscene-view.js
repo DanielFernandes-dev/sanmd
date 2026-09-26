@@ -35,10 +35,10 @@ function criarVisualAbertura({ document, window = {}, config, services }) {
     words.forEach((word, index) => {
       word.element.style.transform = translate((expanded ? layout.expanded : layout.contracted)[index]
         - (withLaugh ? layout.laughWidth / 2 : 0));
-      word.suffix.style.clipPath = expanded ? 'inset(0 -0.15em 0 0)' : 'inset(0 100% 0 0)';
+      word.suffix.style.clipPath = expanded ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)';
     });
     laugh.style.transform = translate(layout.full / 2 - (withLaugh ? layout.laughWidth / 2 : 0));
-    laugh.style.clipPath = withLaugh ? 'inset(0 -0.15em 0 0)' : 'inset(0 100% 0 0)';
+    laugh.style.clipPath = withLaugh ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)';
   }
   return Object.freeze({
     iniciar(data) {
@@ -87,12 +87,12 @@ function criarVisualAbertura({ document, window = {}, config, services }) {
             { transform: translate(expanding ? layout.contracted[index] : layout.expanded[index]) },
             { transform: word.element.style.transform }, duration, reduced);
           if (expanding) animate(word.suffix,
-            { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 -0.15em 0 0)' }, duration, reduced);
+            { clipPath: 'inset(0 100% 0 0)' }, { clipPath: 'inset(0 0% 0 0)' }, duration, reduced);
         });
         if (expanding) animate(title, { transform: 'scale(var(--cutscene-contracted-scale))' },
           { transform: 'scale(1)' }, duration, reduced);
         else animate(laugh, { clipPath: 'inset(0 100% 0 0)' },
-          { clipPath: 'inset(0 -0.15em 0 0)' }, duration, reduced);
+          { clipPath: 'inset(0 0% 0 0)' }, duration, reduced);
       }
       if (step.sound) stopAudio = services.tocarEfeitoTransitorio(sequence.lampAudio);
     },

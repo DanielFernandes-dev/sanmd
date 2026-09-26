@@ -2355,7 +2355,8 @@ button:hover:not(:disabled) .action-icon {
 /* Largura é medida só nas mudanças de estado; cada palavra se move por transform. */
 #cutscene-title { position: relative; height: 1.3em; white-space: nowrap; }
 .cutscene-word, .cutscene-laugh { position: absolute; left: 50%; top: 0; display: flex; }
-.cutscene-suffix { display: inline-block; }
+.cutscene-suffix { display: inline-block; padding-right: .1em; }
+.cutscene-laugh { padding-right: .1em; }
 .cutscene-suffix, .cutscene-laugh { clip-path: inset(0 100% 0 0); }
 #cutscene-stage[data-phase='siglas'] #cutscene-titles,
 #cutscene-stage[data-phase='pausa-siglas'] #cutscene-titles,

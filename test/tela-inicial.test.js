@@ -309,6 +309,7 @@ test("movimento reduzido encurta a animação sem pular a etapa visível", async
 
 async function concluirIntro(contexto) {
   await esperarIluminacao(contexto);
+  vm.runInContext('game.services.pularCutscene()', contexto);
 }
 
 /** Aguarda o relógio visual do harness até a finalização natural. */
@@ -334,9 +335,12 @@ test('intro precede controle do menu e snapshot ignora apresentação', async ()
   assert.doesNotMatch(after, /cutscene|intro_abertura|skipDoubleInput|pausa-siglas/);
 });
 
-test('fim natural da luz libera o menu sem gesto adicional', async () => {
+test('luz permanece visível e bloqueia menu até Skip', async () => {
   const { contexto, elementos } = criarAmbiente();
-  await concluirIntro(contexto);
+  await esperarIluminacao(contexto);
+  assert.equal(elementos.get('cutscene-stage').dataset.phase, 'luz');
+  assert.equal(elementos.get('title-menu').inert, true);
+  vm.runInContext('game.services.pularCutscene()', contexto);
   assert.equal(elementos.get('cutscene-stage').dataset.phase, 'fim');
   assert.equal(elementos.get('title-menu').inert, false);
   assert.equal(elementos.get('cutscene-overlay').hidden, true);

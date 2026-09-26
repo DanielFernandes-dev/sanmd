@@ -27,12 +27,14 @@ Outras apresentações podem ser injetadas na mesma fábrica sem duplicar Skip.
 
 `iniciarCutscene(id, onComplete)` recusa concorrência e bloqueia imediatamente.
 O carregador global `prepareSceneImages` fornece cache, decode e timeout para
-a arte do menu. Depois, um único timer por vez avança pelos passos. Término
+a arte do menu. Depois, um único timer por vez avança pelos passos, exceto o passo final com `hold`. Término
 natural e `pularCutscene()` convergem em `finalizar()`, que cancela timer,
 invalida callbacks por geração, limpa a intenção de Skip e finaliza o visual.
 O visual cancela animações Web Animations/CSS, desconecta observação de tamanho,
 interrompe áudio e revela o mesmo menu, com foco em Novo jogo. A conclusão roda
-uma vez. Não há espera por gesto depois da luz.
+uma vez. Na abertura, a fase `luz` declara `hold: true`: o acendimento termina e
+a cena iluminada permanece, sem timer ou repetição de áudio, até o Skip.
+Sequências sem `hold` continuam finalizando naturalmente.
 
 Skip durante preparo aguarda somente o carregamento já limitado pelo timeout
 global; não executa os passos. Falha de asset não prende a interface.

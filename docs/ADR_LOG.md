@@ -265,5 +265,36 @@ As mesmas cinco iniciais se deslocam e abrem seus complementos, formando o
 significado. Só então entra `kk`; o bloco completo pausa e sobe. Usar a fonte
 do canon em itálico, 700, com tamanho expandido de 3.8cqw e escala contraída
 1.84. Medidas são feitas por estado e movimentos usam transform/clip-path.
-A conclusão natural libera o menu automaticamente. Som técnico original de
-420 ms sincroniza com a luz, sem depender de autoplay para concluir.
+A conclusão natural liberava o menu automaticamente, decisão substituída pela
+entrada seguinte. Som técnico original de 420 ms sincroniza com a luz, sem
+depender de autoplay para concluir.
+
+## 2026-09-26 — A luz acesa espera o Skip
+
+Status: aceito; substitui a conclusão natural que liberava o menu sozinha.
+
+Contexto: com o término natural, a abertura entregava o menu no mesmo instante
+em que a luz terminava, e o primeiro toque do jogador caía em um alvo que ele
+não tinha visto aparecer. A espera também evita a última disfarçada: o clip
+negativo de `inset(0 -0.15em 0 0)` existia só para sangrar a letra na borda do
+texto, e o título ficava sem respiro depois de revelado.
+
+Decisão: um passo pode declarar `hold: true`. O controlador apresenta o passo e
+não agenda timer, então `finalizar()` deixa de ser chamado pela sequência e
+passa a ser chamado só por `pularCutscene()`. A luz acende em `ease-out` a
+partir do canto da lâmpada e a cena permanece visível, com o menu `inert`,
+até o duplo toque. Nenhuma tecla foi acrescentada como caminho sem ponteiro:
+o duplo toque já é o gesto de Skip em todas as fases e manter um único caminho
+evita duas formas de encerrar a mesma espera. O sangue da letra passa a ser
+`padding-right: .1em` em `.cutscene-suffix` e `.cutscene-laugh`, e o clip
+volta a ser `inset(0 0% 0 0)`.
+
+Consequências: `intro_abertura` é a única sequência com `hold`, e somente no
+último passo; um roteiro sem `hold` continua finalizando naturalmente, com o
+mesmo finalizador e a mesma conclusão única. Sem timer não há segunda entrada
+na fase, então o som da lâmpada toca uma vez. A espera continua sendo estado
+transiente de apresentação: não é cancelamento do Save System, não entra no
+snapshot e cada abertura do aplicativo repete a luz. A primeira interação do
+jogador passa a ser um duplo toque intencional sobre uma cena já iluminada, e
+os testes que percorrem a abertura precisam encerrar com `pularCutscene()`.
+Ver [Cutscenes](cutscenes.md).

@@ -68,6 +68,8 @@ function criarCutsceneController({ document, window, config, services, sequences
       const reduced = services.movimentoReduzido();
       const duration = config.cutscene[reduced && step.reduced ? step.reduced : step.duration];
       visual.apresentar(step, duration, reduced);
+      // A apresentação pode permanecer no último estado até o Skip.
+      if (step.hold) { timer = null; return; }
       timer = schedule(next, duration);
     }
     // O carregador global compartilha cache, decode e limite de espera.
