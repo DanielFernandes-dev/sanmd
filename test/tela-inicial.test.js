@@ -308,7 +308,14 @@ test("movimento reduzido encurta a animação sem pular a etapa visível", async
 });
 
 async function concluirIntro(contexto) {
-  while (vm.runInContext('game.services.isCutsceneActive()', contexto)) await Promise.resolve();
+  await esperarIluminacao(contexto);
+}
+
+/** Aguarda o relógio visual do harness até a finalização natural. */
+async function esperarIluminacao(contexto) {
+  for (let i = 0; i < 60 && vm.runInContext('game.services.isCutsceneActive()', contexto); i++) {
+    await Promise.resolve();
+  }
 }
 
 test('intro precede controle do menu e snapshot ignora apresentação', async () => {
@@ -324,5 +331,15 @@ test('intro precede controle do menu e snapshot ignora apresentação', async ()
   const after = vm.runInContext('JSON.stringify(game.services.capturarEstadoJogo())', contexto);
   const normalize = value => { const data = JSON.parse(value); delete data.capturedAt; return data; };
   assert.deepEqual(normalize(before), normalize(after));
-  assert.doesNotMatch(after, /cutscene|intro_abertura|skipDoubleInput|pausa-titulo/);
+  assert.doesNotMatch(after, /cutscene|intro_abertura|skipDoubleInput|pausa-siglas/);
+});
+
+test('fim natural da luz libera o menu sem gesto adicional', async () => {
+  const { contexto, elementos } = criarAmbiente();
+  await concluirIntro(contexto);
+  assert.equal(elementos.get('cutscene-stage').dataset.phase, 'fim');
+  assert.equal(elementos.get('title-menu').inert, false);
+  assert.equal(elementos.get('cutscene-overlay').hidden, true);
+  await vm.runInContext('menu.openLoad()', contexto);
+  assert.equal(elementos.get('title-menu').dataset.state, 'load');
 });

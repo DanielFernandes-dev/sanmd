@@ -931,5 +931,10 @@ Contratos de sistema:
 - [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) — slots, autosave e snapshot.
 - [`docs/ADR_LOG.md`](docs/ADR_LOG.md) — decisões de arquitetura e apresentação.
 - [`TODO.md`](TODO.md) — roadmap executável, incluindo pendências de validação.
-A abertura usa títulos de apresentação de `7cqw` e `2.4cqw`, conforme a decisão
+A abertura usa um título de `3.8cqw`, itálico, peso 700, com escala contraída
+`1.84`, conforme a decisão
 local registrada em [ADR_LOG](docs/ADR_LOG.md) e no [sistema de Cutscene](docs/cutscenes.md).
+O texto de apresentação é itálico da face `--fonte`, sem arquivo de fonte
+novo, e a leitura pixelada vem de `steps(24, end)` com sombra deslocada sem
+desfoque. A luz é ambiente: revela em `ease-in-out` e, ao contrário da subida
+narrativa, não é cortada no movimento reduzido.

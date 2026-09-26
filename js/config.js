@@ -1,8 +1,9 @@
 const CONFIG = Object.freeze({
   cutscene: Object.freeze({
     skipDoubleInputWindow: 350, introBlackHold: 5000, titleReveal: 1200,
-    titleHold: 650, subtitleReveal: 1500, completeTitleHold: 1600,
-    titleExit: 1800, postTitleBlackHold: 550, lampReveal: 1400, reducedMotion: 100
+    titleHold: 650, titleExpansion: 2000, laughReveal: 450, completeTitleHold: 1600,
+    titleExit: 1800, postTitleBlackHold: 550, lampLightDelay: 70,
+    lampReveal: 1100, reducedMotion: 100
   }),
   sceneTransition: Object.freeze({ out: 320, hold: 100, in: 400, reduced: 10, assetTimeout: 10000 }),
   velocidadeDigitacao: 65,

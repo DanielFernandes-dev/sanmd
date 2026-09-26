@@ -227,3 +227,43 @@ imagens. A tipografia de apresentação usa tokens de 7cqw/2.4cqw, exceção loc
 escala de títulos de interface, para hierarquia no palco 1672:941. Movimento
 reduzido preserva conteúdo e corta deslocamento. O efeito de interruptor tem
 integração opcional; asset final pendente. Ver [Cutscenes](cutscenes.md).
+
+## 2026-09-26 — Significado no lugar do título, luz que espera e som da lâmpada
+
+Status: aceito.
+
+Contexto: a abertura mostrava o significado como subtítulo abaixo do título, e o
+texto subia rápido demais para ser lido. O asset de áudio continuava pendente, e
+uma cutscene que termina sozinha entrega o menu antes de o jogador estar
+pronto para escolher.
+
+Decisão: `#cutscene-siglas` e `#cutscene-frase` ocupam a mesma célula de grid, e
+o significado nasce no lugar do título — uma palavra por letra de SANMD, em
+cascata com `--i`, e a risada por último. Sem arquivo de fonte: o itálico é o
+`font-style` real de `--fonte` e a leitura pixelada vem da revelação em
+`steps(24, end)` com sombra deslocada sem desfoque. A subida vai a 3600ms e a
+luz a 2600ms em `ease-in-out`, porque iluminar é ambiente e leitura de texto é
+narrativa. Um passo com `hold: true` apresenta e não agenda timer: a luz fica
+acesa e só `pularCutscene()` encerra, com `Enter`/`Space` como caminho sem
+ponteiro. O som é sintetizado em `assets/audio/lampada.wav` e o APK libera o
+autoplay em `MainActivity.java`.
+
+Consequências: a espera não é cancelamento do Save System e não entra no
+snapshot; a fase continua ativa e o menu permanece `inert` até o gesto, o que
+torna a primeira interação do jogador um duplo toque intencional. A sequência
+ganhou dois passos e a risada é conteúdo, não rótulo, então não recebe caixa
+alta. A fonte continua entre as quatro faces existentes. Se um dia entrar fonte
+pixel de verdade, é uma quinta face e precisa de revisão deste registro. Ver
+[Cutscenes](cutscenes.md) e [`assets/audio/README.md`](../assets/audio/README.md).
+
+## 2026-09-26 — SANMD como estado contraído do único título
+
+Status: aceito; substitui a apresentação anterior com siglas/frase sobrepostas
+ou separadas e a espera indefinida depois da luz.
+
+As mesmas cinco iniciais se deslocam e abrem seus complementos, formando o
+significado. Só então entra `kk`; o bloco completo pausa e sobe. Usar a fonte
+do canon em itálico, 700, com tamanho expandido de 3.8cqw e escala contraída
+1.84. Medidas são feitas por estado e movimentos usam transform/clip-path.
+A conclusão natural libera o menu automaticamente. Som técnico original de
+420 ms sincroniza com a luz, sem depender de autoplay para concluir.

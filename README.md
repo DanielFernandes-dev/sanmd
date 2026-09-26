@@ -43,7 +43,7 @@ O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e J
 
 Já estão disponíveis:
 
-- Abertura com revelação central do título e iluminação do menu; Skip por duplo clique/toque (som do interruptor pendente).
+- Abertura com um único título itálico: SANMD se expande no significado, recebe `kk` e sobe. Clique/estalo e luz revelam o menu, liberado automaticamente. Duplo clique/toque pula qualquer fase.
 
 - Tela inicial em caderno fechado sobre a mesa escura, com capa, animação de abertura e páginas internas mostrando os registros como fotografias.
 - Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
@@ -233,7 +233,7 @@ O padrão implementado para mecânicas e animações está em
 ## Fluxo do protótipo atual
 
 ```text
-Preto → SANMD → significado → subida → luz → Caderno sobre a mesa
+Preto → SANMD → significado → kk → subida → luz → Caderno sobre a mesa
    │
    ├── Novo jogo ──> Abre o caderno ──> Fade ──> Entrada narrativa provisória
    │

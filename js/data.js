@@ -375,16 +375,20 @@ const ITEMS = {
   }
 };
 
-// IDs narrativos independentes dos caminhos dos assets. Som final ainda pendente.
+// IDs narrativos independentes dos caminhos dos assets. Uma palavra por sigla.
 const CUTSCENES = Object.freeze({
   intro_abertura: Object.freeze({
-    title: 'SANMD', subtitle: 'Sim, Acredite Nas Mentiras Dele kk',
-    assets: ['assets/interfaces/menu.png'], lampAudio: null,
+    title: 'SANMD',
+    significado: ['Sim,', 'Acredite', 'Nas', 'Mentiras', 'Dele'],
+    risada: 'kk',
+    assets: ['assets/interfaces/menu.png'],
+    lampAudio: 'assets/audio/lampada.wav',
     steps: [
       { phase: 'preto', duration: 'introBlackHold' },
-      { phase: 'titulo', duration: 'titleReveal', reduced: 'reducedMotion' },
-      { phase: 'pausa-titulo', duration: 'titleHold' },
-      { phase: 'subtitulo', duration: 'subtitleReveal', reduced: 'reducedMotion' },
+      { phase: 'siglas', duration: 'titleReveal', reduced: 'reducedMotion' },
+      { phase: 'pausa-siglas', duration: 'titleHold' },
+      { phase: 'significado', duration: 'titleExpansion', reduced: 'reducedMotion' },
+      { phase: 'risada', duration: 'laughReveal', reduced: 'reducedMotion' },
       { phase: 'pausa-completa', duration: 'completeTitleHold' },
       { phase: 'subida', duration: 'titleExit', reduced: 'reducedMotion' },
       { phase: 'preto-final', duration: 'postTitleBlackHold' },

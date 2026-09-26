@@ -12,109 +12,91 @@ updated: 2026-09-26
 # Sistema de Cutscene
 
 > [!summary] Objetivo
-> Executar sequências narrativas com bloqueio de input, Skip e finalização comum.
-> A primeira utilização é `intro_abertura`, antes de entregar o menu principal.
-> Navegação continua em [Scene Transitions](SCENE_TRANSITIONS.md); persistência
-> continua no [Save System](SAVE_SYSTEM.md).
+> Sequências com bloqueio de input, Skip e finalização comum. A primeira é
+> `intro_abertura`, antes do menu principal. Navegação permanece no
+> [Scene Transition](SCENE_TRANSITIONS.md); persistência no [Save System](SAVE_SYSTEM.md).
 
-## Responsabilidades e integração
+## Composição e ciclo de vida
 
-`criarJogo` compõe `criarCutsceneController` e injeta a apresentação
-`criarVisualAbertura`. O bootstrap prepara o menu bloqueado e chama
-`game.services.iniciarCutscene('intro_abertura')` uma vez. O gameplay só começa
-pela escolha do menu. Cada abertura do aplicativo executa a intro novamente.
+`criarJogo` compõe o controlador e injeta `criarVisualAbertura`. O bootstrap
+prepara o menu bloqueado e chama `iniciarCutscene('intro_abertura')` uma vez.
+Cada inicialização repete a abertura, sem flag persistente. Gameplay só começa
+pela escolha do menu. Conteúdo e sequência vivem em `CUTSCENES`, em `data.js`.
+Tempos vivem em `CONFIG.cutscene`. O controlador não conhece textos nem DOM.
+Outras apresentações podem ser injetadas na mesma fábrica sem duplicar Skip.
 
-`CUTSCENES`, em `js/data.js`, mapeia IDs narrativos estáveis para conteúdo,
-assets e passos. Cada passo nomeia uma fase visual e uma duração em
-`CONFIG.cutscene`; pode declarar duração alternativa para movimento reduzido
-ou disparo de áudio. O controlador não conhece textos, elementos do caderno,
-keyframes nem regras narrativas. Uma próxima apresentação pode ser injetada
-na mesma fábrica (ou despachada por ID), reutilizando execução e Skip.
-Nenhuma próxima cutscene ou flag narrativa foi implementada.
+`iniciarCutscene(id, onComplete)` recusa concorrência e bloqueia imediatamente.
+O carregador global `prepareSceneImages` fornece cache, decode e timeout para
+a arte do menu. Depois, um único timer por vez avança pelos passos. Término
+natural e `pularCutscene()` convergem em `finalizar()`, que cancela timer,
+invalida callbacks por geração, limpa a intenção de Skip e finaliza o visual.
+O visual cancela animações Web Animations/CSS, desconecta observação de tamanho,
+interrompe áudio e revela o mesmo menu, com foco em Novo jogo. A conclusão roda
+uma vez. Não há espera por gesto depois da luz.
 
-## Ciclo de vida e cancelamento
+Skip durante preparo aguarda somente o carregamento já limitado pelo timeout
+global; não executa os passos. Falha de asset não prende a interface.
+`isCutsceneActive()`, `getCurrent()` e `isSkipping()` expõem estado transitório
+em closures. Nenhum timer, frame, posição, máscara, estado de áudio ou primeiro
+toque entra em snapshots. Save/Load não foi alterado.
 
-1. `iniciarCutscene(id, onComplete)` recusa concorrência e bloqueia imediatamente.
-2. Prepara/decodifica assets usando `prepareSceneImages`, com cache e timeout
-   do controlador global de cena. O palco permanece preto durante essa espera.
-3. Executa os passos sequencialmente, com um único timer registrado por vez.
-4. Término natural e `pularCutscene()` convergem em `finalizar()`.
-5. Cancela timer, invalida callbacks por geração, limpa intenção de Skip,
-   para áudio, cancela animações CSS, aplica visual final e libera o menu/foco.
-   `onComplete` roda uma única vez.
+## Input e camadas
 
-Skip durante carregamento cancela a sequência e espera apenas o preparo já
-limitado por `CONFIG.sceneTransition.assetTimeout`, evitando revelar arte ainda
-não decodificada. Falha de asset é registrada e não prende o menu indefinidamente.
-Nenhum callback da sequência encerrada pode iniciar fase ou áudio posteriormente.
+Captura no documento bloqueia ponteiro, mouse, touch, teclado, formulários e
+wheel. O menu nasce `inert`; o app continua `inert` até a escolha de gameplay.
+As ações públicas do menu também verificam esse bloqueio.
 
-`isCutsceneActive()`, `getCurrent()` e `isSkipping()` expõem estado transitório.
-Tudo fica em closures; snapshot não contém timer, fase, máscara, posição,
-geração ou primeiro toque. Save/Load e seu formato permanecem intactos.
+Dois `pointerup` primários na janela `skipDoubleInputWindow` (350 ms) pulam.
+Clique único, dupla fora da janela e multitoque não pulam. Não depende de
+`dblclick`. `touch-action: none` impede zoom. Eventos sintetizados de cauda são
+consumidos mesmo após esconder o overlay, até uma nova pressão de ponteiro ou
+tecla; o segundo toque não ativa Novo jogo. O título é decorativo e não focável.
 
-## Input e acessibilidade
+Overlay 1001 fica imediatamente sobre o menu 1000. O fade de cena continua em
+7 e celular em 50. Cutscenes futuras que naveguem devem terminar e usar a API
+`transitionToScene`; não há um segundo sistema de navegação.
 
-Captura no documento bloqueia ponteiro, touch, mouse, teclado, formulário,
-context menu e wheel. O menu está `inert` desde o HTML; o app permanece `inert`
-até a escolha de Novo jogo/Carregar. As ações públicas do menu também recusam
-ativação enquanto ele estiver inerte.
+## Um único título
 
-Somente `pointerup` primário conta para Skip: dois cliques/toques completos
-dentro de `skipDoubleInputWindow` (350 ms). Não usa `dblclick` para detectar
-Skip e não conta os eventos touch/mouse sintetizados como novos toques.
-Um toque isolado ou dois fora da janela não pulam; multitoque não conta.
-`touch-action: none` impede zoom de duplo toque sobre a apresentação.
+O palco mantém `1672:941`. O único componente `#cutscene-title` contém cinco
+palavras, cada uma com inicial e complemento, mais a risada. As mesmas iniciais
+permanecem no DOM e na tela: S → Sim, A → Acredite, N → Nas, M → Mentiras, D → Dele.
+Não há segundo título, substituição de texto ou crossfade. Fonte do canon,
+itálica e peso 700; nenhuma fonte externa.
 
-Click/dblclick e eventos de cauda do gesto usado para pular são consumidos
-mesmo após esconder o overlay. Uma nova pressão de ponteiro ou tecla libera
-a próxima interação. Ao terminar, o foco retorna a Novo jogo com o contrato
-existente de `:focus-visible`. Os textos decorativos não são focáveis.
+As larguras são medidas nas mudanças de estado. Inicialmente só as iniciais
+estão juntas e os complementos ficam mascarados. Durante a expansão, palavras
+se deslocam por `transform`, os complementos abrem por `clip-path` e o conjunto
+reduz a escala para caber. Ambas as posições são calculadas em torno do mesmo
+centro. Não há animação contínua de width/top/left. Resize recalcula composição.
+`kk` só abre na fase seguinte, deslocando as palavras meio comprimento da risada
+para manter o conjunto centralizado. Toda a frase sobe como um bloco.
 
-## Apresentação e camadas
+Fases: preto (5 s), siglas por máscara central, pausa, expansão, risada,
+pausa completa, subida, preto final, luz. CONFIG controla todas as durações.
+O JavaScript injeta `--cutscene-duration` e `--cutscene-lamp-delay`; a consulta
+compartilhada `movimentoReduzido()` alimenta `data-reduced`. Movimento reduzido
+mantém a ordem e pausas de leitura, aplica expansão/risada sem deslocamento
+animado, corta subida e encurta a luz. Resultado final idêntico.
 
-O overlay `1001` fica imediatamente sobre a tela inicial `1000`; o fade de
-cena permanece em `7`, o celular em `50`. Não se cria outro sistema de troca
-de cenas. Cutscenes futuras que naveguem devem terminar sua apresentação e
-usar `transitionToScene`, como definido no contrato global.
+## Som e luz
 
-O palco usa o mesmo lock `1672:941`, largura e centralização do menu.
-Preto → SANMD por máscara central → pausa → significado com a mesma máscara
-→ pausa → subida conjunta → preto → luz superior → menu existente.
-A máscara usa `clip-path`; o texto fica parado. A subida usa `transform` em
-passos. A luz descobre progressivamente a arte por gradiente radial superior
-com retirada da escuridão, sem recriar a mesa/caderno nem modificar assets.
+O [WAV técnico original](../assets/audio/README.md) tem clique em 0 ms,
+estalo em 52 ms e duração de 420 ms. O áudio existente dispara uma única vez
+no início de `luz`; a retirada da escuridão começa aos 70 ms e termina aos
+1100 ms. Gradiente parte da região superior esquerda onde está a lâmpada da
+arte. Menu e caderno não são recriados. Não há partículas, blur ou flashes.
 
-Todas as durações são resolvidas de CONFIG e passadas ao CSS por
-`--cutscene-duration`. `movimentoReduzido()` é a fonte da preferência, lida a
-cada fase e espelhada em `data-reduced`. Em modo reduzido a máscara abre sem
-expansão gradual, a subida é cortada e a luz dura 100 ms; pausas de leitura
-preservam SANMD, significado e ordem narrativa.
+Autoplay rejeitado segue em silêncio, sem espera ou reprodução tardia.
+Skip antes da luz impede o disparo; durante a luz interrompe o efeito.
+O APK atual já tinha configuração nativa de autoplay antes desta refatoração;
+nenhuma fonte Android foi editada nesta etapa.
 
-## Áudio pendente
+## Verificações
 
-O serviço de diálogo já contém o áudio sintetizado da digitação. Foi estendido
-somente com `tocarEfeitoTransitorio(source)`, que retorna um cancelador para um
-arquivo curto e não aguarda playback. `lampAudio: null` declara o asset pendente:
-fornecer um som de interruptor autorizado em `assets/audio/` e apontar esse
-campo para o arquivo. Nenhum asset externo foi baixado; atualmente a abertura
-é silenciosa. Arquivo ausente e rejeição de autoplay são tolerados.
-
-Navegadores e WebViews podem impedir som antes de um gesto. Nesse caso o visual
-prossegue, sem replay tardio nem espera pelo áudio. O cancelador pausa e remove
-a fonte no término/Skip. A reprodução audível real depende do asset final e de
-validação em dispositivo.
-
-## Validação
-
-`test/cutscene.test.js` controla o relógio e cobre ordem, preparo, concorrência,
-finalização única, Skip em cada uma das oito fases, timer cancelado, callback
-obsoleto, clique único/duplo, janela expirada, multitoque, bloqueio de teclado,
-cauda do gesto, retomada de teclado, reduced motion e limpeza visual/áudio.
-`test/tela-inicial.test.js` executa o bootstrap publicado e verifica menu
-bloqueado antes da intro, liberação posterior e snapshot sem estado visual.
-
-Checklist visual desktop/APK: abrir com cache frio, confirmar preto sem flash,
-máscaras centrais e subida conjunta; testar clique único e dupla em cada fase;
-confirmar que Novo jogo não abre pelo toque de Skip; usar Carregar e voltar;
-repetir em landscape, tamanhos diferentes e movimento reduzido. Confirmar luz
-superior e estado final idêntico ao menu já aprovado. Áudio aguarda asset final.
+Testes de relógio controlado cobrem fases, finalização natural única, Skip nas
+nove fases, callbacks obsoletos, input, reduced motion, permanência dos mesmos
+nós das iniciais, entrada tardia do kk, cancelamento de áudio, rejeição de
+autoplay e WAV curto. O bootstrap real verifica bloqueio/liberação do menu e
+snapshot sem estado de cutscene. Validação visual e áudio em aparelho são
+complementares aos testes automatizados.
