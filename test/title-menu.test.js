@@ -35,6 +35,8 @@ function setup({ compact = false } = {}) {
     animarFade: async (_, from, to) => { phases.push(`fade:${from}-${to}`); },
     cancelarTemporizadores: () => phases.push('cancel'),
     restaurarInterface: () => phases.push('reset-ui'),
+    iniciarCutscene: (id, done) => { phases.push(id); done(); },
+    isCutsceneActive: () => false,
     iniciarConversa: () => phases.push('story'),
     restaurarEstadoJogo(snapshot) {
       phases.push('restore');
@@ -83,7 +85,7 @@ test('Novo Jogo aguarda abertura e fade, limpa progresso e só então inicia nar
   assert.equal(t.state.inventory[0], 'old');
   assert.deepEqual(t.phases, ['book:700']);
   t.finish(); await starting;
-  assert.deepEqual(t.phases, ['book:700', 'fade:0-1', 'cancel', 'reset-ui', 'init', 'fade:1-0', 'story']);
+  assert.deepEqual(t.phases, ['book:700', 'fade:0-1', 'cancel', 'reset-ui', 'init', 'lulith_codigo', 'fade:1-0', 'story']);
   assert.equal(t.state.inventory.length, 0);
   assert.equal(Object.keys(t.state.sceneState).length, 0);
   assert.equal(t.repository.listarManuais().length, 1);
@@ -127,7 +129,8 @@ test('saída usa autosave existente apenas durante gameplay e preserva fotos man
   t.repository.criarManual(photo('manual'));
   t.menu.saveOnExit(); assert.equal(t.repository.obterAutosave(), null);
   const starting = t.menu.newGame(); t.finish(); await starting;
-  t.transitioning(true); t.menu.saveOnExit(); assert.equal(t.repository.obterAutosave(), null);
+  const initial = t.repository.obterAutosave();
+  t.transitioning(true); t.menu.saveOnExit(); assert.deepEqual(t.repository.obterAutosave(), initial);
   t.transitioning(false);
   t.state.inventory = ['progress'];
   t.document.visibilityState = 'hidden'; t.document.listeners.visibilitychange();

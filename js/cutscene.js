@@ -10,20 +10,29 @@ function criarCutsceneController({ document, window, config, services, sequences
   let ready = false;
   let skipping = false;
   let complete;
+  let finishing = false;
 
   function finalizar() {
-    if (!current) return;
+    if (!current || finishing) return;
+    finishing = true;
     generation++;
     cancel(timer);
     timer = null;
     firstInput = null;
-    visual.finalizar();
-    current = null;
-    skipping = false;
-    complete();
+    const done = () => {
+      visual.finalizar();
+      current = null;
+      skipping = false;
+      complete();
+    };
+    const closing = visual.encerrar?.();
+    if (closing) Promise.resolve(closing).then(done, error => {
+      console.error('Falha ao encerrar cutscene', error); done();
+    });
+    else done();
   }
   function skip() {
-    if (!current || skipping) return;
+    if (!current || skipping || finishing) return;
     skipping = true;
     cancel(timer);
     timer = null;
@@ -56,6 +65,7 @@ function criarCutsceneController({ document, window, config, services, sequences
     if (!sequence) throw new Error(`Cutscene desconhecida: ${id}`);
     current = id;
     skipping = ready = false;
+    finishing = false;
     firstInput = null;
     complete = onComplete;
     const token = ++generation;
@@ -66,15 +76,22 @@ function criarCutsceneController({ document, window, config, services, sequences
       if (index === sequence.steps.length) { finalizar(); return; }
       const step = sequence.steps[index++];
       const reduced = services.movimentoReduzido();
-      const duration = config.cutscene[reduced && step.reduced ? step.reduced : step.duration];
+      const timing = sequence.timing ? config.cutscene[sequence.timing] : config.cutscene;
+      const duration = timing[reduced && step.reduced ? step.reduced : step.duration];
       visual.apresentar(step, duration, reduced);
       // A apresentação pode permanecer no último estado até o Skip.
       if (step.hold) { timer = null; return; }
       timer = schedule(next, duration);
     }
     // O carregador global compartilha cache, decode e limite de espera.
-    Promise.resolve().then(() => services.prepareSceneImages(sequence.assets || []))
-      .catch(error => console.error('Asset da cutscene indisponível', error))
+    Promise.resolve().then(() => Promise.all([
+      services.prepareSceneImages(sequence.assets || []), visual.preparar?.()
+    ]))
+      .catch(error => {
+        console.error('Asset da cutscene indisponível', error);
+        // Sequências de quadros não exibem imagens quebradas após falha no preload.
+        if (sequence.frames) skipping = true;
+      })
       .then(() => {
         if (token !== generation) return;
         ready = true;

@@ -19,7 +19,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     saveRepository, eventosInteracao: Object.create(null) };
   const systems = {
     cutscene: criarCutsceneController({ ...context, sequences: CUTSCENES,
-      visual: criarVisualAbertura(context) }),
+      visual: criarVisualCutscenes(context) }),
     animation: criarSistemaAnimacoes(context),
     persistence: criarSistemaPersistencia(context),
     transition: criarSceneTransitionController(context),

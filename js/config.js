@@ -1,5 +1,11 @@
 const CONFIG = Object.freeze({
   cutscene: Object.freeze({
+    lulithCodigo: Object.freeze({
+      frame01: 1600, frame02: 1250, frame03: 850, frame04: 1150, frame05: 1050,
+      frame06: 750, frame07: 700, frame08: 400, frame09: 1150, frame10: 1700,
+      entryFade: 200, exitFade: 280, impactShake: 140, errorShake: 90,
+      errorFlash: 110, audioTimeout: 1500, audioFade: 180, audioFadeTick: 16
+    }),
     skipDoubleInputWindow: 350, introBlackHold: 5000, titleReveal: 1200,
     titleHold: 650, titleExpansion: 2000, laughReveal: 450, completeTitleHold: 1600,
     titleExit: 1800, postTitleBlackHold: 550, lampLightDelay: 70,

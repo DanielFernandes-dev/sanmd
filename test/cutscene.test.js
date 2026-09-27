@@ -23,11 +23,11 @@ function setup({ reduced = false, prepare = Promise.resolve() } = {}) {
       clearTimeout(id) { if (timers.has(id)) cancelled.push(id); timers.delete(id); } },
     config, sequences,
     services: { movimentoReduzido: () => reduced, prepareSceneImages: () => prepare },
-    visual: { iniciar() { blocked = true; }, apresentar(step, duration) { phases.push([step.phase, duration]); },
+    visual: { iniciar() { blocked = true; }, apresentar(step, duration) { phases.push([step.phase || step.frame, duration]); },
       finalizar() { blocked = false; finished++; } }
   });
   let completions = 0;
-  const start = () => controller.iniciarCutscene('intro_abertura', () => completions++);
+  const start = (id = 'intro_abertura') => controller.iniciarCutscene(id, () => completions++);
   function input(type, timeStamp, extra = {}) {
     const event = { type, timeStamp, button: 0, isPrimary: true,
       preventDefault() { this.prevented = true; }, stopImmediatePropagation() { this.stopped = true; }, ...extra };
@@ -41,7 +41,7 @@ function setup({ reduced = false, prepare = Promise.resolve() } = {}) {
   return { controller, start, input, advance, esvaziar, timers, phases, config, sequences, cancelled,
     get blocked() { return blocked; }, get finished() { return finished; }, get completions() { return completions; } };
 }
-async function ready() { for (let i = 0; i < 6; i++) await Promise.resolve(); }
+async function ready() { for (let i = 0; i < 20; i++) await Promise.resolve(); }
 
 test('bloqueia sincronamente, aguarda assets, executa ordem e finaliza uma vez', async () => {
   let resolve;
@@ -225,4 +225,33 @@ test('sequências sem hold continuam finalizando naturalmente uma única vez', a
   t.start(); await ready(); t.esvaziar();
   assert.equal(t.finished, 1); assert.equal(t.completions, 1);
   t.controller.pularCutscene(); assert.equal(t.finished, 1);
+});
+
+for (let frame = 0; frame < 10; frame++) {
+  test(`Lulith: Skip no quadro ${frame + 1} invalida próximas trocas`, async () => {
+    const t = setup(); t.start('lulith_codigo'); await ready();
+    for (let i = 0; i < frame; i++) t.advance();
+    const stale = [...t.timers.values()][0].fn;
+    t.input('pointerup', 100); assert.equal(t.finished, 0);
+    t.input('pointerup', 200); assert.equal(t.finished, 1);
+    stale(); t.controller.pularCutscene();
+    assert.equal(t.phases.length, frame + 1);
+    assert.equal(t.timers.size, 0); assert.equal(t.completions, 1);
+  });
+}
+for (const reduced of [false, true]) {
+  test(`Lulith: preload, ordem, tempos e conclusão natural; reduced=${reduced}`, async () => {
+    let resolve;
+    const t = setup({ reduced, prepare: new Promise(r => { resolve = r; }) });
+    t.start('lulith_codigo'); assert.equal(t.phases.length, 0);
+    resolve(); await ready(); t.esvaziar();
+    assert.deepEqual(t.phases.map(p => p[0]), Array.from({ length: 10 }, (_, i) => `lulith_codigo_${String(i + 1).padStart(2, '0')}`));
+    assert.deepEqual(t.phases.map(p => p[1]), [1600,1250,850,1150,1050,750,700,400,1150,1700]);
+    assert.equal(t.finished, 1); assert.equal(t.completions, 1);
+  });
+}
+test('Lulith: falha de imagem encerra sem exibir quadros quebrados', async () => {
+  const t = setup({ prepare: Promise.reject(new Error('imagem indisponível')) });
+  t.start('lulith_codigo'); await ready();
+  assert.equal(t.phases.length, 0); assert.equal(t.finished, 1);
 });

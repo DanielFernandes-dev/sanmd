@@ -100,12 +100,17 @@ function criarTelaInicial({ game, document, window }) {
       game.iniciar();
       get('notebook-stage').hidden = true;
       menu.classList.add('entering-game');
+      if (newGame) {
+        await new Promise(resolve => services.iniciarCutscene('lulith_codigo', resolve));
+      }
       await services.animarFade(fade, 1, 0, duration);
       menu.hidden = true;
       app.inert = false;
       playing = true;
-      // A cutscene planejada ainda não existe: usar a entrada narrativa atual.
-      if (newGame) services.iniciarConversa();
+      if (newGame) {
+        services.iniciarConversa();
+        services.registrarAutosave();
+      }
       get('btn-conversar').focus();
     } catch (error) {
       playing = false;
@@ -141,7 +146,7 @@ function criarTelaInicial({ game, document, window }) {
     }, false);
   }
   function saveOnExit() {
-    if (!playing || services.isSceneTransitioning()) return;
+    if (!playing || services.isSceneTransitioning() || services.isCutsceneActive()) return;
     services.registrarAutosave();
   }
   function iniciar({ bloqueado = false } = {}) {

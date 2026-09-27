@@ -70,6 +70,7 @@ class ClassList {
 }
 
 class Element {
+  removeAttribute(name) { delete this.attributes[name]; }
   constructor() {
     this.children = [];
     this.classList = new ClassList();
@@ -285,7 +286,7 @@ test("a saída reaproveita o autosave existente e não cria nem sobrescreve foto
   vm.runInContext("game.state.inventory.push('progresso')", contexto);
 
   const antes = JSON.parse(storage.getItem("sanmd:saves"));
-  assert.equal(antes.autosave ?? null, null, "sair da capa não grava autosave");
+  assert.ok(antes.autosave, "conclusão da cutscene registra o início da partida");
   assert.equal(antes.manualSaves.length, 1, "as fotos manuais ficam intactas");
 
   documento.visibilityState = "hidden";

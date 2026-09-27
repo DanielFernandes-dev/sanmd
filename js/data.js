@@ -376,7 +376,45 @@ const ITEMS = {
 };
 
 // IDs narrativos independentes dos caminhos dos assets. Uma palavra por sigla.
+const LULITH_FRAMES = Object.freeze({
+  lulith_codigo_01: 'assets/cenario/quarto-lulith/cena1.png',
+  lulith_codigo_02: 'assets/cenario/quarto-lulith/cena2.png',
+  lulith_codigo_03: 'assets/cenario/quarto-lulith/cena3.png',
+  lulith_codigo_04: 'assets/cenario/quarto-lulith/cena4.png',
+  lulith_codigo_05: 'assets/cenario/quarto-lulith/cena5.png',
+  lulith_codigo_06: 'assets/cenario/quarto-lulith/cena6.png',
+  lulith_codigo_07: 'assets/cenario/quarto-lulith/cena7.png',
+  lulith_codigo_08: 'assets/cenario/quarto-lulith/cena8.png',
+  lulith_codigo_09: 'assets/cenario/quarto-lulith/cena9.png',
+  lulith_codigo_10: 'assets/cenario/quarto-lulith/cena10.png',
+});
+
 const CUTSCENES = Object.freeze({
+  lulith_codigo: Object.freeze({
+    timing: 'lulithCodigo',
+    frames: LULITH_FRAMES,
+    sounds: Object.freeze({
+      room_ambience: { src: 'assets/audio/room_ambience.wav', volume: .16, loop: true },
+      keyboard: { src: 'assets/audio/keyboard.wav', volume: .35 },
+      keyboard_fast: { src: 'assets/audio/keyboard_fast.wav', volume: .43 },
+      computer_error: { src: 'assets/audio/computer_error.wav', volume: .35 },
+      chair_move: { src: 'assets/audio/chair_move.wav', volume: .4 },
+      kick_impact: { src: 'assets/audio/kick_impact.wav', volume: .6 }
+    }),
+    assets: Object.values(LULITH_FRAMES),
+    steps: [
+      { frame: 'lulith_codigo_01', duration: 'frame01', transition: 'fade-in', camera: 'slow-push' },
+      { frame: 'lulith_codigo_02', duration: 'frame02', sfx: 'keyboard', transition: 'cut', camera: 'small-push' },
+      { frame: 'lulith_codigo_03', effect: 'computer-error', flashRegion: [6, 25, 46, 55], duration: 'frame03', sfx: 'computer_error', transition: 'cut' },
+      { frame: 'lulith_codigo_04', duration: 'frame04', transition: 'cut', camera: 'slow-push' },
+      { frame: 'lulith_codigo_05', duration: 'frame05', sfx: 'keyboard_fast', transition: 'cut', camera: 'small-push' },
+      { frame: 'lulith_codigo_06', effect: 'computer-error', flashRegion: [1, 32, 39, 53], duration: 'frame06', shake: 'error', sfx: 'computer_error', weight: 1.2, transition: 'cut' },
+      { frame: 'lulith_codigo_07', duration: 'frame07', sfx: 'chair_move', transition: 'cut' },
+      { frame: 'lulith_codigo_08', duration: 'frame08', shake: 'impact', sfx: 'kick_impact', transition: 'cut' },
+      { frame: 'lulith_codigo_09', duration: 'frame09', transition: 'cut' },
+      { frame: 'lulith_codigo_10', duration: 'frame10', transition: 'cut', camera: 'slow-push' }
+    ]
+  }),
   intro_abertura: Object.freeze({
     title: 'SANMD',
     significado: ['Sim,', 'Acredite', 'Nas', 'Mentiras', 'Dele'],
