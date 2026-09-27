@@ -59,3 +59,26 @@ test('assets: dez PNGs válidos, paisagem e IDs independentes; SFX WAV locais', 
   }
   for(const sound of Object.values(t.sequence.sounds)) assert.equal(fs.readFileSync(sound.src).subarray(0,4).toString(),'RIFF');
 });
+
+test('falha e timeout de SFX liberam preload e nunca disparam reprodução atrasada', async () => {
+  const t = setup(); t.visual.iniciar(t.sequence); const pending = t.visual.preparar();
+  const late = t.audios.map(a => a.oncanplaythrough);
+  t.audios[0].onerror();
+  for(const timeout of [...t.timers.values()]) timeout();
+  await pending;
+  t.visual.apresentar(t.sequence.steps[1], 1250, false);
+  await t.visual.encerrar(); t.visual.finalizar();
+  late.forEach(callback => callback());
+  assert.ok(t.audios.every(a => a.paused && !a.src));
+  assert.equal(t.timers.size, 0);
+});
+test('suavização curta usa somente o quadro anterior e preserva cortes de impacto', async () => {
+  const t = setup(); t.visual.iniciar(t.sequence); await t.visual.preparar();
+  t.visual.apresentar(t.sequence.steps[0],1600,false);
+  t.visual.apresentar(t.sequence.steps[1],1250,false);
+  assert.equal(t.elements.get('cutscene-previous-frame').src,t.sequence.frames.lulith_codigo_01);
+  assert.ok(t.animations.some(a=>a.options.duration===100&&!a.cancelled));
+  t.visual.apresentar(t.sequence.steps[2],850,false);
+  assert.ok(t.animations.filter(a=>a.options.duration===100).every(a=>a.cancelled));
+  await t.visual.encerrar();t.visual.finalizar();
+});

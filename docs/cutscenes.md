@@ -102,3 +102,67 @@ nós das iniciais, entrada tardia do kk, cancelamento de áudio, rejeição de
 autoplay e WAV curto. O bootstrap real verifica bloqueio/liberação do menu e
 snapshot sem estado de cutscene. Validação visual e áudio em aparelho são
 complementares aos testes automatizados.
+
+## Cutscene 02 — `lulith_codigo`
+
+Novo jogo abre o caderno, cobre o menu de preto, cancela temporizadores antigos,
+recria o estado e a interface e executa a sequência. O app permanece `inert` até
+terminar a apresentação e o fade de gameplay. Só então começa a conversa inicial
+existente e registra o autosave. Carregar não executa a sequência. Nenhuma flag,
+frame, câmera, efeito ou áudio é persistido.
+
+O mesmo controlador seleciona o renderer de quadros por `sequence.frames`.
+`criarVisualAbertura` e seus dados permanecem intactos. A finalização opcional
+assíncrona mantém input bloqueado enquanto o visual faz fade para preto. Skip
+invalida imediatamente o timer e a geração; a mesma finalização atende o fim
+natural. A imagem anterior serve somente à suavização; não existem dez camadas.
+
+`LULITH_FRAMES` mapeia IDs lógicos aos dez PNGs de `assets/cenario/quarto-lulith`.
+Inspeção confirmou paisagem, ordem, ausência de números e divisórias. Os arquivos
+**não têm proporção exatamente igual**: variam de aproximadamente 1,775 a 1,800.
+O palco fixo 1672:941 usa `cover`, recortando levemente as bordas sem esticar nem
+reprocessar as artes. `image-rendering: pixelated` mantém a nitidez.
+
+Os tempos de `CONFIG.cutscene.lulithCodigo` são 2000, 1550, 1050, 1450, 1300,
+950, 900, 400, 1150 e 1700 ms. Os sete primeiros quadros têm aproximadamente
+25% mais tempo de leitura; os três últimos mantêm o ritmo anterior. Entrada: 200 ms;
+saída: 280 ms. Os quadros 02, 04, 05, 07, 09 e 10 têm transição suave de 100 ms.
+Os erros e o chute continuam com corte seco. Reduced motion mantém todos os
+quadros, desliga câmera/shake/suavização interna e reduz a intensidade do flash.
+
+A câmera usa apenas duas variantes (1,02 e 1,025). O flash magenta fica na região
+do notebook; erro forte move o palco em até 1 px e chute em até 3 px por 140 ms.
+A finalização congela a câmera durante o fade e limpa tudo ao terminar.
+
+Preload global aguarda e decodifica as dez imagens. Falha/timeout registra erro e
+encerra a sequência com segurança, sem mostrar imagem quebrada. O pool de áudio
+aguarda no máximo 1500 ms por SFX; falhas seguem em silêncio, sem reprodução
+posterior. Trocar de quadro para o som anterior, e finalizar faz fade de ambiente
+de 180 ms. Sons sintetizados originais: `assets/audio/gerar_lulith.py`.
+
+Testes em `cutscene.test.js`, `cutscene-frames.test.js`, `title-menu.test.js` e
+`tela-inicial.test.js` cobrem ordem, tempos, falhas, Skip nos dez quadros, áudio,
+animações, reduced motion, limpeza, autosave e o fluxo de Carregar.
+
+### Validação no aparelho — 2026-09-26
+
+APK debug compilado e instalado por ADB no aparelho conectado em
+`192.168.0.42:41205`. WebView em landscape: viewport 774×360 CSS px, palco
+639,64×359,98, escala de viewport 1. Execução natural com cache desabilitado:
+10/10 imagens completas, sem quadros vazios ou mudança das dimensões do palco;
+intervalos medidos próximos aos tempos configurados (aproximadamente 5–8 ms
+adicionais por quadro). Transição concluiu no gameplay inicial.
+
+Skip exercitado no WebView nos dez quadros pelo detector global de ponteiro:
+primeiro toque não pula, segundo pula, contagem de quadros para imediatamente,
+nenhum HTMLAudioElement permanece tocando, zero animações residuais e transform
+do palco volta a `none`. Carregar o autosave não inicia `lulith_codigo`.
+Os registros existentes foram copiados antes dos testes e restaurados ao final.
+
+Verificação complementar no mesmo APK: duplo toque nativo via CDP no quadro 01
+chegou ao gameplay mantendo `visualViewport.scale === 1`; emulação de
+`prefers-reduced-motion` no WebView apresentou os dez quadros com zero animações
+de transform. A suspensão da tela foi restaurada para os 30 segundos originais.
+A suíte Node completa passou nos 17 arquivos de teste. Reprodução/limpeza de áudio
+foi verificada por estado dos elementos; a avaliação auditiva dos SFX sintetizados
+continua sendo subjetiva.

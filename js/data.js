@@ -404,15 +404,15 @@ const CUTSCENES = Object.freeze({
     assets: Object.values(LULITH_FRAMES),
     steps: [
       { frame: 'lulith_codigo_01', duration: 'frame01', transition: 'fade-in', camera: 'slow-push' },
-      { frame: 'lulith_codigo_02', duration: 'frame02', sfx: 'keyboard', transition: 'cut', camera: 'small-push' },
+      { frame: 'lulith_codigo_02', duration: 'frame02', sfx: 'keyboard', transition: 'soft-cut', camera: 'small-push' },
       { frame: 'lulith_codigo_03', effect: 'computer-error', flashRegion: [6, 25, 46, 55], duration: 'frame03', sfx: 'computer_error', transition: 'cut' },
-      { frame: 'lulith_codigo_04', duration: 'frame04', transition: 'cut', camera: 'slow-push' },
-      { frame: 'lulith_codigo_05', duration: 'frame05', sfx: 'keyboard_fast', transition: 'cut', camera: 'small-push' },
+      { frame: 'lulith_codigo_04', duration: 'frame04', transition: 'soft-cut', camera: 'slow-push' },
+      { frame: 'lulith_codigo_05', duration: 'frame05', sfx: 'keyboard_fast', transition: 'soft-cut', camera: 'small-push' },
       { frame: 'lulith_codigo_06', effect: 'computer-error', flashRegion: [1, 32, 39, 53], duration: 'frame06', shake: 'error', sfx: 'computer_error', weight: 1.2, transition: 'cut' },
-      { frame: 'lulith_codigo_07', duration: 'frame07', sfx: 'chair_move', transition: 'cut' },
+      { frame: 'lulith_codigo_07', duration: 'frame07', sfx: 'chair_move', transition: 'soft-cut' },
       { frame: 'lulith_codigo_08', duration: 'frame08', shake: 'impact', sfx: 'kick_impact', transition: 'cut' },
-      { frame: 'lulith_codigo_09', duration: 'frame09', transition: 'cut' },
-      { frame: 'lulith_codigo_10', duration: 'frame10', transition: 'cut', camera: 'slow-push' }
+      { frame: 'lulith_codigo_09', duration: 'frame09', transition: 'soft-cut' },
+      { frame: 'lulith_codigo_10', duration: 'frame10', transition: 'soft-cut', camera: 'slow-push' }
     ]
   }),
   intro_abertura: Object.freeze({

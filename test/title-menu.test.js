@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-function setup({ compact = false } = {}) {
+function setup({ compact = false, deferCutscene = false } = {}) {
   const elements = new Map();
   function element() {
     return { dataset: {}, style: {}, children: [], listeners: {},
@@ -21,7 +21,7 @@ function setup({ compact = false } = {}) {
   const media = { ...element(), matches: compact };
   const window = { ...element(), matchMedia: () => media };
   const phases = [], waits = [];
-  let transitioning = false;
+  let transitioning = false, cutsceneDone;
   const context = vm.createContext({ document, window });
   for (const file of ['state.js', 'save-system.js', 'title-menu.js']) {
     vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', file), 'utf8'), context);
@@ -35,7 +35,7 @@ function setup({ compact = false } = {}) {
     animarFade: async (_, from, to) => { phases.push(`fade:${from}-${to}`); },
     cancelarTemporizadores: () => phases.push('cancel'),
     restaurarInterface: () => phases.push('reset-ui'),
-    iniciarCutscene: (id, done) => { phases.push(id); done(); },
+    iniciarCutscene: (id, done) => { phases.push(id); if(deferCutscene) cutsceneDone = done; else done(); },
     isCutsceneActive: () => false,
     iniciarConversa: () => phases.push('story'),
     restaurarEstadoJogo(snapshot) {
@@ -54,6 +54,7 @@ function setup({ compact = false } = {}) {
   menu.iniciar();
   return { menu, state, repository, phases, elements, document, window, media,
     transitioning: value => { transitioning = value; },
+    finishCutscene: () => cutsceneDone(),
     finish: () => waits.shift()(), get: id => document.getElementById(id) };
 }
 const photo = id => ({ id, name: `Foto ${id}`, createdAt: 1, photoExpression: 'neutral', saveState: { inventory: ['record'] } });
@@ -136,4 +137,18 @@ test('saída usa autosave existente apenas durante gameplay e preserva fotos man
   t.document.visibilityState = 'hidden'; t.document.listeners.visibilitychange();
   assert.deepEqual(Array.from(t.repository.obterAutosave().saveState.inventory), ['progress']);
   assert.equal(t.repository.listarManuais()[0].id, 'manual');
+});
+
+test('Novo jogo não salva nem libera gameplay enquanto a cutscene estiver pendente', async () => {
+  const t = setup({ deferCutscene: true });
+  t.state.inventory.push('old');
+  const start = t.menu.newGame(); t.finish();
+  for(let i=0;i<10;i++) await Promise.resolve();
+  assert.ok(t.phases.includes('lulith_codigo'));
+  assert.equal(t.state.inventory.length,0);
+  assert.equal(t.get('app').inert,true);
+  t.menu.saveOnExit(); assert.equal(t.repository.obterAutosave(),null);
+  t.finishCutscene(); await start;
+  assert.equal(t.get('app').inert,false);
+  assert.ok(t.repository.obterAutosave());
 });

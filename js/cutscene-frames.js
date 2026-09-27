@@ -18,6 +18,7 @@ function criarVisualQuadros({ document, window, config, services }) {
   const overlay = get('frame-cutscene-overlay');
   const stage = get('frame-cutscene-stage');
   const frame = get('cutscene-frame');
+  const previous = get('cutscene-previous-frame');
   const fade = get('frame-cutscene-fade');
   const effects = get('cutscene-effects');
   let sequence, timing, audio;
@@ -29,6 +30,7 @@ function criarVisualQuadros({ document, window, config, services }) {
     frame.style.transform = transform;
     stage.style.transform = 'none';
     effects.style.opacity = '0';
+    previous.style.opacity = '0';
   }
   function animate(element, keys, duration) {
     if (element.animate) animations.push(element.animate(keys, { duration, easing: 'linear' }));
@@ -56,7 +58,15 @@ function criarVisualQuadros({ document, window, config, services }) {
     },
     preparar() { return audio.preparar(); },
     apresentar(step, duration, reduced) {
+      const previousSource = frame.dataset.frame && frame.src;
+      const previousTransform = window.getComputedStyle?.(frame).transform || frame.style.transform;
       clear();
+      if (step.transition === 'soft-cut' && previousSource && !reduced) {
+        previous.src = previousSource;
+        previous.style.transform = previousTransform;
+        previous.style.transformOrigin = frame.style.transformOrigin;
+        animate(previous, [{ opacity: 1 }, { opacity: 0 }], timing.frameBlend);
+      }
       audio.apresentar(step.sfx, step.weight);
       frame.src = sequence.frames[step.frame];
       frame.dataset.frame = step.frame;
@@ -84,6 +94,7 @@ function criarVisualQuadros({ document, window, config, services }) {
       audio.finalizar();
       overlay.hidden = true;
       frame.removeAttribute('src');
+      previous.removeAttribute('src');
       delete frame.dataset.frame;
     }
   };

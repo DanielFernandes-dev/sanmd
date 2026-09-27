@@ -1,9 +1,9 @@
 const CONFIG = Object.freeze({
   cutscene: Object.freeze({
     lulithCodigo: Object.freeze({
-      frame01: 1600, frame02: 1250, frame03: 850, frame04: 1150, frame05: 1050,
-      frame06: 750, frame07: 700, frame08: 400, frame09: 1150, frame10: 1700,
-      entryFade: 200, exitFade: 280, impactShake: 140, errorShake: 90,
+      frame01: 2000, frame02: 1550, frame03: 1050, frame04: 1450, frame05: 1300,
+      frame06: 950, frame07: 900, frame08: 400, frame09: 1150, frame10: 1700,
+      entryFade: 200, exitFade: 280, frameBlend: 100, impactShake: 140, errorShake: 90,
       errorFlash: 110, audioTimeout: 1500, audioFade: 180, audioFadeTick: 16
     }),
     skipDoubleInputWindow: 350, introBlackHold: 5000, titleReveal: 1200,

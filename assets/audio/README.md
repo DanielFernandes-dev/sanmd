@@ -21,3 +21,12 @@ não alterou fonte Android. Navegadores podem exigir gesto do usuário.
 
 A gravação definitiva pode substituir o placeholder mantendo seu timing.
 Ver [Cutscenes](../../docs/cutscenes.md).
+
+## Quarto da Lulith
+
+`python3 assets/audio/gerar_lulith.py` reproduz seis SFX originais em WAV mono
+PCM 16 bits/22050 Hz: ambiente de computador, duas velocidades de teclado,
+erro, cadeira e impacto. São efeitos sintetizados; não são gravações de foley.
+Volumes ficam no catálogo `CUTSCENES.lulith_codigo.sounds`. O pool transitório
+em `cutscene-audio.js` limita o preload, interrompe cada SFX na troca de quadro
+e faz fade do ambiente ao concluir ou pular. Nenhum áudio entra no save.

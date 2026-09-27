@@ -8,7 +8,7 @@ const raiz = path.resolve(__dirname, '..');
 const FASES = ['preto', 'siglas', 'pausa-siglas', 'significado', 'risada',
   'pausa-completa', 'subida', 'preto-final', 'luz'];
 
-function setup({ reduced = false, prepare = Promise.resolve() } = {}) {
+function setup({ reduced = false, prepare = Promise.resolve(), closing } = {}) {
   const timers = new Map(), listeners = {}, phases = [], cancelled = [];
   let serial = 0, finished = 0, blocked = false;
   const context = vm.createContext({ console, clearTimeout });
@@ -23,7 +23,7 @@ function setup({ reduced = false, prepare = Promise.resolve() } = {}) {
       clearTimeout(id) { if (timers.has(id)) cancelled.push(id); timers.delete(id); } },
     config, sequences,
     services: { movimentoReduzido: () => reduced, prepareSceneImages: () => prepare },
-    visual: { iniciar() { blocked = true; }, apresentar(step, duration) { phases.push([step.phase || step.frame, duration]); },
+    visual: { encerrar: closing ? () => closing : undefined, iniciar() { blocked = true; }, apresentar(step, duration) { phases.push([step.phase || step.frame, duration]); },
       finalizar() { blocked = false; finished++; } }
   });
   let completions = 0;
@@ -246,7 +246,7 @@ for (const reduced of [false, true]) {
     t.start('lulith_codigo'); assert.equal(t.phases.length, 0);
     resolve(); await ready(); t.esvaziar();
     assert.deepEqual(t.phases.map(p => p[0]), Array.from({ length: 10 }, (_, i) => `lulith_codigo_${String(i + 1).padStart(2, '0')}`));
-    assert.deepEqual(t.phases.map(p => p[1]), [1600,1250,850,1150,1050,750,700,400,1150,1700]);
+    assert.deepEqual(t.phases.map(p => p[1]), [2000,1550,1050,1450,1300,950,900,400,1150,1700]);
     assert.equal(t.finished, 1); assert.equal(t.completions, 1);
   });
 }
@@ -254,4 +254,17 @@ test('Lulith: falha de imagem encerra sem exibir quadros quebrados', async () =>
   const t = setup({ prepare: Promise.reject(new Error('imagem indisponível')) });
   t.start('lulith_codigo'); await ready();
   assert.equal(t.phases.length, 0); assert.equal(t.finished, 1);
+});
+
+test('finalização assíncrona mantém input bloqueado durante o fade e conclui uma vez', async () => {
+  let resolve;
+  const t = setup({ closing: new Promise(r => { resolve = r; }) });
+  t.start('lulith_codigo'); await ready();
+  t.controller.pularCutscene(); t.controller.pularCutscene();
+  assert.equal(t.controller.isCutsceneActive(), true);
+  assert.equal(t.input('keydown', 200).prevented, true);
+  assert.equal(t.timers.size, 0); assert.equal(t.completions, 0);
+  resolve(); await ready();
+  assert.equal(t.controller.isCutsceneActive(), false);
+  assert.equal(t.completions, 1); assert.equal(t.finished, 1);
 });

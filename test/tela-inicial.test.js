@@ -157,7 +157,7 @@ function criarAmbiente({ movimentoReduzido = false } = {}) {
     localStorage: storage,
     requestAnimationFrame: (callback) => callback(),
     setInterval: () => ({}),
-    setTimeout(callback) { return Promise.resolve().then(callback); },
+    setTimeout(callback, delay) { return delay === 10000 ? 0 : Promise.resolve().then(callback); },
     window
   });
   const scripts = [...html.matchAll(/<script src="([^"?]+)(?:\?[^"]*)?"><\/script>/g)]
