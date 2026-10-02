@@ -17,6 +17,7 @@ function criarSistemaPersistencia(context) {
    */
   function capturarEstadoJogo() {
     return {
+      act1Complete: state.act1Complete,
       aparelho: { ...state.aparelho },
       inventory: [...state.inventory],
       sceneState: copiarDados(state.sceneState),
@@ -135,11 +136,12 @@ function criarSistemaPersistencia(context) {
       || !validarDialogo(candidato.dialogo, candidato.localizacao)
       || !validarArquivos(candidato.arquivos) || !validarMensagens(candidato.mensagens)
       || !validarCelular(candidato.celular)) return null;
+    if (candidato.act1Complete !== undefined && typeof candidato.act1Complete !== 'boolean') return null;
     const exploration = validarExploracao(candidato);
     if (!exploration) return null;
     const aparelho = validarAparelho(candidato, exploration);
     if (!aparelho) return null;
-    return { ...copiarDados(candidato), ...exploration, aparelho };
+    return { ...copiarDados(candidato), ...exploration, aparelho, act1Complete: candidato.act1Complete ?? false };
   }
 
   /** Validar aparelho.
@@ -235,6 +237,7 @@ function criarSistemaPersistencia(context) {
    * @param {Object} snapshot
    */
   function restaurarDadosPersistidos(snapshot) {
+    state.act1Complete = snapshot.act1Complete;
     state.modo = "livre";
     state.inventoryActionPending = null;
     state.aparelho = snapshot.aparelho;

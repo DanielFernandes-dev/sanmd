@@ -427,3 +427,20 @@ test("point-and-click: exige item, consumo automático e remoção narrativa", a
   assert.equal(a.ler('executarHotspot("lulith_phone")'), false);
   assert.equal(a.ler('state.inventory.length'), 0);
 });
+
+test('conclusão do ato persiste, migra saves antigos e rejeita flag inválida', () => {
+  const ambiente = criarAmbiente();
+  ambiente.executar(`
+    state.act1Complete = true;
+    registrarAutosave();
+    const finalSave = saveRepository.obterAutosave().saveState;
+    state.act1Complete = false;
+    restaurarEstadoJogo(finalSave);
+    if (!state.act1Complete) throw new Error('Conclusão perdida no Load');
+    delete finalSave.act1Complete;
+    restaurarEstadoJogo(finalSave);
+    if (state.act1Complete !== false) throw new Error('Save antigo não migrou');
+    finalSave.act1Complete = 'true';
+    if (validarSnapshot(finalSave) !== null) throw new Error('Flag inválida aceita');
+  `);
+});

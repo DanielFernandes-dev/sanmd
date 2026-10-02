@@ -43,6 +43,7 @@ function criarEstadoTexto() {
 function criarEstadoJogo() {
   return {
     aparelho: { originalPhoneStatus: "broken", activePhone: null, phoneTheme: "lulith" },
+    act1Complete: false,
     inventoryActionPending: null,
     inventory: [],
     sceneState: {},

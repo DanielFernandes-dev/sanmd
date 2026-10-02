@@ -81,9 +81,11 @@ function criarSistemaCenas(context) {
   function obterDestinos(cena = obterCenaAtual()) {
     const local = obterLocal();
     if (!local || !cena) return [];
-    return cena.destinos
+    const exits = podeSairDoBeco() && cena.id === 'beco_entrada'
+      ? [{ id: 'sair_beco', label: 'Sair do beco' }] : [];
+    return exits.concat(cena.destinos
       .map((destinoId) => local.cenas[destinoId])
-      .filter(Boolean);
+      .filter(Boolean));
   }
 
   /** Tem destinos.
@@ -172,11 +174,33 @@ function criarSistemaCenas(context) {
     services.definirBotoes();
   }
 
+  /** A saída narrativa fica disponível somente depois da coleta. */
+  function podeSairDoBeco() {
+    const progress = state.sceneState.beco_fundo;
+    return state.localizacao.local === 'beco' && !state.act1Complete
+      && progress?.safeOpened === true && progress?.lulithPhoneCollected === true;
+  }
+
   /** Ir para.
    * @param {string} destinoId
    */
   function irPara(destinoId) {
     if (state.modo !== "livre" || services.isSceneTransitioning()) return;
+    if (services.isCutsceneActive()) return;
+    if (destinoId === 'sair_beco') {
+      if (!podeSairDoBeco() || state.localizacao.cena !== 'beco_entrada') return;
+      fecharMenuIrPara();
+      services.cancelarTemporizadores();
+      state.modo = 'cutscene';
+      return services.iniciarCutscene('act1_ending', () => {
+        state.act1Complete = true;
+        services.registrarAutosave();
+        services.iniciarCutscene('act1_title', () => {
+          state.modo = 'livre';
+          eventosInteracao.act1Complete?.();
+        });
+      });
+    }
     const cena = obterCenaAtual();
     if (!cena?.destinos.includes(destinoId)) return;
     const destino = obterLocal()?.cenas[destinoId];

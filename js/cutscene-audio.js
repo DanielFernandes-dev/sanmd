@@ -6,6 +6,7 @@ function criarAudioCutscene({ window, services }, timing, sounds) {
   let current = null;
   let ambience = null;
   let fadeTimer = null;
+  let stepFadeTimer = null;
   let preparation = null;
   let closing = null;
   const pause = audio => { if (audio) { audio.pause(); audio.currentTime = 0; } };
@@ -57,10 +58,14 @@ function criarAudioCutscene({ window, services }, timing, sounds) {
     try { audio.play()?.catch(() => pause(audio)); } catch { pause(audio); }
     return audio;
   }
-  function stopStep() { pause(current); current = null; }
+  function stopStep() {
+    window.clearInterval?.(stepFadeTimer); stepFadeTimer = null;
+    pause(current); current = null;
+  }
   function cancelarPreload() { for (const cancel of [...pending]) cancel(); }
   function finalizar() {
     active = false;
+    stopStep();
     cancelarPreload();
     window.clearInterval?.(fadeTimer);
     fadeTimer = null;
@@ -85,11 +90,18 @@ function criarAudioCutscene({ window, services }, timing, sounds) {
   }
   return Object.freeze({
     preparar,
-    apresentar(id, weight) {
+    apresentar(id, weight = 1, fadeTo, duration) {
       if (!active) return;
       stopStep();
       if (!ambience) ambience = play('room_ambience');
       if (id) current = play(id, weight);
+      if (current && Number.isFinite(fadeTo) && duration > 0) {
+        const sound = current, start = Date.now(), from = sound.volume;
+        const to = sounds[id].volume * fadeTo;
+        stepFadeTimer = window.setInterval(() => {
+          sound.volume = from + (to - from) * Math.min(1, (Date.now() - start) / duration);
+        }, timing.audioFadeTick);
+      }
     },
     encerrar() { if (!closing) closing = fadeOut(); return closing; },
     finalizar

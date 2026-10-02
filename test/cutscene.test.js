@@ -295,3 +295,24 @@ test('duração inválida encerra com segurança em vez de criar timer sem limit
   assert.equal(t.completions,1); assert.equal(t.phases.length,0);
   assert.equal(t.timers.size,0);
 });
+
+for (let index = 0; index < 10; index++) test(`Ato 1: Skip no passo ${index + 1} cancela continuação`, async () => {
+  const t = setup(); t.start('act1_ending'); await ready();
+  for (let i = 0; i < index; i++) t.advance();
+  const stale = [...t.timers.values()][0].fn;
+  t.input('pointerup', 100, { pointerType: 'touch' });
+  t.input('pointerup', 200, { pointerType: 'touch' });
+  assert.equal(t.completions, 1); assert.equal(t.timers.size, 0);
+  const count = t.phases.length; stale();
+  assert.equal(t.phases.length, count);
+});
+test('Ato 1: preload, ordem e preto separado do título', async () => {
+  const t = setup(); t.start('act1_ending'); await ready(); t.esvaziar();
+  assert.equal(t.completions, 1);
+  assert.equal(t.phases.length, 10);
+  assert.equal(t.phases.at(-1)[1], 650);
+  assert.equal(t.sequences.act1_ending.assets.length, 8);
+  assert.equal(t.sequences.act1_ending.steps.at(-1).type, 'black');
+  t.start('act1_title'); await ready(); t.esvaziar();
+  assert.equal(t.completions, 2);
+});

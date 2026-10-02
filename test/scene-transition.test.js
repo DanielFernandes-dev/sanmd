@@ -28,7 +28,7 @@ function setup(reduced = false) {
     vm.runInContext(fs.readFileSync(`js/${file}.js`, 'utf8'), sandbox);
   }
   const state = vm.runInContext('criarEstadoJogo()', sandbox);
-  const services = { definirBotoes() {}, adicionarItem(id) { state.inventory.push(id); return true; },
+  const services = { isCutsceneActive: () => false, definirBotoes() {}, adicionarItem(id) { state.inventory.push(id); return true; },
     registrarAutosave() {} };
   const context = { state, services, document, window: { Image, matchMedia: () => ({ matches: reduced }) },
     el: { scene, bag: { bagDialog: { open: false }, btnBolsa: element() } },
@@ -163,4 +163,30 @@ test('falha de preload mantém cofre fechado e permite tentar novamente', async 
   assert.equal(scene.hotspotLayer.children[0].disabled, false);
   services.prepareSceneImages = prepare;
   assert.equal(await services.executarHotspot('safe'), true);
+});
+
+test('saída narrativa exige coleta e entrada; conclusão salva antes do título e não repete', () => {
+  const { services, state, context } = setup();
+  const calls = [], callbacks = [];
+  services.cancelarTemporizadores = () => calls.push('cancel');
+  services.iniciarCutscene = (id, done) => { calls.push(id); callbacks.push(done); return true; };
+  services.registrarAutosave = () => calls.push(`save:${state.act1Complete}`);
+  context.eventosInteracao.act1Complete = () => calls.push('menu');
+  services.irPara('sair_beco'); assert.equal(calls.length, 0);
+  state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: false };
+  services.irPara('sair_beco'); assert.equal(calls.length, 0);
+  state.sceneState.beco_fundo.lulithPhoneCollected = true;
+  assert.equal(calls.length, 0, 'coleta não inicia a sequência');
+  state.localizacao.cena = 'beco_fundo';
+  services.irPara('sair_beco'); assert.equal(calls.length, 0);
+  state.localizacao.cena = 'beco_entrada';
+  assert.ok(services.obterDestinos().some(d => d.id === 'sair_beco'));
+  services.irPara('sair_beco');
+  assert.equal(state.modo, 'cutscene'); assert.equal(state.act1Complete, false);
+  callbacks.shift()();
+  assert.deepEqual(calls, ['cancel', 'act1_ending', 'save:true', 'act1_title']);
+  callbacks.shift()(); assert.equal(calls.at(-1), 'menu');
+  assert.equal(state.modo, 'livre');
+  services.irPara('sair_beco'); assert.equal(calls.length, 5);
+  assert.ok(!services.obterDestinos().some(d => d.id === 'sair_beco'));
 });

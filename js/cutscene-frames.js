@@ -6,6 +6,7 @@ function criarVisualQuadros({ document, window, config, services }) {
   const frame = get('cutscene-frame');
   const previous = get('cutscene-previous-frame');
   const fade = get('frame-cutscene-fade');
+  const title = get('frame-cutscene-title');
   const effects = get('cutscene-effects');
   const cameras = {
     'slow-push': { scale: 1.02, origin: '50% 50%' },
@@ -52,10 +53,10 @@ function criarVisualQuadros({ document, window, config, services }) {
     }
   }
   function aplicarCamera(name, duration, reduced) {
-    const camera = cameras[name];
+    const camera = timing.cameras?.[name] || cameras[name];
     if (reduced || !camera) return;
     frame.style.transformOrigin = camera.origin;
-    frame.style.transform = `scale(${camera.scale})`;
+    frame.style.transform = `scale(${camera.scale}) translateX(${camera.x || 0}%)`;
     animate(frame, [{ transform: 'scale(1)' }, { transform: frame.style.transform }], duration);
   }
   return Object.freeze({
@@ -65,13 +66,34 @@ function criarVisualQuadros({ document, window, config, services }) {
       audio = criarAudioCutscene({ window, services }, timing, data.sounds || {});
       document.activeElement?.blur?.();
       overlay.hidden = false;
+      title.hidden = true;
+      title.textContent = data.title || '';
+      title.dataset.phase = '';
       fade.style.opacity = '1';
       frame.style.visibility = 'hidden';
     },
     preparar() { return audio.preparar(); },
     apresentar(step, duration, reduced) {
+      if (step.type) {
+        clear(true);
+        title.hidden = step.type !== 'title';
+        if (step.type === 'fade-black') {
+          fade.style.opacity = '1';
+          animate(fade, [{ opacity: 0 }, { opacity: 1 }], duration);
+          audio.encerrar().catch(error => console.error('Falha no fade de áudio', error));
+        } else {
+          fade.style.opacity = '1';
+          frame.style.visibility = 'hidden';
+        }
+        if (step.type === 'title') {
+          title.dataset.phase = step.phase;
+          title.style.animationDuration = `${duration}ms`;
+          title.dataset.reduced = String(reduced);
+        }
+        return;
+      }
       transicionar(step, reduced);
-      audio.apresentar(step.sfx, step.weight);
+      audio.apresentar(step.sfx, step.weight, step.fadeTo, duration);
       frame.src = sequence.frames[step.frame];
       frame.dataset.frame = step.frame;
       frame.style.visibility = 'visible';
@@ -81,12 +103,15 @@ function criarVisualQuadros({ document, window, config, services }) {
     },
     async encerrar() {
       clear(true);
-      await Promise.all([services.animarFade(fade, Number(fade.style.opacity), 1, timing.exitFade),
+      await Promise.all([Number(fade.style.opacity) === 1 ? Promise.resolve()
+        : services.animarFade(fade, Number(fade.style.opacity), 1, timing.exitFade),
         audio.encerrar()]);
     },
     finalizar() {
       clear();
       audio.finalizar();
+      title.hidden = true;
+      for (const animation of title.getAnimations?.() || []) animation.cancel();
       overlay.hidden = true;
       frame.removeAttribute('src');
       previous.removeAttribute('src');

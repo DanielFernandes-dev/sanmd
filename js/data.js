@@ -389,7 +389,39 @@ const LULITH_FRAMES = Object.freeze({
   lulith_codigo_10: 'assets/cenario/quarto-lulith/cena10.png',
 });
 
+const ACT1_FRAMES = Object.freeze(Object.fromEntries(Array.from({ length: 8 }, (_, i) =>
+  [`cutscene_act1_0${i + 1}`, `assets/cenario/custcene-beco/cena${i + 1}.png`])));
+
 const CUTSCENES = Object.freeze({
+  act1_ending: Object.freeze({
+    timing: 'act1Ending', frames: ACT1_FRAMES, assets: Object.values(ACT1_FRAMES),
+    sounds: Object.freeze({
+      room_ambience: { src: 'assets/audio/rooftop_ambience.wav', volume: .22, loop: true },
+      mj_steps: { src: 'assets/audio/mj_steps.wav', volume: .12 },
+      binoculars: { src: 'assets/audio/binoculars.wav', volume: .18 },
+      backpack: { src: 'assets/audio/backpack.wav', volume: .20 },
+      strap: { src: 'assets/audio/strap.wav', volume: .16 },
+      exit_steps: { src: 'assets/audio/exit_steps.wav', volume: .24 }
+    }),
+    steps: [
+      ...Object.keys(ACT1_FRAMES).map((frame, i) => ({ frame, duration: `frame0${i + 1}`,
+        transition: i === 0 ? 'fade-in' : 'cut',
+        camera: ['rooftop-push', 'street-focus', 'street-track', null, 'equipment-focus', 'door-focus', null, null][i],
+        sfx: [null, 'mj_steps', 'mj_steps', 'binoculars', 'backpack', 'strap', 'exit_steps', null][i],
+        weight: i === 2 ? .55 : 1, fadeTo: i === 2 ? 0 : undefined })),
+      { type: 'fade-black', duration: 'exitFade' },
+      { type: 'black', duration: 'frame09' }
+    ]
+  }),
+  act1_title: Object.freeze({
+    timing: 'act1Ending', frames: {}, title: 'ATO 1 COMPLETO', assets: [],
+    steps: [
+      { type: 'title', phase: 'reveal', duration: 'titleReveal', reduced: 'reducedMotion' },
+      { type: 'title', phase: 'hold', duration: 'titleHold' },
+      { type: 'title', phase: 'exit', duration: 'titleExit', reduced: 'reducedMotion' },
+      { type: 'black', duration: 'postTitleBlackHold' }
+    ]
+  }),
   lulith_codigo: Object.freeze({
     timing: 'lulithCodigo',
     frames: LULITH_FRAMES,

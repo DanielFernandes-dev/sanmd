@@ -1,5 +1,19 @@
 const CONFIG = Object.freeze({
   cutscene: Object.freeze({
+    act1Ending: Object.freeze({
+      frame01: 1800, frame02: 1350, frame03: 1150, frame04: 1250,
+      frame05: 1150, frame06: 1050, frame07: 1050, frame08: 1450, frame09: 650,
+      entryFade: 240, exitFade: 400, audioTimeout: 1500, audioFade: 400, audioFadeTick: 16,
+      cameras: Object.freeze({
+        'rooftop-push': { scale: 1.02, x: 0, origin: '55% 50%' },
+        'street-focus': { scale: 1.015, x: -.15, origin: '75% 65%' },
+        'street-track': { scale: 1.01, x: -.3, origin: '50% 65%' },
+        'equipment-focus': { scale: 1.01, x: 0, origin: '40% 65%' },
+        'door-focus': { scale: 1.01, x: -.2, origin: '75% 45%' }
+      }),
+      titleReveal: 1200, titleHold: 1600, titleExit: 1800, postTitleBlackHold: 550,
+      reducedMotion: 100
+    }),
     lulithCodigo: Object.freeze({
       frame01: 2000, frame02: 1550, frame03: 1050, frame04: 1450, frame05: 1300,
       frame06: 950, frame07: 900, frame08: 400, frame09: 1150, frame10: 1700,

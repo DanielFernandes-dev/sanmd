@@ -43,7 +43,7 @@ Skip durante preparo aguarda somente o carregamento já limitado pelo timeout
 global; não executa os passos. Falha de asset não prende a interface.
 `isCutsceneActive()`, `getCurrent()` e `isSkipping()` expõem estado transitório
 em closures. Nenhum timer, frame, posição, máscara, estado de áudio ou primeiro
-toque entra em snapshots. O formato dos snapshots não foi alterado; Novo jogo registra autosave após a conclusão de Lulith e a entrada no gameplay.
+toque entra em snapshots. A conclusão do Ato 1 acrescenta somente a flag persistente `act1Complete`; Novo jogo registra autosave após a conclusão de Lulith e a entrada no gameplay.
 
 ## Input e camadas
 
@@ -246,3 +246,34 @@ Verificações aprovadas no WebView real:
 Os saves originais e a suspensão de tela foram restaurados ao terminar.
 Essa rodada confirma os fluxos refatorados; o teste de Skip em todos os quadros
 continua coberto pela suíte automatizada e pela rodada Android de setembro.
+
+## Cutscene 03 — `act1_ending`
+
+Na entrada do beco, `Ir para` oferece `Sair do beco` quando `safeOpened` e
+`lulithPhoneCollected` são verdadeiros e `act1Complete` é falso. Coletar o
+celular e navegar dentro do beco não iniciam a sequência. Não há requisito
+adicional de reset ou conversa do celular.
+
+`ACT1_FRAMES` aponta para as oito artes existentes em `assets/cenario/custcene-beco`.
+O palco e `object-fit: cover` são compartilhados com a Cutscene 02. Não há
+sprite de caminhada adequado; os quadros 02–03 representam o afastamento da MJ.
+Todos os cortes internos são secos. CONFIG.cutscene.act1Ending contém tempos,
+fades e câmeras (escala máxima 1,02; pan máximo 0,3%). Reduced motion mantém
+quadros e som, sem câmera. Os sons originais são reproduzíveis offline com
+`python3 assets/audio/gerar_beco.py` e usam o pool de áudio existente.
+
+Após 08, um passo de fade de 400 ms cobre a tela; o passo 09 mantém preto
+uniforme por 650 ms. Não há imagem 09. O ambiente termina durante o fade.
+A mesma conclusão natural/Skip marca `act1Complete`, registra um autosave e
+inicia `act1_title`: revelação central, pausa, subida e preto. Essa sequência
+separada usa o mesmo controlador, renderer, fonte e keyframes da abertura,
+sem lâmpada ou interruptor. O callback retorna à capa normal do menu.
+
+Somente `act1Complete` entra no snapshot; saves antigos recebem `false`.
+Carregar o save final preserva o progresso e não oferece novamente essa saída.
+O retorno ao menu cancela timers de gameplay e preserva saves manuais e autosave.
+
+Validação: testes automatizados de passos, Skip em todos os quadros e fade,
+limpeza de áudio/câmera, gatilho, migração de saves e reentrada. Navegador Chromium
+em viewport de 915×412 verifica o fluxo completo. Android físico e avaliação
+auditiva dos volumes no aparelho permanecem verificações manuais necessárias.

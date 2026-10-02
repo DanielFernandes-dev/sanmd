@@ -1,6 +1,7 @@
 // O navegador cria uma instância; testes podem criar outras com dependências próprias.
 const game = criarJogo({ document, storage: obterStorageDisponivel() });
 const titleMenu = criarTelaInicial({ game, document, window });
+game.eventosInteracao.act1Complete = titleMenu.retornarAoMenu;
 titleMenu.iniciar({ bloqueado: true });
 game.services.iniciarCutscene('intro_abertura');
 

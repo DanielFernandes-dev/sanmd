@@ -149,6 +149,23 @@ function criarTelaInicial({ game, document, window }) {
       if (services.restaurarEstadoJogo(save.saveState) === false) throw new Error('Aguarde a transição e tente novamente.');
     }, false);
   }
+  function retornarAoMenu() {
+    playing = false;
+    services.cancelarTemporizadores();
+    app.inert = true;
+    menu.hidden = false;
+    menu.inert = false;
+    menu.classList.remove('entering-game');
+    get('notebook-stage').hidden = false;
+    get('notebook-fade').style.opacity = '0';
+    cover.style.opacity = '1';
+    opened.hidden = true;
+    opened.style.opacity = '0';
+    setMode('menu');
+    render();
+    get('notebook-new').focus();
+  }
+
   function saveOnExit() {
     if (!playing || services.isSceneTransitioning() || services.isCutsceneActive()) return;
     services.registrarAutosave();
@@ -173,5 +190,5 @@ function criarTelaInicial({ game, document, window }) {
     window.addEventListener('pagehide', saveOnExit);
     if (!bloqueado) get('notebook-new').focus();
   }
-  return Object.freeze({ iniciar, newGame, openLoad, close, load, saveOnExit, getMode: () => mode });
+  return Object.freeze({ iniciar, newGame, openLoad, close, load, saveOnExit, retornarAoMenu, getMode: () => mode });
 }

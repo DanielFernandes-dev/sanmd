@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 
-function setup(reduced = false) {
+function setup(reduced = false, id = 'lulith_codigo') {
   const elements = new Map(), audios = [], animations = [], intervals = new Set();
   const timers = new Map(); let serial = 0;
   const element = () => ({ style: {}, dataset: {}, removeAttribute(key) { delete this[key]; },
@@ -24,7 +24,7 @@ function setup(reduced = false) {
     animarFade: async (el, from, to) => { el.style.opacity = String(to); } };
   const ctx = vm.createContext({ console, Date });
   for (const file of ['config','data','cutscene-audio','cutscene-frames']) vm.runInContext(fs.readFileSync(`js/${file}.js`, 'utf8'), ctx);
-  const config = vm.runInContext('CONFIG', ctx), sequence = vm.runInContext('CUTSCENES.lulith_codigo', ctx);
+  const config = vm.runInContext('CONFIG', ctx), sequence = vm.runInContext(`CUTSCENES.${id}`, ctx);
   const visual = ctx.criarVisualQuadros({ document, window, config, services });
   return { visual, sequence, config, animations, audios, elements, timers, intervals, window, services,
     createAudio: () => ctx.criarAudioCutscene({ window, services }, config.cutscene.lulithCodigo, sequence.sounds) };
@@ -112,4 +112,28 @@ test('falha durante fade de áudio ainda limpa o pool e o intervalo', async () =
   await assert.rejects(audio.encerrar(),/fade interrompido/);
   assert.equal(t.intervals.size,0);
   assert.ok(t.audios.every(a=>a.paused&&!a.src));
+});
+
+for (let index = 0; index < 10; index++) test(`Ato 1: limpa câmera, áudio e imagens no passo ${index + 1}`, async () => {
+  const t = setup(false, 'act1_ending'); t.visual.iniciar(t.sequence); await t.visual.preparar();
+  for (const step of t.sequence.steps.slice(0, index + 1))
+    t.visual.apresentar(step, t.config.cutscene.act1Ending[step.duration], false);
+  if (index >= 8) assert.equal(t.elements.get('frame-cutscene-fade').style.opacity, '1');
+  await t.visual.encerrar(); t.visual.finalizar();
+  assert.ok(t.animations.every(a => a.cancelled));
+  assert.ok(t.audios.every(a => a.paused && !a.src));
+  assert.equal(t.intervals.size, 0); assert.equal(t.timers.size, 0);
+});
+test('Ato 1: oito assets paisagem, reduced motion e preto sem src indefinido', async () => {
+  const t = setup(true, 'act1_ending'); t.visual.iniciar(t.sequence); await t.visual.preparar();
+  for (const file of t.sequence.assets) {
+    const b = fs.readFileSync(file); const ratio = b.readUInt32BE(16) / b.readUInt32BE(20);
+    assert.ok(ratio > 1.76 && ratio < 1.80);
+  }
+  for (const step of t.sequence.steps) t.visual.apresentar(step, t.config.cutscene.act1Ending[step.duration], true);
+  assert.equal(t.elements.get('cutscene-frame').src, t.sequence.frames.cutscene_act1_08);
+  assert.equal(t.elements.get('cutscene-frame').style.visibility, 'hidden');
+  assert.equal(t.elements.get('frame-cutscene-title').hidden, true);
+  assert.ok(t.animations.every(a => a.keys.every(k => !k.transform)));
+  await t.visual.encerrar(); t.visual.finalizar();
 });
