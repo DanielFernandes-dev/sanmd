@@ -11,7 +11,7 @@ tags:
   - visual-novel
   - obsidian
 status: atual
-updated: 2026-09-11
+updated: 2026-10-02
 ---
 
 # Estrutura Gaming
@@ -47,6 +47,9 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 
 ### O Que Funciona
 
+- Cutscene 01 de SANMD/luz, menu em caderno e Cutscene 02 de Lulith no Novo jogo.
+- Um controlador global, preload de dez quadros, Skip, câmera discreta, SFX e efeitos transitórios; [contrato completo](docs/cutscenes.md).
+
 - Três cenas noturnas provisórias: entrada, interior e fundo do beco.
 - Sprite genérico e estático de MJ em PNG externo (`assets/sprites/MJ.png`).
 - MJ aparece em cena somente durante os monólogos (sala sem personagens presenciais).
@@ -78,10 +81,10 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 
 O protótipo valida a base da experiência, não o jogo completo. A interface do celular, a apresentação narrativa e a transição entre estados são o foco desta versão.
 
-A cena ainda é um contexto provisório que começa com o celular em posse de MJ. A conversa, os monólogos, os arquivos anteriores ao reset, a limpeza remota, a investigação point-and-click, a Bolsa e a ativação do aparelho já representam um recorte canônico da Fase 8 do Ato I; as etapas anteriores, da abertura à obtenção do aparelho, ainda não estão implementadas.
+Novo jogo apresenta Lulith e entra no beco com inventário vazio, celular original quebrado e nenhum aparelho ativo. O cofre, a coleta e a ativação pela Bolsa já funcionam. A conversa, os arquivos e o reset formam um recorte da Fase 8; James, dormitório, caso policial, nota e percurso canônico até o cofre continuam planejados.
 
 > [!warning] Fonte de verdade
-> O [[IDEIA_CONCEITUAL]] registra as decisões narrativas mais recentes. O [[GDD]] organiza o design do jogo. Investigação, terminal, puzzles, múltiplos atos, finais, replay e ARG fazem parte da visão futura e não estão presentes no código atual.
+> O [[IDEIA_CONCEITUAL]] registra as decisões narrativas mais recentes. O [[GDD]] organiza o design do jogo. A investigação básica do beco está implementada. Evidências, terminal, sistema geral de puzzles, múltiplos atos, finais, replay e ARG continuam planejados.
 
 ## Direção Conceitual Atual
 
@@ -91,7 +94,7 @@ MJ é uma investigadora criminal/consultora técnica ligada à polícia em São 
 
 ```mermaid
 flowchart TD
-    A[Cutscene provisória de Lulith] --> B[James acorda MJ]
+    A[Cutscene silenciosa de Lulith — implementada] --> B[James acorda MJ]
     B --> C[Caso introdutório point-and-click]
     C --> D[Nota na delegacia]
     D -->|Jogar fora| E[Final imediato e progresso mínimo]
@@ -136,18 +139,21 @@ Este roadmap descreve a sequência que já funciona durante uma partida.
 
 ### Etapa 1 — Inicialização
 
-1. `index.html` monta a cena, os três controles sobrepostos e o celular oculto.
-2. `js/data.js` disponibiliza locais, cenas, destinos, monólogos e árvore de mensagens.
-3. `js/save-system.js` disponibiliza o repositório de persistência; `js/bootstrap.js` compõe os serviços e cria o estado inicial em modo `livre`.
-4. **Conversar**, **Ir para** e **Celular** ficam disponíveis conforme o estado e os destinos da cena.
+1. `criarJogo` compõe as fábricas e os serviços; `bootstrap.js` prepara menu e app bloqueados.
+2. `intro_abertura` apresenta o título e a luz; aguarda Skip para liberar o caderno.
+3. Novo jogo abre o caderno, cobre de preto e reinicializa o estado antes de `lulith_codigo`.
+4. Os dez quadros terminam naturalmente ou por Skip; fade revela o beco, inicia o monólogo e registra autosave.
+5. Carregar restaura o snapshot selecionado sem executar a Cutscene 02.
+6. Conversar, Ir para, Celular e Bolsa são disponibilizados conforme o modo; Celular fica oculto até ativar o aparelho.
 
 ### Etapa 2 — Cena Livre
 
-O jogador vê o beco e pode escolher uma das três ações principais:
+O jogador vê o beco e pode usar os hotspots e os controles disponíveis:
 
 - **Conversar:** inicia uma interação local.
 - **Ir para:** abre os destinos ligados à cena atual.
-- **Celular:** abre o aparelho em uma camada sobre o cenário.
+- **Celular:** após ativação pela Bolsa, abre o aparelho em uma camada sobre o cenário.
+- **Bolsa:** inspeciona itens e executa a ação USAR.
 
 Enquanto um diálogo ou o celular está aberto, os três botões principais ficam desabilitados e o menu de destinos é fechado.
 
@@ -166,7 +172,7 @@ O celular abre sempre na tela inicial e apresenta:
 - Galeria.
 - Arquivos.
 
-**Mensagens**, **Galeria** e **Arquivos** possuem comportamento implementado. A Galeria cria, carrega e exclui saves fotográficos. Mensagens fica acessível desde o início. Três arquivos podem liberar opções condicionais durante a conversa; `REMETENTE.enc` aparece somente quando a conversa termina e o cronômetro do reset começa. Após a limpeza, os dois aplicativos continuam acessíveis, mas não exibem conteúdo.
+**Mensagens**, **Galeria** e **Arquivos** possuem comportamento implementado. A Galeria cria, carrega e exclui saves fotográficos. Mensagens fica acessível após coletar e ativar o Celular de Lulith. Três arquivos podem liberar opções condicionais durante a conversa; `REMETENTE.enc` aparece somente quando a conversa termina e o cronômetro do reset começa. Após a limpeza, os dois aplicativos continuam acessíveis, mas não exibem conteúdo.
 
 ### Etapa 5 — Primeira Mensagem Do Protagonista
 
@@ -251,7 +257,7 @@ Depois da última resposta do contato:
 │   ├── phone.js               # Fábrica do celular (apps, tema, navegação)
 │   ├── scene.js               # Fábrica de cena (fundos, hotspots, objetos)
 │   ├── gallery.js             # Fábrica da Galeria (fotografias, save/load)
-│   ├── persistence.js         # Persistência de saves (indexedDB/localStorage)
+│   ├── persistence.js         # Snapshot, validação e restauração narrativa
 │   ├── save-system.js         # Sistema de saves manuais e autosave
 │   ├── interface.js           # Fábrica da interface principal (botões, menus)
 │   ├── keyboard.js            # Teclado virtual próprio do jogo
@@ -863,21 +869,21 @@ Abrir `http://localhost:8000`.
 
 - Persistência limitada às estruturas narrativas do protótipo; sem migrations entre versões incompatíveis ou cloud save.
 - Sem gerenciamento de múltiplas partidas.
-- Sem sistema de inventário ou evidências.
-- Sem eventos de cenário.
-- Áudio limitado ao blip sintetizado de digitação; sem música, efeitos de interface ou trilha.
-- Sem investigação point-and-click, terminal ou sistema geral de puzzles; existe apenas o enigma de identidade do celular.
+- Bolsa e inventário narrativo implementados; falta sistema completo de apresentação de evidências.
+- Hotspots e eventos do cofre implementados; faltam eventos das cenas futuras.
+- Blip de diálogo, lâmpada e seis SFX sintetizados de Lulith implementados; sem trilha musical definitiva.
+- Point-and-click do beco implementado; terminal e sistema geral de puzzles pendentes. O cofre atual abre por interação e não tem puzzle de senha.
 
 ### Interface
 
-- A Galeria é funcional; faltam interface dedicada para carregar autosave e modais próprios de confirmação. Notas foi removido da tela inicial.
+- Galeria e Carregar no caderno funcionais, incluindo seleção do autosave. Notas foi removido da tela inicial.
 - O overlay não possui trava completa de foco.
 - O botão físico Voltar do Android não possui tratamento específico.
 - Bateria e sinal são decorativos.
 
 ### Qualidade
 
-   - A suíte automatizada possui 85 testes para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ, ícones principais, teclado virtual, entrada de texto e transições de cena; validações visuais e sistemas futuros ainda não possuem cobertura completa.
+   - A suíte automatizada possui cobertura para navegação entre cenas, fluxo do chat da Fase 8, estados críticos, contrato visual de MJ, ícones principais, teclado virtual, entrada de texto e transições de cena; validações visuais e sistemas futuros ainda não possuem cobertura completa.
    - Não existe CI.
    - Responsividade e acessibilidade dependem de validação manual.
    - O APK foi gerado e validado ponta a ponta com ADB.
@@ -924,7 +930,8 @@ Status: **planejada**.
 
 - [ ] Trocar o conteúdo atual para MJ, Lulith e William James.
 - [ ] Permitir a escolha do nome real de MJ.
-- [ ] Prototipar a cutscene de Lulith e a cena de dormitório.
+- [x] Implementar a Cutscene 02 de Lulith em dez quadros estáticos.
+- [ ] Prototipar a cena de dormitório e James após a cutscene.
 - [ ] Criar o caso introdutório de investigação point-and-click.
 - [ ] Criar a delegacia, a nota e a escolha que permite encerrar a partida.
 - [ ] Implementar coordenadas, deslocamento, cofre e obtenção do celular.
@@ -1013,6 +1020,19 @@ O título completo sobe e a luz revela o menu já preparado, liberando o control
 somente pelo Skip. Duplo clique/toque pula a apresentação em qualquer fase.
 O menu mostra um caderno sobre a mesa escura, com a cidade noturna ao fundo. A tela é parte do universo do jogo, não um menu web: o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` são gravados em `assets/interfaces/menu.png`, e os controles são áreas de toque transparentes sobrepostas a eles.
 
+### Cutscene 02 e apresentação compartilhada
+
+`criarVisualCutscenes` seleciona `criarVisualAbertura` ou `criarVisualQuadros`;
+ambos pertencem ao mesmo `criarCutsceneController`. Dados ficam em `CUTSCENES`,
+IDs em `LULITH_FRAMES`, tempos em `CONFIG.cutscene.lulithCodigo`. O renderer usa
+uma imagem ativa e uma auxiliar para a transição suave; som e animações não são
+persistidos. O encerramento assíncrono mantém input bloqueado até concluir o fade.
+
+Quadros 01–07 têm cerca de 25% mais tempo que a revisão anterior; 08–10 mantêm
+o ritmo. Câmera, flashes e shake são cancelados ao sair. Os detalhes de timing,
+preload, falhas e validação estão em [Cutscenes](docs/cutscenes.md). A sequência
+não ativa o telefone, não muda o tema e não implementa a saída do beco.
+
 ### Composição
 
 | Peça | Elemento | Papel |
@@ -1041,7 +1061,7 @@ Nenhum desses valores entra no snapshot: `capturarEstadoJogo()` em `js/persisten
 
 ### Fluxos
 
-- **Novo jogo** — `animateBook(true)` → `animarFade` até opaco → `cancelarTemporizadores()` + `Object.assign(state, criarEstadoJogo())` + `restaurarInterface()` → `game.iniciar()` → fade de volta. A animação de abertura é sempre awaited antes do fade, então nunca é pulada.
+- **Novo jogo** — `animateBook(true)` → `animarFade` até opaco → `cancelarTemporizadores()` + `Object.assign(state, criarEstadoJogo())` + `restaurarInterface()` → `game.iniciar()` → `iniciarCutscene("lulith_codigo")` → fade de volta → liberar app → `iniciarConversa()` → `registrarAutosave()`. A animação de abertura é sempre awaited antes do fade, então nunca é pulada.
 - **Carregar** — `animateBook(true)` e permanece visível, com os registros renderizados nas páginas. Clicar numa fotografia executa a mesma restauração da Galeria.
 - **Voltar** — `animateBook(false)` devolve o caderno à capa fechada.
 
@@ -1055,7 +1075,7 @@ A paginação usa 4 slots por página e 2 em telas compactas (`max-height: 500px
 
 ### Saída do Jogo
 
-A tela inicial não cria um autosave próprio. `saveOnExit` reutiliza `services.registrarAutosave()` — o mesmo autosave que a Galeria, o celular e o fim de cutscene já gravam — apenas quando o jogo está em andamento e nenhuma transição de cena está correndo, para não capturar estado pela metade. Fotografias manuais nunca são tocadas. O registro acontece em `visibilitychange` e em `pagehide`; como o fechamento forçado do app não é garantido, o autosave continua sendo uma conveniência e não um ponto de recuperação obrigatório.
+A tela inicial não cria um autosave próprio. `saveOnExit` reutiliza `services.registrarAutosave()` — o checkpoint separado dos saves manuais da Galeria — apenas quando o jogo está em andamento, sem cutscene ativa e sem transição de cena, para não capturar estado pela metade. Fotografias manuais nunca são tocadas. O registro acontece em `visibilitychange` e em `pagehide`; como o fechamento forçado do app não é garantido, o autosave continua sendo uma conveniência e não um ponto de recuperação obrigatório.
 
 ### Geometria e Responsividade
 
@@ -1402,7 +1422,7 @@ Não criam autosave:
 - criação de fotografia manual;
 - load de fotografia manual.
 
-Carregar um save manual antigo preserva o autosave existente. O checkpoint só é substituído quando outra cutscene termina após o load.
+Carregar um save preserva o autosave existente. O próximo diálogo concluído, reset remoto, hotspot concluído ou saída elegível pode substituí-lo. Novo jogo também salva após concluir a Cutscene 02 e entrar no gameplay. A abertura SANMD e os quadros intermediários não geram autosave.
 
 ### Design Atual
 

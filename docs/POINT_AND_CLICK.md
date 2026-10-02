@@ -9,7 +9,7 @@ Escape, mantém o foco dentro da Bolsa e devolve o foco ao ícone.
 
 - `js/data.js`: `DATA.locais[local].cenas` declara cenas e destinos de **Ir para**.
   `beco_fundo` continua sendo uma única cena, com background permanente.
-- `js/game.js`: navegação, renderização, interações e captura/restauração de snapshot.
+- `js/game.js`: composição dos sistemas; `js/scene.js`: navegação, renderização e interações; `js/mechanics.js`: estratégias de hotspots; `js/persistence.js`: snapshot.
 - `js/save-system.js`: repositório existente de saves manuais e autosave, sem novo sistema.
 - `assets/cenario/`: arte fonte; `npm run copy:web` gera `www/`, inclusive os novos PNGs.
 

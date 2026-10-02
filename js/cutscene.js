@@ -1,52 +1,56 @@
-/** Sequências por instância. Timers, input e cancelamento nunca entram no estado salvo. */
+/** Uma sessão por execução: apresentação nunca entra no estado salvo. */
 function criarCutsceneController({ document, window, config, services, sequences, visual }) {
   const schedule = window.setTimeout.bind(window);
   const cancel = window.clearTimeout?.bind(window) ?? clearTimeout;
-  let current = null;
-  let timer = null;
-  let generation = 0;
+  let session = null;
   let firstInput = null;
   let swallowClick = false;
-  let ready = false;
-  let skipping = false;
-  let complete;
-  let finishing = false;
 
-  function finalizar() {
-    if (!current || finishing) return;
-    finishing = true;
-    generation++;
-    cancel(timer);
-    timer = null;
+  function cancelarAvanco(run) {
+    cancel(run.timer);
+    run.timer = null;
+  }
+
+  function finalizar(run) {
+    if (session !== run || run.status === 'finishing') return;
+    run.status = 'finishing';
+    cancelarAvanco(run);
     firstInput = null;
     const done = () => {
-      visual.finalizar();
-      current = null;
-      skipping = false;
-      complete();
+      if (session !== run) return;
+      try { visual.finalizar(); }
+      catch (error) { console.error('Falha na limpeza da cutscene', error); }
+      session = null;
+      run.onComplete();
     };
-    const closing = visual.encerrar?.();
-    if (closing) Promise.resolve(closing).then(done, error => {
-      console.error('Falha ao encerrar cutscene', error); done();
-    });
-    else done();
+    try {
+      const closing = visual.encerrar?.();
+      if (closing) Promise.resolve(closing).then(done, error => {
+        console.error('Falha ao encerrar cutscene', error); done();
+      });
+      else done();
+    } catch (error) {
+      console.error('Falha ao encerrar cutscene', error);
+      done();
+    }
   }
+
   function skip() {
-    if (!current || skipping || finishing) return;
-    skipping = true;
-    cancel(timer);
-    timer = null;
-    if (ready) finalizar();
+    const run = session;
+    if (!run || run.skipRequested || run.status === 'finishing') return;
+    run.skipRequested = true;
+    cancelarAvanco(run);
+    if (run.status !== 'preparing') finalizar(run);
   }
   function input(event) {
     // Consumir também click/dblclick sintetizados DEPOIS do pointerup que pulou.
-    if (!current) {
+    if (!session) {
       if (event.type === 'pointerdown' || event.type === 'keydown') swallowClick = false;
       if (!swallowClick || !['click', 'dblclick', 'touchend', 'mouseup', 'keyup'].includes(event.type)) return;
     }
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (!current) return;
+    if (!session) return;
     if (event.type === 'pointerdown' || event.type === 'keydown') swallowClick = true;
     if (event.type === 'pointercancel') firstInput = null;
     if (event.type !== 'pointerup' || event.isPrimary === false || event.button > 0) return;
@@ -59,46 +63,53 @@ function criarCutsceneController({ document, window, config, services, sequences
     'click', 'dblclick', 'touchstart', 'touchend', 'touchmove', 'keydown', 'keyup', 'submit', 'contextmenu', 'wheel']) {
     document.addEventListener(type, input, { capture: true, passive: false });
   }
-  function iniciar(id, onComplete = () => {}) {
-    if (current) return false;
-    const sequence = sequences[id];
-    if (!sequence) throw new Error(`Cutscene desconhecida: ${id}`);
-    current = id;
-    skipping = ready = false;
-    finishing = false;
-    firstInput = null;
-    complete = onComplete;
-    const token = ++generation;
-    visual.iniciar(sequence);
-    let index = 0;
-    function next() {
-      if (token !== generation || !current) return;
-      if (index === sequence.steps.length) { finalizar(); return; }
-      const step = sequence.steps[index++];
+  function avancar(run) {
+    if (session !== run || run.status !== 'playing') return;
+    run.timer = null;
+    const step = run.sequence.steps[run.index++];
+    if (!step) { finalizar(run); return; }
+    try {
       const reduced = services.movimentoReduzido();
-      const timing = sequence.timing ? config.cutscene[sequence.timing] : config.cutscene;
-      const duration = timing[reduced && step.reduced ? step.reduced : step.duration];
+      const duration = run.timing[reduced && step.reduced ? step.reduced : step.duration];
+      if (!Number.isFinite(duration) || duration < 0) throw new Error(`Duração inválida: ${step.duration}`);
       visual.apresentar(step, duration, reduced);
-      // A apresentação pode permanecer no último estado até o Skip.
-      if (step.hold) { timer = null; return; }
-      timer = schedule(next, duration);
+      if (session !== run || run.status !== 'playing' || step.hold) return;
+      run.timer = schedule(() => avancar(run), duration);
+    } catch (error) {
+      console.error('Falha ao apresentar cutscene', error);
+      finalizar(run);
     }
-    // O carregador global compartilha cache, decode e limite de espera.
+  }
+
+  function iniciar(id, onComplete = () => {}) {
+    if (session) return false;
+    const sequence = Object.hasOwn(sequences, id) && sequences[id];
+    if (!sequence) throw new Error(`Cutscene desconhecida: ${id}`);
+    const run = session = { id, sequence, onComplete, index: 0, timer: null,
+      status: 'preparing', skipRequested: false,
+      timing: sequence.timing ? config.cutscene[sequence.timing] : config.cutscene };
+    firstInput = null;
+    try { visual.iniciar(sequence); }
+    catch (error) {
+      console.error('Falha ao iniciar cutscene', error);
+      finalizar(run);
+      return true;
+    }
+    // Identidade da sessão impede qualquer callback antigo de afetar outra execução.
     Promise.resolve().then(() => Promise.all([
       services.prepareSceneImages(sequence.assets || []), visual.preparar?.()
-    ]))
-      .catch(error => {
-        console.error('Asset da cutscene indisponível', error);
-        // Sequências de quadros não exibem imagens quebradas após falha no preload.
-        if (sequence.frames) skipping = true;
-      })
-      .then(() => {
-        if (token !== generation) return;
-        ready = true;
-        if (skipping) finalizar(); else next();
-      });
+    ])).catch(error => {
+      if (session !== run) return;
+      console.error('Asset da cutscene indisponível', error);
+      if (sequence.frames) run.skipRequested = true;
+    }).then(() => {
+      if (session !== run || run.status !== 'preparing') return;
+      run.status = 'playing';
+      if (run.skipRequested) finalizar(run); else avancar(run);
+    });
     return true;
   }
-  return Object.freeze({ iniciarCutscene: iniciar, pularCutscene: skip, isCutsceneActive: () => current !== null,
-    getCurrent: () => current, isSkipping: () => skipping });
+  return Object.freeze({ iniciarCutscene: iniciar, pularCutscene: skip,
+    isCutsceneActive: () => session !== null, getCurrent: () => session?.id ?? null,
+    isSkipping: () => session?.skipRequested ?? false });
 }

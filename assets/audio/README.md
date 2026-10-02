@@ -30,3 +30,19 @@ erro, cadeira e impacto. São efeitos sintetizados; não são gravações de fol
 Volumes ficam no catálogo `CUTSCENES.lulith_codigo.sounds`. O pool transitório
 em `cutscene-audio.js` limita o preload, interrompe cada SFX na troca de quadro
 e faz fade do ambiente ao concluir ou pular. Nenhum áudio entra no save.
+
+
+| ID lógico | Arquivo | Uso/volume no catálogo |
+|---|---|---|
+| `room_ambience` | `room_ambience.wav` | Loop ambiente, 0,16 |
+| `keyboard` | `keyboard.wav` | Quadro 02, 0,35 |
+| `keyboard_fast` | `keyboard_fast.wav` | Quadro 05, 0,43 |
+| `computer_error` | `computer_error.wav` | Quadros 03/06, 0,35; segundo erro ×1,2 |
+| `chair_move` | `chair_move.wav` | Quadro 07, 0,40 |
+| `kick_impact` | `kick_impact.wav` | Quadro 08, 0,60 |
+
+`CONFIG.cutscene.lulithCodigo` limita o preload de áudio a 1500 ms e o fade do
+ambiente a 180 ms. Som com falha é descartado sem reprodução tardia. Digitação
+é um SFX de duração própria; ampliar a permanência do quadro não estica o WAV.
+Os testes verificam reprodução/limpeza por estado dos elementos; avaliação
+subjetiva de timbre, volume e alto-falante do aparelho permanece complementar.

@@ -86,3 +86,12 @@ O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato
 - [`../../ESTRUTURA_GAMING.md`](../../ESTRUTURA_GAMING.md): controles e contrato arquitetural do menu.
 - [`../../IDEIA_CONCEITUAL.md`](../../IDEIA_CONCEITUAL.md): direção minimalista da interface atual.
 - [`../../TODO.md`](../../TODO.md): implementação e validações pendentes.
+
+
+## Integração com as cutscenes
+
+O caderno é preparado sob a Cutscene 01; o Skip global libera seus botões. Novo
+jogo abre a capa e cobre a tela antes de reiniciar o estado e executar Lulith.
+Carregar segue para os registros e nunca dispara a Cutscene 02. Os overlays de
+cutscene estão na camada 1001, sobre o menu 1000. Não são novos menus em bitmap.
+Ver [Cutscenes](../../docs/cutscenes.md) e [Save System](../../docs/SAVE_SYSTEM.md).

@@ -8,7 +8,7 @@ const raiz = path.resolve(__dirname, '..');
 const FASES = ['preto', 'siglas', 'pausa-siglas', 'significado', 'risada',
   'pausa-completa', 'subida', 'preto-final', 'luz'];
 
-function setup({ reduced = false, prepare = Promise.resolve(), closing } = {}) {
+function setup({ reduced = false, prepare = Promise.resolve(), closing, visualOverrides = {} } = {}) {
   const timers = new Map(), listeners = {}, phases = [], cancelled = [];
   let serial = 0, finished = 0, blocked = false;
   const context = vm.createContext({ console, clearTimeout });
@@ -24,7 +24,7 @@ function setup({ reduced = false, prepare = Promise.resolve(), closing } = {}) {
     config, sequences,
     services: { movimentoReduzido: () => reduced, prepareSceneImages: () => prepare },
     visual: { encerrar: closing ? () => closing : undefined, iniciar() { blocked = true; }, apresentar(step, duration) { phases.push([step.phase || step.frame, duration]); },
-      finalizar() { blocked = false; finished++; } }
+      finalizar() { blocked = false; finished++; }, ...visualOverrides }
   });
   let completions = 0;
   const start = (id = 'intro_abertura') => controller.iniciarCutscene(id, () => completions++);
@@ -267,4 +267,31 @@ test('finalização assíncrona mantém input bloqueado durante o fade e conclui
   resolve(); await ready();
   assert.equal(t.controller.isCutsceneActive(), false);
   assert.equal(t.completions, 1); assert.equal(t.finished, 1);
+});
+
+for (const method of ['iniciar', 'apresentar', 'encerrar', 'finalizar']) {
+  test(`falha de ${method} libera a sessão e conclui uma vez`, async () => {
+    const t = setup({ visualOverrides: { [method]() { throw new Error('falha visual'); } } });
+    t.start('lulith_codigo'); await ready();
+    if (t.controller.isCutsceneActive()) t.controller.pularCutscene();
+    await ready();
+    assert.equal(t.controller.isCutsceneActive(), false);
+    assert.equal(t.completions, 1);
+    assert.equal(t.timers.size, 0);
+  });
+}
+test('callback de execução anterior não avança uma nova sessão', async () => {
+  const t = setup(); t.start('lulith_codigo'); await ready();
+  const stale = [...t.timers.values()][0].fn;
+  t.controller.pularCutscene();
+  t.start('lulith_codigo'); await ready();
+  const count = t.phases.length;
+  stale(); assert.equal(t.phases.length,count);
+  t.esvaziar(); assert.equal(t.completions,2);
+});
+test('duração inválida encerra com segurança em vez de criar timer sem limite', async () => {
+  const t = setup(); t.sequences.lulith_codigo.steps[0].duration = 'missing';
+  t.start('lulith_codigo'); await ready();
+  assert.equal(t.completions,1); assert.equal(t.phases.length,0);
+  assert.equal(t.timers.size,0);
 });

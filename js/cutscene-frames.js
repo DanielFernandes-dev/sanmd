@@ -1,17 +1,3 @@
-/** Seleção de apresentação; ordem, input e Skip pertencem ao único controlador. */
-function criarVisualCutscenes(context) {
-  const opening = criarVisualAbertura(context);
-  const frames = criarVisualQuadros(context);
-  let active = opening;
-  return {
-    iniciar(sequence) { active = sequence.frames ? frames : opening; active.iniciar(sequence); },
-    preparar() { return active.preparar?.(); },
-    apresentar(...args) { active.apresentar(...args); },
-    encerrar() { return active.encerrar?.(); },
-    finalizar() { active.finalizar(); }
-  };
-}
-
 /** Uma imagem ativa, palco de proporção fixa e cobertura preta para entrada/saída. */
 function criarVisualQuadros({ document, window, config, services }) {
   const get = id => document.getElementById(id);
@@ -21,6 +7,10 @@ function criarVisualQuadros({ document, window, config, services }) {
   const previous = get('cutscene-previous-frame');
   const fade = get('frame-cutscene-fade');
   const effects = get('cutscene-effects');
+  const cameras = {
+    'slow-push': { scale: 1.02, origin: '50% 50%' },
+    'small-push': { scale: 1.025, origin: '40% 55%' }
+  };
   let sequence, timing, audio;
   let animations = [];
   function clear(holdFrame = false) {
@@ -46,7 +36,29 @@ function criarVisualQuadros({ document, window, config, services }) {
     effects.style.clipPath = `polygon(${x}% ${y}%, ${x + width}% ${y}%, ${x + width}% ${y + height}%, ${x}% ${y + height}%)`;
     animate(effects, [{ opacity: reduced ? .08 : .2 }, { opacity: 0 }], timing.errorFlash);
   }
-  return {
+  function transicionar(step, reduced) {
+    const source = frame.dataset.frame && frame.src;
+    const transform = window.getComputedStyle?.(frame).transform || frame.style.transform;
+    clear();
+    if (step.transition === 'soft-cut' && source && !reduced) {
+      previous.src = source;
+      previous.style.transform = transform;
+      previous.style.transformOrigin = frame.style.transformOrigin;
+      animate(previous, [{ opacity: 1 }, { opacity: 0 }], timing.frameBlend);
+    }
+    if (step.transition === 'fade-in') {
+      fade.style.opacity = '0';
+      animate(fade, [{ opacity: 1 }, { opacity: 0 }], timing.entryFade);
+    }
+  }
+  function aplicarCamera(name, duration, reduced) {
+    const camera = cameras[name];
+    if (reduced || !camera) return;
+    frame.style.transformOrigin = camera.origin;
+    frame.style.transform = `scale(${camera.scale})`;
+    animate(frame, [{ transform: 'scale(1)' }, { transform: frame.style.transform }], duration);
+  }
+  return Object.freeze({
     iniciar(data) {
       sequence = data;
       timing = config.cutscene[data.timing];
@@ -58,31 +70,14 @@ function criarVisualQuadros({ document, window, config, services }) {
     },
     preparar() { return audio.preparar(); },
     apresentar(step, duration, reduced) {
-      const previousSource = frame.dataset.frame && frame.src;
-      const previousTransform = window.getComputedStyle?.(frame).transform || frame.style.transform;
-      clear();
-      if (step.transition === 'soft-cut' && previousSource && !reduced) {
-        previous.src = previousSource;
-        previous.style.transform = previousTransform;
-        previous.style.transformOrigin = frame.style.transformOrigin;
-        animate(previous, [{ opacity: 1 }, { opacity: 0 }], timing.frameBlend);
-      }
+      transicionar(step, reduced);
       audio.apresentar(step.sfx, step.weight);
       frame.src = sequence.frames[step.frame];
       frame.dataset.frame = step.frame;
       frame.style.visibility = 'visible';
-      if (!reduced && step.camera) {
-        const scale = step.camera === 'small-push' ? 1.025 : 1.02;
-        frame.style.transformOrigin = step.camera === 'small-push' ? '40% 55%' : '50% 50%';
-        frame.style.transform = `scale(${scale})`;
-        animate(frame, [{ transform: 'scale(1)' }, { transform: `scale(${scale})` }], duration);
-      }
+      aplicarCamera(step.camera, duration, reduced);
       if (step.effect === 'computer-error') computerErrorFlash(step.flashRegion, reduced);
       if (!reduced && step.shake) shake(step.shake);
-      if (step.transition === 'fade-in') {
-        fade.style.opacity = '0';
-        animate(fade, [{ opacity: 1 }, { opacity: 0 }], timing.entryFade);
-      }
     },
     async encerrar() {
       clear(true);
@@ -97,5 +92,5 @@ function criarVisualQuadros({ document, window, config, services }) {
       previous.removeAttribute('src');
       delete frame.dataset.frame;
     }
-  };
+  });
 }

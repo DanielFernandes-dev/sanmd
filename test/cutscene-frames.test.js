@@ -26,7 +26,8 @@ function setup(reduced = false) {
   for (const file of ['config','data','cutscene-audio','cutscene-frames']) vm.runInContext(fs.readFileSync(`js/${file}.js`, 'utf8'), ctx);
   const config = vm.runInContext('CONFIG', ctx), sequence = vm.runInContext('CUTSCENES.lulith_codigo', ctx);
   const visual = ctx.criarVisualQuadros({ document, window, config, services });
-  return { visual, sequence, config, animations, audios, elements, timers, intervals };
+  return { visual, sequence, config, animations, audios, elements, timers, intervals, window, services,
+    createAudio: () => ctx.criarAudioCutscene({ window, services }, config.cutscene.lulithCodigo, sequence.sounds) };
 }
 
 for (let index = 0; index < 10; index++) test(`renderer: limpeza completa no quadro ${index + 1}`, async () => {
@@ -81,4 +82,34 @@ test('suavização curta usa somente o quadro anterior e preserva cortes de impa
   t.visual.apresentar(t.sequence.steps[2],850,false);
   assert.ok(t.animations.filter(a=>a.options.duration===100).every(a=>a.cancelled));
   await t.visual.encerrar();t.visual.finalizar();
+});
+
+test('finalizar durante preload descarta imediatamente mídia e timers pendentes', async () => {
+  const t = setup(); const audio = t.createAudio();
+  const pending = audio.preparar();
+  assert.equal(audio.preparar(),pending);
+  const late = t.audios.map(a=>a.oncanplaythrough);
+  audio.finalizar();
+  assert.equal(t.timers.size,0);
+  assert.ok(t.audios.every(a=>a.paused&&!a.src));
+  late.forEach(fn=>fn()); await pending;
+  audio.apresentar('keyboard');
+  assert.ok(t.audios.every(a=>a.paused));
+});
+test('encerramento de áudio é idempotente e não depende de this', async () => {
+  const t = setup(); const audio = t.createAudio(); await audio.preparar();
+  audio.apresentar('keyboard');
+  const { encerrar, finalizar } = audio;
+  const first = encerrar(); assert.equal(encerrar(), first);
+  await first; finalizar();
+  assert.equal(t.intervals.size,0);
+  assert.ok(t.audios.every(a=>a.paused&&!a.src));
+});
+test('falha durante fade de áudio ainda limpa o pool e o intervalo', async () => {
+  const t = setup(); const audio = t.createAudio(); await audio.preparar();
+  audio.apresentar('keyboard');
+  t.services.esperarAnimacao = async () => { throw new Error('fade interrompido'); };
+  await assert.rejects(audio.encerrar(),/fade interrompido/);
+  assert.equal(t.intervals.size,0);
+  assert.ok(t.audios.every(a=>a.paused&&!a.src));
 });

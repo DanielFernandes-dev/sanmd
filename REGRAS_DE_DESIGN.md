@@ -11,7 +11,7 @@ tags:
   - acessibilidade
   - convencoes
 status: atual
-updated: 2026-09-26
+updated: 2026-10-02
 ---
 
 # Regras de Design
@@ -385,10 +385,11 @@ progresso, nunca como única forma de o layout funcionar.
 
 `[DECIDIDO]` **A fonte única dos tempos é `CONFIG`.** `js/config.js` define
 `transicaoPersonagemEntrada`, `transicaoPersonagemSaida`, `transicaoCelular`,
-`duracaoFlashFoto`, `duracaoReset` e `sceneTransition`.
+`duracaoFlashFoto`, `duracaoReset`, `sceneTransition` e `cutscene`.
 `configurarAnimacoes()` em [`docs/MECHANICS_PATTERN.md`](docs/MECHANICS_PATTERN.md)
-injeta esses valores como `--duracao-*` no `:root`, e o CSS consome com fallback
-igual ao valor. Duração não se escreve em pixel no CSS.
+injeta os tempos de personagem, celular, fotografia e reset como `--duracao-*`
+no `:root`. Transições e cutscenes consomem CONFIG diretamente nos controladores
+e na Web Animations API; a abertura também injeta variáveis no palco.
 
 ## 5.1 Durações por função
 
@@ -407,10 +408,8 @@ Regras:
 
 - A faixa de toque é a mais curta possível e usa só `transform`. Animar `width`,
   `height` ou `top` em interação direta sente lag no aparelho.
-- Efeito de `140ms` ou menos é percebido como clarão, não como animação. Flash de
-  fotografia é o único que usa esse intervalo.
-- O ritual longo é o único que pode bloquear input, e apenas porque representa
-  tempo narrativo.
+- Efeitos curtos incluem o flash fotográfico, o flash de erro de 110 ms, o shake de 90/140 ms e a transição suave de quadros de 100 ms. Os tempos de cutscene vêm de CONFIG.
+- Transições de cena e cutscenes também bloqueiam input. Na cutscene, somente o detector global de Skip aceita o duplo clique/toque.
 
 ## 5.2 Curvas
 
@@ -696,7 +695,9 @@ que é específico de um tipo de arte fica no README da pasta
 ## 10.1 Fonte e artefato
 
 `[DECIDIDO]` **A fonte é a raiz.** `index.html`, `styles.css`, `js/` e `assets/`
-são fonte. `www/` e `android/` são artefato gerado e nunca se edita como fonte.
+são fonte. `www/` e `android/app/src/main/assets/public/` são cópias geradas e não devem
+ser editadas como fonte web. O projeto `android/` também contém configuração
+e integração nativas versionadas, como `AndroidManifest.xml` e `MainActivity.java`.
 
 | Caminho | Papel |
 |---|---|
@@ -705,7 +706,7 @@ são fonte. `www/` e `android/` são artefato gerado e nunca se edita como fonte
 | `js/` | Comportamento e dados |
 | `assets/` | Arte |
 | `www/` | Saída de `npm run copy:web`, consumida pelo Capacitor |
-| `android/` | Projeto nativo gerado por `npx cap sync android` |
+| `android/` | Projeto nativo Capacitor; assets web atualizados por sync |
 
 Comandos: `npm test` roda a suíte, `npm run sync` atualiza `www/` e o Android,
 `npm run apk` gera o APK de debug. `copy:web` também injeta um `v=` de cache
@@ -728,6 +729,8 @@ A suíte usa `node --test`. O que já existe e o que cobre:
 | `test/save-system.test.js` | Slots, autosave e snapshot |
 | `test/text-input.test.js` | Teclado virtual, acentos, limites e integração |
 | `test/scene-transition.test.js` | Fade global e bloqueio de input |
+| `test/cutscene.test.js` | Ordem, Skip, preload, input e finalização das sequências |
+| `test/cutscene-frames.test.js` | Arte, SFX, efeitos, suavização e cancelamento por quadro |
 | `test/bolsa.test.js`, `test/fase-navegacao.test.js` | Bolsa e navegação entre cenas |
 
 Regras:
@@ -835,16 +838,16 @@ alvos pequenos entram como item próprio.
 | `all` em `transition` | `styles.css:1616` e outras 4 | Animandopropriedade não prevista |
 | Raio em porcentagem em dois lugares | `styles.css:2289`, `:2310` | Sem precedente no resto do arquivo |
 | Fonte trocada dentro de media query | `styles.css:2217`–`2252` | Quebra a regra "quatro faces, um papel cada" |
-| `will-change` e `animation-delay` ausentes | `styles.css` | Sem promoção de camada explícita nem atraso orquestrado |
+| Promoção de camada deve ser avaliada por componente | `styles.css`, Web Animations API | A abertura já usa atraso orquestrado da lâmpada; não assumir ausência global de `animation-delay` |
 
 Ação proposta: declarar a versão mínima de WebView antes de mexer em
 `:has()`; sem isso não há como decidir se o risco é real.
 
 ## 11.7 Cobertura de teste
 
-`[PENDENTE]` Nenhuma regra de cor, tipografia, espaçamento, movimento ou estado
-tem verificação automatizada. A suíte cobre geometria de arte, contrato de
-arquivo, persistência e transição. As regras visuais puras deste documento são
+`[PENDENTE]` Regras de cor, tipografia e espaçamento ainda dependem de inspeção.
+A suíte já verifica movimento reduzido, estados de apresentação, ordem, cancelamento
+e tempos das cutscenes, além de geometria, arquivos, persistência e transição. As regras visuais puras deste documento são
 hoje verificadas por inspeção.
 
 Ação proposta: começar pelo que é mensurável sem browser — contagem de hexes
@@ -935,6 +938,13 @@ A abertura usa um título de `3.8cqw`, itálico, peso 700, com escala contraída
 `1.84`, conforme a decisão
 local registrada em [ADR_LOG](docs/ADR_LOG.md) e no [sistema de Cutscene](docs/cutscenes.md).
 O texto de apresentação é itálico da face `--fonte`, sem arquivo de fonte
-novo, e a leitura pixelada vem de `steps(24, end)` com sombra deslocada sem
-desfoque. A luz é ambiente: revela em `ease-in-out` e, ao contrário da subida
-narrativa, não é cortada no movimento reduzido.
+novo, e os passos de máscara/expansão e subida são definidos em `cutscene-view.js` e
+`styles.css`. A luz usa `ease-in`/`ease-out` e duração reduzida quando solicitado.
+
+A Cutscene 02 usa arte estática, `image-rendering: pixelated`, escala máxima de
+1,025 e um palco de proporção fixa com `cover`. A pedido de ajuste de ritmo, os
+cortes calmos usam suavização de 100 ms; erros e chute usam corte seco. Não há
+vídeo, GIF, interpolação de quadros, blur ou movimento de membros. Reduced motion
+desliga câmera, shake e suavização interna sem omitir quadros. O texto de erro
+já desenhado no notebook é parte da arte, não uma legenda ou interface variável.
+Ver [o contrato de cutscenes](docs/cutscenes.md).

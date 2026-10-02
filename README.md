@@ -39,16 +39,20 @@ O objetivo da V1 é validar a estrutura visual e a experiência básica antes do
 
 ## Estado atual
 
+Revisado em **02/10/2026** contra o código do repositório. As seções de direção
+conceitual e fluxo planejado descrevem o jogo futuro; a lista abaixo descreve o runtime.
+
 O núcleo do protótipo é uma aplicação web estática feita com HTML, CSS e JavaScript. O projeto também possui uma camada Capacitor para gerar o aplicativo Android.
 
 Já estão disponíveis:
 
 - Abertura com um único título itálico: SANMD se expande no significado, recebe `kk` e sobe. Clique/estalo e luz revelam o menu, que permanece iluminado e bloqueado até o Skip. Duplo clique/toque pula qualquer fase.
 
+- Cutscene 02 (`lulith_codigo`) exclusiva de **Novo jogo**, com dez imagens estáticas, câmera discreta, áudio e efeitos pontuais, sem falas. Usa o mesmo controlador e Skip da abertura.
 - Tela inicial em caderno fechado sobre a mesa escura, com capa, animação de abertura e páginas internas mostrando os registros como fotografias.
 - Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
 - Personagem de MJ em PNG (`assets/sprites/MJ.png`), mostrada em cena somente durante os monólogos.
-- Comandos por ícones pixelados para **Conversar**, **Ir para** e **Celular**, sem sidebar visual.
+- Comandos por ícones pixelados para **Conversar**, **Ir para**, **Celular** e **Bolsa**, sem sidebar visual.
 - Menu **Ir para** compacto e contextual, com somente os destinos disponíveis na cena atual.
 - Caixa de diálogo inspirada em *Ace Attorney* com nome, falas sequenciais e efeito de digitação.
 - Efeito de digitação com som sintetizado por letra via Web Audio API.
@@ -74,13 +78,12 @@ Já estão disponíveis:
 - Cofre interativo no fundo do beco com abertura e coleta do Celular de Lulith.
 - Ativação do aparelho pela Bolsa com reação narrativa e transição de tema.
 - Layout da Galeria com linhas dimensionadas pelo conteúdo, metadados estruturados e suporte a nomes longos.
-   - Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
-   - Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
-   - Transição de cena com fade global, bloqueio de input durante o efeito e suporte a `prefers-reduced-motion`.
-   - Projeto Android e comando de build de APK com Capacitor.
-   - 85 testes automatizados cobrindo navegação, estado, ícones, saves, assets fotográficos, layout da Galeria, teclado virtual, entrada de texto e transições de cena.
+- Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
+- Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
+- Transição de cena com fade global, bloqueio de input durante o efeito e suporte a `prefers-reduced-motion`.
+- Suíte Node cobrindo navegação, estado, saves, arte, teclado, menu, transições e as duas cutscenes. Consulte [o relatório de implementação e validação](docs/STATUS_PROJETO.md).
 
-> A cena ainda começa em um contexto provisório, pois as etapas anteriores do Ato I não foram implementadas. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
+> Após a Cutscene 02, o gameplay começa no beco. James, dormitório, caso introdutório e nota ainda não foram implementados. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
 ## Celular, mensagens e conversas
 
@@ -92,27 +95,27 @@ A interface separa as conversas presenciais das mensagens digitais:
 - Quando o protagonista está sozinho, **Conversar** apresenta um pensamento ou monólogo.
 - O celular original da MJ começa quebrado e o ícone CELULAR fica oculto. Colete o Celular de Lulith no cofre e escolha **USAR** na Bolsa; ao concluir a reação, o aparelho fica ativo com o tema Lulith.
 - O botão **Voltar**, sem borda ou fundo, fica no canto inferior esquerdo da tela inicial do celular e no canto superior esquerdo dentro dos apps.
-   - Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
-   - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
-   - A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
-   - A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
-   - O jogo possui um **teclado virtual próprio** que substitui o IME do sistema. Ele é usado para nomear fotografias na Galeria e para compor mensagens em Mensagens, mantendo a identidade visual e evitando sobreposição do teclado do Android em paisagem.
+- Dentro de Mensagens, **Voltar** retorna à tela inicial do aparelho.
+- Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
+- A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
+- A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
+- O jogo possui um **teclado virtual próprio** que substitui o IME do sistema. Ele é usado para nomear fotografias na Galeria e para compor mensagens em Mensagens, mantendo a identidade visual e evitando sobreposição do teclado do Android em paisagem.
 
-   ## Entrada de texto e teclado virtual
+## Entrada de texto e teclado virtual
 
-   O jogo não usa campos `input` nativos nem o teclado IME do sistema. Um teclado virtual próprio, desenhado dentro do celular, processa toda a digitação do jogo. Isso mantém a identidade visual, evita sobreposição do teclado do SO e elimina o último diálogo/formulário nativo do fluxo.
+O jogo não usa campos `input` nativos nem o teclado IME do sistema. Um teclado virtual próprio, desenhado dentro do celular, processa toda a digitação do jogo. Isso mantém a identidade visual, evita sobreposição do teclado do SO e elimina o último diálogo/formulário nativo do fluxo.
 
-   Dois serviços compartilham o mesmo estado transitório:
-   - `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
-   - `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
+Dois serviços compartilham o mesmo estado transitório:
+- `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
+- `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
 
-   A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
+A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
 
-   Layouts do teclado:
-   - **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.
-   - **Números** — dígitos, símbolos, espaço, OK.
+Layouts do teclado:
+- **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.
+- **Números** — dígitos, símbolos, espaço, OK.
 
-   Consulte [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) para detalhes completos.
+Consulte [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) para detalhes completos.
 
 ## Como executar
 
@@ -164,9 +167,15 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── index.html       # Estrutura da Visual Novel e do celular
 ├── styles.css       # Aparência, animações e responsividade
 ├── js/
-│   ├── bootstrap.js # Composição e injeção de dependências do jogo
+│   ├── bootstrap.js # Cria a instância, prepara o menu e inicia a Cutscene 01
+│   ├── game.js      # Composição das fábricas e injeção de services
+│   ├── cutscene.js  # Controlador único de sequência, input e Skip
+│   ├── cutscene-view.js # Apresentação do título e luz da abertura
+│   ├── cutscene-frames.js # Renderer de quadros, câmera e efeitos
+│   ├── cutscene-renderers.js # Seleção da apresentação de cada sequência
+│   ├── cutscene-audio.js # Preload e ciclo de vida dos SFX
 │   ├── title-menu.js # Tela inicial: capa do caderno e páginas de registros
-│   ├── config.js    # Configurações globais (tamanhos, temas, etc.)
+│   ├── config.js    # Tempos e limites globais, incluindo cutscenes
 │   ├── data.js      # Locais, cenas, personagem e conteúdo narrativo
 │   ├── state.js     # Estado centralizado do jogo
 │   ├── dom.js       # Acesso agrupado ao DOM por componente
@@ -177,7 +186,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 │   ├── phone.js     # Fábrica do celular (apps, tema, navegação)
 │   ├── scene.js     # Fábrica de cena (fundos, hotspots, objetos)
 │   ├── gallery.js   # Fábrica da Galeria (fotografias, save/load)
-│   ├── persistence.js # Persistência de saves (indexedDB/localStorage)
+│   ├── persistence.js # Snapshot, validação e restauração narrativa
 │   ├── save-system.js # Sistema de saves manuais e autosave
 │   ├── interface.js # Fábrica da interface principal (botões, menus)
 │   ├── keyboard.js  # Teclado virtual próprio do jogo
@@ -186,7 +195,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 │   ├── mechanics.js # Estratégias de interação e registro de tipos
 │   └── scene-transition.js # Fade global entre cenas e bloqueio de input
 ├── assets/
-│   ├── cenario/     # Fundos e README do contrato de cenários
+│   ├── audio/       # WAVs sintetizados e receitas reproduzíveis
+│   ├── cenario/     # Fundos, quadros de Lulith e contrato de cenários
 │   ├── interfaces/  # Ícones e README do contrato de interface
 │   └── sprites/     # Personagens e README do contrato de sprites
 ├── android/         # Projeto nativo gerado pelo Capacitor
@@ -199,6 +209,8 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 ├── TODO.md          # Lista de tarefas do protótipo
 ├── docs/
 │   ├── ADR_LOG.md   # Registro de decisões de arquitetura
+│   ├── STATUS_PROJETO.md # Implementado, pendente e evidências de validação
+│   ├── cutscenes.md # Sequências, configuração e limpeza de apresentação
 │   ├── PHONE_THEMES.md # Contrato de temas visuais do celular
 │   ├── POINT_AND_CLICK.md # Guia de point-and-click e Bolsa
 │   ├── SAVE_SYSTEM.md # Contrato de persistência e saves
@@ -209,23 +221,25 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 
 ## Documentação
 
-   | Documento | Responsabilidade |
-   |---|---|
-   | [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
-   | [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
-   | [`REGRAS_DE_DESIGN.md`](REGRAS_DE_DESIGN.md) | Regras gerais de design e índice dos contratos de assets |
-   | [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
-   | [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
-   | [`docs/ADR_LOG.md`](docs/ADR_LOG.md) | Registro de decisões de arquitetura |
-   | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
-   | [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
-   | [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
-   | [`docs/cutscenes.md`](docs/cutscenes.md) | Ciclo de vida, Skip e apresentação da abertura |
-   | [`docs/SCENE_TRANSITIONS.md`](docs/SCENE_TRANSITIONS.md) | Contrato das transições globais de cena |
-   | [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
-   | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
-   | [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
-   | [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
+| Documento | Responsabilidade |
+|---|---|
+| [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md) | Decisões, hipóteses e pendências conceituais |
+| [`GDD.md`](GDD.md) | Design narrativo e mecânico de longo prazo |
+| [`REGRAS_DE_DESIGN.md`](REGRAS_DE_DESIGN.md) | Regras gerais de design e índice dos contratos de assets |
+| [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
+| [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
+| [`docs/STATUS_PROJETO.md`](docs/STATUS_PROJETO.md) | Estado consolidado e validação registrada |
+| [`assets/audio/README.md`](assets/audio/README.md) | SFX locais e geração reproduzível |
+| [`docs/ADR_LOG.md`](docs/ADR_LOG.md) | Registro de decisões de arquitetura |
+| [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
+| [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
+| [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
+| [`docs/cutscenes.md`](docs/cutscenes.md) | Cutscenes 01/02, tempos, preload, Skip, câmera, áudio e efeitos |
+| [`docs/SCENE_TRANSITIONS.md`](docs/SCENE_TRANSITIONS.md) | Contrato das transições globais de cena |
+| [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
+| [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
+| [`assets/interfaces/README.md`](assets/interfaces/README.md) | Organização e contrato dos ícones de interface |
+| [`assets/sprites/README.md`](assets/sprites/README.md) | Organização e contrato dos sprites |
 
 O padrão implementado para mecânicas e animações está em
 [`docs/MECHANICS_PATTERN.md`](docs/MECHANICS_PATTERN.md).
@@ -233,27 +247,27 @@ O padrão implementado para mecânicas e animações está em
 ## Fluxo do protótipo atual
 
 ```text
-Preto → SANMD → significado → kk → subida → luz → Caderno sobre a mesa
-   │
-   ├── Novo jogo ──> Abre o caderno ──> Fade ──> Entrada narrativa provisória
-   │
-   └── Carregar ──> Abre o caderno ──> Páginas com os registros ──> Selecionar ──> Load
-                          ▲
-                          └── Voltar fecha o caderno
+Preto → SANMD → significado → kk → subida → luz (aguarda Skip) → Menu
+│
+├── Novo jogo ──> Abre o caderno → Fade → Estado novo → Lulith (10 quadros) → Fade → Gameplay
+│
+└── Carregar ──> Abre o caderno ──> Páginas com os registros ──> Selecionar ──> Load
+                       ▲
+                       └── Voltar fecha o caderno
 ```
 
 Depois disso o protótipo combina exploração point-and-click no cenário com a interface do celular:
 
 ```text
 Cenário
-   │
-   ├── Conversar ──> Diálogo ou monólogo ──> Cenário
-   │
-   ├── Ir para ──> Destinos conectados ──> Outra cena
-   │
-   ├── Bolsa ──> Inventário e ação USAR ──> Cenário
-   │
-   └── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
+│
+├── Conversar ──> Diálogo ou monólogo ──> Cenário
+│
+├── Ir para ──> Destinos conectados ──> Outra cena
+│
+├── Bolsa ──> Inventário e ação USAR ──> Cenário
+│
+└── Celular ──> Tela inicial ──> Aplicativos ──> Voltar
 ```
 
 - **Tela inicial:** caderno fechado sobre a mesa escura. `Novo jogo` e `Carregar` são rótulos gravados na arte, com áreas de toque sobrepostas. A página aberta do próprio caderno é a tela de Load, e **Carregar** nunca abre um menu externo. A tela inicial apenas apresenta e seleciona o registro: o Save System continua sendo a fonte de verdade, sem formato próprio.
@@ -290,51 +304,56 @@ A investigação point-and-click com hotspots, Bolsa e ativação do celular já
 ## Fluxo narrativo planejado do Ato I
 
 ```text
-Cutscene provisória de Lulith
-   ↓
+Cutscene de Lulith (já implementada, sem falas)
+↓
 James acorda MJ
-   ↓
+↓
 Caso policial introdutório e tutorial point-and-click
-   ↓
+↓
 Retorno à mesa na delegacia
-   ↓
+↓
 Nota: jogar fora → final imediato com progresso mínimo
-   │
-   └── resolver → coordenadas → deslocamento → cofre
-                                      ↓
-                              celular de Lulith
-                                      ↓
-                     mensagens, reset remoto e terminal
+│
+└── resolver → coordenadas → deslocamento → cofre
+                                   ↓
+                           celular de Lulith
+                                   ↓
+                  mensagens, reset remoto e terminal
 ```
 
-O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. O caso introdutório, o texto da cutscene, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos.
+O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. A Cutscene 02 já apresenta Lulith trabalhando e reagindo às falhas do notebook, sem diálogo. O caso introdutório, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos; o jogo atual segue diretamente para o beco.
 
 ## Testes
 
-   O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos, layout da Galeria, teclado virtual, entrada de texto e a tela inicial:
+O projeto inclui suítes automatizadas que validam navegação, estado do celular, saves, assets fotográficos, layout da Galeria, teclado virtual, entrada de texto e a tela inicial:
 
-   ```bash
-   npm test
-   ```
+```bash
+npm test
+```
 
-   Arquivos de teste:
-   - `test/bolsa.test.js` — inventário, ações diretas e ativação do aparelho.
-   - `test/fase-navegacao.test.js` — destinos e bloqueio de saltos entre cenas.
-   - `test/fase10-mj.test.js` — sprite e presença visual de MJ.
-   - `test/fase8.test.js` — fluxo do primeiro contato, reset remoto e monólogos.
-   - `test/gallery-layout.test.js` — grade da Galeria e metadados das fotografias.
-   - `test/interface-icons.test.js` — ícones principais e contrato visual.
-   - `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
-   - `test/save-system.test.js` — persistência, validação, load e autosave.
-   - `test/text-input.test.js` — teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
-   - `test/scene-transition.test.js` — fases da transição, concorrência, bloqueio de input, estados e reduced motion.
-   - `test/title-menu.test.js` — estados, animação, paginação e delegação de carga da tela inicial.
-   - `test/tela-inicial.test.js` — bootstrap real contra o DOM publicado e geometria conferida contra `assets/interfaces/menu.png` e `save-menu.png`.
+Arquivos de teste:
+- `test/animation.test.js` — serviço de animação e tempos visuais.
+- `test/cutscene.test.js` — ordem, Skip, input, preload e finalização comum.
+- `test/cutscene-frames.test.js` — quadros, câmera, áudio, efeitos, suavização e limpeza.
+- `test/bolsa.test.js` — inventário, ações diretas e ativação do aparelho.
+- `test/fase-navegacao.test.js` — destinos e bloqueio de saltos entre cenas.
+- `test/fase10-mj.test.js` — sprite e presença visual de MJ.
+- `test/fase8.test.js` — fluxo do primeiro contato, reset remoto e monólogos.
+- `test/gallery-layout.test.js` — grade da Galeria e metadados das fotografias.
+- `test/interface-icons.test.js` — ícones principais e contrato visual.
+- `test/photo-assets.test.js` — sprites fotográficos, transparência e fallback.
+- `test/save-system.test.js` — persistência, validação, load e autosave.
+- `test/text-input.test.js` — teclado virtual, entrada de texto, shift, layouts, acentos, teclado físico e snapshot.
+- `test/scene-transition.test.js` — fases da transição, concorrência, bloqueio de input, estados e reduced motion.
+- `test/title-menu.test.js` — estados, animação, paginação e delegação de carga da tela inicial.
+- `test/tela-inicial.test.js` — bootstrap real contra o DOM publicado e geometria conferida contra `assets/interfaces/menu.png` e `save-menu.png`.
 
 ## Critérios de validação
 
 A estrutura básica da V1 será considerada funcional quando for possível:
 
+- [x] Assistir às duas cutscenes, pular por duplo clique/toque e iniciar gameplay somente após a apresentação.
+- [x] Carregar registros sem executar a Cutscene 02.
 - [x] Visualizar um cenário provisório.
 - [x] Navegar entre entrada, interior e fundo do beco.
 - [x] Visualizar um personagem provisório.

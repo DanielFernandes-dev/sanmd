@@ -9,7 +9,10 @@ e menu (6). Celular, Bolsa, Galeria, teclado e fotografia não acionam esse fade
 A navegação continua em `scene.js`: `irPara` valida as conexões atuais;
 `irParaLocal` resolve a entrada de um local (API existente para mapa). Ambos
 chamam `transitionToScene(localId, cenaId)`. Não há regra específica do beco.
-Não existe atualmente outro fluxo de cutscene que altere a localização.
+As cutscenes atuais não navegam entre locais. `lulith_codigo` é apresentação
+de Novo jogo; o estado inicial do beco já foi criado antes dela. Caderno e
+cutscene reutilizam `animarFade`, com overlays próprios, sem invocar uma segunda
+transição de navegação. Ver [Cutscenes](cutscenes.md).
 
 Para uma nova navegação, valide primeiro as regras narrativas e então use:
 
@@ -67,9 +70,9 @@ cache frio e erro de asset, Save/Load. Conferir ausência de flash, resize,
 orientação alterada e touch atravessando. Testes automatizados não substituem
 inspeção visual em WebView Android real.
 
-## Validação desta implementação
+## Validação histórica desta implementação
 
-- `npm test`: 12 arquivos/suítes aprovados. Os testes antigos aguardam a API
+- Na implantação original, `npm test`: 12 arquivos/suítes aprovados. A revisão atual está no [relatório do projeto](STATUS_PROJETO.md). Os testes antigos aguardam a API
   real; o harness simula imagens e relógio visual. O teste dedicado controla
   as fases e verifica concorrência, bloqueio, estados, reduced motion e erros.
 - Chromium em localhost: percurso completo, bloqueio de Bolsa, pedido duplicado,

@@ -6,6 +6,8 @@
 >
 > Objetivo do Ato I: apresentar MJ, James, investigação point-and-click, nota, coordenadas, cofre, celular, Lulith e os principais sistemas de gameplay.
 
+> Atualização de implementação: **02/10/2026**. Ver [estado consolidado](docs/STATUS_PROJETO.md).
+
 ## Limites do escopo
 
 - [x] Tratar o Ato I como tutorial e início da trama principal.
@@ -49,7 +51,7 @@
 
 Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/menu.png` e `save-menu.png`.
 
-- [x] Mostrar a tela inicial antes de qualquer cena narrativa.
+- [x] Preparar o menu sob a Cutscene 01 e liberar a capa somente após o Skip.
 - [x] Compor mesa escura, cidade noturna, lâmpada e caderno fechado no centro.
 - [x] Usar o título `Sanmd` e os rótulos `Novo jogo` e `Carregar` gravados na arte, com áreas de toque sobrepostas.
 - [x] `Novo jogo`: animação de abertura perceptível, fade, reinício do estado e só então a cutscene.
@@ -61,12 +63,13 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 - [x] `Voltar` fecha o caderno e devolve à capa.
 - [x] Uma única animação de abertura/fechamento, compartilhada por `Novo jogo` e `Carregar`.
 - [x] Estados `menu`, `opening`, `load`, `closing` e `startingGame`, fora do snapshot.
-- [x] Reutilizar o fade global do jogo nas transições.
+- [x] Reutilizar `animarFade` no caderno e na passagem ao gameplay; a navegação usa o controlador global de cena.
 - [x] Reaproveitar o autosave existente na saída, sem tocar nas fotografias manuais.
 - [x] Manter o caderno centralizado e os alvos confortáveis em paisagem, sem resolução fixa.
 - [x] Validar contra a geometria medida nas artes e contra o DOM publicado (`test/tela-inicial.test.js`).
-- [ ] Validar visualmente no APK Android landscape.
-- [ ] Substituir a entrada narrativa provisória pela cutscene inicial planejada.
+- [x] Validar o fluxo de Novo jogo e Carregar no APK Android landscape.
+- [x] Integrar `lulith_codigo` entre o reset de Novo jogo e o gameplay do beco.
+- [ ] Integrar o conteúdo futuro de James, dormitório e caso introdutório após a Cutscene 02.
 
 ### Preparação para o conteúdo canônico
 
@@ -102,7 +105,7 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 
 ### Pendências narrativas necessárias ao ato
 
-- [ ] Definir provisoriamente o que Lulith diz querer recuperar na cutscene.
+- [ ] Definir em cenas futuras o que Lulith quer recuperar; a Cutscene 02 atual não contém falas.
 - [ ] Definir quanto da aparente vingança precisa ser compreendido no Ato I.
 - [ ] Definir por que Lulith escolheu MJ para este teste.
 - [ ] Definir como Lulith garante que MJ encontre o cofre.
@@ -208,11 +211,24 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 
 ### Cutscene de Lulith
 
-- [ ] Escrever um texto provisório sobre recuperar o que foi tirado dela.
-- [ ] Evitar confirmar a interpretação de vingança como verdade completa.
-- [ ] Criar enquadramentos, expressões e ritmo da cutscene.
-- [ ] Implementar avanço e opção de pular a cutscene.
-- [ ] Garantir que a cena continue marcada como provisória.
+- [x] Apresentar Lulith sem diálogo: quarto, trabalho, dois erros, irritação, reação, chute e plano final.
+- [x] Mapear os dez PNGs de `quarto-lulith` por IDs lógicos, sem reprocessar as artes.
+- [x] Reutilizar o controlador global para ordem, preload, input e Skip nos dez quadros.
+- [x] Centralizar tempos em CONFIG; ampliar os quadros 01–07 em cerca de 25%, preservando 08–10.
+- [x] Suavizar os cortes calmos em 100 ms; manter corte seco nos erros e no chute.
+- [x] Aplicar câmera discreta, sons sintetizados, flash localizado e shake curto.
+- [x] Respeitar reduced motion e cancelar áudio, efeitos e callbacks ao sair.
+- [x] Registrar autosave somente após a conclusão e entrada no gameplay; Skip também conclui.
+- [x] Validar no Android a sequência natural, Skip nos dez quadros e Carregar sem Cutscene 02.
+- [ ] Avaliar auditivamente os SFX sintetizados e decidir se serão substituídos por gravações.
+- [ ] Validar subjetivamente o ritmo após o último aumento dos quadros 01–07.
+- [ ] Confirmar a integração dessa apresentação à versão final do Ato I.
+
+### Cutscene 01 — título e luz
+
+- [x] Expandir as próprias iniciais de SANMD no significado e acrescentar `kk`.
+- [x] Sincronizar clique/estalo da lâmpada com a revelação do menu.
+- [x] Manter a luz acesa até o Skip global, sem salvar estado da abertura.
 
 ### Dormitório e James
 

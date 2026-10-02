@@ -101,7 +101,11 @@ function criarTelaInicial({ game, document, window }) {
       get('notebook-stage').hidden = true;
       menu.classList.add('entering-game');
       if (newGame) {
-        await new Promise(resolve => services.iniciarCutscene('lulith_codigo', resolve));
+        await new Promise((resolve, reject) => {
+          if (services.iniciarCutscene('lulith_codigo', resolve) === false) {
+            reject(new Error('Uma apresentação já está em andamento. Tente novamente.'));
+          }
+        });
       }
       await services.animarFade(fade, 1, 0, duration);
       menu.hidden = true;

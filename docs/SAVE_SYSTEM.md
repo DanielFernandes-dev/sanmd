@@ -4,7 +4,7 @@
 
 O snapshot do jogo é a fonte de verdade. A fotografia é somente a identidade visual de um save manual.
 
-- `js/game.js` captura, valida e restaura o estado narrativo real.
+- `js/persistence.js` captura, valida e restaura o estado narrativo real; `js/game.js` compõe os sistemas.
 - `js/save-system.js` isola a persistência física e mantém a coleção versionada no `localStorage`.
 - A Galeria apresenta e administra somente saves manuais.
 - A Galeria é a única exceção à limpeza do celular: o reset remoto preserva suas fotografias e saves manuais, enquanto limpa Mensagens e o conteúdo visível de Arquivos.
@@ -21,7 +21,7 @@ manualSaves: PhotoSave[0..9]
 autosave: Autosave | null
 ```
 
-`storageVersion` identifica o formato da coleção. `saveVersion` identifica o formato de cada snapshot. Não existem migrations nesta versão; formatos incompatíveis são rejeitados sem alterar a sessão atual.
+`storageVersion` identifica o formato da coleção. `saveVersion` identifica o formato de cada snapshot. Versões incompatíveis são rejeitadas sem alterar a sessão atual. Campos opcionais legados de snapshots v1 recebem normalização, incluindo inventário, estado de cena e aparelho, descrita abaixo.
 
 ## Save Manual
 
@@ -74,21 +74,25 @@ O autosave não possui nome, expressão fotográfica nem posição na grade. Cad
 Os pontos lógicos atuais são:
 
 - `encerrarConversa()`, depois do fim do diálogo e antes de devolver os controles;
-- `concluirResetRemoto()`, depois de aplicar a limpeza e as flags finais do reset.
+- `concluirResetRemoto()`, depois de aplicar a limpeza e as flags finais do reset;
+- conclusão bem-sucedida de hotspots, após flags e eventos narrativos;
+- Novo jogo, depois de concluir ou pular `lulith_codigo`, revelar o gameplay e iniciar a conversa inicial;
+- `saveOnExit`, em `visibilitychange`/`pagehide`, somente durante a partida, sem cutscene ativa ou transição de cena.
 
-Trocar de cena, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele só será substituído quando outra cutscene terminar no novo ramo da sessão.
+Trocar de cena, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele será substituído pelo próximo gatilho elegível da lista acima. A Cutscene 01 não grava autosave. Frames, timers, áudio, câmera, flashes e estado de Skip nunca entram no snapshot.
 
 ## Expressões Fotográficas
 
 `DATA.personagens.mj.fotografia.expressoes` define os dez IDs lógicos disponíveis. A expressão é sorteada uma vez na captura, evita a expressão do save manual imediatamente anterior quando há alternativas e é persistida nos metadados.
 
-Enquanto os sprites exclusivos não existem, o renderer usa `MJ.png` como fallback visual. Para adicionar as artes futuramente, cadastrar caminhos sem mudar o formato dos saves:
+Os dez sprites exclusivos já estão cadastrados em `assets/sprites/mj/photo/`.
+`MJ.png` é fallback para IDs sem arte válida. Exemplo do mapeamento atual, sem mudar o formato dos saves:
 
 ```js
-DATA.personagens.mj.fotografia.sprites.mj__photo__01 = "assets/sprites/mj/photo-01.png";
+DATA.personagens.mj.fotografia.sprites.mj__photo__01 = "assets/sprites/mj/photo/mj__photo__01.png";
 ```
 
-Repetir para os IDs existentes. Não substituir os IDs em saves persistidos e não adicionar essas poses a `dialogo` ou `personagens.mj.sprites`: elas são cosméticas e exclusivas da Galeria.
+Ao substituir as artes, manter os IDs existentes. Não substituir os IDs em saves persistidos e não adicionar essas poses a `dialogo` ou `personagens.mj.sprites`: elas são cosméticas e exclusivas da Galeria.
 
 ## Validação E Erros
 

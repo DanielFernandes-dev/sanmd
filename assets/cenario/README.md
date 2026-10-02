@@ -4,7 +4,8 @@ Esta pasta contém os fundos de cena usados pelo protótipo. Eles são assets 2D
 
 ## Conteúdo Atual
 
-Os três fundos disponíveis pertencem ao local lógico `beco`:
+Os três fundos navegáveis pertencem ao local lógico `beco`. A pasta também contém
+os dez quadros narrativos de Lulith, que não são destinos de navegação:
 
 | Arquivo | Cena | Rótulo | Destinos |
 |---|---|---|---|
@@ -15,6 +16,28 @@ Os três fundos disponíveis pertencem ao local lógico `beco`:
 Os fundos de entrada e corredor possuem `3344×1882`; o fundo independente `background.png` possui `1672×941`. O palco preserva a proporção `1672:941`, sem recortar objetos interativos. `cofre.png` é referência histórica e não é carregado pelo jogo.
 
 Os sprites RGBA independentes ficam em `beco/objects/`: `safe_closed.png`, `safe_opening_01.png` a `safe_opening_04.png`, `safe_open.png` e `lulith_phone.png`. Os seis frames do cofre compartilham canvas 1254×1254. Ver [POINT_AND_CLICK](../../docs/POINT_AND_CLICK.md).
+
+## Quadros do quarto de Lulith
+
+`quarto-lulith/cena1.png` a `cena10.png` são as dez imagens da Cutscene 02.
+`LULITH_FRAMES` em `js/data.js` associa cada arquivo ao ID `lulith_codigo_01` a
+`lulith_codigo_10`. A ordem usa os IDs explícitos, não ordenação alfabética dos
+nomes físicos (`cena10` não vem depois de `cena1` na narrativa).
+
+| Quadros | Dimensões |
+|---|---|
+| 01, 02, 05 | 826×462 |
+| 03, 04 | 826×459 |
+| 06 | 825×462 |
+| 07 | 826×463 |
+| 08 | 825×463 |
+| 09, 10 | 1670×941 |
+
+São paisagem, sem numeração visual nem divisórias brancas. A proporção varia
+levemente: o renderer preserva palco 1672:941 com `object-fit: cover`, sem esticar
+nem modificar os PNGs. Não são sprites de membros nem frames intermediários de
+animação. O código/erro no notebook faz parte da composição narrativa da arte.
+Preload decodifica todos antes da exibição; ver [Cutscenes](../../docs/cutscenes.md).
 
 ## Contrato
 

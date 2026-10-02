@@ -1,5 +1,8 @@
 # Game Design Document — Sim, Acredite nas Mentiras Dele kk
 
+> Revisado em 02/10/2026. Este documento distingue o design planejado do
+> [estado implementado](docs/STATUS_PROJETO.md).
+
 ## 1. Visão Geral do Projeto
 
 - **Gênero:** Visual Novel · Investigação · Escape Room · Puzzle · ARG
@@ -22,7 +25,7 @@
 
 ### Ponto de partida
 
-Após uma cutscene provisória de Lulith, William James acorda MJ e a leva para uma cena de crime. O jogador resolve um caso introdutório que ensina investigação point-and-click. De volta à delegacia, MJ encontra uma nota criptografada sobre sua mesa.
+No fluxo completo planejado, após a cutscene de Lulith, William James acorda MJ e a leva para uma cena de crime. O jogador resolve um caso introdutório que ensina investigação point-and-click. De volta à delegacia, MJ encontra uma nota criptografada sobre sua mesa.
 
 O jogador recebe duas escolhas explícitas:
 
@@ -94,7 +97,7 @@ Apresentar MJ e James, ensinar a investigação, introduzir a nota, o deslocamen
 
 ### Gameplay
 
-1. Cutscene provisória de Lulith falando sobre recuperar aquilo que lhe foi tirado.
+1. Cutscene de Lulith trabalhando no notebook, falhando e reagindo, sem falas. A versão atual usa dez quadros estáticos; a antiga proposta de monólogo de recuperação não faz parte dessa sequência.
 2. James acorda MJ e a leva à cena do crime.
 3. Caso introdutório e tutorial de investigação point-and-click.
 4. Retorno à mesa na delegacia e descoberta da nota.
@@ -468,12 +471,12 @@ A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como
 ### Estado atual do protótipo
 
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
-- **Estrutura:** Separada em `js/data.js` (conteúdo), `js/game.js` (motor, Bolsa, Galeria) e `js/save-system.js` (persistência) — ver ADR-0003.
-- **Interface implementada:** Cena em tela cheia com três comandos por ícones pixelados, menu contextual de destinos, investigação point-and-click com hotspots acessíveis, inventário narrativo pela **Bolsa da MJ** e smartphone sobreposto com **Galeria funcional (10 expressões fotográficas da MJ, Save/Load fotográfico com até 9 saves manuais + autosave, composição 4:3, flash 140ms, preview/detalhe, layout 3×3 responsivo, metadados estruturados)**.
-- **Conteúdo implementado:** Três cenas provisórias conectadas no beco, cofre interativo com abertura e coleta do Celular de Lulith, ativação do aparelho pela Bolsa com reação narrativa, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos, **persistência completa em localStorage (snapshots versionados, saves manuais, autosave, expressões fotográficas, inventário, estado de cena)**.
+- **Estrutura:** Fábricas por sistema, compostas em `js/game.js`; catálogo em `js/data.js`, tempos em `js/config.js`, snapshot em `js/persistence.js` e armazenamento em `js/save-system.js`. Ver [arquitetura](ESTRUTURA_GAMING.md) e [padrão das mecânicas](docs/MECHANICS_PATTERN.md).
+- **Interface implementada:** Menu em caderno, abertura SANMD, Cutscene 02 exclusiva de Novo jogo e cena em tela cheia com quatro comandos por ícones pixelados, menu contextual de destinos, investigação point-and-click com hotspots acessíveis, inventário narrativo pela **Bolsa da MJ** e smartphone sobreposto com **Galeria funcional (10 expressões fotográficas da MJ, Save/Load fotográfico com até 9 saves manuais + autosave, composição 4:3, flash 140ms, preview/detalhe, layout 3×3 responsivo, metadados estruturados)**.
+- **Conteúdo implementado:** Cutscene silenciosa de Lulith em dez quadros, com preload, câmera, sons, efeitos, Skip global e suporte a movimento reduzido. Três cenas provisórias conectadas no beco, cofre interativo com abertura e coleta do Celular de Lulith, ativação do aparelho pela Bolsa com reação narrativa, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos, **persistência completa em localStorage (snapshots versionados, saves manuais, autosave, expressões fotográficas, inventário, estado de cena)**.
 - **Acessibilidade e mobile:** Destaque de toque removido dos controles principais, layout mobile paisagem com frame reduzido, tipografia ajustada e galeria com linhas dimensionadas pelo conteúdo.
 - **Ainda não implementado:** Investigação point-and-click completa com evidências, terminal, sistema geral de puzzles, mapa completo, cenas canônicas do início do Ato I, atos completos, finais, progresso, replay persistente e ARG.
-- **Compatibilidade narrativa:** O recorte do celular segue a direção atual do Ato I; a cena inicial ainda é provisória e começa depois de etapas narrativas não implementadas.
+- **Compatibilidade narrativa:** O recorte do celular segue a direção atual do Ato I; após a Cutscene 02, o gameplay começa no beco, antes da coleta do celular. James, dormitório, caso introdutório, nota e percurso canônico até o cofre ainda estão pendentes.
 
 O estado atual persiste em `localStorage` (snapshots versionados, até 9 saves manuais, 1 autosave, 10 expressões fotográficas, inventário e estado de cena). Arquivos vistos, solução, histórico, rota de monólogo e saves fotográficos sobrevivem ao recarregamento e fechamento. Replay persistente entre partidas ainda é planejamento.
 

@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 
-function setup({ compact = false, deferCutscene = false } = {}) {
+function setup({ compact = false, deferCutscene = false, rejectCutscene = false } = {}) {
   const elements = new Map();
   function element() {
     return { dataset: {}, style: {}, children: [], listeners: {},
@@ -35,7 +35,7 @@ function setup({ compact = false, deferCutscene = false } = {}) {
     animarFade: async (_, from, to) => { phases.push(`fade:${from}-${to}`); },
     cancelarTemporizadores: () => phases.push('cancel'),
     restaurarInterface: () => phases.push('reset-ui'),
-    iniciarCutscene: (id, done) => { phases.push(id); if(deferCutscene) cutsceneDone = done; else done(); },
+    iniciarCutscene: (id, done) => { if (rejectCutscene) return false; phases.push(id); if(deferCutscene) cutsceneDone = done; else done(); },
     isCutsceneActive: () => false,
     iniciarConversa: () => phases.push('story'),
     restaurarEstadoJogo(snapshot) {
@@ -151,4 +151,15 @@ test('Novo jogo não salva nem libera gameplay enquanto a cutscene estiver pende
   t.finishCutscene(); await start;
   assert.equal(t.get('app').inert,false);
   assert.ok(t.repository.obterAutosave());
+});
+
+test('recusa de cutscene concorrente devolve o caderno em vez de aguardar para sempre', async () => {
+  const t = setup({ rejectCutscene: true });
+  const start = t.menu.newGame(); t.finish(); await start;
+  assert.equal(t.menu.getMode(),'load');
+  assert.equal(t.get('title-menu').hidden,false);
+  assert.equal(t.get('app').inert,true);
+  assert.match(t.get('notebook-status').textContent,/apresentação já está em andamento/);
+  assert.equal(t.phases.includes('story'),false);
+  assert.equal(t.repository.obterAutosave(),null);
 });

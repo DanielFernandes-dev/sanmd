@@ -11,6 +11,10 @@ referenciar serviços dentro de callbacks, mas não devem executá-los na constr
 | Responsabilidade | Implementação |
 |---|---|
 | Navegação e regras de destino | `scene.js` |
+| Sequências, input e Skip global | `cutscene.js` |
+| Seleção de apresentação | `cutscene-renderers.js` |
+| Título/luz e renderer de quadros | `cutscene-view.js`, `cutscene-frames.js` |
+| Pool de SFX, preload e limpeza | `cutscene-audio.js` |
 | Sequência exclusiva: cobrir, carregar, revelar, liberar input | `scene-transition.js` |
 | Execução do fade, fallback, tempos visuais e reduced motion | `animation.js` |
 | Estratégias de hotspots e registro de tipos | `mechanics.js` |
@@ -56,6 +60,12 @@ input, overlay e foco em `finally`.
 Timers narrativos (digitação, mensagens, contagem e reset) preservam seu tempo:
 a preferência visual não pode adiantar eventos da história. O progresso visual
 do reset acompanha `CONFIG.duracaoReset`. Animações não entram nos saves.
+
+As cutscenes usam passos declarativos e um único timer de avanço. `hold` suspende
+o avanço da abertura; Lulith conclui naturalmente. `encerrar()` opcional pode
+aguardar fade/áudio antes de `finalizar()` e do callback, mantendo o input
+bloqueado. Skip encerra a sessão ativa e cancela o timer; não cria outro caminho
+narrativo. Ver [Cutscenes](cutscenes.md).
 
 Validação: `node --test`. Inspeção visual em navegador e WebView Android continua
 necessária para avaliar fluidez, composição e orientação reais.

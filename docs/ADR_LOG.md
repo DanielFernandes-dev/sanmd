@@ -1,5 +1,9 @@
 # Registro de decisões
 
+> Histórico de decisões e revisões. Entradas antigas preservam o contexto da época
+> e podem ter sido substituídas por decisões posteriores. Para o comportamento
+> vigente, consulte [Estado do projeto](STATUS_PROJETO.md) e os contratos por sistema.
+
 ## 2026-09-09 — Teclado virtual próprio e entrada de texto sem IME
 
 Status: aceito.
@@ -298,3 +302,51 @@ snapshot e cada abertura do aplicativo repete a luz. A primeira interação do
 jogador passa a ser um duplo toque intencional sobre uma cena já iluminada, e
 os testes que percorrem a abertura precisam encerrar com `pularCutscene()`.
 Ver [Cutscenes](cutscenes.md).
+
+## 2026-10-02 — Consolidação da Cutscene 02 e das revisões de ritmo
+
+Status: aceito; registro consolidado das entregas de 26/09 e da revisão documental.
+
+Decisão: `lulith_codigo` é uma sequência de dez quadros estáticos, exclusiva de
+Novo jogo, executada pelo mesmo controlador da abertura. O estado novo é criado
+antes da apresentação. Carregar não a executa. O renderer e o pool de áudio são
+componentes de apresentação, sem outro detector de Skip e sem estado persistido.
+
+O encerramento opcional assíncrono mantém input bloqueado enquanto câmera,
+efeitos e áudio são cancelados e o palco faz fade. O callback do menu revela o
+gameplay, inicia a conversa e reutiliza o autosave. Não existe autosave por frame.
+
+Revisões solicitadas: primeiro encurtar o ritmo; depois suavizar os quadros
+calmos em 100 ms; por último alongar 01–07 em cerca de 25%, preservando 08–10.
+Erros e chute mantêm corte seco. A restrição inicial de evitar dissolves repetidos
+foi ajustada pelo pedido posterior de suavização, sem interpolar artes ou criar
+vídeo. CONFIG é a fonte dos tempos. SFX são sintetizados locais, substituíveis.
+
+A proposta antiga de monólogo sobre recuperar o que foi tirado de Lulith não
+integra a Cutscene 02: não há diálogo nem legenda. O roteiro canônico completo
+após a cutscene continua pendente; o protótipo entra diretamente no beco.
+
+Evidências e limites: [estado do projeto](STATUS_PROJETO.md) e
+[contrato de cutscenes](cutscenes.md). Registros anteriores deste ADR descrevem
+as revisões históricas: os nós separados de siglas/frase, o Skip por teclado e
+os tempos antigos da abertura foram substituídos. O comportamento atual usa
+um único título, duplo clique/toque e espera na luz até Skip.
+
+
+## 2026-10-02 — Sessão de execução e limpeza idempotente das cutscenes
+
+Status: aceito.
+
+O controlador único agrupa seu estado transitório por execução, em vez de manter
+flags independentes de geração, preparo e finalização. Identidade da sessão e
+fase bloqueiam callbacks antigos e reentrância. Os contratos públicos, sequências,
+tempos, detector de Skip e apresentação da abertura permanecem iguais.
+
+A seleção de apresentação sai do renderer de quadros para `cutscene-renderers.js`.
+O pool de áudio passa a cancelar preloads pendentes, compartilhar a promessa de
+encerramento e limpar recursos em `finally`. Falhas visuais liberam a sessão;
+recusa de concorrência em Novo jogo segue o tratamento de erro do caderno.
+
+Validação: suíte Node completa e regressões de falha/cancelamento. APK debug
+recompilado, instalado e revalidado em 02/10/2026 no SM-A055M: abertura, Lulith
+natural, Skip nativo e Carregar aprovados. Ver [Cutscenes](cutscenes.md).

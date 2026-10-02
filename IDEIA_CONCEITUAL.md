@@ -181,15 +181,20 @@ Atualmente definidos:
 
 ## 3.1. Cutscene inicial
 
-**[PROVISÓRIO]**
+**[REVISADO — implementação conferida em 02/10/2026]**
 
-O jogo começa com uma cutscene envolvendo Lulith.
+A abertura do aplicativo apresenta SANMD e revela o caderno. Ao escolher
+**Novo jogo**, a Cutscene 02 mostra Lulith em dez imagens estáticas: trabalho no
+notebook, duas falhas, irritação, chute, consequência e plano final. Não há fala,
+monólogo, legenda ou nome de personagem. Som, montagem e movimento discreto de
+câmera comunicam a ação. Ver [Cutscenes](docs/cutscenes.md).
 
-Ela murmura sobre:
+**[PROVISÓRIO — direção narrativa futura]**
 
-> conseguir de volta aquilo que foi tirado dela.
-
-A intenção é fazer parecer inicialmente que a história possui uma proposta de vingança.
+A antiga proposta de Lulith murmurar sobre recuperar o que lhe foi tirado foi
+substituída na apresentação atual. A motivação de recuperação/vingança continua
+uma hipótese para desenvolvimento em cenas futuras, sem ser afirmada pela
+Cutscene 02.
 
 Durante o Ato II, o jogador começa a perceber que existe de fato uma motivação de vingança, porém não necessariamente da forma como interpretou no começo.
 
@@ -200,7 +205,7 @@ Durante o Ato II, o jogador começa a perceber que existe de fato uma motivaçã
 - Contra quem a vingança é direcionada.
 - O que exatamente significa “recuperar” aquilo.
 - Até que ponto a interpretação de vingança permanece correta.
-- Texto definitivo da cutscene.
+- Como apresentar a motivação de Lulith em cenas futuras, preservando a Cutscene 02 sem falas.
 - Confirmar se essa abertura continuará na versão final.
 
 ---

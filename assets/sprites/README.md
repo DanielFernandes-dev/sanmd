@@ -10,6 +10,13 @@ Esta pasta contém os sprites de personagens usados em runtime. Os assets atuais
 
 `MJ.png` possui canvas transparente de `1070×1470` pixels. É um asset estático, genérico, provisório e produzido com auxílio de IA para validar presença, escala e integração. Ele pode ser substituído integralmente no Protótipo 3.
 
+## Arte de Lulith
+
+`lulith.png` está disponível como arte de personagem, mas não está cadastrado em
+`DATA.personagens` nem é carregado como sprite de diálogo. A Cutscene 02 usa os
+dez quadros completos em `assets/cenario/quarto-lulith`, preservando o desenho
+original; não recorta nem anima membros do sprite.
+
 ## Contrato
 
 - Personagens usam IDs narrativos independentes do caminho dos arquivos.
