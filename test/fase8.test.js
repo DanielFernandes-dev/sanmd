@@ -175,10 +175,15 @@ test("Fase 8 libera o enigma após a rota nova e preserva a solução antes do r
   assert.equal(elementos.get("reset-countdown").classList.contains("oculto"), false);
   assert.equal(elementos.get("phone-signal").classList.contains("oculto"), true);
 
-  executar('voltarCelular(); abrirArquivos(); visualizarArquivo("identidade"); resolverEnigmaIdentidade("ele");');
+  executar('voltarCelular(); abrirArquivos(); visualizarArquivo("identidade"); abrirEditorIdentidade();');
+  assert.equal(ler("state.texto.aberto"), true);
+  assert.equal(elementos.get("game-keyboard").children.length > 0, true);
+  executar('pressionarTecla("e"); pressionarTecla("l"); pressionarTecla("e"); confirmarEntradaTexto();');
   assert.equal(ler("state.arquivos.enigmaIdentidadeResolvido"), false);
-  executar('resolverEnigmaIdentidade("ela");');
+  assert.equal(elementos.get("identity-feedback").textContent, "Sequência inválida.");
+  executar('abrirEditorIdentidade(); pressionarTecla("e"); pressionarTecla("l"); pressionarTecla("a"); confirmarEntradaTexto();');
   assert.equal(ler("state.arquivos.enigmaIdentidadeResolvido"), true);
+  assert.equal(elementos.get("identity-answer").disabled, true);
   assert.equal(ler('state.dialogo.faseMonologo'), "identidadeResolvida");
 
   executarProximoTimeout();

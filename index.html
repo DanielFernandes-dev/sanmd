@@ -228,14 +228,11 @@
             <p id="file-type"></p>
             <h2 id="file-name"></h2>
             <p id="file-content"></p>
-            <form id="identity-puzzle" class="oculto">
-              <label for="identity-answer">Decodifique o pronome do remetente:</label>
-              <div class="puzzle-input-row">
-                <input id="identity-answer" type="text" autocomplete="off" maxlength="12">
-                <button type="submit">DECODIFICAR</button>
-              </div>
+            <div id="identity-puzzle" class="oculto">
+              <p id="identity-prompt">Decodifique o pronome do remetente:</p>
+              <button id="identity-answer" type="button" aria-describedby="identity-prompt identity-feedback">TOQUE PARA DECODIFICAR</button>
               <p id="identity-feedback" aria-live="polite"></p>
-            </form>
+            </div>
           </article>
         </section>
         <section id="phone-gallery" class="oculto" aria-labelledby="gallery-header">

@@ -53,10 +53,7 @@ function criarSistemaEventos(context) {
       const botao = event.target.closest("button[data-file-id]");
       if (botao) services.visualizarArquivo(botao.dataset.fileId);
     });
-    el.phone.identityPuzzle.addEventListener("submit", (event) => {
-      event.preventDefault();
-      services.resolverEnigmaIdentidade(el.phone.identityAnswer.value);
-    });
+    el.phone.identityAnswer.addEventListener("click", services.abrirEditorIdentidade);
     el.phone.messagesChoices.addEventListener("click", (event) => {
       const botao = event.target.closest("button[data-option-id]");
       if (botao) services.escolherResposta(botao.dataset.optionId);

@@ -824,46 +824,30 @@ button:hover:not(:disabled) .action-icon {
   border-top: 1px dashed #526185;
 }
 
-#identity-puzzle label {
+#identity-prompt {
   display: block;
   margin-bottom: 9px;
   color: #dce5ff;
   font: 11px/1.4 "Courier New", monospace;
 }
 
-.puzzle-input-row {
-  display: flex;
-  gap: 6px;
-}
-
 #identity-answer {
-  min-width: 0;
-  flex: 1;
-  padding: 8px;
-  border: 1px solid #526185;
-  border-radius: 4px;
-  outline: none;
-  background: #060a13;
-  color: #72e0a4;
-  font: bold 13px "Courier New", monospace;
-  text-transform: uppercase;
-}
-
-#identity-answer:focus {
-  border-color: #72e0a4;
-}
-
-.puzzle-input-row button {
-  padding: 8px;
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
   border: 1px solid #72e0a4;
   border-radius: 4px;
   background: #183429;
   color: #a5f2c8;
-  font: bold 9px "Courier New", monospace;
+  font: bold 11px/1.3 "Courier New", monospace;
   cursor: pointer;
 }
 
-.puzzle-input-row button:disabled,
+#identity-answer:hover,
+#identity-answer:focus-visible {
+  background: #24513e;
+}
+
 #identity-answer:disabled {
   opacity: 0.5;
   cursor: default;
@@ -884,26 +868,34 @@ button:hover:not(:disabled) .action-icon {
 }
 
 #phone-reset {
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
   gap: 16px;
-  padding: 26px;
+  padding: 16px;
   background: #080b12;
   color: #ff667d;
   font-family: "Courier New", monospace;
   text-align: center;
 }
 
+#phone-reset > * {
+  width: 100%;
+  min-width: 0;
+}
+
 .reset-code {
-  font-size: 18px;
+  font-size: clamp(11px, 4vw, 18px);
   font-weight: bold;
   letter-spacing: 0.12em;
+  overflow-wrap: anywhere;
   animation: falha-reset 0.18s steps(2) infinite;
 }
 
 #reset-status {
   color: #cbd2e8;
   font-size: 12px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
 }
 
 .reset-progress {
@@ -928,7 +920,7 @@ button:hover:not(:disabled) .action-icon {
 }
 
 @keyframes falha-reset {
-  50% { opacity: 0.45; transform: translateX(1px); }
+  50% { opacity: 0.45; }
 }
 
 #messages-list {
@@ -2239,6 +2231,9 @@ button:hover:not(:disabled) .action-icon {
   #file-type { font-size: 9px; }
   #file-name { margin-bottom: 6px; font-size: 11px; }
   #file-content { font: 10px/1.4 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
+  #phone-reset { padding: 10px; gap: 8px; }
+  .reset-code { font-size: 11px; letter-spacing: 0.06em; }
+  #reset-status { font-size: 10px; }
   #messages-list { gap: 6px; padding: 8px; }
   .mensagem { padding: 6px 8px; font: 10px/1.35 "Avenir Next", "Trebuchet MS", system-ui, sans-serif; }
   #messages-choices { gap: 4px; padding: 6px; }

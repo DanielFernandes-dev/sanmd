@@ -398,13 +398,27 @@ function criarSistemaCelular(context) {
     if (arquivo.enigma) {
       const enigmaBloqueado = state.arquivos.enigmaIdentidadeResolvido;
       el.phone.identityAnswer.disabled = enigmaBloqueado;
-      el.phone.identityPuzzle.querySelector('button[type="submit"]').disabled = enigmaBloqueado;
+      el.phone.identityAnswer.textContent = enigmaBloqueado ? "ELA" : "TOQUE PARA DECODIFICAR";
       el.phone.identityFeedback.textContent = state.arquivos.enigmaIdentidadeResolvido
         ? "DECODIFICADO: ELA"
         : "Você tem 1 minuto antes do reset.";
     }
     renderizarArquivos();
     el.phone.filesList.querySelector(`[data-file-id="${arquivo.id}"]`)?.focus();
+  }
+
+  /** Abrir o teclado do jogo para responder ao enigma. */
+  function abrirEditorIdentidade() {
+    if (state.modo !== "celular" || state.celular.tela !== "arquivos"
+      || state.celular.resetStatus !== RESET_STATUS.AGENDADO
+      || state.arquivos.enigmaIdentidadeResolvido
+      || el.phone.identityPuzzle.classList.contains("oculto")) return false;
+
+    return services.abrirEntradaTexto({
+      confirmLabel: "OK",
+      maxLength: 12,
+      aoConfirmar: resolverEnigmaIdentidade
+    });
   }
 
   /** Resolver enigma identidade.
@@ -419,15 +433,15 @@ function criarSistemaCelular(context) {
     const tentativa = resposta.trim().toLocaleLowerCase("pt-BR");
     if (tentativa !== "ela") {
       el.phone.identityFeedback.textContent = "Sequência inválida.";
-      el.phone.identityAnswer.select();
+      el.phone.identityAnswer.focus();
       return;
     }
 
     state.arquivos.enigmaIdentidadeResolvido = true;
     state.dialogo.faseMonologo = "identidadeResolvida";
     el.phone.identityFeedback.textContent = "DECODIFICADO: ELA";
+    el.phone.identityAnswer.textContent = "ELA";
     el.phone.identityAnswer.disabled = true;
-    el.phone.identityPuzzle.querySelector('button[type="submit"]').disabled = true;
   }
 
   /** Abrir arquivos.
@@ -614,6 +628,7 @@ function criarSistemaCelular(context) {
     abrirEditorMensagem,
     renderizarArquivos,
     visualizarArquivo,
+    abrirEditorIdentidade,
     resolverEnigmaIdentidade,
     abrirArquivos,
     arquivarDadosAntesReset,

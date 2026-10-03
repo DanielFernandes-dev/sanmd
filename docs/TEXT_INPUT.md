@@ -109,6 +109,13 @@ remoto não terminou. `abrirEditorMensagem` usa `maxLength: CONFIG.tamanhoMensag
 (160) e "Enviar"; confirmar adiciona `{ autor: "protagonista", texto }` ao
 histórico através do sistema de celular — o teclado não mexe no histórico.
 
+### Enigma de identidade
+
+`#identity-answer` é um botão que abre `abrirEditorIdentidade` enquanto o reset
+está agendado. O editor limita a resposta a 12 caracteres e envia o texto para
+`resolverEnigmaIdentidade` ao confirmar. Uma tentativa inválida permite abrir o
+teclado novamente; após `ELA`, o botão fica desabilitado.
+
 ## Persistência e acessibilidade
 
 - O estado do teclado não é persistido e o dock é fechado ao restaurar, voltar,
