@@ -107,6 +107,44 @@ const CENAS_CASA = {
   }
 };
 
+const CENAS_CRIME = {
+  crime_sala: {
+    id: "crime_sala", label: "Cena do crime",
+    background: "assets/cenario/cena-do-crime/cena-do-crime.png",
+    backgroundSize: [1664, 936],
+    initialState: { introSeen: false, firstEvidenceExamined: false,
+      investigationItemCollected: false, lockedEvidenceOpened: false },
+    destinos: [],
+    objects: [
+      { id: "crime_small_key", rect: [44, 70, 3.5, 5.5], variants: [
+        { asset: "assets/cenario/cena-do-crime/chave-pequena.svg",
+          conditions: { investigationItemCollected: false } }
+      ] },
+      { id: "crime_case", rect: [13, 67, 19, 18], variants: [
+        { asset: "assets/cenario/cena-do-crime/maleta-fechada.svg",
+          conditions: { lockedEvidenceOpened: false } },
+        { asset: "assets/cenario/cena-do-crime/maleta-aberta.svg",
+          conditions: { lockedEvidenceOpened: true } }
+      ] }
+    ],
+    hotspots: [
+      { id: "crime_glass", rect: [31, 80, 12, 13], ariaLabel: "Examinar os cacos de vidro",
+        type: "examine", conditions: { firstEvidenceExamined: false },
+        changes: { firstEvidenceExamined: true }, eventId: "crimeEvidenceExamined" },
+      { id: "crime_small_key", rect: [42.5, 68.5, 6.5, 9], ariaLabel: "Coletar chave pequena",
+        type: "collect", itemId: "crime_small_key",
+        conditions: { investigationItemCollected: false },
+        changes: { investigationItemCollected: true }, message: "Uma chave pequena. Vou guardá-la na Bolsa." },
+      { id: "crime_case", rect: [14, 69, 16, 15], ariaLabel: "Abrir a maleta no chão",
+        type: "use_item", requiresItem: "crime_small_key", requiresSelection: true,
+        consumeItem: true, missingItemMessage: "Está trancada. Preciso de alguma coisa para abrir.",
+        conditions: { lockedEvidenceOpened: false },
+        changes: { lockedEvidenceOpened: true }, eventId: "crimeCaseOpened" }
+    ],
+    personagensPresentes: []
+  }
+};
+
 const MONOLOGOS_BECO = {
   identidadeResolvida: [
     { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
@@ -159,6 +197,7 @@ const MONOLOGOS_BECO = {
 const DATA = {
   locais: {
     casa: { id: "casa", nome: "Casa", cenaInicial: "casa_quarto_mj", cenas: CENAS_CASA },
+    cena_crime: { id: "cena_crime", nome: "Cena do crime", cenaInicial: "crime_sala", cenas: CENAS_CRIME },
     beco: {
       id: "beco",
       nome: "Beco",
@@ -238,6 +277,13 @@ const DATA = {
   },
 
   monologos: {
+    crime_sala: {
+      inicial: [{ autor: "MJ", texto: "(Então foi aqui. Melhor olhar com calma antes de ir embora.)" }],
+      phoneBreak: [
+        { autor: "", texto: "O telefone escorrega da mão de MJ e bate no chão.", eventId: "mjPhoneImpact" },
+        { autor: "MJ", texto: "(...Ótimo.)" }
+      ]
+    },
     casa_quarto_mj: { inicial: [
       { autor: "MJ", texto: "(Acordei... Que sonho estranho.)" },
       { autor: "MJ", texto: "(Já podia começar o dia sem essa sensação.)" }
@@ -436,6 +482,14 @@ const DATA = {
 
 // Inventário persiste somente IDs; definições permanecem fora do snapshot.
 const ITEMS = {
+  crime_small_key: {
+    id: "crime_small_key", label: "Chave pequena", shortLabel: "Chave",
+    description: "Uma chave pequena encontrada perto dos objetos espalhados.",
+    purpose: "Talvez abra a maleta no chão.",
+    asset: "assets/cenario/cena-do-crime/chave-pequena.svg",
+    inventoryAction: { type: "use_on_hotspot", label: "Usar", targetHotspot: "crime_case" },
+    consumable: true
+  },
   lulith_phone: {
     id: "lulith_phone",
     label: "Celular de Lulith",

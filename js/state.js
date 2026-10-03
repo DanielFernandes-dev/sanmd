@@ -1,6 +1,6 @@
 /** @returns {{pagina: number, pesquisa: string, itemSelecionadoId: string|null}} */
 function criarEstadoBolsa() {
-  return { pagina: 1, pesquisa: "", itemSelecionadoId: null };
+  return { pagina: 1, pesquisa: "", itemSelecionadoId: null, itemEmUsoId: null };
 }
 
 /** @returns {DialogueState} Estado transitório e progresso narrativo do diálogo. */

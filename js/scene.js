@@ -4,7 +4,7 @@
  * @returns {Object} Operações do componente, usadas pelos demais sistemas e pelos testes.
  */
 function criarSistemaCenas(context) {
-  const { state, el, document, data: DATA, items: ITEMS, config: CONFIG, services } = context;
+  const { state, el, document, window, data: DATA, items: ITEMS, config: CONFIG, services } = context;
 
   const eventosInteracao = context.eventosInteracao;
   const mecanicas = criarMecanicasHotspot(context);
@@ -83,8 +83,12 @@ function criarSistemaCenas(context) {
     if (!local || !cena) return [];
     const exits = [
       ...(podeSairDaCasa() && cena.id === "casa_sala" ? [{ id: "sair_casa", label: "Sair de casa" }] : []),
+      ...(local.id === "cena_crime" ? [{ id: "voltar_casa", label: "Casa" }] : []),
+      ...(podeIrDelegacia() && Object.hasOwn(DATA.locais, "delegacia")
+        ? [{ id: "ir_delegacia", label: "Delegacia" }] : []),
       ...(podeSairDoBeco() && cena.id === "beco_entrada" ? [{ id: "sair_beco", label: "Sair do beco" }] : [])
     ];
+    // TODO Delegacia: cadastrar o local quando seu cenário for implementado.
     return exits.concat(cena.destinos
       .map((destinoId) => local.cenas[destinoId])
       .filter(Boolean));
@@ -153,6 +157,7 @@ function criarSistemaCenas(context) {
    */
   function trocarCenario(cena) {
     objectAnimation = null; // Troca de cena ou Load invalida qualquer continuação pendente.
+    state.bolsa.itemEmUsoId = null;
     state.localizacao.cena = cena.id;
     DATA.cena = cena;
     el.scene.cenario.src = cena.background;
@@ -186,10 +191,25 @@ function criarSistemaCenas(context) {
 
   function sairDaCasa() {
     if (!podeSairDaCasa() || state.localizacao.cena !== "casa_sala") return false;
-    // TODO Cenário 02: após cadastrar o local, validar aqui e chamar services.transitionToScene(local, cena).
-    el.scene.interactionStatus.textContent = "Estamos prontos. Falta decidir para onde ir.";
-    fecharMenuIrPara();
-    return true;
+    return services.transitionToScene("cena_crime", "crime_sala");
+  }
+
+  function voltarParaCasa() {
+    if (state.localizacao.local !== "cena_crime" || state.localizacao.cena !== "crime_sala") return false;
+    return services.transitionToScene("casa", "casa_sala");
+  }
+
+  function irParaDelegacia() {
+    if (!podeIrDelegacia() || !Object.hasOwn(DATA.locais, "delegacia")) return false;
+    const local = DATA.locais.delegacia;
+    return services.transitionToScene(local.id, local.cenaInicial);
+  }
+
+  function podeIrDelegacia() {
+    const crime = state.sceneState.crime_sala;
+    return state.localizacao.local === "cena_crime"
+      && crime?.firstEvidenceExamined === true && crime?.lockedEvidenceOpened === true
+      && state.aparelho.originalPhoneStatus === "broken";
   }
 
   /** A saída narrativa fica disponível somente depois da coleta. */
@@ -235,6 +255,8 @@ function criarSistemaCenas(context) {
     if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     if (services.isCutsceneActive()) return;
     if (destinoId === "sair_casa") return sairDaCasa();
+    if (destinoId === "voltar_casa") return voltarParaCasa();
+    if (destinoId === "ir_delegacia") return irParaDelegacia();
     if (destinoId === 'sair_beco') return sairDoBeco();
     const cena = obterCenaAtual();
     if (!cena?.destinos.includes(destinoId)) return;
@@ -285,6 +307,7 @@ function criarSistemaCenas(context) {
     });
     return changed.then(success => {
       if (success && cenaId === "casa_quarto_mj") iniciarIntroCasa();
+      if (success && cenaId === "crime_sala") iniciarIntroCrime();
       return success;
     });
   }
@@ -292,6 +315,12 @@ function criarSistemaCenas(context) {
   function iniciarIntroCasa() {
     if (state.localizacao.cena !== "casa_quarto_mj" || state.sceneState.casa_quarto_mj?.introSeen) return false;
     return services.iniciarConversa({ automatic: true });
+  }
+
+  function iniciarIntroCrime() {
+    if (state.localizacao.cena !== "crime_sala" || state.sceneState.crime_sala?.introSeen) return false;
+    state.sceneState.crime_sala = { ...estadoDaCena(DATA.locais.cena_crime.cenas.crime_sala), introSeen: true };
+    return services.iniciarFalas(DATA.monologos.crime_sala.inicial);
   }
 
   /** Estado da cena.
@@ -314,8 +343,21 @@ function criarSistemaCenas(context) {
    * @param {HTMLElement} element
    * @param {number[]} rect
    */
-  function posicionarObjeto(element, rect) {
+  function posicionarObjeto(element, rect, cena = obterCenaAtual()) {
     const [x, y, width, height] = rect;
+    const [imageWidth, imageHeight] = cena?.backgroundSize ?? [];
+    const stageWidth = el.scene.cenario.clientWidth;
+    const stageHeight = el.scene.cenario.clientHeight;
+    if (imageWidth && imageHeight && stageWidth && stageHeight) {
+      const scale = Math.max(stageWidth / imageWidth, stageHeight / imageHeight);
+      const left = (stageWidth - imageWidth * scale) / 2;
+      const top = (stageHeight - imageHeight * scale) / 2;
+      element.style = `left:${left + x * imageWidth * scale / 100}px;`
+        + `top:${top + y * imageHeight * scale / 100}px;`
+        + `width:${width * imageWidth * scale / 100}px;`
+        + `height:${height * imageHeight * scale / 100}px;`;
+      return;
+    }
     element.style = `left:${x}%;top:${y}%;width:${width}%;height:${height}%;`;
   }
 
@@ -334,7 +376,7 @@ function criarSistemaCenas(context) {
       sprite.alt = "";
       sprite.draggable = false;
       sprite.dataset.objectId = object.id;
-      posicionarObjeto(sprite, object.rect);
+      posicionarObjeto(sprite, object.rect, cena);
       return [sprite];
     });
   }
@@ -348,6 +390,7 @@ function criarSistemaCenas(context) {
       const existing = previous.find(o => o.dataset.objectId === sprite.dataset.objectId);
       if (!existing) return sprite;
       if (objectAnimation?.objectId !== sprite.dataset.objectId) existing.src = sprite.src;
+      existing.style = sprite.style;
       return existing;
     }));
     const values = estadoDaCena(cena);
@@ -360,11 +403,15 @@ function criarSistemaCenas(context) {
         button.ariaLabel = h.ariaLabel;
         button.dataset.hotspot = h.id;
         button.disabled = Boolean(objectAnimation);
-        posicionarObjeto(button, h.rect);
+        posicionarObjeto(button, h.rect, cena);
         button.addEventListener("click", () => executarHotspot(h.id));
         return button;
       }));
   }
+
+  window.addEventListener?.("resize", () => {
+    if (obterCenaAtual()?.backgroundSize) renderizarObjetos();
+  });
 
   /** Executa uma interação válida, aplica mudanças e registra o autosave.
    * @param {string} id
@@ -382,8 +429,10 @@ function criarSistemaCenas(context) {
     const executarMecanica = h && mecanicas.obter(h.type);
     if (!executarMecanica
       || !condicoesAtendidas(h.conditions, estadoDaCena(cena))) return false;
+    const itemEmUso = selectedItem ?? state.bolsa.itemEmUsoId;
     if (h.requiresItem && (!state.inventory.includes(h.requiresItem)
-      || (selectedItem !== null && selectedItem !== h.requiresItem))) {
+      || (h.requiresSelection && itemEmUso !== h.requiresItem)
+      || (itemEmUso !== null && itemEmUso !== h.requiresItem))) {
       el.scene.interactionStatus.textContent = h.missingItemMessage ?? "Preciso de outro item para isso.";
       return false;
     }
@@ -426,6 +475,7 @@ function criarSistemaCenas(context) {
     if (!executarMecanica(h)) return false;
     state.sceneState[cena.id] = { ...estadoDaCena(cena), ...h.changes };
     if (h.requiresItem && (h.consumeItem ?? ITEMS[h.requiresItem]?.consumable)) services.removerItem(h.requiresItem);
+    if (h.requiresSelection) state.bolsa.itemEmUsoId = null;
     fecharMenuIrPara();
     renderizarObjetos();
     el.scene.interactionStatus.textContent = "";
@@ -433,7 +483,7 @@ function criarSistemaCenas(context) {
     if (h.eventId) eventosInteracao[h.eventId]?.({ sceneId: cena.id, itemId: h.itemId });
     if (h.message && !h.eventId) el.scene.interactionStatus.textContent = h.message;
     services.registrarAutosave();
-    (el.scene.hotspotLayer.firstElementChild ?? el.bag.btnBolsa).focus();
+    if (state.modo === "livre") (el.scene.hotspotLayer.firstElementChild ?? el.bag.btnBolsa).focus();
     return true;
   }
 
@@ -444,7 +494,9 @@ function criarSistemaCenas(context) {
     obterCenaAtual,
     obterDestinos,
     podeSairDaCasa,
+    podeIrDelegacia,
     iniciarIntroCasa,
+    iniciarIntroCrime,
     temDestinos,
     criarBotaoDestino,
     renderizarMenuIrPara,

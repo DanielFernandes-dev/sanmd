@@ -597,3 +597,56 @@ test("ação direta: item sem ação não ganha USAR; ativação recalcula pági
   assert.equal(a.ler('el.bagNoResults.hidden'), false);
   assert.equal(a.ler('el.bagDetails.children.length'), 0);
 });
+
+test("cena do crime: examinar, coletar, usar pela Bolsa e quebrar o telefone", async () => {
+  const a = criarAmbiente();
+  a.executar(`state.localizacao = { local: 'cena_crime', cena: 'crime_sala' };
+    state.sceneState.casa_sala = { mjPhoneCollected: true };
+    state.aparelho = { originalPhoneStatus: 'working', activePhone: 'mj', phoneTheme: 'mj' };
+    aplicarCena(obterCenaAtual());`);
+  const snapshots = [a.ler('JSON.stringify(capturarEstadoJogo())')];
+  assert.equal(a.ler('executarHotspot("crime_case")'), false);
+  assert.equal(a.ler('state.sceneState.crime_sala?.lockedEvidenceOpened'), undefined);
+  a.executar('state.modo = "dialogo";');
+  assert.equal(a.ler('executarHotspot("crime_glass")'), false);
+  a.executar('state.modo = "livre"; executarHotspot("crime_glass");');
+  assert.equal(a.ler('state.sceneState.crime_sala.firstEvidenceExamined'), true);
+  assert.equal(a.ler('state.aparelho.activePhone'), 'mj');
+  snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
+
+  a.executar('executarHotspot("crime_small_key");');
+  assert.equal(a.ler('state.inventory.includes("crime_small_key")'), true);
+  assert.equal(a.ler('executarHotspot("crime_small_key")'), false);
+  assert.equal(a.ler('el.objectLayer.children.some(x => x.dataset.objectId === "crime_small_key")'), false);
+  snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
+  assert.equal(a.ler('executarHotspot("crime_case")'), false, 'a chave deve ser escolhida na Bolsa');
+  a.executar('el.btnBolsa.click();');
+  assert.equal(a.ler('el.bagDetails.children.some(x => x.className === "bag-item-action")'), true);
+  assert.equal(a.ler('executarAcaoInventario("crime_small_key")'), true);
+  assert.equal(a.ler('state.bolsa.itemEmUsoId'), 'crime_small_key');
+  assert.equal(a.ler('el.bagDialog.open'), false);
+  a.executar('executarHotspot("crime_case");');
+  assert.equal(a.ler('state.sceneState.crime_sala.lockedEvidenceOpened'), true);
+  assert.equal(a.ler('state.inventory.includes("crime_small_key")'), false);
+  assert.equal(a.ler('state.aparelho.originalPhoneStatus'), 'broken');
+  assert.equal(a.ler('state.aparelho.activePhone'), null);
+  assert.equal(a.ler('el.btnCelular.hidden'), true);
+  assert.equal(a.ler('state.modo'), 'dialogo');
+  assert.equal(a.ler('el.namePlate.classList.contains("oculto")'), true);
+  assert.equal(a.ler('el.objectLayer.children.some(x => x.dataset.objectId === "crime_case" && x.src.endsWith("maleta-aberta.svg"))'), true);
+  a.executar('encerrarConversa();');
+  assert.equal(a.ler('executarHotspot("crime_case")'), false);
+  snapshots.push(a.ler('JSON.stringify(capturarEstadoJogo())'));
+
+  for (const [index, snapshot] of snapshots.entries()) {
+    a.executar(`restaurarEstadoJogo(${snapshot});`);
+    assert.equal(a.ler('state.localizacao.cena'), 'crime_sala');
+    assert.equal(a.ler('Boolean(state.sceneState.crime_sala?.firstEvidenceExamined)'), index >= 1);
+    assert.equal(a.ler('Boolean(state.sceneState.crime_sala?.investigationItemCollected)'), index >= 2);
+    assert.equal(a.ler('Boolean(state.sceneState.crime_sala?.lockedEvidenceOpened)'), index === 3);
+    assert.equal(a.ler('state.inventory.includes("crime_small_key")'), index === 2);
+    assert.equal(a.ler('el.objectLayer.children.some(x => x.dataset.objectId === "crime_small_key")'), index < 2);
+    assert.equal(a.ler('state.aparelho.originalPhoneStatus'), index === 3 ? 'broken' : 'working');
+    assert.equal(a.ler('state.bolsa.itemEmUsoId'), null);
+  }
+});

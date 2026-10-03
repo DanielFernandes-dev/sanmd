@@ -6,6 +6,20 @@
 function criarSistemaDialogos(context) {
   const { state, el, window, data: DATA, config: CONFIG, services } = context;
 
+  /** Inicia falas narrativas na mesma interface e com o mesmo controle dos diálogos. */
+  function iniciarFalas(falas) {
+    if (state.modo !== "livre" || services.isSceneTransitioning() || services.isCutsceneActive()
+      || !Array.isArray(falas) || !falas.length) return false;
+    state.dialogo.falas = falas;
+    state.dialogo.linha = 0;
+    state.dialogo.conversationId = null;
+    state.modo = "dialogo";
+    el.dialogue.dialogueBox.classList.remove("oculto");
+    services.definirBotoes();
+    mostrarLinha();
+    return true;
+  }
+
   /** Iniciar conversa.
    */
   function iniciarConversa({ automatic = false } = {}) {
@@ -74,10 +88,12 @@ function criarSistemaDialogos(context) {
   function mostrarLinha() {
     const fala = state.dialogo.falas[state.dialogo.linha];
     el.dialogue.namePlate.textContent = fala.autor;
-    if (!fala.autor || (fala.autor === "MJ" && services.obterCenaAtual().id === "casa_quarto_mj"))
+    if (!fala.autor || (fala.autor === "MJ"
+      && ["casa_quarto_mj", "crime_sala"].includes(services.obterCenaAtual().id)))
       el.dialogue.namePlate.classList.add("oculto");
     else el.dialogue.namePlate.classList.remove("oculto");
     if (fala.eventId === "jamesNotification") tocarEfeitoTransitorio("assets/audio/phone_notification.wav");
+    if (fala.eventId === "mjPhoneImpact") tocarEfeitoTransitorio("assets/audio/kick_impact.wav");
     el.dialogue.continueArrow.classList.add("oculto");
     digitarTexto(fala.texto);
   }
@@ -195,6 +211,7 @@ function criarSistemaDialogos(context) {
   }
 
   return Object.freeze({
+    iniciarFalas,
     iniciarConversa,
     selecionarFaseMonologo,
     obterFaseMonologo,

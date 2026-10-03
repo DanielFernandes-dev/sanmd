@@ -162,9 +162,20 @@ function criarSistemaPersistencia(context) {
         exploration.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
       }
     }
-    if (!aparelho || aparelho.originalPhoneStatus !== "broken"
-      || ![null, "lulith"].includes(aparelho.activePhone)
+    const housePhoneCollected = exploration.sceneState.casa_sala?.mjPhoneCollected === true;
+    const crime = exploration.sceneState.crime_sala;
+    const crimeConcluded = crime?.firstEvidenceExamined === true && crime?.lockedEvidenceOpened === true;
+    // Saves da casa anteriores ao Cenário 02 ainda registravam o aparelho original como quebrado.
+    if (housePhoneCollected && !crimeConcluded && aparelho?.originalPhoneStatus === "broken"
+      && aparelho.activePhone === null) {
+      aparelho = { originalPhoneStatus: "working", activePhone: "mj", phoneTheme: "mj" };
+    }
+    if (!aparelho || !["broken", "working"].includes(aparelho.originalPhoneStatus)
+      || ![null, "mj", "lulith"].includes(aparelho.activePhone)
       || !["lulith", "mj"].includes(aparelho.phoneTheme)) return null;
+    if (aparelho.originalPhoneStatus === "working"
+      && (!housePhoneCollected || aparelho.activePhone !== "mj" || crimeConcluded)) return null;
+    if (aparelho.activePhone === "mj" && aparelho.originalPhoneStatus !== "working") return null;
     const collected = exploration.sceneState.beco_fundo?.lulithPhoneCollected;
     if (aparelho.activePhone === "lulith" && (!collected
       || !exploration.sceneState.beco_fundo.safeOpened

@@ -221,6 +221,16 @@ function criarSistemaBolsa(context) {
    */
   function executarAcaoInventario(itemId) {
     if (state.modo !== "livre" || !el.bag.bagDialog.open || !acaoInventarioDisponivel(itemId)) return false;
+    const action = ITEMS[itemId].inventoryAction;
+    if (action.type === "use_on_hotspot") {
+      el.bag.bagDialog.close();
+      state.bolsa.itemEmUsoId = itemId;
+      el.scene.interactionStatus.textContent = "Vou usar a chave na maleta.";
+      const target = Array.from(el.scene.hotspotLayer.children)
+        .find(button => button.dataset.hotspot === action.targetHotspot);
+      (target ?? el.bag.btnBolsa).focus();
+      return true;
+    }
     state.inventoryActionPending = itemId;
     el.bag.bagDialog.close();
     services.fecharMenuIrPara();
@@ -360,6 +370,12 @@ function criarSistemaBolsa(context) {
   }
 
   const inventoryActionHandlers = criarRegistroMecanicas({
+    use_on_hotspot: {
+      validar: item => state.localizacao.local === "cena_crime"
+        && state.localizacao.cena === "crime_sala"
+        && item.inventoryAction.targetHotspot === "crime_case"
+        && !state.sceneState.crime_sala?.lockedEvidenceOpened
+    },
     activate_phone: {
       validar: item => state.aparelho.activePhone === null
         && item.inventoryAction.device === "lulith"

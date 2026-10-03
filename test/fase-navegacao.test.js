@@ -302,6 +302,8 @@ test('casa: James habilita coleta, bolsa e telefone persistem e liberam saída',
   await executar('irPara("casa_sala");');
   await executar('executarHotspot("mj_phone");');
   assert.equal(ler('state.sceneState.casa_sala.mjPhoneCollected'), true);
+  assert.equal(ler('state.aparelho.activePhone'), 'mj');
+  assert.equal(ler('state.aparelho.originalPhoneStatus'), 'working');
   assert.equal(ler('executarHotspot("mj_phone")'), false);
   assert.equal(ler('podeSairDaCasa()'), false);
   await executar('irPara("casa_quarto_mj");');
@@ -339,7 +341,58 @@ test('casa: load preserva estados parciais sem liberar saída antes dos três re
     assert.equal(ler('state.sceneState.casa_cozinha.jamesIntroConversationComplete'), talked);
     assert.equal(ler('state.sceneState.casa_quarto_mj.mjBagCollected'), bag);
     assert.equal(ler('state.sceneState.casa_sala.mjPhoneCollected'), phone);
+    assert.equal(ler('state.aparelho.activePhone'), phone ? 'mj' : null);
     assert.equal(ler('el.objectLayer.children.length'), phone ? 0 : 1);
     assert.equal(ler('obterDestinos().some(x => x.id === "sair_casa")'), talked && bag && phone);
   }
+});
+
+test('cena do crime: saída da casa, retorno e autorização futura da Delegacia', async () => {
+  const { executar, ler } = controlarAmbiente();
+  entrarCasa(executar);
+  executar(`state.localizacao.cena = 'casa_sala';
+    state.sceneState.casa_quarto_mj = { introSeen: true, mjBagCollected: true };
+    state.sceneState.casa_cozinha = { jamesIntroConversationComplete: true };
+    state.sceneState.casa_sala = { mjPhoneCollected: true };
+    state.aparelho = { originalPhoneStatus: 'working', activePhone: 'mj', phoneTheme: 'mj' };
+    aplicarCena(obterCenaAtual());`);
+  await executar('irPara("sair_casa");');
+  assert.equal(ler('state.localizacao.local'), 'cena_crime');
+  assert.equal(ler('state.localizacao.cena'), 'crime_sala');
+  assert.equal(ler('state.modo'), 'dialogo');
+  executar('encerrarConversa(); abrirMenuIrPara();');
+  assert.deepEqual(rotulosMenu(ler), ['Casa']);
+  assert.equal(ler('irPara("ir_delegacia")'), false);
+  executar('fecharMenuIrPara();');
+  await executar('irPara("voltar_casa");');
+  assert.equal(ler('state.localizacao.cena'), 'casa_sala');
+  await executar('irPara("sair_casa");');
+  assert.equal(ler('state.modo'), 'livre', 'o contexto inicial não se repete');
+  assert.equal(ler('state.sceneState.crime_sala.introSeen'), true);
+  executar(`state.sceneState.crime_sala.firstEvidenceExamined = true;
+    state.sceneState.crime_sala.lockedEvidenceOpened = true;
+    state.aparelho.originalPhoneStatus = 'broken'; state.aparelho.activePhone = null;`);
+  assert.equal(ler('podeIrDelegacia()'), true);
+  assert.equal(ler('obterDestinos().some(x => x.id === "ir_delegacia")'), false,
+    'a Delegacia ainda não tem cena cadastrada');
+  assert.equal(ler('irPara("ir_delegacia")'), false);
+  executar(`DATA.locais.delegacia = { id: 'delegacia', cenaInicial: 'delegacia_teste', cenas: {
+    delegacia_teste: { id: 'delegacia_teste', label: 'Delegacia', background: 'teste.png',
+      destinos: [], initialState: {}, personagensPresentes: [] }
+  } }; abrirMenuIrPara();`);
+  assert.deepEqual(rotulosMenu(ler), ['Casa', 'Delegacia']);
+});
+
+test('cena do crime: hotspots acompanham o recorte cover em landscape', () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'cena_crime', cena: 'crime_sala' };
+    el.cenario.clientWidth = 1600; el.cenario.clientHeight = 720;
+    aplicarCena(obterCenaAtual());`);
+  const keyStyle = ler('el.objectLayer.children.find(x => x.dataset.objectId === "crime_small_key").style');
+  const hotspotStyle = ler('el.hotspotLayer.children.find(x => x.dataset.hotspot === "crime_small_key").style');
+  assert.match(keyStyle, /left:704px;top:540px;/);
+  assert.match(hotspotStyle, /left:680px;top:526\.5px;/);
+  executar('el.cenario.clientWidth = 1664; el.cenario.clientHeight = 936; renderizarObjetos();');
+  assert.match(ler('el.objectLayer.children.find(x => x.dataset.objectId === "crime_small_key").style'),
+    /left:732\.16px;top:655\.2px;/);
 });
