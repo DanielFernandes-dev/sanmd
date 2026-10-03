@@ -15,7 +15,9 @@ Esta pasta contém os sprites de personagens usados em runtime. Os assets atuais
 `lulith.png` está disponível como arte de personagem, mas não está cadastrado em
 `DATA.personagens` nem é carregado como sprite de diálogo. A Cutscene 02 usa os
 dez quadros completos em `assets/cenario/quarto-lulith`, preservando o desenho
-original; não recorta nem anima membros do sprite.
+original; não recorta nem anima membros do sprite. A Cutscene 03 também usa
+quadros completos do telhado em `assets/cenario/custcene-beco`; a MJ distante
+já está desenhada nos Frames 02–03 e não usa overlay de sprite.
 
 ## Contrato
 

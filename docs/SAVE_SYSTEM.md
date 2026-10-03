@@ -44,6 +44,7 @@ A captura é temporária até a confirmação do nome. Cancelar descarta ID, exp
 
 O formato versão 1 persiste somente estruturas existentes no jogo:
 
+- `act1Complete`: conclusão narrativa do protótipo (`false` em snapshots v1 antigos sem esse campo);
 - `aparelho`: `originalPhoneStatus`, `activePhone` e `phoneTheme`;
 - `inventory`: IDs únicos de itens coletados;
 - `sceneState`: flags persistentes por cena, como `safeOpened` e `lulithPhoneCollected`;
@@ -53,7 +54,7 @@ O formato versão 1 persiste somente estruturas existentes no jogo:
 - `arquivos`: IDs vistos, snapshot pré-reset e flags do enigma de identidade;
 - `mensagens`: etapa, histórico, fila, próxima etapa, flags de entrega, cooldown absoluto e histórico pré-reset.
 
-Saves anteriores a essas extensões recebem valores iniciais: `inventory` vazio e `sceneState` derivado de `initialState`. A restauração substitui esses dados por cópias independentes.
+Saves anteriores a essas extensões recebem valores iniciais, incluindo `act1Complete: false`: `inventory` vazio e `sceneState` derivado de `initialState`. A restauração substitui esses dados por cópias independentes.
 
 Não são serializados objetos ou estados transitórios:
 
@@ -77,9 +78,10 @@ Os pontos lógicos atuais são:
 - `concluirResetRemoto()`, depois de aplicar a limpeza e as flags finais do reset;
 - conclusão bem-sucedida de hotspots, após flags e eventos narrativos;
 - Novo jogo, depois de concluir ou pular `lulith_codigo`, revelar o gameplay e iniciar a conversa inicial;
+- conclusão ou Skip de `act1_ending`, depois de marcar `act1Complete: true` e antes de `act1_title`/menu;
 - `saveOnExit`, em `visibilitychange`/`pagehide`, somente durante a partida, sem cutscene ativa ou transição de cena.
 
-Trocar de cena, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele será substituído pelo próximo gatilho elegível da lista acima. A Cutscene 01 não grava autosave. Frames, timers, áudio, câmera, flashes e estado de Skip nunca entram no snapshot.
+Trocar de cena, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele será substituído pelo próximo gatilho elegível da lista acima. A Cutscene 01 não grava autosave. A coleta registra o autosave normal do hotspot, mas não inicia a Cutscene 03. Frames, timers, áudio, câmera, título e estado de Skip nunca entram no snapshot. O retorno ao menu não apaga saves; carregar o autosave final conserva `act1Complete` e impede repetir a saída.
 
 ## Expressões Fotográficas
 

@@ -47,8 +47,8 @@ O projeto atual é um protótipo de Visual Novel investigativa feito com HTML, C
 
 ### O Que Funciona
 
-- Cutscene 01 de SANMD/luz, menu em caderno e Cutscene 02 de Lulith no Novo jogo.
-- Um controlador global, preload de dez quadros, Skip, câmera discreta, SFX e efeitos transitórios; [contrato completo](docs/cutscenes.md).
+- Cutscene 01 de SANMD/luz, menu em caderno, Cutscene 02 de Lulith no Novo jogo e Cutscene 03 na saída do beco.
+- Um controlador global, preload dos quadros das Cutscenes 02/03, Skip, câmera discreta, SFX e efeitos transitórios; [contrato completo](docs/cutscenes.md).
 
 - Três cenas noturnas provisórias: entrada, interior e fundo do beco.
 - Sprite genérico e estático de MJ em PNG externo (`assets/sprites/MJ.png`).
@@ -103,6 +103,7 @@ flowchart TD
     G --> H[Celular de Lulith]
     H --> I[Primeiro contato e reset remoto]
     I --> J[Trama principal]
+    J --> K[Encerramento planejado do Ato I]
 ```
 
 ### Personagens Definidos
@@ -145,6 +146,7 @@ Este roadmap descreve a sequência que já funciona durante uma partida.
 4. Os dez quadros terminam naturalmente ou por Skip; fade revela o beco, inicia o monólogo e registra autosave.
 5. Carregar restaura o snapshot selecionado sem executar a Cutscene 02.
 6. Conversar, Ir para, Celular e Bolsa são disponibilizados conforme o modo; Celular fica oculto até ativar o aparelho.
+7. Depois de abrir o cofre e coletar o celular, **Sair do beco** na entrada inicia `act1_ending`. Fim natural ou Skip marca `act1Complete`, salva e executa `act1_title` antes de devolver o menu.
 
 ### Etapa 2 — Cena Livre
 
@@ -931,6 +933,7 @@ Status: **planejada**.
 - [ ] Trocar o conteúdo atual para MJ, Lulith e William James.
 - [ ] Permitir a escolha do nome real de MJ.
 - [x] Implementar a Cutscene 02 de Lulith em dez quadros estáticos.
+- [x] Implementar a Cutscene 03 do encerramento do protótipo em oito quadros e preto criado pelo código.
 - [ ] Prototipar a cena de dormitório e James após a cutscene.
 - [ ] Criar o caso introdutório de investigação point-and-click.
 - [ ] Criar a delegacia, a nota e a escolha que permite encerrar a partida.
@@ -1031,7 +1034,22 @@ persistidos. O encerramento assíncrono mantém input bloqueado até concluir o 
 Quadros 01–07 têm cerca de 25% mais tempo que a revisão anterior; 08–10 mantêm
 o ritmo. Câmera, flashes e shake são cancelados ao sair. Os detalhes de timing,
 preload, falhas e validação estão em [Cutscenes](docs/cutscenes.md). A sequência
-não ativa o telefone, não muda o tema e não implementa a saída do beco.
+não ativa o telefone nem muda o tema. A saída do beco pertence à Cutscene 03, descrita abaixo.
+
+### Cutscene 03 e retorno ao menu
+
+`ACT1_FRAMES` associa oito imagens já existentes a IDs lógicos; `CONFIG.cutscene.act1Ending`
+controla ritmo, entrada, passagem ao preto, câmera e fade do áudio. Os oito
+quadros têm cortes secos entre si. O Frame 09 é preto uniforme do renderer,
+seguido pela sequência independente `act1_title`, que revela **ATO 1 COMPLETO**
+do centro, pausa, sobe e desaparece. O mesmo controlador trata preload, Skip e
+bloqueio de input. Nenhuma arte, timer ou fase visual entra no snapshot.
+
+A condição narrativa está em `scene.js`: a opção de saída só aparece na entrada
+após `safeOpened` e `lulithPhoneCollected` e enquanto `act1Complete` é falso.
+A conclusão normal e o Skip registram a mesma flag e autosave antes do título.
+O retorno usa a capa do menu existente, sem repetir a abertura SANMD. O save
+final pode ser carregado e não dispara novamente a Cutscene 03.
 
 ### Composição
 
@@ -1422,7 +1440,7 @@ Não criam autosave:
 - criação de fotografia manual;
 - load de fotografia manual.
 
-Carregar um save preserva o autosave existente. O próximo diálogo concluído, reset remoto, hotspot concluído ou saída elegível pode substituí-lo. Novo jogo também salva após concluir a Cutscene 02 e entrar no gameplay. A abertura SANMD e os quadros intermediários não geram autosave.
+Carregar um save preserva o autosave existente. O próximo diálogo concluído, reset remoto, hotspot concluído ou saída elegível pode substituí-lo. Novo jogo também salva após concluir a Cutscene 02 e entrar no gameplay. A conclusão ou Skip de `act1_ending` salva `act1Complete: true` antes de `act1_title` e do menu. A abertura SANMD e os quadros intermediários não geram autosave.
 
 ### Design Atual
 

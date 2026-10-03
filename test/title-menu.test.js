@@ -163,3 +163,22 @@ test('recusa de cutscene concorrente devolve o caderno em vez de aguardar para s
   assert.equal(t.phases.includes('story'),false);
   assert.equal(t.repository.obterAutosave(),null);
 });
+
+test('retorno do Ato 1 restaura capa e preserva autosave e fotografias', async () => {
+  const t = setup();
+  t.repository.criarManual(photo('manual'));
+  const start = t.menu.newGame(); t.finish(); await start;
+  t.state.inventory = ['final']; t.menu.saveOnExit();
+  const finalSave = t.repository.obterAutosave();
+  t.menu.retornarAoMenu();
+  assert.equal(t.menu.getMode(), 'menu');
+  assert.equal(t.get('title-menu').hidden, false);
+  assert.equal(t.get('title-menu').inert, false);
+  assert.equal(t.get('notebook-open').hidden, true);
+  assert.equal(t.get('app').inert, true);
+  t.state.inventory = []; t.menu.saveOnExit();
+  assert.deepEqual(t.repository.obterAutosave(), finalSave);
+  assert.equal(t.repository.listarManuais()[0].id, 'manual');
+  assert.equal(t.phases.filter(p => p === 'lulith_codigo').length, 1);
+  assert.ok(!t.phases.includes('intro_abertura'));
+});

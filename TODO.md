@@ -89,7 +89,8 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 - [ ] Definir como cenários, objetos, expressões e interfaces contam a história sem depender apenas de diálogos.
 - [ ] Marcar os pontos em que o jogador aprende cada mecânica.
 - [ ] Definir as condições de avanço e falha de cada sequência.
-- [ ] Definir o encerramento do Ato I após a apresentação dos sistemas do celular.
+- [x] Implementar o encerramento do protótipo ao sair do beco após coletar o celular.
+- [ ] Definir o encerramento canônico do Ato I após a apresentação de todos os sistemas planejados.
 
 ### Personagens
 
@@ -223,6 +224,17 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 - [ ] Avaliar auditivamente os SFX sintetizados e decidir se serão substituídos por gravações.
 - [ ] Validar subjetivamente o ritmo após o último aumento dos quadros 01–07.
 - [ ] Confirmar a integração dessa apresentação à versão final do Ato I.
+
+### Cutscene 03 — saída do beco
+
+- [x] Usar os oito PNGs existentes em `custcene-beco` com IDs lógicos e preload.
+- [x] Oferecer **Sair do beco** em `Ir para` somente na entrada após abrir o cofre e coletar o celular; não repetir após `act1Complete`.
+- [x] Usar cortes secos, câmera sutil, ambiente e SFX no controlador e pool de áudio existentes.
+- [x] Criar Frame 09 preto por CSS, sem PNG, e entregar à sequência independente **ATO 1 COMPLETO**.
+- [x] Unificar fim natural e Skip: conclusão, autosave e retorno ao menu sem repetir SANMD.
+- [x] Cobrir Skip em cada ponto, falha de asset, save legado e reentrada por testes automatizados; validar fluxo no Chromium em paisagem.
+- [x] Compilar e instalar o APK de debug no SM-A055M; confirmar abertura em paisagem.
+- [ ] Assistir e ouvir a sequência completa no Android físico, ajustar volumes/timing e exercitar Skip em cada quadro no WebView.
 
 ### Cutscene 01 — título e luz
 
@@ -579,7 +591,7 @@ O recorte de Save/Load abaixo está implementado e testado no protótipo atual, 
 
 ### Fluxo narrativo
 
-- [ ] Jogar da escolha do nome até a cutscene final do Ato I.
+- [ ] Jogar o Ato I canônico da escolha do nome até a cutscene final; o encerramento atual do protótipo já funciona após a coleta no beco.
 - [ ] Confirmar a ordem correta de todas as cenas e transições.
 - [ ] Confirmar que o caso ensina investigação antes da nota.
 - [ ] Confirmar que descartar a nota encerra o jogo imediatamente.

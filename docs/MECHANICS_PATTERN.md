@@ -62,7 +62,7 @@ a preferência visual não pode adiantar eventos da história. O progresso visua
 do reset acompanha `CONFIG.duracaoReset`. Animações não entram nos saves.
 
 As cutscenes usam passos declarativos e um único timer de avanço. `hold` suspende
-o avanço da abertura; Lulith conclui naturalmente. `encerrar()` opcional pode
+o avanço da abertura; as Cutscenes 02 e 03 concluem naturalmente. `encerrar()` opcional pode
 aguardar fade/áudio antes de `finalizar()` e do callback, mantendo o input
 bloqueado. Skip encerra a sessão ativa e cancela o timer; não cria outro caminho
 narrativo. Ver [Cutscenes](cutscenes.md).

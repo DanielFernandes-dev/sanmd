@@ -273,7 +273,17 @@ Somente `act1Complete` entra no snapshot; saves antigos recebem `false`.
 Carregar o save final preserva o progresso e não oferece novamente essa saída.
 O retorno ao menu cancela timers de gameplay e preserva saves manuais e autosave.
 
-Validação: testes automatizados de passos, Skip em todos os quadros e fade,
-limpeza de áudio/câmera, gatilho, migração de saves e reentrada. Navegador Chromium
-em viewport de 915×412 verifica o fluxo completo. Android físico e avaliação
-auditiva dos volumes no aparelho permanecem verificações manuais necessárias.
+Tempos em `CONFIG.cutscene.act1Ending`: 1800, 1350, 1150, 1250, 1150, 1050,
+1050 e 1450 ms para os oito PNGs; fade para preto de 400 ms, Frame 09 de 650 ms.
+O título usa revelação de 1200 ms, pausa de 1600 ms, subida de 1800 ms e preto
+final de 550 ms. O primeiro quadro entra em 240 ms de fade. Skip funciona nos
+nove quadros, no fade e no título; mudanças de frame e áudio pendentes são
+canceladas. Reduced motion mantém os oito quadros e o preto, com câmera desligada.
+
+Validação: 193 testes Node aprovados, incluindo Skip, limpeza, gatilho, migração
+e reentrada. Chromium em viewport 915×412 confirmou fluxo completo, Skip nos
+nove quadros, reduced motion, autosave e retorno ao menu sem zoom nem áudio
+residual. Captura do Frame 09 teve RGB `(0,0,0)` em todos os pixels. O APK foi
+compilado e instalado via ADB no SM-A055M e o aplicativo abriu em paisagem.
+A execução completa da Cutscene 03 e avaliação auditiva dos volumes no aparelho
+continuam pendentes.

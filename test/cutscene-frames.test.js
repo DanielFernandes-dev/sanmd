@@ -137,3 +137,50 @@ test('Ato 1: oito assets paisagem, reduced motion e preto sem src indefinido', a
   assert.ok(t.animations.every(a => a.keys.every(k => !k.transform)));
   await t.visual.encerrar(); t.visual.finalizar();
 });
+
+for (const phase of ['reveal', 'hold', 'exit']) test(`Skip cancela título ${phase} antes de aguardar encerramento`, async () => {
+  const t = setup(false, 'act1_title');
+  t.visual.iniciar(t.sequence); await t.visual.preparar();
+  t.visual.apresentar({ type: 'title', phase }, 1000, false);
+  const title = t.elements.get('frame-cutscene-title');
+  let cancelled = false;
+  title.getAnimations = () => [{ cancel() { cancelled = true; } }];
+  assert.equal(title.hidden, false);
+  const closing = t.visual.encerrar();
+  assert.equal(title.hidden, true); assert.equal(cancelled, true);
+  assert.equal(title.dataset.phase, '');
+  await closing; t.visual.finalizar();
+  assert.equal(title.textContent, '');
+  assert.equal(t.elements.get('frame-cutscene-fade').style.opacity, '1');
+  assert.equal(t.audios.length, 0);
+});
+test('renderer recusa dados inválidos em vez de exibir imagem indefinida ou preto silencioso', async () => {
+  const t = setup(false, 'act1_ending'); t.visual.iniciar(t.sequence); await t.visual.preparar();
+  for (const step of [{ type: 'unknown' }, { frame: 'missing' }, { type: 'title', phase: 'missing' }])
+    assert.throws(() => t.visual.apresentar(step, 100, false), /inválid|desconhecido/);
+  await t.visual.encerrar(); t.visual.finalizar();
+  assert.ok(t.audios.every(a => a.paused && !a.src));
+});
+test('rejeição antiga de play não interrompe o mesmo WAV reutilizado', async () => {
+  const t = setup(); const audio = t.createAudio(); await audio.preparar();
+  const sound = t.audios.find(a => a.src.endsWith('/keyboard.wav'));
+  let rejectOld;
+  sound.play = function () { this.paused = false; return new Promise((_, reject) => { rejectOld = reject; }); };
+  audio.apresentar('keyboard');
+  sound.play = function () { this.paused = false; return Promise.resolve(); };
+  audio.apresentar('keyboard');
+  rejectOld(new Error('play antigo cancelado'));
+  await Promise.resolve();
+  assert.equal(sound.paused, false);
+  audio.finalizar();
+  assert.equal(sound.paused, true);
+});
+test('callback antigo de volume não altera mídia depois do descarte', async () => {
+  const t = setup(); const audio = t.createAudio(); await audio.preparar();
+  audio.apresentar('keyboard', 1, 0, 1000);
+  const callback = [...t.intervals][0];
+  const sound = t.audios.find(a => a.src.endsWith('/keyboard.wav'));
+  audio.finalizar(); sound.volume = .75; callback();
+  assert.equal(sound.volume, .75);
+  assert.equal(t.intervals.size, 0);
+});

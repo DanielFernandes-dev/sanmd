@@ -5,11 +5,11 @@ Esta pasta contém os fundos de cena usados pelo protótipo. Eles são assets 2D
 ## Conteúdo Atual
 
 Os três fundos navegáveis pertencem ao local lógico `beco`. A pasta também contém
-os dez quadros narrativos de Lulith, que não são destinos de navegação:
+os dez quadros narrativos do quarto e oito do telhado, que não são destinos de navegação:
 
 | Arquivo | Cena | Rótulo | Destinos |
 |---|---|---|---|
-| `beco/entrada.png` | `beco_entrada` | Entrada do beco | `beco_interior` |
+| `beco/entrada.png` | `beco_entrada` | Entrada do beco | `beco_interior`; **Sair do beco** após abrir o cofre e coletar o celular |
 | `beco/corredor.png` | `beco_interior` | Interior do beco | `beco_entrada`, `beco_fundo` |
 | `beco/background.png` | `beco_fundo` | Fundo do beco | `beco_interior` |
 
@@ -38,6 +38,20 @@ levemente: o renderer preserva palco 1672:941 com `object-fit: cover`, sem estic
 nem modificar os PNGs. Não são sprites de membros nem frames intermediários de
 animação. O código/erro no notebook faz parte da composição narrativa da arte.
 Preload decodifica todos antes da exibição; ver [Cutscenes](../../docs/cutscenes.md).
+
+## Quadros do telhado — Cutscene 03
+
+`custcene-beco/cena1.png` a `cena8.png` são as oito imagens existentes da
+Cutscene 03. `ACT1_FRAMES` em `js/data.js` mapeia `cutscene_act1_01` a
+`cutscene_act1_08` para esses caminhos. O nome físico `custcene-beco` é mantido
+como está no projeto. Os PNGs são paisagem, com dimensões de aproximadamente
+829–832×466–469; `object-fit: cover` os encaixa no mesmo palco 1672:941 sem
+stretch, com `image-rendering: pixelated`.
+
+O Frame 09 é preto criado pelo renderer e pelo token `--cutscene-black`; não
+existe PNG para ele. Os quadros 02–03 mostram a MJ em posições sucessivas ao
+longe, sem sprite de caminhada separado. Todas as imagens são decodificadas
+antes do primeiro corte. Ver [Cutscenes](../../docs/cutscenes.md).
 
 ## Contrato
 

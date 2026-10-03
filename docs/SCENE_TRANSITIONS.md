@@ -7,11 +7,12 @@ Os controles laterais persistem visualmente, mas ficam desabilitados. A cor
 e menu (6). Celular, Bolsa, Galeria, teclado e fotografia não acionam esse fade.
 
 A navegação continua em `scene.js`: `irPara` valida as conexões atuais;
-`irParaLocal` resolve a entrada de um local (API existente para mapa). Ambos
-chamam `transitionToScene(localId, cenaId)`. Não há regra específica do beco.
-As cutscenes atuais não navegam entre locais. `lulith_codigo` é apresentação
-de Novo jogo; o estado inicial do beco já foi criado antes dela. Caderno e
-cutscene reutilizam `animarFade`, com overlays próprios, sem invocar uma segunda
+`irParaLocal` resolve a entrada de um local (API existente para mapa). Destinos
+comuns chamam `transitionToScene(localId, cenaId)`. Na entrada do beco, a opção
+narrativa **Sair do beco** inicia `act1_ending` quando o cofre está aberto,
+o celular foi coletado e `act1Complete` é falso. A localização não muda durante
+o encerramento. `lulith_codigo` é a apresentação de Novo jogo; o estado inicial
+do beco já foi criado antes dela. Caderno e cutscenes reutilizam `animarFade`, com overlays próprios, sem invocar uma segunda
 transição de navegação. Ver [Cutscenes](cutscenes.md).
 
 Para uma nova navegação, valide primeiro as regras narrativas e então use:
@@ -51,7 +52,7 @@ mouse, touch, teclado e formulários; serviços de navegação, hotspots, conver
 celular e load também recusam chamadas durante a transição. Menus e feedback
 antigos são fechados antes do fade. O estado transitório fica na closure do
 controlador, fora de saves/autosaves. Inicialização e Load continuam usando o
-carregador imediato existente. Não alteramos o formato dos snapshots.
+carregador imediato existente. O controlador de transição não altera snapshots; a Cutscene 03 acrescenta somente `act1Complete` ao progresso persistente.
 
 Checklist para integrar navegação:
 

@@ -17,6 +17,7 @@ A mudança da Galeria uniformiza o fundo, o cabeçalho e as superfícies de cont
 com os outros apps. Fotografias, nove slots, captura, confirmação, exclusão,
 Save/Load e autosave mantêm a implementação existente.
 
-A futura personalização/saída do beco continua pendente. A Cutscene 02 de Novo
+A personalização do tema continua pendente. A saída do beco já aciona a Cutscene 03
+após a coleta, independentemente do tema e de o aparelho ter sido ativado. A Cutscene 02 de Novo
 jogo (`lulith_codigo`) não ativa o aparelho nem troca o tema: o jogador ainda
 precisa coletar o celular no cofre e usá-lo na Bolsa.

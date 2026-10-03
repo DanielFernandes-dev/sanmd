@@ -46,3 +46,23 @@ ambiente a 180 ms. Som com falha é descartado sem reprodução tardia. Digitaç
 é um SFX de duração própria; ampliar a permanência do quadro não estica o WAV.
 Os testes verificam reprodução/limpeza por estado dos elementos; avaliação
 subjetiva de timbre, volume e alto-falante do aparelho permanece complementar.
+
+## Telhado — Cutscene 03
+
+`python3 assets/audio/gerar_beco.py` reproduz seis WAVs mono PCM originais usados
+pela sequência `act1_ending`. O pool de `cutscene-audio.js` faz preload e descarte;
+o ambiente inicia no Frame 01 e desaparece durante o fade para o Frame 09.
+
+| ID lógico | Arquivo | Uso/volume no catálogo |
+|---|---|---|
+| `room_ambience` | `rooftop_ambience.wav` | Vento/cidade em loop, 0,22 |
+| `mj_steps` | `mj_steps.wav` | Quadros 02–03, 0,12; no 03 peso 0,55 e fade a zero |
+| `binoculars` | `binoculars.wav` | Quadro 04, 0,18 |
+| `backpack` | `backpack.wav` | Quadro 05, 0,20 |
+| `strap` | `strap.wav` | Quadro 06, 0,16 |
+| `exit_steps` | `exit_steps.wav` | Quadro 07, 0,24 |
+
+O Frame 08 deixa apenas o ambiente. `CONFIG.cutscene.act1Ending` limita preload
+de áudio a 1500 ms e controla o fade de 400 ms. Skip descarta todo o pool,
+inclusive os passos e intervalos de volume. O título final não executa sons.
+Os volumes ainda precisam de avaliação auditiva no Android físico.

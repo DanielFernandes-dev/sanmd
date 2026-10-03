@@ -184,9 +184,36 @@ test('saída narrativa exige coleta e entrada; conclusão salva antes do título
   services.irPara('sair_beco');
   assert.equal(state.modo, 'cutscene'); assert.equal(state.act1Complete, false);
   callbacks.shift()();
-  assert.deepEqual(calls, ['cancel', 'act1_ending', 'save:true', 'act1_title']);
+  assert.deepEqual(calls, ['act1_ending', 'cancel', 'save:true', 'act1_title']);
   callbacks.shift()(); assert.equal(calls.at(-1), 'menu');
   assert.equal(state.modo, 'livre');
   services.irPara('sair_beco'); assert.equal(calls.length, 5);
   assert.ok(!services.obterDestinos().some(d => d.id === 'sair_beco'));
+});
+
+test('saída recusada conserva gameplay, timers e progresso', () => {
+  const { services, state } = setup();
+  state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+  let cancellations = 0;
+  services.cancelarTemporizadores = () => cancellations++;
+  services.iniciarCutscene = () => false;
+  assert.equal(services.irPara('sair_beco'), false);
+  assert.equal(state.modo, 'livre');
+  assert.equal(state.act1Complete, false);
+  assert.equal(cancellations, 0);
+});
+test('conclusão repetida não duplica autosave/título e recusa do título devolve menu', () => {
+  const { services, state, context } = setup();
+  state.sceneState.beco_fundo = { safeOpened: true, lulithPhoneCollected: true };
+  let done, saves = 0, titles = 0, menus = 0;
+  services.cancelarTemporizadores = () => {};
+  services.registrarAutosave = () => { assert.equal(state.act1Complete, true); saves++; };
+  services.iniciarCutscene = (id, callback) => {
+    if (id === 'act1_ending') { done = callback; return true; }
+    titles++; return false;
+  };
+  context.eventosInteracao.act1Complete = () => menus++;
+  services.irPara('sair_beco'); done(); done();
+  assert.equal(saves, 1); assert.equal(titles, 1); assert.equal(menus, 1);
+  assert.equal(state.modo, 'livre');
 });

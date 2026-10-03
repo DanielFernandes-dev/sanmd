@@ -947,4 +947,7 @@ cortes calmos usam suavização de 100 ms; erros e chute usam corte seco. Não h
 vídeo, GIF, interpolação de quadros, blur ou movimento de membros. Reduced motion
 desliga câmera, shake e suavização interna sem omitir quadros. O texto de erro
 já desenhado no notebook é parte da arte, não uma legenda ou interface variável.
-Ver [o contrato de cutscenes](docs/cutscenes.md).
+A Cutscene 03 usa o mesmo palco e `image-rendering`, oito cortes secos, câmera
+entre 1 e 1,02 e pan até 0,3%. O Frame 09 é cobertura preta uniforme em CSS,
+seguido por um título independente. Reduced motion mantém todos os quadros e
+remove câmera decorativa. Ver [o contrato de cutscenes](docs/cutscenes.md).

@@ -181,26 +181,42 @@ function criarSistemaCenas(context) {
       && progress?.safeOpened === true && progress?.lulithPhoneCollected === true;
   }
 
+  /** Regra de saída e conclusão narrativa; apresentação pertence ao controlador. */
+  function sairDoBeco() {
+    if (!podeSairDoBeco() || state.localizacao.cena !== 'beco_entrada') return false;
+    let concluded = false;
+    let returned = false;
+    function retornar() {
+      if (returned) return;
+      returned = true;
+      state.modo = 'livre';
+      eventosInteracao.act1Complete?.();
+    }
+    function concluir() {
+      if (concluded) return;
+      concluded = true;
+      state.act1Complete = true;
+      services.registrarAutosave();
+      if (!services.iniciarCutscene('act1_title', retornar)) retornar();
+    }
+    state.modo = 'cutscene';
+    const started = services.iniciarCutscene('act1_ending', concluir);
+    if (!started) {
+      state.modo = 'livre';
+      return false;
+    }
+    fecharMenuIrPara();
+    services.cancelarTemporizadores();
+    return true;
+  }
+
   /** Ir para.
    * @param {string} destinoId
    */
   function irPara(destinoId) {
     if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     if (services.isCutsceneActive()) return;
-    if (destinoId === 'sair_beco') {
-      if (!podeSairDoBeco() || state.localizacao.cena !== 'beco_entrada') return;
-      fecharMenuIrPara();
-      services.cancelarTemporizadores();
-      state.modo = 'cutscene';
-      return services.iniciarCutscene('act1_ending', () => {
-        state.act1Complete = true;
-        services.registrarAutosave();
-        services.iniciarCutscene('act1_title', () => {
-          state.modo = 'livre';
-          eventosInteracao.act1Complete?.();
-        });
-      });
-    }
+    if (destinoId === 'sair_beco') return sairDoBeco();
     const cena = obterCenaAtual();
     if (!cena?.destinos.includes(destinoId)) return;
     const destino = obterLocal()?.cenas[destinoId];

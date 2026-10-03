@@ -7,8 +7,9 @@ Escape, mantém o foco dentro da Bolsa e devolve o foco ao ícone.
 
 ## Estrutura existente e integração
 
-- `js/data.js`: `DATA.locais[local].cenas` declara cenas e destinos de **Ir para**.
+- `js/data.js`: `DATA.locais[local].cenas` declara cenas e destinos comuns de **Ir para**.
   `beco_fundo` continua sendo uma única cena, com background permanente.
+- `js/scene.js`: acrescenta **Sair do beco** na entrada quando cofre e coleta estão concluídos e `act1Complete` é falso; essa ação inicia a Cutscene 03.
 - `js/game.js`: composição dos sistemas; `js/scene.js`: navegação, renderização e interações; `js/mechanics.js`: estratégias de hotspots; `js/persistence.js`: snapshot.
 - `js/save-system.js`: repositório existente de saves manuais e autosave, sem novo sistema.
 - `assets/cenario/`: arte fonte; `npm run copy:web` gera `www/`, inclusive os novos PNGs.

@@ -59,50 +59,71 @@ function criarVisualQuadros({ document, window, config, services }) {
     frame.style.transform = `scale(${camera.scale}) translateX(${camera.x || 0}%)`;
     animate(frame, [{ transform: 'scale(1)' }, { transform: frame.style.transform }], duration);
   }
-  return Object.freeze({
-    iniciar(data) {
-      sequence = data;
-      timing = config.cutscene[data.timing];
-      audio = criarAudioCutscene({ window, services }, timing, data.sounds || {});
-      document.activeElement?.blur?.();
-      overlay.hidden = false;
-      title.hidden = true;
-      title.textContent = data.title || '';
-      title.dataset.phase = '';
-      fade.style.opacity = '1';
-      frame.style.visibility = 'hidden';
-    },
-    preparar() { return audio.preparar(); },
-    apresentar(step, duration, reduced) {
-      if (step.type) {
-        clear(true);
-        title.hidden = step.type !== 'title';
-        if (step.type === 'fade-black') {
-          fade.style.opacity = '1';
-          animate(fade, [{ opacity: 0 }, { opacity: 1 }], duration);
-          audio.encerrar().catch(error => console.error('Falha no fade de áudio', error));
-        } else {
-          fade.style.opacity = '1';
-          frame.style.visibility = 'hidden';
-        }
-        if (step.type === 'title') {
-          title.dataset.phase = step.phase;
-          title.style.animationDuration = `${duration}ms`;
-          title.dataset.reduced = String(reduced);
-        }
-        return;
-      }
+  function ocultarTitulo() {
+    title.hidden = true;
+    for (const animation of title.getAnimations?.() || []) animation.cancel();
+    title.dataset.phase = '';
+    delete title.dataset.reduced;
+    title.style.animationDuration = '';
+  }
+  function apresentarPreto() {
+    clear(true);
+    ocultarTitulo();
+    fade.style.opacity = '1';
+    frame.style.visibility = 'hidden';
+  }
+  const presenters = {
+    frame(step, duration, reduced) {
+      const source = sequence.frames[step.frame];
+      if (!source) throw new Error(`Quadro desconhecido: ${step.frame}`);
+      ocultarTitulo();
       transicionar(step, reduced);
       audio.apresentar(step.sfx, step.weight, step.fadeTo, duration);
-      frame.src = sequence.frames[step.frame];
+      frame.src = source;
       frame.dataset.frame = step.frame;
       frame.style.visibility = 'visible';
       aplicarCamera(step.camera, duration, reduced);
       if (step.effect === 'computer-error') computerErrorFlash(step.flashRegion, reduced);
       if (!reduced && step.shake) shake(step.shake);
     },
+    'fade-black'(step, duration) {
+      clear(true);
+      ocultarTitulo();
+      fade.style.opacity = '1';
+      animate(fade, [{ opacity: 0 }, { opacity: 1 }], duration);
+      audio.encerrar().catch(error => console.error('Falha no fade de áudio', error));
+    },
+    black: apresentarPreto,
+    title(step, duration, reduced) {
+      if (!['reveal', 'hold', 'exit'].includes(step.phase)) throw new Error(`Fase de título inválida: ${step.phase}`);
+      apresentarPreto();
+      title.hidden = false;
+      title.dataset.phase = step.phase;
+      title.style.animationDuration = `${duration}ms`;
+      title.dataset.reduced = String(reduced);
+    }
+  };
+  return Object.freeze({
+    iniciar(data) {
+      sequence = data;
+      timing = config.cutscene[data.timing];
+      audio = criarAudioCutscene({ window, services }, timing, data.sounds || {}, data.ambience);
+      document.activeElement?.blur?.();
+      overlay.hidden = false;
+      ocultarTitulo();
+      title.textContent = data.title || '';
+      fade.style.opacity = '1';
+      frame.style.visibility = 'hidden';
+    },
+    preparar() { return audio.preparar(); },
+    apresentar(step, duration, reduced) {
+      const type = step.type || 'frame';
+      if (!Object.hasOwn(presenters, type)) throw new Error(`Tipo de passo inválido: ${type}`);
+      presenters[type](step, duration, reduced);
+    },
     async encerrar() {
       clear(true);
+      ocultarTitulo();
       await Promise.all([Number(fade.style.opacity) === 1 ? Promise.resolve()
         : services.animarFade(fade, Number(fade.style.opacity), 1, timing.exitFade),
         audio.encerrar()]);
@@ -110,8 +131,13 @@ function criarVisualQuadros({ document, window, config, services }) {
     finalizar() {
       clear();
       audio.finalizar();
-      title.hidden = true;
-      for (const animation of title.getAnimations?.() || []) animation.cancel();
+      ocultarTitulo();
+      title.textContent = '';
+      frame.style.visibility = 'hidden';
+      frame.style.transformOrigin = '';
+      previous.style.transform = 'none';
+      effects.style.clipPath = '';
+      fade.style.opacity = '1';
       overlay.hidden = true;
       frame.removeAttribute('src');
       previous.removeAttribute('src');

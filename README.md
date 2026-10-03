@@ -49,6 +49,7 @@ Já estão disponíveis:
 - Abertura com um único título itálico: SANMD se expande no significado, recebe `kk` e sobe. Clique/estalo e luz revelam o menu, que permanece iluminado e bloqueado até o Skip. Duplo clique/toque pula qualquer fase.
 
 - Cutscene 02 (`lulith_codigo`) exclusiva de **Novo jogo**, com dez imagens estáticas, câmera discreta, áudio e efeitos pontuais, sem falas. Usa o mesmo controlador e Skip da abertura.
+- Cutscene 03 (`act1_ending`) ao escolher **Sair do beco** em `Ir para`, após abrir o cofre e coletar o celular: oito imagens, cortes secos, preto criado pelo código, título **ATO 1 COMPLETO**, autosave e retorno ao menu.
 - Tela inicial em caderno fechado sobre a mesa escura, com capa, animação de abertura e páginas internas mostrando os registros como fotografias.
 - Três cenas noturnas provisórias conectadas: entrada, interior e fundo do beco.
 - Personagem de MJ em PNG (`assets/sprites/MJ.png`), mostrada em cena somente durante os monólogos.
@@ -81,9 +82,9 @@ Já estão disponíveis:
 - Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
 - Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
 - Transição de cena com fade global, bloqueio de input durante o efeito e suporte a `prefers-reduced-motion`.
-- Suíte Node cobrindo navegação, estado, saves, arte, teclado, menu, transições e as duas cutscenes. Consulte [o relatório de implementação e validação](docs/STATUS_PROJETO.md).
+- Suíte Node cobrindo navegação, estado, saves, arte, teclado, menu, transições e as três cutscenes. Consulte [o relatório de implementação e validação](docs/STATUS_PROJETO.md).
 
-> Após a Cutscene 02, o gameplay começa no beco. James, dormitório, caso introdutório e nota ainda não foram implementados. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
+> Após a Cutscene 02, o gameplay começa no beco; a saída da entrada do beco encerra o protótipo após a coleta do celular. James, dormitório, caso introdutório e nota ainda não foram implementados. O celular, os monólogos, os arquivos, o primeiro contato com Lulith e o reset remoto já formam um recorte canônico da Fase 8; os assets continuam genéricos.
 
 ## Celular, mensagens e conversas
 
@@ -234,7 +235,7 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |
 | [`docs/POINT_AND_CLICK.md`](docs/POINT_AND_CLICK.md) | Guia de point-and-click e Bolsa |
 | [`docs/SAVE_SYSTEM.md`](docs/SAVE_SYSTEM.md) | Contrato de persistência e saves |
-| [`docs/cutscenes.md`](docs/cutscenes.md) | Cutscenes 01/02, tempos, preload, Skip, câmera, áudio e efeitos |
+| [`docs/cutscenes.md`](docs/cutscenes.md) | Cutscenes 01–03, título final, tempos, preload, Skip, câmera e áudio |
 | [`docs/SCENE_TRANSITIONS.md`](docs/SCENE_TRANSITIONS.md) | Contrato das transições globais de cena |
 | [`docs/TEXT_INPUT.md`](docs/TEXT_INPUT.md) | Documentação do teclado virtual e entrada de texto |
 | [`assets/cenario/README.md`](assets/cenario/README.md) | Organização e contrato dos fundos de cena |
@@ -249,7 +250,9 @@ O padrão implementado para mecânicas e animações está em
 ```text
 Preto → SANMD → significado → kk → subida → luz (aguarda Skip) → Menu
 │
-├── Novo jogo ──> Abre o caderno → Fade → Estado novo → Lulith (10 quadros) → Fade → Gameplay
+├── Novo jogo ──> Abre o caderno → Fade → Estado novo → Lulith (10 quadros) → Beco
+│                                                                       → Sair do beco → Cutscene 03
+│                                                                       → ATO 1 COMPLETO → Menu
 │
 └── Carregar ──> Abre o caderno ──> Páginas com os registros ──> Selecionar ──> Load
                        ▲
@@ -263,7 +266,7 @@ Cenário
 │
 ├── Conversar ──> Diálogo ou monólogo ──> Cenário
 │
-├── Ir para ──> Destinos conectados ──> Outra cena
+├── Ir para ──> Destinos conectados ──> Outra cena; na entrada, saída final após coleta
 │
 ├── Bolsa ──> Inventário e ação USAR ──> Cenário
 │
@@ -321,7 +324,7 @@ Nota: jogar fora → final imediato com progresso mínimo
                   mensagens, reset remoto e terminal
 ```
 
-O Ato I deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. A Cutscene 02 já apresenta Lulith trabalhando e reagindo às falhas do notebook, sem diálogo. O caso introdutório, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos; o jogo atual segue diretamente para o beco.
+O protótipo encerra o Ato I ao sair do beco depois da coleta, com a Cutscene 03 e o título **ATO 1 COMPLETO**. O Ato I canônico deverá ensinar os principais sistemas antes de abrir a estrutura maior de investigação. A Cutscene 02 já apresenta Lulith trabalhando e reagindo às falhas do notebook, sem diálogo. O caso introdutório, os enigmas da nota e do cofre e o local exato em São Paulo ainda precisam ser definidos; o jogo atual segue diretamente para o beco.
 
 ## Testes
 
@@ -352,7 +355,8 @@ Arquivos de teste:
 
 A estrutura básica da V1 será considerada funcional quando for possível:
 
-- [x] Assistir às duas cutscenes, pular por duplo clique/toque e iniciar gameplay somente após a apresentação.
+- [x] Assistir às Cutscenes 01 e 02, pular por duplo clique/toque e iniciar gameplay somente após a apresentação.
+- [x] Sair do beco após coletar o celular, assistir ou pular a Cutscene 03, registrar autosave e retornar ao menu.
 - [x] Carregar registros sem executar a Cutscene 02.
 - [x] Visualizar um cenário provisório.
 - [x] Navegar entre entrada, interior e fundo do beco.

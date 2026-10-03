@@ -395,8 +395,9 @@ const ACT1_FRAMES = Object.freeze(Object.fromEntries(Array.from({ length: 8 }, (
 const CUTSCENES = Object.freeze({
   act1_ending: Object.freeze({
     timing: 'act1Ending', frames: ACT1_FRAMES, assets: Object.values(ACT1_FRAMES),
+    ambience: 'rooftop_ambience',
     sounds: Object.freeze({
-      room_ambience: { src: 'assets/audio/rooftop_ambience.wav', volume: .22, loop: true },
+      rooftop_ambience: { src: 'assets/audio/rooftop_ambience.wav', volume: .22, loop: true },
       mj_steps: { src: 'assets/audio/mj_steps.wav', volume: .12 },
       binoculars: { src: 'assets/audio/binoculars.wav', volume: .18 },
       backpack: { src: 'assets/audio/backpack.wav', volume: .20 },
@@ -404,11 +405,14 @@ const CUTSCENES = Object.freeze({
       exit_steps: { src: 'assets/audio/exit_steps.wav', volume: .24 }
     }),
     steps: [
-      ...Object.keys(ACT1_FRAMES).map((frame, i) => ({ frame, duration: `frame0${i + 1}`,
-        transition: i === 0 ? 'fade-in' : 'cut',
-        camera: ['rooftop-push', 'street-focus', 'street-track', null, 'equipment-focus', 'door-focus', null, null][i],
-        sfx: [null, 'mj_steps', 'mj_steps', 'binoculars', 'backpack', 'strap', 'exit_steps', null][i],
-        weight: i === 2 ? .55 : 1, fadeTo: i === 2 ? 0 : undefined })),
+      { frame: 'cutscene_act1_01', duration: 'frame01', transition: 'fade-in', camera: 'rooftop-push' },
+      { frame: 'cutscene_act1_02', duration: 'frame02', transition: 'cut', camera: 'street-focus', sfx: 'mj_steps' },
+      { frame: 'cutscene_act1_03', duration: 'frame03', transition: 'cut', camera: 'street-track', sfx: 'mj_steps', weight: .55, fadeTo: 0 },
+      { frame: 'cutscene_act1_04', duration: 'frame04', transition: 'cut', sfx: 'binoculars' },
+      { frame: 'cutscene_act1_05', duration: 'frame05', transition: 'cut', camera: 'equipment-focus', sfx: 'backpack' },
+      { frame: 'cutscene_act1_06', duration: 'frame06', transition: 'cut', camera: 'door-focus', sfx: 'strap' },
+      { frame: 'cutscene_act1_07', duration: 'frame07', transition: 'cut', sfx: 'exit_steps' },
+      { frame: 'cutscene_act1_08', duration: 'frame08', transition: 'cut' },
       { type: 'fade-black', duration: 'exitFade' },
       { type: 'black', duration: 'frame09' }
     ]

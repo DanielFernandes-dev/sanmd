@@ -92,6 +92,8 @@ O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato
 
 O caderno é preparado sob a Cutscene 01; o Skip global libera seus botões. Novo
 jogo abre a capa e cobre a tela antes de reiniciar o estado e executar Lulith.
-Carregar segue para os registros e nunca dispara a Cutscene 02. Os overlays de
-cutscene estão na camada 1001, sobre o menu 1000. Não são novos menus em bitmap.
+Carregar segue para os registros e nunca dispara a Cutscene 02. A Cutscene 03
+devolve o jogador à mesma capa após **ATO 1 COMPLETO**, sem repetir SANMD ou
+o som da lâmpada. Os overlays de cutscene estão na camada 1001, sobre o menu
+1000. Não são novos menus em bitmap.
 Ver [Cutscenes](../../docs/cutscenes.md) e [Save System](../../docs/SAVE_SYSTEM.md).

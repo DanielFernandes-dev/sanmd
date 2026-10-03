@@ -187,7 +187,7 @@ A abertura do aplicativo apresenta SANMD e revela o caderno. Ao escolher
 **Novo jogo**, a Cutscene 02 mostra Lulith em dez imagens estáticas: trabalho no
 notebook, duas falhas, irritação, chute, consequência e plano final. Não há fala,
 monólogo, legenda ou nome de personagem. Som, montagem e movimento discreto de
-câmera comunicam a ação. Ver [Cutscenes](docs/cutscenes.md).
+câmera comunicam a ação. No encerramento atual do protótipo, depois de coletar o celular e escolher sair do beco, a Cutscene 03 mostra Lulith observando MJ partir. Lulith guarda o equipamento, deixa o telhado, o local fica vazio e surge **ATO 1 COMPLETO** antes do menu. Ver [Cutscenes](docs/cutscenes.md).
 
 **[PROVISÓRIO — direção narrativa futura]**
 

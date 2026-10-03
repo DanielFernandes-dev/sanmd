@@ -350,3 +350,24 @@ recusa de concorrência em Novo jogo segue o tratamento de erro do caderno.
 Validação: suíte Node completa e regressões de falha/cancelamento. APK debug
 recompilado, instalado e revalidado em 02/10/2026 no SM-A055M: abertura, Lulith
 natural, Skip nativo e Carregar aprovados. Ver [Cutscenes](cutscenes.md).
+
+## 2026-10-02 — Cutscene 03 encerra o protótipo ao sair do beco
+
+Status: aceito para o recorte atual.
+
+A condição está em `scene.js`: **Sair do beco** surge em `Ir para` na entrada
+quando o cofre está aberto, o celular foi coletado e `act1Complete` é falso.
+A coleta sozinha não inicia a apresentação. A sequência `act1_ending` vive em
+`CUTSCENES`, com oito PNGs existentes, cortes secos e um nono passo preto em
+CSS; o título `act1_title` é outra sequência do mesmo controlador. A linguagem
+do menu é reutilizada sem lâmpada ou interruptor.
+
+Fim natural e Skip compartilham a conclusão: marcar `act1Complete`, registrar
+um autosave e devolver o menu após o título. Saves v1 sem a nova flag recebem
+`false`; carregar o final não repete a saída. Os passos, câmera, áudio e título
+não entram no snapshot. Não se acrescenta sistema de áudio, transição ou Skip.
+
+Validação: 193 testes Node, fluxo e Skip nos nove quadros no Chromium landscape,
+APK debug compilado/instalado e abertura em paisagem no SM-A055M. A execução
+completa e a escuta da sequência no WebView Android permanecem pendentes.
+Ver [Cutscenes](cutscenes.md) e [Save System](SAVE_SYSTEM.md).

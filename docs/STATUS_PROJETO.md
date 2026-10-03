@@ -25,6 +25,8 @@ Abrir aplicativo
 → duplo clique/toque libera menu em caderno
   ├─ Novo jogo → abrir caderno → fade → limpar estado → Cutscene 02
   │              → fim natural ou Skip → fade → beco → monólogo inicial → autosave
+  │              → cofre e celular → Ir para: Sair do beco → Cutscene 03
+  │              → Frame 09 preto → act1Complete + autosave → ATO 1 COMPLETO → menu
   └─ Carregar → páginas de registros → restaurar snapshot → gameplay (sem Cutscene 02)
 ```
 
@@ -32,7 +34,9 @@ A partida nova começa em `beco_entrada`, com inventário vazio, celular origina
 quebrado e nenhum aparelho ativo. O jogador explora as três cenas do beco,
 abre o cofre, coleta o Celular de Lulith e o ativa pela Bolsa. Mensagens,
 Arquivos e Galeria ficam acessíveis pelo aparelho. O reset remoto preserva os
-saves fotográficos e as pistas históricas previstas no snapshot.
+saves fotográficos e as pistas históricas previstas no snapshot. Após abrir o
+cofre e coletar o celular, a entrada oferece **Sair do beco**; a conclusão da
+Cutscene 03 salva `act1Complete` e retorna ao menu.
 
 ## Entregas implementadas
 
@@ -41,6 +45,7 @@ saves fotográficos e as pistas históricas previstas no snapshot.
 | Composição | Fábricas por instância, `services`, dados e CONFIG separados | [Mecânicas](MECHANICS_PATTERN.md) |
 | Abertura | Um título que expande as próprias iniciais; luz e som da lâmpada; espera por Skip | [Cutscenes](cutscenes.md) |
 | Novo jogo | Reset anterior à apresentação; dez quadros de Lulith sem falas | [Cutscenes](cutscenes.md) |
+| Encerramento do protótipo | Saída condicional do beco, oito quadros, título final, autosave e menu | [Cutscenes](cutscenes.md#cutscene-03--act1_ending) |
 | Menu | Caderno com abertura, páginas, paginação, saves reais e autosave | [Arquitetura](../ESTRUTURA_GAMING.md#tela-inicial) |
 | Navegação | Entrada, interior e fundo do beco; fade global e bloqueio de input | [Transições](SCENE_TRANSITIONS.md) |
 | Investigação | Hotspots, objetos por estado, abertura do cofre, coleta e Bolsa | [Point-and-click](POINT_AND_CLICK.md) |
@@ -63,8 +68,17 @@ saves fotográficos e as pistas históricas previstas no snapshot.
 - Reduced motion mantém todos os quadros e desliga câmera, shake e suavização interna.
 
 A tabela completa dos tempos está em [Cutscenes](cutscenes.md#timeline-atual).
-A apresentação não ativa o celular, não personaliza seu tema e não implementa
-uma cutscene de saída do beco.
+A apresentação não ativa o celular nem personaliza seu tema. A saída do beco
+é tratada pela Cutscene 03, uma sequência separada.
+
+## Cutscene 03 e limites do protótipo
+
+A saída é oferecida em `Ir para` somente na entrada do beco após abrir o cofre
+e coletar o celular. `ACT1_FRAMES` mapeia oito artes existentes; o Frame 09
+é preto em CSS. O título **ATO 1 COMPLETO** é uma segunda sequência do mesmo
+controlador, sem lâmpada. Fim normal e Skip salvam `act1Complete: true` antes
+do título. O menu mantém o autosave final disponível; carregá-lo não repete a
+Cutscene 03. As cenas canônicas anteriores e posteriores continuam planejadas.
 
 ## Validação e limites da evidência
 
@@ -74,12 +88,15 @@ uma cutscene de saída do beco.
 | Android, mesma rodada | Skip nos dez quadros pelo detector global, nenhum áudio/animação/shake residual; Carregar sem Cutscene 02 |
 | Android, verificação complementar | Duplo toque nativo no quadro 01 sem zoom; reduced motion com dez quadros e zero animações de transform |
 | Ajuste final dos quadros 01–07 | 48 casos de cutscene aprovados; APK recompilado e instalado. A execução Android completa anterior não é apresentada como nova avaliação subjetiva desse ritmo |
+| Cutscene 03, 02/10/2026 | 193 testes Node aprovados; Chromium 915×412 validou fluxo completo, reentrada, reduced motion e Skip nos nove quadros; Frame 09 capturado totalmente preto |
+| APK Cutscene 03, 02/10/2026 | Build debug concluído, instalado via ADB no SM-A055M e app aberto em paisagem; sequência 03 completa e áudio ainda não avaliados no aparelho |
 | Revisão documental, 02/10/2026 | Suíte Node atual aprovada: 17 entradas de arquivo, incluindo o helper `test/load-game.cjs`; esse número não é contagem de casos individuais |
 
 Os saves existentes e o tempo de suspensão da tela foram restaurados após os
 testes Android. SFX foram verificados por estado dos elementos de áudio; isso
-não substitui avaliação auditiva. Nenhum teste Android novo foi executado nesta
-revisão exclusivamente documental.
+não substitui avaliação auditiva. Na revisão documental anterior, nenhum teste Android novo foi executado.
+O build posterior da Cutscene 03 foi instalado e aberto no SM-A055M, sem
+ensaio completo da sequência no aparelho.
 
 ## Refatoração das cutscenes — 02/10/2026
 
@@ -95,7 +112,7 @@ originais restaurados. Detalhes em [Cutscenes](cutscenes.md).
 
 - Nome escolhido pelo jogador, James, dormitório e caso introdutório.
 - Nota, coordenadas, puzzle canônico do cofre e ligação entre as cenas do Ato I.
-- Saída do beco/personalização futura do telefone.
+- Personalização futura do telefone e encaixe da saída no Ato I canônico.
 - Evidências, terminal, mapa, sistema geral de puzzles, atos completos e finais.
 - Replay narrativo persistente, progresso de 100% e ARG.
 - Arte/trilha definitivas, avaliação auditiva dos SFX e revisão subjetiva do último ritmo.
