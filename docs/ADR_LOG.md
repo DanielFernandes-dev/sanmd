@@ -371,3 +371,20 @@ Validação: 193 testes Node, fluxo e Skip nos nove quadros no Chromium landscap
 APK debug compilado/instalado e abertura em paisagem no SM-A055M. A execução
 completa e a escuta da sequência no WebView Android permanecem pendentes.
 Ver [Cutscenes](cutscenes.md) e [Save System](SAVE_SYSTEM.md).
+
+## 2026-10-03 — Responsabilidades explícitas no encerramento do Ato 1
+
+Status: aceito.
+
+A sequência usa objetos completos por quadro, eliminando arrays paralelos de
+câmera e SFX. O mesmo renderer distribui tipos de apresentação para funções
+específicas, valida dados e cancela imediatamente o título ao encerrar.
+O ambiente é declarado no catálogo e o pool invalida callbacks de reprodução
+anteriores. `sairDoBeco()` mantém conclusão/autosave idempotentes e recupera
+recusas do controlador sem deixar o modo de gameplay bloqueado.
+
+Timings, artes, proporção e formato do snapshot foram preservados. Os 202 testes
+aprovados incluem regressões das Cutscenes 01/02 e dos demais sistemas. O APK
+foi gerado, seus scripts/CSS conferidos contra o fonte e instalado no SM-A055M.
+A sequência natural completa, autosave, menu e reentrada passaram no WebView,
+com restauração dos saves originais. Ver [Cutscenes](cutscenes.md).

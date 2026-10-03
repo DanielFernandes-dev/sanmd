@@ -234,7 +234,8 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 - [x] Unificar fim natural e Skip: conclusão, autosave e retorno ao menu sem repetir SANMD.
 - [x] Cobrir Skip em cada ponto, falha de asset, save legado e reentrada por testes automatizados; validar fluxo no Chromium em paisagem.
 - [x] Compilar e instalar o APK de debug no SM-A055M; confirmar abertura em paisagem.
-- [ ] Assistir e ouvir a sequência completa no Android físico, ajustar volumes/timing e exercitar Skip em cada quadro no WebView.
+- [x] Validar a sequência natural completa no Android físico: oito quadros, autosave, menu, escala 1 e Load sem repetição; restaurar os saves originais.
+- [ ] Avaliar auditivamente a sequência no Android físico, ajustar volumes/timing e exercitar Skip em cada quadro no WebView.
 
 ### Cutscene 01 — título e luz
 

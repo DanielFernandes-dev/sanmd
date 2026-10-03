@@ -6,7 +6,7 @@ tags:
   - arquitetura
   - cutscene
 status: atual
-updated: 2026-10-02
+updated: 2026-10-03
 ---
 
 # Sistema de Cutscene
@@ -285,5 +285,37 @@ e reentrada. Chromium em viewport 915×412 confirmou fluxo completo, Skip nos
 nove quadros, reduced motion, autosave e retorno ao menu sem zoom nem áudio
 residual. Captura do Frame 09 teve RGB `(0,0,0)` em todos os pixels. O APK foi
 compilado e instalado via ADB no SM-A055M e o aplicativo abriu em paisagem.
-A execução completa da Cutscene 03 e avaliação auditiva dos volumes no aparelho
-continuam pendentes.
+Nessa primeira rodada, a execução completa e a avaliação auditiva no aparelho
+ainda estavam pendentes. A validação posterior da refatoração está abaixo.
+
+
+### Refatoração da Cutscene 03 — 03/10/2026
+
+Os oito passos de imagem estão declarados explicitamente em `CUTSCENES`, com
+frame, duração, corte, câmera e SFX no mesmo objeto. A sequência informa
+`ambience: 'rooftop_ambience'`; não depende do nome do ambiente do quarto.
+O renderer compartilhado resolve `frame`, `fade-black`, `black` e `title` por
+funções de apresentação e rejeita tipos, frames ou fases desconhecidos para
+o controlador finalizar com segurança.
+
+`scene.js` mantém `sairDoBeco()` como ação narrativa, separada da validação de
+navegação em `irPara`. Uma recusa de início devolve modo livre sem cancelar os
+timers de gameplay. Conclusão e retorno são idempotentes por execução: não
+duplicam autosave nem título. Se o título não puder iniciar, o fluxo já concluído
+retorna ao menu. A única flag persistente continua sendo `act1Complete`.
+
+Skip cancela e oculta o título antes de aguardar o encerramento, e a limpeza
+remove texto, fase, duração, transformações e imagem residual. O pool de áudio
+identifica cada reprodução para rejeições antigas de `play()` não pausarem o
+mesmo WAV no quadro seguinte; callbacks de volume descartados ficam inertes.
+
+A suíte completa passou com 202 testes, incluindo recusa de início, callbacks
+de conclusão duplicados, título interrompido nas três fases, rejeição antiga de
+áudio, dados inválidos e preservação de saves no retorno ao menu. O Chromium 915×412 confirmou os oito quadros, título, autosave, retorno ao menu,
+reentrada e Skip do título. O APK gerado foi conferido contra todos os scripts
+e CSS fonte. A revisão foi instalada no SM-A055M via ADB em 03/10/2026.
+No WebView real, os oito quadros apareceram em ordem, `act1Complete` e o
+autosave final foram confirmados, o menu retornou com zero animações residuais
+e escala 1, e carregar o final não repetiu a sequência. Os saves anteriores
+foram restaurados após o teste. Avaliação auditiva de volume/timbre e Skip em
+todos os quadros no aparelho continuam pendentes.

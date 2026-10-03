@@ -65,7 +65,11 @@ As cutscenes usam passos declarativos e um único timer de avanço. `hold` suspe
 o avanço da abertura; as Cutscenes 02 e 03 concluem naturalmente. `encerrar()` opcional pode
 aguardar fade/áudio antes de `finalizar()` e do callback, mantendo o input
 bloqueado. Skip encerra a sessão ativa e cancela o timer; não cria outro caminho
-narrativo. Ver [Cutscenes](cutscenes.md).
+narrativo. O renderer de quadros resolve tipos de passo por funções dedicadas
+(`frame`, `fade-black`, `black`, `title`). Dados desconhecidos causam erro tratado
+pelo controlador; a finalização limpa título e câmera. `sairDoBeco()` coordena a
+conclusão narrativa na camada de cenas, com callbacks idempotentes. Ver
+[Cutscenes](cutscenes.md).
 
 Validação: `node --test`. Inspeção visual em navegador e WebView Android continua
 necessária para avaliar fluidez, composição e orientação reais.

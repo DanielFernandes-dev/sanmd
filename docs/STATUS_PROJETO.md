@@ -7,7 +7,7 @@ tags:
   - implementação
   - validação
 status: atual
-updated: 2026-10-02
+updated: 2026-10-03
 ---
 
 # Estado do projeto
@@ -107,6 +107,17 @@ artes e comportamento de Novo jogo/Carregar foram preservados. A suíte Node
 passou com regressões adicionais para falhas e cancelamento. APK debug recompilado, instalado e revalidado em 02/10/2026 no Samsung SM-A055M:
 abertura/hold, Lulith natural, Skip nativo e Carregar aprovados, com saves
 originais restaurados. Detalhes em [Cutscenes](cutscenes.md).
+
+## Refatoração da Cutscene 03 — 03/10/2026
+
+Passos explícitos no catálogo, ambiente declarado pela sequência, apresentação
+separada por tipo e ação narrativa `sairDoBeco()` com conclusão idempotente.
+Skip limpa o título imediatamente e o áudio ignora callbacks de reproduções
+antigas. Os 202 testes passaram. APK gerado e conferido contra os scripts/CSS
+atuais e instalado no SM-A055M em 03/10/2026. O WebView real confirmou os oito
+quadros, conclusão/autosave, menu sem animações residuais, escala 1 e ausência
+de reexecução após Load. Os saves originais foram restaurados; a avaliação
+auditiva e o Skip em todos os quadros no aparelho permanecem pendentes.
 
 ## Ainda pendente
 

@@ -55,7 +55,7 @@ o ambiente inicia no Frame 01 e desaparece durante o fade para o Frame 09.
 
 | ID lógico | Arquivo | Uso/volume no catálogo |
 |---|---|---|
-| `room_ambience` | `rooftop_ambience.wav` | Vento/cidade em loop, 0,22 |
+| `rooftop_ambience` | `rooftop_ambience.wav` | Vento/cidade em loop, 0,22 |
 | `mj_steps` | `mj_steps.wav` | Quadros 02–03, 0,12; no 03 peso 0,55 e fade a zero |
 | `binoculars` | `binoculars.wav` | Quadro 04, 0,18 |
 | `backpack` | `backpack.wav` | Quadro 05, 0,20 |
@@ -66,3 +66,8 @@ O Frame 08 deixa apenas o ambiente. `CONFIG.cutscene.act1Ending` limita preload
 de áudio a 1500 ms e controla o fade de 400 ms. Skip descarta todo o pool,
 inclusive os passos e intervalos de volume. O título final não executa sons.
 Os volumes ainda precisam de avaliação auditiva no Android físico.
+
+O ambiente da sequência é escolhido por `ambience` no catálogo. O pool mantém
+`room_ambience` como padrão para sequências anteriores. Cada chamada de `play`
+tem uma identidade transitória: rejeições e fades antigos não interrompem um
+WAV que já foi reutilizado por outro quadro.
