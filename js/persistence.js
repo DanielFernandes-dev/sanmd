@@ -276,6 +276,7 @@ function criarSistemaPersistencia(context) {
     el.phone.phoneSignal.classList.remove("oculto");
     el.phone.btnVoltar.disabled = false;
     services.trocarCenario(services.obterCenaAtual());
+    if (state.localizacao.cena === "casa_cozinha") services.mostrarPersonagem("james", "neutral", "right");
     services.fecharMenuIrPara();
     services.atualizarCabecalhoMensagens();
     services.definirBotoes();

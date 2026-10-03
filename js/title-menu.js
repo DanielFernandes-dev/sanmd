@@ -112,7 +112,7 @@ function criarTelaInicial({ game, document, window }) {
       app.inert = false;
       playing = true;
       if (newGame) {
-        services.iniciarConversa();
+        services.iniciarIntroCasa();
         services.registrarAutosave();
       }
       get('btn-conversar').focus();
@@ -138,6 +138,7 @@ function criarTelaInicial({ game, document, window }) {
     await enter(() => {
       services.cancelarTemporizadores();
       Object.assign(state, criarEstadoJogo());
+      state.localizacao = { local: "casa", cena: "casa_quarto_mj" };
       services.restaurarInterface();
     }, true);
   }

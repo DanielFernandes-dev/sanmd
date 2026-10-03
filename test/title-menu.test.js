@@ -38,6 +38,7 @@ function setup({ compact = false, deferCutscene = false, rejectCutscene = false 
     iniciarCutscene: (id, done) => { if (rejectCutscene) return false; phases.push(id); if(deferCutscene) cutsceneDone = done; else done(); },
     isCutsceneActive: () => false,
     iniciarConversa: () => phases.push('story'),
+    iniciarIntroCasa: () => phases.push('story'),
     restaurarEstadoJogo(snapshot) {
       phases.push('restore');
       if (snapshot.invalid) throw new Error('Registro incompatível');
@@ -88,6 +89,8 @@ test('Novo Jogo aguarda abertura e fade, limpa progresso e só então inicia nar
   t.finish(); await starting;
   assert.deepEqual(t.phases, ['book:700', 'fade:0-1', 'cancel', 'reset-ui', 'init', 'lulith_codigo', 'fade:1-0', 'story']);
   assert.equal(t.state.inventory.length, 0);
+  assert.equal(t.state.localizacao.local, 'casa');
+  assert.equal(t.state.localizacao.cena, 'casa_quarto_mj');
   assert.equal(Object.keys(t.state.sceneState).length, 0);
   assert.equal(t.repository.listarManuais().length, 1);
   assert.equal(t.get('app').inert, false);

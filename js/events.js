@@ -5,6 +5,18 @@
  */
 function criarSistemaEventos(context) {
   const { state, el, services, document } = context;
+  context.eventosInteracao.casaExitDoor = () => {
+    el.scene.interactionStatus.textContent = services.podeSairDaCasa()
+      ? "Estamos prontos. Podemos sair pelo Ir para." : "Minha bolsa e meu telefone. E preciso falar com James.";
+  };
+  context.eventosInteracao.mjBagCollected = () => {
+    el.scene.interactionStatus.textContent = "Peguei minha bolsa.";
+    services.definirBotoes();
+  };
+  context.eventosInteracao.mjPhoneCollected = () => {
+    el.scene.interactionStatus.textContent = "Peguei meu telefone.";
+    services.definirBotoes();
+  };
   function inicializarEventos() {
     if (inicializarEventos.inicializado) return;
     inicializarEventos.inicializado = true;

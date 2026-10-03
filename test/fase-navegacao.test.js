@@ -250,3 +250,96 @@ test("botão IR PARA segue o padrão de habilitação dos outros controles", asy
   executar("state.modo = 'livre'; definirBotoes();");
   assert.equal(ler("el.btnIrPara.disabled"), false);
 });
+
+function entrarCasa(executar) {
+  executar(`state.localizacao = { local: 'casa', cena: 'casa_quarto_mj' };
+    aplicarCena(obterCenaAtual());`);
+}
+
+test('casa: monólogo inicial ocorre uma vez e sala conecta somente os quatro cômodos', async () => {
+  const { executar, ler } = controlarAmbiente();
+  entrarCasa(executar);
+  executar('iniciarIntroCasa();');
+  assert.equal(ler('state.modo'), 'dialogo');
+  assert.equal(ler('el.namePlate.classList.contains("oculto")'), true);
+  assert.equal(ler('el.btnIrPara.disabled'), true);
+  executar('encerrarConversa();');
+  assert.equal(ler('state.sceneState.casa_quarto_mj.introSeen'), true);
+  assert.equal(ler('iniciarIntroCasa()'), false);
+  assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'), '["casa_sala"]');
+  await executar('irPara("casa_cozinha");');
+  assert.equal(ler('state.localizacao.cena'), 'casa_quarto_mj');
+  await executar('irPara("casa_sala");');
+  assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'),
+    '["casa_quarto_mj","casa_cozinha","casa_quarto_james","casa_banheiro"]');
+  for (const destination of ['casa_cozinha', 'casa_quarto_james', 'casa_banheiro', 'casa_quarto_mj']) {
+    await executar(`irPara("${destination}");`);
+    assert.equal(ler('state.localizacao.cena'), destination);
+    assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'), '["casa_sala"]');
+    await executar('irPara("casa_sala");');
+  }
+});
+
+test('casa: James habilita coleta, bolsa e telefone persistem e liberam saída', async () => {
+  const { executar, ler } = controlarAmbiente();
+  entrarCasa(executar);
+  executar('state.sceneState.casa_quarto_mj = { introSeen: true, mjBagCollected: false };');
+  assert.equal(ler('executarHotspot("mj_bag")'), false);
+  await executar('irPara("casa_sala");');
+  assert.equal(ler('executarHotspot("mj_phone")'), false);
+  assert.equal(ler('irPara("sair_casa")'), false);
+  await executar('irPara("casa_cozinha");');
+  executar('iniciarConversa();');
+  assert.equal(ler('state.dialogo.falas[0].autor'), 'James');
+  assert.equal(ler('state.dialogo.falas[0].texto.includes("olheiras")'), true);
+  assert.equal(ler('state.modo'), 'dialogo');
+  assert.equal(ler('irPara("casa_sala")'), undefined);
+  executar('encerrarConversa();');
+  assert.equal(ler('state.sceneState.casa_cozinha.jamesIntroConversationComplete'), true);
+  executar('iniciarConversa();');
+  assert.equal(ler('state.dialogo.falas.length'), 1);
+  executar('encerrarConversa();');
+  await executar('irPara("casa_sala");');
+  await executar('executarHotspot("mj_phone");');
+  assert.equal(ler('state.sceneState.casa_sala.mjPhoneCollected'), true);
+  assert.equal(ler('executarHotspot("mj_phone")'), false);
+  assert.equal(ler('podeSairDaCasa()'), false);
+  await executar('irPara("casa_quarto_mj");');
+  await executar('executarHotspot("mj_bag");');
+  assert.equal(ler('state.sceneState.casa_quarto_mj.mjBagCollected'), true);
+  assert.equal(ler('state.inventory.length'), 0);
+  await executar('irPara("casa_sala");');
+  assert.equal(ler('podeSairDaCasa()'), true);
+  assert.equal(ler('obterDestinos().some(x => x.id === "sair_casa")'), true);
+  const snapshot = ler('capturarEstadoJogo()');
+  executar('state.sceneState = {};');
+  executar('restaurarEstadoJogo(' + JSON.stringify(snapshot) + ');');
+  assert.equal(ler('state.localizacao.cena'), 'casa_sala');
+  assert.equal(ler('podeSairDaCasa()'), true);
+  assert.equal(ler('el.objectLayer.children.length'), 0);
+});
+
+test('casa: load preserva estados parciais sem liberar saída antes dos três requisitos', () => {
+  for (const [talked, bag, phone] of [
+    [false, false, false], [true, false, false],
+    [true, true, false], [true, false, true], [true, true, true]
+  ]) {
+    const { executar, ler } = controlarAmbiente();
+    entrarCasa(executar);
+    executar(`state.localizacao.cena = 'casa_sala';
+      state.sceneState.casa_quarto_mj = { introSeen: true, mjBagCollected: ${bag} };
+      state.sceneState.casa_cozinha = { jamesIntroConversationComplete: ${talked} };
+      state.sceneState.casa_sala = { mjPhoneCollected: ${phone} };
+      aplicarCena(obterCenaAtual());`);
+    const snapshot = ler('capturarEstadoJogo()');
+    executar('state.sceneState = {};');
+    executar('restaurarEstadoJogo(' + JSON.stringify(snapshot) + ');');
+    assert.equal(ler('state.localizacao.local'), 'casa');
+    assert.equal(ler('state.localizacao.cena'), 'casa_sala');
+    assert.equal(ler('state.sceneState.casa_cozinha.jamesIntroConversationComplete'), talked);
+    assert.equal(ler('state.sceneState.casa_quarto_mj.mjBagCollected'), bag);
+    assert.equal(ler('state.sceneState.casa_sala.mjPhoneCollected'), phone);
+    assert.equal(ler('el.objectLayer.children.length'), phone ? 0 : 1);
+    assert.equal(ler('obterDestinos().some(x => x.id === "sair_casa")'), talked && bag && phone);
+  }
+});

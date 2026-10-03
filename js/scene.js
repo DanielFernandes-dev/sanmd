@@ -81,8 +81,10 @@ function criarSistemaCenas(context) {
   function obterDestinos(cena = obterCenaAtual()) {
     const local = obterLocal();
     if (!local || !cena) return [];
-    const exits = podeSairDoBeco() && cena.id === 'beco_entrada'
-      ? [{ id: 'sair_beco', label: 'Sair do beco' }] : [];
+    const exits = [
+      ...(podeSairDaCasa() && cena.id === "casa_sala" ? [{ id: "sair_casa", label: "Sair de casa" }] : []),
+      ...(podeSairDoBeco() && cena.id === "beco_entrada" ? [{ id: "sair_beco", label: "Sair do beco" }] : [])
+    ];
     return exits.concat(cena.destinos
       .map((destinoId) => local.cenas[destinoId])
       .filter(Boolean));
@@ -171,7 +173,23 @@ function criarSistemaCenas(context) {
     trocarCenario(cena);
     fecharMenuIrPara();
     ocultarPersonagem();
+    if (cena.id === "casa_cozinha") services.mostrarPersonagem("james", "neutral", "right");
     services.definirBotoes();
+  }
+
+  function podeSairDaCasa() {
+    return state.localizacao.local === "casa"
+      && state.sceneState.casa_cozinha?.jamesIntroConversationComplete === true
+      && state.sceneState.casa_quarto_mj?.mjBagCollected === true
+      && state.sceneState.casa_sala?.mjPhoneCollected === true;
+  }
+
+  function sairDaCasa() {
+    if (!podeSairDaCasa() || state.localizacao.cena !== "casa_sala") return false;
+    // TODO Cenário 02: após cadastrar o local, validar aqui e chamar services.transitionToScene(local, cena).
+    el.scene.interactionStatus.textContent = "Estamos prontos. Falta decidir para onde ir.";
+    fecharMenuIrPara();
+    return true;
   }
 
   /** A saída narrativa fica disponível somente depois da coleta. */
@@ -216,6 +234,7 @@ function criarSistemaCenas(context) {
   function irPara(destinoId) {
     if (state.modo !== "livre" || services.isSceneTransitioning()) return;
     if (services.isCutsceneActive()) return;
+    if (destinoId === "sair_casa") return sairDaCasa();
     if (destinoId === 'sair_beco') return sairDoBeco();
     const cena = obterCenaAtual();
     if (!cena?.destinos.includes(destinoId)) return;
@@ -244,7 +263,7 @@ function criarSistemaCenas(context) {
       return Promise.resolve(false);
     }
     const anterior = { ...state.localizacao };
-    return services.runSceneTransition(async () => {
+    const changed = services.runSceneTransition(async () => {
       await services.prepareSceneImages(assetsDaCena(destino));
       try {
         state.localizacao.local = localId;
@@ -255,6 +274,7 @@ function criarSistemaCenas(context) {
         el.scene.personagem.classList.remove("personagem-entrando", "personagem-saindo");
         el.scene.personagem.src = "";
         el.scene.personagem.dataset.characterId = "";
+        if (destino.id === "casa_cozinha") services.mostrarPersonagem("james", "neutral", "right");
         await services.prepareSceneImages([el.scene.cenario.src,
           ...Array.from(el.scene.objectLayer.children).map(o => o.src)]);
       } catch (error) {
@@ -263,6 +283,15 @@ function criarSistemaCenas(context) {
         throw error;
       }
     });
+    return changed.then(success => {
+      if (success && cenaId === "casa_quarto_mj") iniciarIntroCasa();
+      return success;
+    });
+  }
+
+  function iniciarIntroCasa() {
+    if (state.localizacao.cena !== "casa_quarto_mj" || state.sceneState.casa_quarto_mj?.introSeen) return false;
+    return services.iniciarConversa({ automatic: true });
   }
 
   /** Estado da cena.
@@ -343,6 +372,11 @@ function criarSistemaCenas(context) {
    */
   function executarHotspot(id, selectedItem = null) {
     if (objectAnimation || services.isSceneTransitioning() || state.modo !== "livre" || el.bag.bagDialog.open) return false;
+    if (["mj_bag", "mj_phone"].includes(id)
+      && !state.sceneState.casa_cozinha?.jamesIntroConversationComplete) {
+      el.scene.interactionStatus.textContent = "Vou falar com James primeiro.";
+      return false;
+    }
     const cena = obterCenaAtual();
     const h = cena.hotspots?.find(hotspot => hotspot.id === id);
     const executarMecanica = h && mecanicas.obter(h.type);
@@ -397,6 +431,7 @@ function criarSistemaCenas(context) {
     el.scene.interactionStatus.textContent = "";
     // Narrative hooks run after the atomic logical transition and may remove inventory items.
     if (h.eventId) eventosInteracao[h.eventId]?.({ sceneId: cena.id, itemId: h.itemId });
+    if (h.message && !h.eventId) el.scene.interactionStatus.textContent = h.message;
     services.registrarAutosave();
     (el.scene.hotspotLayer.firstElementChild ?? el.bag.btnBolsa).focus();
     return true;
@@ -408,6 +443,8 @@ function criarSistemaCenas(context) {
     obterLocal,
     obterCenaAtual,
     obterDestinos,
+    podeSairDaCasa,
+    iniciarIntroCasa,
     temDestinos,
     criarBotaoDestino,
     renderizarMenuIrPara,

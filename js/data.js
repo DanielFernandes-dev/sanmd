@@ -46,6 +46,67 @@ const CENAS_BECO = {
   }
 };
 
+const CENAS_CASA = {
+  casa_quarto_mj: {
+    id: "casa_quarto_mj", label: "Quarto da MJ",
+    background: "assets/cenario/casa-mj-james/quarto-mj.png",
+    initialState: { introSeen: false, mjBagCollected: false },
+    destinos: ["casa_sala"],
+    objects: [{ id: "mj_bag", rect: [78, 62, 9, 13], variants: [
+      { asset: "assets/cenario/casa-mj-james/bolsa-mj.svg", conditions: { mjBagCollected: false } }
+    ] }],
+    hotspots: [{ id: "mj_bag", rect: [77, 60, 12, 17], ariaLabel: "Pegar bolsa da MJ",
+      type: "interact", conditions: { mjBagCollected: false },
+      changes: { mjBagCollected: true }, message: "Peguei minha bolsa.", eventId: "mjBagCollected" }],
+    personagensPresentes: []
+  },
+  casa_sala: {
+    id: "casa_sala", label: "Sala",
+    background: "assets/cenario/casa-mj-james/sala.png",
+    initialState: { mjPhoneCollected: false },
+    destinos: ["casa_quarto_mj", "casa_cozinha", "casa_quarto_james", "casa_banheiro"],
+    objects: [{ id: "mj_phone", rect: [6.5, 46, 3, 5], variants: [
+      { asset: "assets/cenario/casa-mj-james/celular-mj.svg", conditions: { mjPhoneCollected: false } }
+    ] }],
+    hotspots: [
+      { id: "mj_phone", rect: [5, 43, 7, 11], ariaLabel: "Pegar telefone da MJ",
+        type: "interact", conditions: { mjPhoneCollected: false },
+        changes: { mjPhoneCollected: true }, message: "Peguei meu telefone.", eventId: "mjPhoneCollected" },
+      { id: "lulith_door", rect: [55, 10, 6, 46], ariaLabel: "Porta do quarto de Lulith",
+        type: "examine", message: "Está fechado." },
+      { id: "main_door", rect: [70, 9, 10, 49], ariaLabel: "Porta de saída",
+        type: "examine", eventId: "casaExitDoor" }
+    ],
+    personagensPresentes: []
+  },
+  casa_cozinha: {
+    id: "casa_cozinha", label: "Cozinha",
+    background: "assets/cenario/casa-mj-james/cozinha.png",
+    initialState: { jamesIntroConversationComplete: false },
+    destinos: ["casa_sala"],
+    personagensPresentes: ["james"],
+    personagensVisuais: [{ id: "james", pose: "neutral", slot: "right" }]
+  },
+  casa_quarto_james: {
+    id: "casa_quarto_james", label: "Quarto do James",
+    background: "assets/cenario/casa-mj-james/quarto-james.png",
+    destinos: ["casa_sala"],
+    initialState: {},
+    hotspots: [{ id: "comics", rect: [12, 15, 22, 35], ariaLabel: "Ver quadrinhos",
+      type: "examine", message: "James nunca perdeu o gosto pelos quadrinhos." }],
+    personagensPresentes: []
+  },
+  casa_banheiro: {
+    id: "casa_banheiro", label: "Banheiro",
+    background: "assets/cenario/casa-mj-james/banheiro.svg",
+    destinos: ["casa_sala"],
+    initialState: {},
+    hotspots: [{ id: "mirror", rect: [34, 14, 31, 48], ariaLabel: "Olhar no espelho",
+      type: "examine", message: "...Ele não precisava estar tão certo." }],
+    personagensPresentes: []
+  }
+};
+
 const MONOLOGOS_BECO = {
   identidadeResolvida: [
     { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
@@ -97,6 +158,7 @@ const MONOLOGOS_BECO = {
 
 const DATA = {
   locais: {
+    casa: { id: "casa", nome: "Casa", cenaInicial: "casa_quarto_mj", cenas: CENAS_CASA },
     beco: {
       id: "beco",
       nome: "Beco",
@@ -108,6 +170,7 @@ const DATA = {
   cena: CENAS_BECO.beco_entrada,
 
   personagens: {
+    james: { id: "james", nome: "James", sprites: { neutral: "assets/sprites/james.png" } },
     mj: {
       id: "mj",
       nome: "MJ",
@@ -163,10 +226,26 @@ const DATA = {
   },
 
   conversas: {
-    presenciais: {}
+    presenciais: {
+      james: [
+        { autor: "James", texto: "Você está trabalhando muito. Olha essas olheiras. Você devia pedir pros nossos superiores te dar uma folga. Umas férias, sabe." },
+        { autor: "", texto: "James entrega uma xícara de café à MJ." },
+        { autor: "James", texto: "Tipo uma passagem pra viajar." },
+        { autor: "", texto: "O celular de James vibra. Ele olha a mensagem por um instante." , eventId: "jamesNotification" },
+        { autor: "James", texto: "...Dito isso, pegue sua bolsa e seu telefone. Temos um caso que surgiu." }
+      ]
+    }
   },
 
   monologos: {
+    casa_quarto_mj: { inicial: [
+      { autor: "MJ", texto: "(Acordei... Que sonho estranho.)" },
+      { autor: "MJ", texto: "(Já podia começar o dia sem essa sensação.)" }
+    ], retorno: [{ autor: "MJ", texto: "(Preciso me arrumar e seguir em frente.)" }] },
+    casa_sala: { inicial: [{ autor: "MJ", texto: "(Preciso me organizar antes de sair.)" }] },
+    casa_cozinha: { inicial: [{ autor: "MJ", texto: "(James está preparando café.)" }] },
+    casa_quarto_james: { inicial: [{ autor: "MJ", texto: "(James sempre deixa seus quadrinhos à vista.)" }] },
+    casa_banheiro: { inicial: [{ autor: "MJ", texto: "(Um minuto para respirar.)" }] },
     beco_entrada: {
       ...MONOLOGOS_BECO,
       inicial: {

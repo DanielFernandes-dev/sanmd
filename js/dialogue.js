@@ -8,22 +8,30 @@ function criarSistemaDialogos(context) {
 
   /** Iniciar conversa.
    */
-  function iniciarConversa() {
-    if (services.isSceneTransitioning()) return false;
+  function iniciarConversa({ automatic = false } = {}) {
+    if (services.isSceneTransitioning() || services.isCutsceneActive()) return false;
     if (state.modo !== "livre") return;
 
-    const personagemPresente = services.obterCenaAtual().personagensPresentes[0];
+    const cena = services.obterCenaAtual();
+    if (automatic && (cena.id !== "casa_quarto_mj" || state.sceneState.casa_quarto_mj?.introSeen)) return false;
+    const personagemPresente = cena.personagensPresentes[0];
     const monologosDaCena = DATA.monologos[services.obterCenaAtual().id];
     const faseMonologo = obterFaseMonologo();
     const ehMonologo = !personagemPresente;
     state.dialogo.falas = ehMonologo
-      ? obterFalasMonologo(monologosDaCena, faseMonologo)
+      ? (cena.id === "casa_quarto_mj" && state.sceneState.casa_quarto_mj?.introSeen
+        ? monologosDaCena.retorno : obterFalasMonologo(monologosDaCena, faseMonologo))
       : DATA.conversas.presenciais[personagemPresente];
 
     if (!state.dialogo.falas?.length) return;
 
-    if (ehMonologo) services.mostrarPersonagem("mj", "neutral", "center");
+    if (personagemPresente === "james" && state.sceneState.casa_cozinha?.jamesIntroConversationComplete) {
+      state.dialogo.falas = [{ autor: "James", texto: "Quando estiver pronta, pegue sua bolsa e seu telefone." }];
+    }
+    if (ehMonologo && cena.id !== "casa_quarto_mj") services.mostrarPersonagem("mj", "neutral", "center");
 
+    state.dialogo.conversationId = personagemPresente === "james" && !state.sceneState.casa_cozinha?.jamesIntroConversationComplete
+      ? "james_intro" : automatic ? "mj_intro" : null;
     state.modo = "dialogo";
     state.dialogo.linha = 0;
     el.dialogue.dialogueBox.classList.remove("oculto");
@@ -66,6 +74,10 @@ function criarSistemaDialogos(context) {
   function mostrarLinha() {
     const fala = state.dialogo.falas[state.dialogo.linha];
     el.dialogue.namePlate.textContent = fala.autor;
+    if (!fala.autor || (fala.autor === "MJ" && services.obterCenaAtual().id === "casa_quarto_mj"))
+      el.dialogue.namePlate.classList.add("oculto");
+    else el.dialogue.namePlate.classList.remove("oculto");
+    if (fala.eventId === "jamesNotification") tocarEfeitoTransitorio("assets/audio/phone_notification.wav");
     el.dialogue.continueArrow.classList.add("oculto");
     digitarTexto(fala.texto);
   }
@@ -167,11 +179,19 @@ function criarSistemaDialogos(context) {
     state.dialogo.timer = null;
     state.dialogo.digitando = false;
     state.dialogo.falas = [];
+    const completedConversation = state.dialogo.conversationId;
+    if (completedConversation === "mj_intro") {
+      state.sceneState.casa_quarto_mj = { ...services.estadoDaCena(DATA.locais.casa.cenas.casa_quarto_mj), introSeen: true };
+    } else if (state.dialogo.conversationId === "james_intro") {
+      state.sceneState.casa_cozinha = { ...services.estadoDaCena(DATA.locais.casa.cenas.casa_cozinha), jamesIntroConversationComplete: true };
+    }
+    state.dialogo.conversationId = null;
     state.modo = "livre";
     el.dialogue.dialogueBox.classList.add("oculto");
-    services.ocultarPersonagem();
+    if (services.obterCenaAtual().id !== "casa_cozinha") services.ocultarPersonagem();
     services.registrarAutosave();
     services.definirBotoes();
+    if (completedConversation === "mj_intro") el.scene.btnIrPara.focus();
   }
 
   return Object.freeze({

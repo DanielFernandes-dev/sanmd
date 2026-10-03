@@ -17,7 +17,7 @@ test("dados narrativos são serializáveis e independentes do estado global", ()
   const copia = JSON.parse(JSON.stringify(DATA.monologos));
   for (const [id, monologos] of Object.entries(DATA.monologos)) {
     assert.equal(Object.getOwnPropertyDescriptor(monologos, "inicial").get, undefined);
-    assert.equal(copia[id].inicial.pendente[0].texto, monologos.inicial.pendente[0].texto);
+    assert.equal(JSON.stringify(copia[id].inicial), JSON.stringify(monologos.inicial));
   }
 });
 
@@ -38,7 +38,7 @@ test("monólogo acompanha abertura, coleta e ativação sem alterar dados ou con
     { sceneState: { beco_fundo: { safeOpened: true, lulithPhoneCollected: true } },
       inventory: [], aparelho: { activePhone: "lulith" } }
   ];
-  for (const [id, monologos] of Object.entries(DATA.monologos)) {
+  for (const [id, monologos] of Object.entries(DATA.monologos).filter(([id]) => id.startsWith("beco_"))) {
     for (const [indice, contexto] of contextos.entries()) {
       const antes = JSON.stringify(contexto);
       const variante = indice === 0 ? "pendente" : indice === 1
