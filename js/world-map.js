@@ -10,8 +10,8 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   let keyboardHome = null;
 
   function normalizarCoordenada(value) {
-    return String(value ?? "").normalize("NFKD").toUpperCase()
-      .replace(/[º°'’‘′"“”″,.;:\s-]/g, "");
+    return String(value ?? "").replace(/º/g, "°").normalize("NFKD").toUpperCase()
+      .replace(/[º°'’‘′"“”″,.;:\s]/g, "");
   }
 
   function modalAberto() {
@@ -26,16 +26,13 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   }
 
   function abrirBilhete({ returnHotspotId: hotspotId } = {}) {
-    if (state.modo !== "livre" || modalAberto() || services.isSceneTransitioning()
+    if (state.modo !== "livre" || modalAberto() || el.bag.bagDialog.open || services.isSceneTransitioning()
       || services.isCutsceneActive()) return false;
     if (state.localizacao.cena !== "delegacia_mesa_mj") return false;
     opener = document.activeElement;
     returnHotspotId = hotspotId ?? null;
     ui.noteLatitude.textContent = DATA.prototypeAlleyCoordinates.latitude;
     ui.noteLongitude.textContent = DATA.prototypeAlleyCoordinates.longitude;
-    state.sceneState.delegacia_mesa_mj = {
-      computerOn: false, ...state.sceneState.delegacia_mesa_mj, noteRead: true
-    };
     ui.noteOverlay.hidden = false;
     state.modo = "interface";
     app.inert = true;
@@ -58,7 +55,8 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   }
 
   function localDisponivel(localId) {
-    return state.worldMap.availableLocations[localId] === true
+    return typeof localId === "string" && Object.hasOwn(DATA.worldMapLocations, localId)
+      && state.worldMap.availableLocations[localId] === true
       && Object.hasOwn(DATA.locais, localId);
   }
 
@@ -180,8 +178,15 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     ui.mapOverlay.hidden = true;
     ui.noteClose.addEventListener("click", () => fecharBilhete());
     ui.mapClose.addEventListener("click", () => fecharMapaGlobal());
-    ui.mapLatitude.addEventListener("click", () => editarCoordenada(ui.mapLatitude));
-    ui.mapLongitude.addEventListener("click", () => editarCoordenada(ui.mapLongitude));
+    for (const input of [ui.mapLatitude, ui.mapLongitude]) {
+      input.addEventListener("click", () => editarCoordenada(input));
+      input.addEventListener("keydown", event => {
+        if (!event.defaultPrevented && (event.key === "Enter" || event.key === " ")) {
+          event.preventDefault();
+          editarCoordenada(input);
+        }
+      });
+    }
     ui.mapSearch.addEventListener("click", localizarCoordenadas);
     document.addEventListener("keydown", event => {
       if (event.defaultPrevented) return;

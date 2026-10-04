@@ -418,10 +418,11 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), true);
   assert.equal(ler('viajarPeloMapa("beco")'), false);
   assert.equal(ler('localizarCoordenadas()'), false);
-  executar(`el.mapLatitude.value = '23 33 12 S'; el.mapLongitude.value = '0';`);
+  executar(`el.mapLatitude.value = DATA.prototypeAlleyCoordinates.latitude; el.mapLongitude.value = '0';`);
   assert.equal(ler('localizarCoordenadas()'), false);
   assert.equal(ler('state.worldMap.availableLocations.beco'), false);
-  executar(`el.mapLatitude.value = '23 33 12 s'; el.mapLongitude.value = '46 38 27 w';`);
+  executar(`el.mapLatitude.value = DATA.prototypeAlleyCoordinates.latitude.toLowerCase();
+    el.mapLongitude.value = DATA.prototypeAlleyCoordinates.longitude.toLowerCase();`);
   assert.equal(ler('localizarCoordenadas()'), true);
   assert.equal(ler('state.worldMap.availableLocations.beco'), true);
   assert.equal(ler('saveRepository.obterAutosave().saveState.worldMap.availableLocations.beco'), true);
@@ -475,4 +476,75 @@ test('cena do crime: hotspots acompanham o recorte cover em landscape', () => {
   executar('el.cenario.clientWidth = 1664; el.cenario.clientHeight = 936; renderizarObjetos();');
   assert.match(ler('el.objectLayer.children.find(x => x.dataset.objectId === "crime_small_key").style'),
     /left:732\.16px;top:655\.2px;/);
+});
+
+test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave duplicado', async () => {
+  const { executar, ler } = controlarAmbiente();
+  await executar(`state.localizacao = { local: 'delegacia', cena: 'delegacia_mesa_mj' };
+    aplicarCena(obterCenaAtual()); executarHotspot('mj_computer');
+    abrirMapaGlobal({ source: 'delegacia_computer' });
+    globalThis.clock = 100; Date.now = () => ++clock;`);
+  for (const field of ['none', 'latitude', 'longitude', 'wrong']) {
+    executar(`el.mapLatitude.value = ${field === 'latitude' ? 'DATA.prototypeAlleyCoordinates.latitude' : "''"};
+      el.mapLongitude.value = ${field === 'longitude' ? 'DATA.prototypeAlleyCoordinates.longitude' : "''"};`);
+    if (field === 'wrong') executar(`el.mapLatitude.value = '0'; el.mapLongitude.value = '0';`);
+    assert.equal(ler('localizarCoordenadas()'), false);
+    assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+    assert.equal(ler('el.mapOverlay.hidden'), false);
+  }
+  executar(`const format = value => value.toLowerCase().replace(/°/g, 'º').replace(/'/g, '′').replace(/"/g, '″').replace(/ /g, '  ');
+    el.mapLatitude.value = format(DATA.prototypeAlleyCoordinates.latitude);
+    el.mapLongitude.value = format(DATA.prototypeAlleyCoordinates.longitude);`);
+  assert.equal(ler('localizarCoordenadas()'), true);
+  const savedAt = ler('saveRepository.obterAutosave().saveState.capturedAt');
+  assert.equal(ler('localizarCoordenadas()'), true);
+  assert.equal(ler('saveRepository.obterAutosave().saveState.capturedAt'), savedAt);
+  assert.match(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").className'), /available/);
+  executar('fecharMapaGlobal();');
+  assert.equal(ler('state.modo'), 'interface');
+  assert.equal(ler('el.map.focused'), true);
+  executar('fecharEstacaoTrabalho();');
+  assert.equal(ler('state.modo'), 'livre');
+  assert.equal(ler('el.hotspotLayer.children.find(x => x.dataset.hotspot === "mj_computer").focused'), true);
+});
+
+test('viagem global valida destino e concorrência independentemente dos botões', async () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'delegacia', cena: 'delegacia_mesa_mj' };
+    aplicarCena(obterCenaAtual());`);
+  for (const id of ['beco', 'delegacia', 'inexistente', '__proto__']) {
+    assert.equal(await ler(`travelToWorldLocation('${id}')`), false);
+  }
+  executar('state.modo = "dialogo";');
+  assert.equal(await ler('travelToWorldLocation("casa")'), false);
+  executar('state.modo = "livre"; el.bagDialog.open = true;');
+  assert.equal(await ler('travelToWorldLocation("casa")'), false);
+  executar('el.bagDialog.open = false;');
+  const trip = ler('travelToWorldLocation("casa")');
+  assert.equal(await ler('travelToWorldLocation("cena_crime")'), false);
+  assert.equal(await trip, true);
+  assert.equal(ler('state.localizacao.cena'), ler('DATA.locais.casa.cenaInicial'));
+});
+
+test('Load antigo migra mapa pela progressão e novas visitas liberam os locais', async () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'casa', cena: 'casa_quarto_mj' };
+    aplicarCena(obterCenaAtual());
+    const antigo = capturarEstadoJogo(); delete antigo.worldMap;
+    restaurarEstadoJogo(antigo);`);
+  assert.equal(ler('state.worldMap.availableLocations.casa'), true);
+  assert.equal(ler('state.worldMap.availableLocations.cena_crime'), false);
+  assert.equal(ler('state.worldMap.availableLocations.delegacia'), false);
+  assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+  executar(`state.sceneState.casa_quarto_mj = { introSeen: true, mjBagCollected: true };
+    state.sceneState.casa_cozinha = { jamesIntroConversationComplete: true };
+    state.sceneState.casa_sala = { mjPhoneCollected: true };
+    state.aparelho = { originalPhoneStatus: 'working', activePhone: 'mj', phoneTheme: 'mj' };`);
+  await executar('irPara("casa_sala"); irPara("sair_casa");');
+  assert.equal(ler('state.worldMap.availableLocations.cena_crime'), true);
+  executar(`encerrarConversa(); state.sceneState.crime_sala.firstEvidenceExamined = true;
+    state.sceneState.crime_sala.lockedEvidenceOpened = true;
+    state.aparelho.originalPhoneStatus = 'broken'; state.aparelho.activePhone = null;`);
+  await executar('irPara("ir_delegacia");');
+  assert.equal(ler('state.worldMap.availableLocations.delegacia'), true);
 });

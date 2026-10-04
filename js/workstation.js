@@ -11,12 +11,13 @@ function criarSistemaEstacaoTrabalho({ state, el, document, services }) {
     ui.overlay.inert = false;
     state.modo = "interface";
     app.inert = true;
+    services.fecharMenuIrPara();
     services.definirBotoes();
     ui.map.focus();
     return true;
   }
   function fecharEstacaoTrabalho({ restoreFocus = true } = {}) {
-    if (!estacaoAberta()) return false;
+    if (!estacaoAberta() || !el.worldMap.mapOverlay.hidden) return false;
     ui.overlay.hidden = true;
     ui.overlay.inert = false;
     state.modo = "livre";

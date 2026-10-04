@@ -124,6 +124,7 @@ function criarSistemaEventos(context) {
     el.dialogue.dialogueBox.addEventListener("click", services.avancarDialogo);
 
     document.addEventListener("keydown", (event) => {
+      if (event.defaultPrevented) return;
       if (services.entradaTextoAberta() && services.tratarTecladoFisico(event)) return;
       if (event.key === "Escape" && state.modo === "livre" && services.menuIrParaAberto()) {
         services.fecharMenuIrPara();

@@ -142,15 +142,27 @@ function criarSistemaPersistencia(context) {
     if (!exploration) return null;
     const aparelho = validarAparelho(candidato, exploration);
     if (!aparelho) return null;
-    const worldMap = validarWorldMap(candidato.worldMap);
+    const worldMap = validarWorldMap(candidato.worldMap, candidato);
     if (!worldMap) return null;
     return { ...copiarDados(candidato), ...exploration, aparelho, worldMap,
       act1Complete: candidato.act1Complete ?? false };
   }
 
-  function validarWorldMap(value) {
+  function validarWorldMap(value, snapshot) {
     const defaults = criarEstadoMapaGlobal(DATA.worldMapLocations);
-    if (value === undefined) return defaults;
+    if (value === undefined) {
+      const scenes = snapshot.sceneState ?? {};
+      const local = snapshot.localizacao.local;
+      const leftHome = scenes.casa_cozinha?.jamesIntroConversationComplete
+        && scenes.casa_quarto_mj?.mjBagCollected && scenes.casa_sala?.mjPhoneCollected;
+      const crime = scenes.crime_sala;
+      defaults.availableLocations.cena_crime = Boolean(leftHome
+        || ["cena_crime", "delegacia", "beco"].includes(local));
+      defaults.availableLocations.delegacia = Boolean(local === "delegacia" || local === "beco"
+        || (crime?.firstEvidenceExamined && crime?.lockedEvidenceOpened
+          && snapshot.aparelho?.originalPhoneStatus === "broken"));
+      return defaults;
+    }
     if (!ehRegistro(value) || !ehRegistro(value.availableLocations)) return null;
     const locations = value.availableLocations;
     if (!Object.keys(defaults.availableLocations).every(id => typeof locations[id] === "boolean")

@@ -23,7 +23,7 @@ function setup({ compact = false, deferCutscene = false, rejectCutscene = false 
   const phases = [], waits = [];
   let transitioning = false, cutsceneDone;
   const context = vm.createContext({ document, window });
-  for (const file of ['state.js', 'save-system.js', 'title-menu.js']) {
+  for (const file of ['data.js', 'state.js', 'save-system.js', 'title-menu.js']) {
     vm.runInContext(fs.readFileSync(path.join(__dirname, '../js', file), 'utf8'), context);
   }
   vm.runInContext('const RESET_STATUS = { INATIVO: "inativo" };', context);

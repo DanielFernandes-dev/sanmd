@@ -190,7 +190,13 @@ function criarSistemaCenas(context) {
 
   function sairDaCasa() {
     if (!podeSairDaCasa() || state.localizacao.cena !== "casa_sala") return false;
-    return services.transitionToScene("cena_crime", "crime_sala");
+    return services.transitionToScene("cena_crime", "crime_sala").then(success => {
+      if (success) {
+        state.worldMap.availableLocations.cena_crime = true;
+        services.registrarAutosave();
+      }
+      return success;
+    });
   }
 
   function voltarParaCasa() {
@@ -202,7 +208,10 @@ function criarSistemaCenas(context) {
     if (!podeIrDelegacia() || !Object.hasOwn(DATA.locais, "delegacia")) return false;
     const local = DATA.locais.delegacia;
     return services.transitionToScene(local.id, local.cenaInicial).then(success => {
-      if (success) services.registrarAutosave();
+      if (success) {
+        state.worldMap.availableLocations.delegacia = true;
+        services.registrarAutosave();
+      }
       return success;
     });
   }
