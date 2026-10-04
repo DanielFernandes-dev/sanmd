@@ -391,8 +391,13 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   await executar('irPara("ir_delegacia"); irPara("delegacia_investigadores"); irPara("delegacia_mesa_mj");');
   assert.equal(ler('state.localizacao.cena'), 'delegacia_mesa_mj');
   assert.equal(ler('executarHotspot("mj_computer")'), true);
-  assert.equal(ler('el.mapOverlay.hidden'), true);
-  assert.equal(ler('state.sceneState.delegacia_mesa_mj?.computerOn'), false);
+  assert.equal(ler('el.mapOverlay.hidden'), true, 'o PC abre a estação, não o mapa');
+  assert.equal(ler('el.overlay.hidden'), false);
+  assert.equal(ler('state.modo'), 'interface');
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj?.computerOn'), true);
+  assert.equal(ler('executarHotspot("mj_note")'), false, 'estação modal bloqueia a cena');
+  assert.equal(ler('fecharEstacaoTrabalho()'), true);
+  assert.equal(ler('state.modo'), 'livre');
   assert.equal(ler('executarHotspot("mj_note")'), true);
   assert.equal(ler('state.sceneState.delegacia_mesa_mj.noteRead'), true);
   assert.equal(ler('el.noteOverlay.hidden'), false);
@@ -401,6 +406,9 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   assert.equal(ler('executarHotspot("mj_note")'), true);
   await executar('fecharBilhete(); executarHotspot("mj_computer");');
   assert.equal(ler('state.sceneState.delegacia_mesa_mj.computerOn'), true);
+  assert.equal(ler('el.overlay.hidden'), false);
+  executar('abrirMapaGlobal({ source: "delegacia_computer" });');
+  assert.equal(ler('el.overlay.inert'), true);
   assert.equal(ler('el.mapOverlay.hidden'), false);
   assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), true);
   assert.equal(ler('viajarPeloMapa("delegacia")'), false);

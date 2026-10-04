@@ -6,6 +6,8 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   let returnHotspotId = null;
   let traveling = false;
   let initialized = false;
+  let returnToWorkstation = false;
+  let keyboardHome = null;
 
   function normalizarCoordenada(value) {
     return String(value ?? "").normalize("NFKD").toUpperCase()
@@ -78,11 +80,15 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   }
 
   function abrirMapaGlobal({ source, returnHotspotId: hotspotId } = {}) {
-    if (state.modo !== "livre" || modalAberto() || services.isSceneTransitioning()
-      || services.isCutsceneActive() || el.bag.bagDialog.open) return false;
+    const fromWorkstation = services.estacaoAberta();
+    if ((!fromWorkstation && state.modo !== "livre") || modalAberto() || services.isSceneTransitioning()
+      || services.isWorldTraveling() || services.isCutsceneActive() || el.bag.bagDialog.open) return false;
+    returnToWorkstation = fromWorkstation;
+    if (fromWorkstation) el.workstation.overlay.inert = true;
     opener = document.activeElement;
     returnHotspotId = hotspotId ?? null;
     traveling = false;
+    ui.mapLatitude.disabled = ui.mapLongitude.disabled = ui.mapSearch.disabled = false;
     ui.mapFeedback.textContent = "";
     ui.mapLatitude.value = "";
     ui.mapLongitude.value = "";
@@ -99,11 +105,15 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
 
   function fecharMapaGlobal({ restoreFocus = true } = {}) {
     if (ui.mapOverlay.hidden) return false;
+    fecharEditorCoordenada();
     ui.mapOverlay.hidden = true;
-    state.modo = "livre";
-    app.inert = false;
+    const back = returnToWorkstation && services.estacaoAberta();
+    returnToWorkstation = false;
+    state.modo = back ? "interface" : "livre";
+    app.inert = back;
+    el.workstation.overlay.inert = false;
     services.definirBotoes();
-    if (restoreFocus) focusOpener();
+    if (restoreFocus) { if (back) el.workstation.map.focus(); else focusOpener(); }
     opener = null;
     returnHotspotId = null;
     return true;
@@ -131,21 +141,35 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       || services.isSceneTransitioning() || services.isCutsceneActive()
       || !Object.values(DATA.worldMapLocations).some(location => location.localId === localId)
       || !localDisponivel(localId) || localId === state.localizacao.local) return false;
+    return services.travelToWorldLocation(localId);
+  }
+
+  function bloquearMapaGlobal() {
     traveling = true;
+    ui.mapLatitude.disabled = ui.mapLongitude.disabled = ui.mapSearch.disabled = true;
     renderizarMapaGlobal();
-    fecharMapaGlobal({ restoreFocus: false });
-    const trip = services.irParaLocal(localId);
-    if (!trip) { traveling = false; return false; }
-    return Promise.resolve(trip).then(success => {
-      traveling = false;
-      if (success) services.registrarAutosave();
-      return success;
-    }, error => { traveling = false; throw error; });
+  }
+
+  function fecharEditorCoordenada() {
+    if (!keyboardHome) return;
+    services.fecharEntradaTexto();
+    keyboardHome.appendChild(el.phone.textEntryDock);
+    keyboardHome = null;
+  }
+
+  function editarCoordenada(input) {
+    if (traveling || ui.mapOverlay.hidden || services.entradaTextoAberta()) return false;
+    keyboardHome = el.phone.textEntryDock.parentNode;
+    ui.mapOverlay.querySelector(".prototype-panel").appendChild(el.phone.textEntryDock);
+    return services.abrirEntradaTexto({ initialValue: input.value, maxLength: 48, allowEmpty: true,
+      aoConfirmar: value => { input.value = value; fecharEditorCoordenada(); input.focus(); },
+      aoCancelar: () => { fecharEditorCoordenada(); input.focus(); } });
   }
 
   function fecharInterfacesMapa() {
     fecharBilhete({ restoreFocus: false });
     fecharMapaGlobal({ restoreFocus: false });
+    services.fecharEstacaoTrabalho({ restoreFocus: false });
     traveling = false;
   }
 
@@ -156,8 +180,20 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     ui.mapOverlay.hidden = true;
     ui.noteClose.addEventListener("click", () => fecharBilhete());
     ui.mapClose.addEventListener("click", () => fecharMapaGlobal());
+    ui.mapLatitude.addEventListener("click", () => editarCoordenada(ui.mapLatitude));
+    ui.mapLongitude.addEventListener("click", () => editarCoordenada(ui.mapLongitude));
     ui.mapSearch.addEventListener("click", localizarCoordenadas);
     document.addEventListener("keydown", event => {
+      if (event.defaultPrevented) return;
+      const overlay = !ui.mapOverlay.hidden ? ui.mapOverlay : !ui.noteOverlay.hidden
+        ? ui.noteOverlay : services.estacaoAberta() ? el.workstation.overlay : null;
+      if (event.key === "Tab" && overlay) {
+        const controls = Array.from(overlay.querySelectorAll("button:not(:disabled), input:not(:disabled), [tabindex='0']"))
+          .filter(control => control.getClientRects().length);
+        const first = controls[0], last = controls.at(-1);
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
       if (event.key !== "Escape") return;
       if (!ui.noteOverlay.hidden) { event.preventDefault(); fecharBilhete(); }
       else if (!ui.mapOverlay.hidden && !traveling) { event.preventDefault(); fecharMapaGlobal(); }
@@ -166,5 +202,5 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
 
   return Object.freeze({ abrirBilhete, fecharBilhete, abrirMapaGlobal, fecharMapaGlobal,
     fecharInterfacesMapa, renderizarMapaGlobal, localizarCoordenadas, viajarPeloMapa,
-    normalizarCoordenada, inicializarMapaGlobal });
+    localDisponivel, bloquearMapaGlobal, editarCoordenada, normalizarCoordenada, inicializarMapaGlobal });
 }

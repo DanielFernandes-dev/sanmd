@@ -24,6 +24,8 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     persistence: criarSistemaPersistencia(context),
     transition: criarSceneTransitionController(context),
     scene: criarSistemaCenas(context),
+    workstation: criarSistemaEstacaoTrabalho(context),
+    worldTravel: criarSistemaViagemGlobal(context),
     worldMap: criarSistemaMapaGlobal(context),
     dialogue: criarSistemaDialogos(context),
     phone: criarSistemaCelular(context),
@@ -44,6 +46,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     services.configurarAnimacoes();
     services.inicializarEventos();
     services.inicializarMapaGlobal();
+    services.inicializarEstacaoTrabalho();
     services.aplicarCena(services.obterCenaAtual());
     services.atualizarCabecalhoMensagens();
     services.renderizarBolsa();

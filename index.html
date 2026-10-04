@@ -129,6 +129,17 @@
       <button id="note-close" type="button">Fechar</button>
     </div>
   </section>
+  <section id="workstation-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="workstation-title" hidden>
+    <div class="prototype-panel">
+      <h2 id="workstation-title">Estação de trabalho</h2>
+      <div class="workstation-apps">
+        <button id="workstation-map" type="button">MAPA</button>
+        <button type="button" disabled>CASOS — indisponível</button>
+        <button type="button" disabled>ARQUIVOS — indisponível</button>
+      </div>
+      <button id="workstation-close" type="button">Fechar</button>
+    </div>
+  </section>
   <section id="world-map-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="world-map-title" hidden>
     <div class="prototype-panel prototype-map-panel">
       <h2 id="world-map-title">Mapa</h2>
@@ -139,7 +150,7 @@
         <button id="map-search" type="button">Localizar coordenadas</button>
       </div>
       <p id="map-feedback" role="status" aria-live="polite"></p>
-      <button id="map-close" type="button">Fechar</button>
+      <button id="map-close" type="button">Voltar</button>
     </div>
   </section>
   <div id="phone-overlay" class="oculto">
@@ -327,6 +338,8 @@
   <script src="js/keyboard.js?v=refatoracao-2"></script>
   <script src="js/text-entry.js?v=refatoracao-2"></script>
   <script src="js/interface.js?v=refatoracao-2"></script>
+  <script src="js/workstation.js?v=1"></script>
+  <script src="js/world-travel.js?v=1"></script>
   <script src="js/world-map.js?v=1"></script>
   <script src="js/events.js?v=refatoracao-2"></script>
   <script src="js/game.js?v=refatoracao-2"></script>

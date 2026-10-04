@@ -45,12 +45,7 @@ function criarSistemaEventos(context) {
   };
   context.eventosInteracao.mjComputerUsed = ({ sceneId }) => {
     if (sceneId !== "delegacia_mesa_mj") return;
-    if (!state.sceneState.delegacia_mesa_mj?.noteRead) {
-      el.scene.interactionStatus.textContent = "Não tenho o que procurar ainda.";
-      return;
-    }
-    state.sceneState.delegacia_mesa_mj.computerOn = true;
-    services.abrirMapaGlobal({ source: "delegacia_computer", returnHotspotId: "mj_computer" });
+    services.abrirEstacaoTrabalho();
   };
   function inicializarEventos() {
     if (inicializarEventos.inicializado) return;

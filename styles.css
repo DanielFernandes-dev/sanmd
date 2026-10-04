@@ -2406,3 +2406,8 @@ button:hover:not(:disabled) .action-icon {
 #frame-cutscene-title[data-phase='exit'] { animation: intro-subir-titulo steps(60, end) both; }
 #frame-cutscene-title[data-reduced='true'] { animation: none; }
 #frame-cutscene-title[data-reduced='true'][data-phase='exit'] { visibility: hidden; }
+
+.workstation-apps { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
+.prototype-panel button:disabled { cursor: default; }
+#world-map-overlay #text-entry { position: static; width: 100%; margin-top: 12px; }
+#world-map-overlay .game-key { min-height: 44px; }

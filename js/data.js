@@ -166,7 +166,7 @@ const CENAS_DELEGACIA = {
       { id: "mj_note", rect: [48, 70, 17, 14], ariaLabel: "Examinar bilhete",
         type: "examine", eventId: "mjNoteRead" },
       { id: "mj_computer", rect: [40, 34, 23, 24], ariaLabel: "Usar computador",
-        type: "interact", eventId: "mjComputerUsed" }
+        type: "interact", changes: { computerOn: true }, eventId: "mjComputerUsed" }
     ],
     personagensPresentes: []
   }

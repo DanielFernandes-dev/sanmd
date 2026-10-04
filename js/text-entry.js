@@ -59,6 +59,8 @@ function criarSistemaEntradaTexto(context) {
     if (state.texto.aberto) return false;
     state.texto = criarEstadoTexto();
     state.texto.aberto = true;
+    state.texto.buffer = String(configuracao.initialValue ?? "");
+    state.texto.cursor = state.texto.buffer.length;
     state.texto.config = {
       confirmLabel: configuracao.confirmLabel ?? "OK",
       maxLength: configuracao.maxLength ?? CONFIG.tamanhoNomeFoto,

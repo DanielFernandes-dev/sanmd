@@ -10,6 +10,9 @@ function criarElementos(document) {
     return elemento;
   };
   return {
+    workstation: {
+      overlay: buscar("workstation-overlay"), map: buscar("workstation-map"), close: buscar("workstation-close")
+    },
     worldMap: {
       noteOverlay: buscar("note-overlay"), noteLatitude: buscar("note-latitude"),
       noteLongitude: buscar("note-longitude"), noteClose: buscar("note-close"),
