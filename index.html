@@ -120,6 +120,28 @@
       <p>Tente outro nome ou palavra-chave.</p>
     </div>
   </dialog>
+  <section id="note-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="note-title" hidden>
+    <div class="prototype-panel">
+      <h2 id="note-title">Bilhete</h2>
+      <p id="note-latitude"></p>
+      <p id="note-longitude"></p>
+      <p>Onde essas linhas se encontram?</p>
+      <button id="note-close" type="button">Fechar</button>
+    </div>
+  </section>
+  <section id="world-map-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="world-map-title" hidden>
+    <div class="prototype-panel prototype-map-panel">
+      <h2 id="world-map-title">Mapa</h2>
+      <div id="world-map-locations" class="world-map-locations" aria-label="Locais"></div>
+      <div class="map-search-fields">
+        <label>Latitude <input id="map-latitude" type="text" autocomplete="off"></label>
+        <label>Longitude <input id="map-longitude" type="text" autocomplete="off"></label>
+        <button id="map-search" type="button">Localizar coordenadas</button>
+      </div>
+      <p id="map-feedback" role="status" aria-live="polite"></p>
+      <button id="map-close" type="button">Fechar</button>
+    </div>
+  </section>
   <div id="phone-overlay" class="oculto">
     <div id="phone-frame">
       <div id="phone-screen" data-phone-theme="lulith">
@@ -305,6 +327,7 @@
   <script src="js/keyboard.js?v=refatoracao-2"></script>
   <script src="js/text-entry.js?v=refatoracao-2"></script>
   <script src="js/interface.js?v=refatoracao-2"></script>
+  <script src="js/world-map.js?v=1"></script>
   <script src="js/events.js?v=refatoracao-2"></script>
   <script src="js/game.js?v=refatoracao-2"></script>
   <script src="js/title-menu.js?v=1"></script>

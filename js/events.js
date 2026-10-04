@@ -39,6 +39,19 @@ function criarSistemaEventos(context) {
     if (sceneId !== "crime_sala") return;
     if (!concluirInvestigacao()) el.scene.interactionStatus.textContent = "Há documentos dentro. Melhor examinar o resto da sala.";
   };
+  context.eventosInteracao.mjNoteRead = ({ sceneId }) => {
+    if (sceneId !== "delegacia_mesa_mj") return;
+    services.abrirBilhete({ returnHotspotId: "mj_note" });
+  };
+  context.eventosInteracao.mjComputerUsed = ({ sceneId }) => {
+    if (sceneId !== "delegacia_mesa_mj") return;
+    if (!state.sceneState.delegacia_mesa_mj?.noteRead) {
+      el.scene.interactionStatus.textContent = "Não tenho o que procurar ainda.";
+      return;
+    }
+    state.sceneState.delegacia_mesa_mj.computerOn = true;
+    services.abrirMapaGlobal({ source: "delegacia_computer", returnHotspotId: "mj_computer" });
+  };
   function inicializarEventos() {
     if (inicializarEventos.inicializado) return;
     inicializarEventos.inicializado = true;

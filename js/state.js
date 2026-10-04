@@ -39,14 +39,20 @@ function criarEstadoTexto() {
     painelAcentos: false, config: null };
 }
 
+function criarEstadoMapaGlobal(locations = DATA.worldMapLocations) {
+  return { availableLocations: Object.fromEntries(Object.values(locations)
+    .map(location => [location.localId, location.initiallyAvailable === true])) };
+}
+
 /** @returns {GameState} Uma instância independente do estado de todos os componentes. */
-function criarEstadoJogo() {
+function criarEstadoJogo(data = DATA) {
   return {
     aparelho: { originalPhoneStatus: "broken", activePhone: null, phoneTheme: "lulith" },
     act1Complete: false,
     inventoryActionPending: null,
     inventory: [],
     sceneState: {},
+    worldMap: criarEstadoMapaGlobal(data.worldMapLocations),
     modo: "livre",
     localizacao: { local: "beco", cena: "beco_entrada" },
     cena: { personagemSaidaTimer: null },

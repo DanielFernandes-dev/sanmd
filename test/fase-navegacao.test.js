@@ -373,14 +373,86 @@ test('cena do crime: saída da casa, retorno e autorização futura da Delegacia
     state.sceneState.crime_sala.lockedEvidenceOpened = true;
     state.aparelho.originalPhoneStatus = 'broken'; state.aparelho.activePhone = null;`);
   assert.equal(ler('podeIrDelegacia()'), true);
-  assert.equal(ler('obterDestinos().some(x => x.id === "ir_delegacia")'), false,
-    'a Delegacia ainda não tem cena cadastrada');
-  assert.equal(ler('irPara("ir_delegacia")'), false);
-  executar(`DATA.locais.delegacia = { id: 'delegacia', cenaInicial: 'delegacia_teste', cenas: {
-    delegacia_teste: { id: 'delegacia_teste', label: 'Delegacia', background: 'teste.png',
-      destinos: [], initialState: {}, personagensPresentes: [] }
-  } }; abrirMenuIrPara();`);
+  assert.equal(ler('obterDestinos().some(x => x.id === "ir_delegacia")'), true);
+  executar('abrirMenuIrPara();');
   assert.deepEqual(rotulosMenu(ler), ['Casa', 'Delegacia']);
+  await executar('fecharMenuIrPara(); irPara("ir_delegacia");');
+  assert.equal(ler('state.localizacao.cena'), 'delegacia_corredor');
+});
+
+test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', async () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'cena_crime', cena: 'crime_sala' };
+    state.sceneState.crime_sala = { introSeen: true, firstEvidenceExamined: true,
+      investigationItemCollected: true, lockedEvidenceOpened: true };
+    state.sceneState.casa_sala = { mjPhoneCollected: true };
+    state.aparelho = { originalPhoneStatus: 'broken', activePhone: null, phoneTheme: 'mj' };
+    aplicarCena(obterCenaAtual());`);
+  await executar('irPara("ir_delegacia"); irPara("delegacia_investigadores"); irPara("delegacia_mesa_mj");');
+  assert.equal(ler('state.localizacao.cena'), 'delegacia_mesa_mj');
+  assert.equal(ler('executarHotspot("mj_computer")'), true);
+  assert.equal(ler('el.mapOverlay.hidden'), true);
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj?.computerOn'), false);
+  assert.equal(ler('executarHotspot("mj_note")'), true);
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj.noteRead'), true);
+  assert.equal(ler('el.noteOverlay.hidden'), false);
+  assert.equal(ler('executarHotspot("mj_computer")'), false);
+  executar('fecharBilhete();');
+  assert.equal(ler('executarHotspot("mj_note")'), true);
+  await executar('fecharBilhete(); executarHotspot("mj_computer");');
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj.computerOn'), true);
+  assert.equal(ler('el.mapOverlay.hidden'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), true);
+  assert.equal(ler('viajarPeloMapa("delegacia")'), false);
+  assert.equal(ler('state.modo'), 'interface');
+  assert.equal(ler('irPara("delegacia_investigadores")'), undefined);
+  assert.equal(ler('executarHotspot("mj_note")'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), true);
+  assert.equal(ler('viajarPeloMapa("beco")'), false);
+  assert.equal(ler('localizarCoordenadas()'), false);
+  executar(`el.mapLatitude.value = '23 33 12 S'; el.mapLongitude.value = '0';`);
+  assert.equal(ler('localizarCoordenadas()'), false);
+  assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+  executar(`el.mapLatitude.value = '23 33 12 s'; el.mapLongitude.value = '46 38 27 w';`);
+  assert.equal(ler('localizarCoordenadas()'), true);
+  assert.equal(ler('state.worldMap.availableLocations.beco'), true);
+  assert.equal(ler('saveRepository.obterAutosave().saveState.worldMap.availableLocations.beco'), true);
+  assert.equal(ler('el.mapOverlay.hidden'), false);
+  assert.equal(ler('localizarCoordenadas()'), true);
+  assert.equal(ler('state.localizacao.local'), 'delegacia');
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
+  const snapshot = ler('JSON.stringify(capturarEstadoJogo())');
+  executar('fecharMapaGlobal();');
+  await ler('viajarPeloMapa("beco")'); // Mapa fechado: nenhuma viagem.
+  assert.equal(ler('state.localizacao.local'), 'delegacia');
+  executar(`restaurarEstadoJogo(${snapshot});`);
+  assert.equal(ler('el.mapOverlay.hidden'), true, 'Load não reabre o painel');
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj.noteRead'), true);
+  assert.equal(ler('state.sceneState.delegacia_mesa_mj.computerOn'), true);
+  executar(`abrirMapaGlobal({source: 'test'});`);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
+  const trip = ler('viajarPeloMapa("beco")');
+  assert.equal(ler('viajarPeloMapa("casa")'), false);
+  await trip;
+  assert.equal(ler('state.localizacao.local'), 'beco');
+  assert.equal(ler('state.localizacao.cena'), 'beco_entrada');
+  assert.equal(ler('state.worldMap.availableLocations.beco'), true);
+  assert.equal(ler('saveRepository.obterAutosave().saveState.localizacao.local'), 'beco');
+  const alleySave = ler('JSON.stringify(capturarEstadoJogo())');
+  executar(`restaurarEstadoJogo(${snapshot}); restaurarEstadoJogo(${alleySave});`);
+  assert.equal(ler('state.localizacao.local'), 'beco');
+  assert.equal(ler('state.worldMap.availableLocations.beco'), true);
+  const legacy = JSON.parse(snapshot);
+  delete legacy.worldMap;
+  executar(`restaurarEstadoJogo(${JSON.stringify(legacy)});`);
+  assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+  for (const [localId, sceneId] of [['casa', 'casa_quarto_mj'], ['cena_crime', 'crime_sala']]) {
+    executar(`restaurarEstadoJogo(${snapshot}); abrirMapaGlobal({source: 'test'});`);
+    await ler(`viajarPeloMapa("${localId}")`);
+    assert.equal(ler('state.localizacao.local'), localId);
+    assert.equal(ler('state.localizacao.cena'), sceneId);
+    if (ler('state.modo') === 'dialogo') executar('encerrarConversa();');
+  }
 });
 
 test('cena do crime: hotspots acompanham o recorte cover em landscape', () => {

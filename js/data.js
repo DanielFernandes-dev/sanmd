@@ -145,6 +145,33 @@ const CENAS_CRIME = {
   }
 };
 
+const CENAS_DELEGACIA = {
+  delegacia_corredor: {
+    id: "delegacia_corredor", label: "Corredor da Delegacia",
+    background: "assets/cenario/delegacia/corredor-delegacia.png",
+    initialState: {}, destinos: ["delegacia_investigadores"], personagensPresentes: []
+  },
+  delegacia_investigadores: {
+    id: "delegacia_investigadores", label: "Área dos investigadores",
+    background: "assets/cenario/delegacia/central-delegacia.png",
+    initialState: {}, destinos: ["delegacia_corredor", "delegacia_mesa_mj"], personagensPresentes: []
+  },
+  delegacia_mesa_mj: {
+    id: "delegacia_mesa_mj", label: "Mesa da MJ",
+    background: "assets/cenario/delegacia/escritoria-mj.png",
+    backgroundSize: [1672, 941],
+    initialState: { noteRead: false, computerOn: false },
+    destinos: ["delegacia_investigadores"],
+    hotspots: [
+      { id: "mj_note", rect: [48, 70, 17, 14], ariaLabel: "Examinar bilhete",
+        type: "examine", eventId: "mjNoteRead" },
+      { id: "mj_computer", rect: [40, 34, 23, 24], ariaLabel: "Usar computador",
+        type: "interact", eventId: "mjComputerUsed" }
+    ],
+    personagensPresentes: []
+  }
+};
+
 const MONOLOGOS_BECO = {
   identidadeResolvida: [
     { autor: "MJ", texto: "(5-12-1. E-L-A.)" },
@@ -198,6 +225,7 @@ const DATA = {
   locais: {
     casa: { id: "casa", nome: "Casa", cenaInicial: "casa_quarto_mj", cenas: CENAS_CASA },
     cena_crime: { id: "cena_crime", nome: "Cena do crime", cenaInicial: "crime_sala", cenas: CENAS_CRIME },
+    delegacia: { id: "delegacia", nome: "Delegacia", cenaInicial: "delegacia_corredor", cenas: CENAS_DELEGACIA },
     beco: {
       id: "beco",
       nome: "Beco",
@@ -207,6 +235,14 @@ const DATA = {
   },
 
   cena: CENAS_BECO.beco_entrada,
+
+  prototypeAlleyCoordinates: { latitude: '23° 33\' 12" S', longitude: '46° 38\' 27" W' },
+  worldMapLocations: {
+    casa: { label: "Casa", localId: "casa", initiallyAvailable: true },
+    cena_crime: { label: "Cena do Crime", localId: "cena_crime", initiallyAvailable: true },
+    delegacia: { label: "Delegacia", localId: "delegacia", initiallyAvailable: true },
+    beco: { label: "Beco", localId: "beco", initiallyAvailable: false }
+  },
 
   personagens: {
     james: { id: "james", nome: "James", sprites: { neutral: "assets/sprites/james.png" } },
@@ -277,6 +313,9 @@ const DATA = {
   },
 
   monologos: {
+    delegacia_corredor: { inicial: [{ autor: "MJ", texto: "(Preciso ir à minha mesa.)" }] },
+    delegacia_investigadores: { inicial: [{ autor: "MJ", texto: "(Minha mesa fica adiante.)" }] },
+    delegacia_mesa_mj: { inicial: [{ autor: "MJ", texto: "(O computador está aqui.)" }] },
     crime_sala: {
       inicial: [{ autor: "MJ", texto: "(Então foi aqui. Melhor olhar com calma antes de ir embora.)" }],
       phoneBreak: [

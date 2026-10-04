@@ -21,6 +21,7 @@ function criarSistemaPersistencia(context) {
       aparelho: { ...state.aparelho },
       inventory: [...state.inventory],
       sceneState: copiarDados(state.sceneState),
+      worldMap: copiarDados(state.worldMap),
       saveVersion: SAVE_VERSION,
       capturedAt: Date.now(),
       localizacao: { ...state.localizacao },
@@ -141,7 +142,20 @@ function criarSistemaPersistencia(context) {
     if (!exploration) return null;
     const aparelho = validarAparelho(candidato, exploration);
     if (!aparelho) return null;
-    return { ...copiarDados(candidato), ...exploration, aparelho, act1Complete: candidato.act1Complete ?? false };
+    const worldMap = validarWorldMap(candidato.worldMap);
+    if (!worldMap) return null;
+    return { ...copiarDados(candidato), ...exploration, aparelho, worldMap,
+      act1Complete: candidato.act1Complete ?? false };
+  }
+
+  function validarWorldMap(value) {
+    const defaults = criarEstadoMapaGlobal(DATA.worldMapLocations);
+    if (value === undefined) return defaults;
+    if (!ehRegistro(value) || !ehRegistro(value.availableLocations)) return null;
+    const locations = value.availableLocations;
+    if (!Object.keys(defaults.availableLocations).every(id => typeof locations[id] === "boolean")
+      || Object.keys(locations).some(id => !Object.hasOwn(defaults.availableLocations, id))) return null;
+    return { availableLocations: { ...locations } };
   }
 
   /** Validar aparelho.
@@ -255,6 +269,7 @@ function criarSistemaPersistencia(context) {
     state.localizacao = snapshot.localizacao;
     state.inventory = snapshot.inventory;
     state.sceneState = snapshot.sceneState;
+    state.worldMap = snapshot.worldMap;
     state.bolsa = criarEstadoBolsa();
     state.dialogo = { ...criarEstadoDialogo(), ...snapshot.dialogo, audio: state.dialogo.audio };
     state.celular = { ...criarEstadoCelular(), ...snapshot.celular };
@@ -267,6 +282,7 @@ function criarSistemaPersistencia(context) {
   /** Sincroniza a interface e devolve o foco após carregar um snapshot.
    */
   function restaurarInterface() {
+    services.fecharInterfacesMapa();
     if (el.bag.bagDialog.open && typeof el.bag.bagDialog.close === "function") el.bag.bagDialog.close();
     el.bag.bagSearch.value = "";
     el.scene.interactionStatus.textContent = "";

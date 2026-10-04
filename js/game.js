@@ -11,7 +11,7 @@
  */
 function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
   config = CONFIG, window = globalThis.window ?? {} }) {
-  const state = criarEstadoJogo();
+  const state = criarEstadoJogo(data);
   const el = criarElementos(document);
   const services = {};
   const saveRepository = criarSaveRepository(storage);
@@ -24,6 +24,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     persistence: criarSistemaPersistencia(context),
     transition: criarSceneTransitionController(context),
     scene: criarSistemaCenas(context),
+    worldMap: criarSistemaMapaGlobal(context),
     dialogue: criarSistemaDialogos(context),
     phone: criarSistemaCelular(context),
     gallery: criarSistemaGaleria(context),
@@ -42,6 +43,7 @@ function criarJogo({ document, storage = null, data = DATA, items = ITEMS,
     if (iniciado) return;
     services.configurarAnimacoes();
     services.inicializarEventos();
+    services.inicializarMapaGlobal();
     services.aplicarCena(services.obterCenaAtual());
     services.atualizarCabecalhoMensagens();
     services.renderizarBolsa();

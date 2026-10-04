@@ -1506,6 +1506,24 @@ button:hover:not(:disabled) .action-icon {
   touch-action: manipulation;
 }
 .scene-hotspot:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
+.prototype-overlay:not([hidden]) {
+  position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center;
+  background: #080c15e8; padding: 16px;
+}
+.prototype-panel {
+  width: min(620px, 100%); max-height: 100%; overflow: auto; padding: 20px;
+  color: #f4f4f4; background: #182032; border: 2px solid #718098;
+}
+.prototype-panel h2 { margin: 0 0 12px; }
+.prototype-panel button { min-height: 44px; padding: 8px 14px; cursor: pointer; }
+.prototype-map-panel { width: min(760px, 100%); }
+.world-map-locations { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.map-location--available { background: #246e38; color: white; }
+.map-location--locked { background: #424650; color: #ddd; }
+.map-location--current { background: #364c71; color: white; }
+.map-search-fields { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.map-search-fields label { display: grid; gap: 4px; }
+.map-search-fields input { min-height: 44px; width: min(180px, 36vw); padding: 5px; }
 #interaction-status {
   position: absolute; bottom: 12px; left: 16px; max-width: calc(100% - 100px);
   pointer-events: none; z-index: 3; background: #131828e8; border-radius: 6px;

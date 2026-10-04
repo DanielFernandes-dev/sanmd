@@ -10,6 +10,14 @@ function criarElementos(document) {
     return elemento;
   };
   return {
+    worldMap: {
+      noteOverlay: buscar("note-overlay"), noteLatitude: buscar("note-latitude"),
+      noteLongitude: buscar("note-longitude"), noteClose: buscar("note-close"),
+      mapOverlay: buscar("world-map-overlay"), mapLocations: buscar("world-map-locations"),
+      mapLatitude: buscar("map-latitude"), mapLongitude: buscar("map-longitude"),
+      mapSearch: buscar("map-search"), mapFeedback: buscar("map-feedback"),
+      mapClose: buscar("map-close")
+    },
     scene: {
       transitionOverlay: buscar("scene-transition-overlay"),
       objectLayer: buscar("object-layer"),

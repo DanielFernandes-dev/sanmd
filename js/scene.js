@@ -88,7 +88,6 @@ function criarSistemaCenas(context) {
         ? [{ id: "ir_delegacia", label: "Delegacia" }] : []),
       ...(podeSairDoBeco() && cena.id === "beco_entrada" ? [{ id: "sair_beco", label: "Sair do beco" }] : [])
     ];
-    // TODO Delegacia: cadastrar o local quando seu cenário for implementado.
     return exits.concat(cena.destinos
       .map((destinoId) => local.cenas[destinoId])
       .filter(Boolean));
@@ -202,7 +201,10 @@ function criarSistemaCenas(context) {
   function irParaDelegacia() {
     if (!podeIrDelegacia() || !Object.hasOwn(DATA.locais, "delegacia")) return false;
     const local = DATA.locais.delegacia;
-    return services.transitionToScene(local.id, local.cenaInicial);
+    return services.transitionToScene(local.id, local.cenaInicial).then(success => {
+      if (success) services.registrarAutosave();
+      return success;
+    });
   }
 
   function podeIrDelegacia() {
