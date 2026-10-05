@@ -23,8 +23,13 @@ function criarSistemaEstacaoTrabalho({ state, el, document, services }) {
     state.modo = "livre";
     app.inert = false;
     services.definirBotoes();
-    if (restoreFocus) Array.from(el.scene.hotspotLayer.children)
-      .find(button => button.dataset.hotspot === "mj_computer")?.focus();
+    if (restoreFocus) {
+      for (const button of el.scene.hotspotLayer.children) {
+        if (button.dataset.hotspot !== "mj_computer") continue;
+        button.focus();
+        break;
+      }
+    }
     return true;
   }
   function inicializarEstacaoTrabalho() {
@@ -34,8 +39,8 @@ function criarSistemaEstacaoTrabalho({ state, el, document, services }) {
     ui.map.addEventListener("click", () => services.abrirMapaGlobal({ source: "delegacia_computer" }));
     ui.close.addEventListener("click", () => fecharEstacaoTrabalho());
     document.addEventListener("keydown", event => {
-      if (event.defaultPrevented || !estacaoAberta() || !el.worldMap.mapOverlay.hidden) return;
-      if (event.key === "Escape") { event.preventDefault(); fecharEstacaoTrabalho(); }
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      if (fecharEstacaoTrabalho()) event.preventDefault();
     });
   }
   return Object.freeze({ estacaoAberta, abrirEstacaoTrabalho, fecharEstacaoTrabalho, inicializarEstacaoTrabalho });

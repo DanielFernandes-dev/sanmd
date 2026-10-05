@@ -568,6 +568,7 @@ test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave dup
     aplicarCena(obterCenaAtual()); executarHotspot('mj_computer');
     abrirMapaGlobal({ source: 'delegacia_computer' });
     globalThis.clock = 100; Date.now = () => ++clock;`);
+  const marcadorBeco = ler('el.mapLocations.children.find(x => x.dataset.localId === "beco")');
   for (const field of ['none', 'latitude', 'longitude', 'wrong']) {
     executar(`el.mapLatitude.value = ${field === 'latitude' ? 'DATA.prototypeAlleyCoordinates.latitude' : "''"};
       el.mapLongitude.value = ${field === 'longitude' ? 'DATA.prototypeAlleyCoordinates.longitude' : "''"};`);
@@ -581,6 +582,8 @@ test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave dup
     el.mapLatitude.value = format(DATA.prototypeAlleyCoordinates.latitude);
     el.mapLongitude.value = format(DATA.prototypeAlleyCoordinates.longitude);`);
   assert.equal(ler('localizarCoordenadas()'), true);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco")'), marcadorBeco,
+    'desbloquear o beco atualiza o marcador existente');
   const savedAt = ler('saveRepository.obterAutosave().saveState.capturedAt');
   assert.equal(ler('localizarCoordenadas()'), true);
   assert.equal(ler('saveRepository.obterAutosave().saveState.capturedAt'), savedAt);

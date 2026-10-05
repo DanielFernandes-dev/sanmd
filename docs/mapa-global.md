@@ -48,6 +48,15 @@ incluindo ícone e rótulo, permanece oculto até a confirmação das coordenada
 corretas em Localizar. A visibilidade usa `worldMap.availableLocations.beco`,
 incluindo o desbloqueio restaurado por Save/Load. Rótulos acessíveis indicam cada estado.
 
+## Atualização da interface
+
+Os marcadores e seus listeners são criados uma única vez na inicialização.
+Abrir o mapa, localizar o Beco e bloquear uma viagem atualizam os mesmos botões,
+lendo a localização e a disponibilidade atuais do estado, inclusive após Load.
+A consulta de destinos usa o registro de marcadores, sem percorrer o catálogo
+em cada seleção. A edição e a normalização de coordenadas são funções internas
+do módulo de mapa.
+
 ## Integração futura
 
 Inserir a apresentação de fast travel em `travelToWorldLocation`, depois de

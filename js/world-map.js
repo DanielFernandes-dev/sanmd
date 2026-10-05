@@ -8,6 +8,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   let initialized = false;
   let returnToWorkstation = false;
   let keyboardHome = null;
+  const marcadores = new Map();
 
   function normalizarCoordenada(value) {
     return String(value ?? "").replace(/º/g, "°").normalize("NFKD").toUpperCase()
@@ -60,24 +61,30 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       && Object.hasOwn(DATA.locais, localId);
   }
 
-  function renderizarMapaGlobal() {
+  function criarMarcadoresMapa() {
     ui.mapLocations.replaceChildren(...Object.values(DATA.worldMapLocations).map(location => {
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.localId = location.localId;
       button.dataset.label = location.label;
-      const current = state.localizacao.local === location.localId;
-      const available = localDisponivel(location.localId);
-      button.hidden = location.localId === "beco" && !available;
       button.textContent = location.label;
       button.style = `left:${location.mapPosition.x}%;top:${location.mapPosition.y}%;`;
+      button.addEventListener("click", () => viajarPeloMapa(location.localId));
+      marcadores.set(location.localId, button);
+      return button;
+    }));
+  }
+
+  function renderizarMapaGlobal() {
+    for (const [localId, button] of marcadores) {
+      const current = state.localizacao.local === localId;
+      const available = localDisponivel(localId);
+      button.hidden = localId === "beco" && !available;
       button.className = `map-location ${current ? "map-location--current" : available
         ? "map-location--available" : "map-location--locked"}`;
       button.disabled = traveling || current || !available;
-      button.ariaLabel = `${location.label} — ${current ? "local atual" : available ? "disponível" : "indisponível"}`;
-      button.addEventListener("click", () => viajarPeloMapa(location.localId));
-      return button;
-    }));
+      button.ariaLabel = `${button.dataset.label} — ${current ? "local atual" : available ? "disponível" : "indisponível"}`;
+    }
   }
 
   function abrirMapaGlobal({ source, returnHotspotId: hotspotId } = {}) {
@@ -140,7 +147,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   function viajarPeloMapa(localId) {
     if (ui.mapOverlay.hidden || traveling || state.modo !== "interface"
       || services.isSceneTransitioning() || services.isCutsceneActive()
-      || !Object.values(DATA.worldMapLocations).some(location => location.localId === localId)) return false;
+      || !marcadores.has(localId)) return false;
     if (localId === state.localizacao.local) {
       ui.mapFeedback.textContent = `Você já está em ${DATA.worldMapLocations[localId].label}. Use Voltar para retornar ao computador.`;
       return false;
@@ -197,6 +204,8 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     initialized = true;
     ui.noteOverlay.hidden = true;
     ui.mapOverlay.hidden = true;
+    criarMarcadoresMapa();
+    renderizarMapaGlobal();
     const art = document.getElementById("world-map-art");
     const artUnavailable = () => {
       console.warn("Arte do mapa indisponível; exibindo controles sem a imagem.");
@@ -235,5 +244,5 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
 
   return Object.freeze({ abrirBilhete, fecharBilhete, abrirMapaGlobal, fecharMapaGlobal,
     fecharInterfacesMapa, renderizarMapaGlobal, localizarCoordenadas, viajarPeloMapa,
-    localDisponivel, bloquearMapaGlobal, editarCoordenada, normalizarCoordenada, inicializarMapaGlobal });
+    localDisponivel, bloquearMapaGlobal, inicializarMapaGlobal });
 }
