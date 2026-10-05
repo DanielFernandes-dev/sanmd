@@ -1,7 +1,9 @@
 # Game Design Document — Sim, Acredite nas Mentiras Dele kk
 
-> Revisado em 02/10/2026. Este documento distingue o design planejado do
-> [estado implementado](docs/STATUS_PROJETO.md).
+> Revisado em 05/10/2026. Este documento distingue o design planejado do
+> [estado implementado](docs/STATUS_PROJETO.md). Consulte também o
+> [guia de desenvolvedor](AGENTS.md) e a
+> [referência de módulos JS](docs/JS_MODULES.md).
 
 ## 1. Visão Geral do Projeto
 
@@ -472,7 +474,7 @@ A influência hentai ainda precisa ser decidida: ela pode permanecer apenas como
 ### Estado atual do protótipo
 
 - **Plataforma:** Web / Desktop (HTML/CSS/JS vanilla, sem build).
-- **Estrutura:** Fábricas por sistema, compostas em `js/game.js`; catálogo em `js/data.js`, tempos em `js/config.js`, snapshot em `js/persistence.js` e armazenamento em `js/save-system.js`. Ver [arquitetura](ESTRUTURA_GAMING.md) e [padrão das mecânicas](docs/MECHANICS_PATTERN.md).
+- **Estrutura:** Fábricas por sistema, compostas em `js/bootstrap.js`; catálogo em `js/data.js`, tempos em `js/config.js`, snapshot em `js/persistence.js` e armazenamento em `js/save-system.js`. Ver [arquitetura](ESTRUTURA_GAMING.md), [guia de desenvolvedor](AGENTS.md), [referência de módulos](docs/JS_MODULES.md) e [padrão das mecânicas](docs/MECHANICS_PATTERN.md).
 - **Interface implementada:** Menu em caderno, abertura SANMD, Cutscene 02 exclusiva de Novo jogo e Cutscene 03 ao sair do beco, e cena em tela cheia com quatro comandos por ícones pixelados, menu contextual de destinos, investigação point-and-click com hotspots acessíveis, inventário narrativo pela **Bolsa da MJ** e smartphone sobreposto com **Galeria funcional (10 expressões fotográficas da MJ, Save/Load fotográfico com até 9 saves manuais + autosave, composição 4:3, flash 140ms, preview/detalhe, layout 3×3 responsivo, metadados estruturados)**.
 - **Conteúdo implementado:** Cutscene 02 silenciosa de Lulith em dez quadros e Cutscene 03 em oito quadros de observação no telhado, com preto final criado pelo código, título **ATO 1 COMPLETO**, autosave e retorno ao menu; ambas usam preload, câmera discreta, sons, Skip global e movimento reduzido. Três cenas provisórias conectadas no beco, cofre interativo com abertura e coleta do Celular de Lulith, ativação do aparelho pela Bolsa com reação narrativa, primeiro contato anônimo, opções condicionais validadas por arquivos, rotas de monólogo com pronome contextual, enigma A1Z26, cronômetro e reset remoto com estados explícitos, **persistência completa em localStorage (snapshots versionados, saves manuais, autosave, expressões fotográficas, inventário, estado de cena)**.
 - **Acessibilidade e mobile:** Destaque de toque removido dos controles principais, layout mobile paisagem com frame reduzido, tipografia ajustada e galeria com linhas dimensionadas pelo conteúdo.

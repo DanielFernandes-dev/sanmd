@@ -3,6 +3,7 @@ aliases:
   - Estrutura Gaming
   - Arquitetura do Jogo
   - Estado Atual do SANMD
+  - Arquitetura e Estado do SANMD
 tags:
   - sanmd
   - arquitetura
@@ -10,8 +11,9 @@ tags:
   - roadmap
   - visual-novel
   - obsidian
+  - js-modules
 status: atual
-updated: 2026-10-02
+updated: 2026-10-05
 ---
 
 # Estrutura Gaming
@@ -2075,11 +2077,11 @@ Isso evita registrar no mapa assets que ainda não atendam ao requisito de trans
 
 ## Referências
 
-- [[README]] — visão geral e execução.
-- [[TODO]] — tarefas concluídas e pendentes.
-- [[GDD]] — visão narrativa e mecânicas futuras.
-- [[IDEIA_CONCEITUAL]] — decisões conceituais e pendências atuais.
-- [[REGRAS_DE_DESIGN]] — regras gerais de design e índice dos contratos de assets.
+- [`README.md`](README.md) — visão geral, execução e índice de documentação.
+- [Arquitetura](AGENTS.md) — orientação rápida para agentes e desenvolvedores.
+- [Referência de módulos JS](docs/JS_MODULES.md) — API de todos os 30 módulos.
+- [docs/ADR_LOG.md](docs/ADR_LOG.md) — decisões de arquitetura.
+- [`REGRAS_DE_DESIGN.md`](REGRAS_DE_DESIGN.md) — regras gerais de design e índice dos contratos de assets.
 - [index.html](index.html) — estrutura atual.
    - [styles.css](styles.css) — apresentação atual.
    - [js/data.js](js/data.js) — dados narrativos atuais.

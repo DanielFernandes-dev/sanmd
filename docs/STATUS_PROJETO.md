@@ -7,7 +7,7 @@ tags:
   - implementação
   - validação
 status: atual
-updated: 2026-10-03
+updated: 2026-10-05
 ---
 
 # Estado do projeto
@@ -136,3 +136,11 @@ auditiva e o Skip em todos os quadros no aparelho permanecem pendentes.
 arquivos reais. O [ADR](ADR_LOG.md) conserva decisões históricas, inclusive as
 substituídas. Tempos devem mudar primeiro em CONFIG; esta documentação registra
 o comportamento resultante, sem criar outra fonte de configuração.
+
+## Documentação de referência
+
+| Documento | Responsabilidade |
+|---|---|
+| [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) | Visão geral da arquitetura, fluxo de dados e padrões |
+| [`docs/JS_MODULES.md`](JS_MODULES.md) | Referência de cada módulo JS com suas APIs |
+| [`AGENTS.md`](AGENTS.md) | Diretrizes para agentes Kilo e revisão de código |

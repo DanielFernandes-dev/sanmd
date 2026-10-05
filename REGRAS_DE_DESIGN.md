@@ -11,7 +11,7 @@ tags:
   - acessibilidade
   - convencoes
 status: atual
-updated: 2026-10-02
+updated: 2026-10-05
 ---
 
 # Regras de Design

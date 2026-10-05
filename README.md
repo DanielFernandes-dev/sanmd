@@ -230,6 +230,9 @@ O comando copia os arquivos web, sincroniza o projeto Capacitor e executa o buil
 | [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) | Arquitetura, estado implementado e contratos técnicos |
 | [`TODO.md`](TODO.md) | Roadmap executável do Ato I |
 | [`docs/STATUS_PROJETO.md`](docs/STATUS_PROJETO.md) | Estado consolidado e validação registrada |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Visão geral da arquitetura e fluxo de dados |
+| [`docs/JS_MODULES.md`](docs/JS_MODULES.md) | Referência de cada módulo JavaScript |
+| [`AGENTS.md`](AGENTS.md) | Diretrizes para agentes Kilo e revisão de código |
 | [`assets/audio/README.md`](assets/audio/README.md) | SFX locais e geração reproduzível |
 | [`docs/ADR_LOG.md`](docs/ADR_LOG.md) | Registro de decisões de arquitetura |
 | [`docs/PHONE_THEMES.md`](docs/PHONE_THEMES.md) | Contrato de temas visuais do celular |

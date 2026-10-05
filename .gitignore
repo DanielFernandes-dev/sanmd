@@ -1,7 +1,5 @@
 node_modules/
 www/
-
-# Capacitor / Android
 android/.gradle/
 android/app/build/
 android/build/
@@ -9,3 +7,10 @@ android/capacitor-cordova-android-plugins/
 android/local.properties
 *.apk
 *.aab
+
+# Arquivos temporários do jogo (gerados durante desenvolvimento)
+*.tmp
+*.temp
+*.log
+.DS_Store
+Thumbs.db

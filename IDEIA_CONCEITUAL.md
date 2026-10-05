@@ -3,6 +3,8 @@
 > Documento-base para atualização conceitual de **Sim, Acredite nas Mentiras Dele kk (SANMD)**.
 >
 > Este arquivo consolida as decisões narrativas e visuais mais recentes discutidas até agora, separando o que já foi definido do que ainda permanece em aberto.
+>
+> Última atualização: **05/10/2026**.
 
 ---
 

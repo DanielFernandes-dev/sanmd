@@ -6,7 +6,7 @@
 >
 > Objetivo do Ato I: apresentar MJ, James, investigação point-and-click, nota, coordenadas, cofre, celular, Lulith e os principais sistemas de gameplay.
 
-> Atualização de implementação: **02/10/2026**. Ver [estado consolidado](docs/STATUS_PROJETO.md).
+> Atualização de implementação: **05/10/2026**. Ver [estado consolidado](docs/STATUS_PROJETO.md).
 
 ## Limites do escopo
 
@@ -756,3 +756,55 @@ Os itens abaixo devem permanecer documentados no GDD, mas não entram neste road
 - Metalinguagem, exploração dos arquivos do APK e ARG completo.
 - Design canônico dos personagens e cenários.
 - Decisão definitiva sobre a influência hentai.
+
+## Convenções de Código
+
+### JavaScript
+
+- **Linguagem**: Vanilla ES2024, sem transpiler, sem bundler.
+- **Paradigma**: Funções fábrica com injeção de dependências (`criar*` pattern). Cada módulo exporta uma ou mais funções `criar*` que retornam um objeto congelado de operações.
+- **Nomenclatura**:
+  - Funções e propriedades usam `camelCase`.
+  - Funções fábrica são nomeadas `criar*` (português para "create*").
+  - Constantes em escopo de módulo usam `UPPER_SNAKE_CASE` (ex: `MAX_MANUAL_SAVES`).
+  - Chaves de estado usam abreviações em português (ex: `bolsa`, `celular`, `localizacao`, `cene`).
+- **Imutabilidade**: Objetos de serviço retornados são `Object.freeze`. Objetos de estado são substituídos, não mutados in-place, durante restauração.
+- **Sem comentários no código** a menos que solicitado — documentação vive nas docstrings e na pasta `docs/`.
+- **Tratamento de erros**: Erros são capturados e exibidos como feedback de UI ou avisos no console — o jogo nunca lança erros não tratados no navegador.
+- **Sem mutações globais**: `game.js` cria instâncias isoladas. A única entrada global é `bootstrap.js`, que anexa uma única instância `game`.
+
+### Padrões em uso
+
+- **Factory + DI**: `criarJogo()` compõe todos os subsistemas, injetando um objeto `context` compartilhado.
+- **Strategy**: `mechanics.js` registra handlers de interação (`examine`, `collect`, `use_item`, etc.) por tipo.
+- **Facade**: `animation.js` abstrai detalhes de fade/animação e reduced-motion.
+- **Composite/Renderer Selector**: `cutscene-renderers.js` despacha para o renderer de título (`cutscene-view.js`) ou de quadros (`cutscene-frames.js`) baseado na definição da sequência.
+
+### Estado de Persistência
+
+| Segmento         | Fonte             | Descrição                          |
+|------------------|-------------------|------------------------------------|
+| Game state       | `js/state.js`     | Todo estado persistente e transitório |
+| Scene state      | `js/scene.js`     | Flags por cena, exibição de personagem |
+| Dialogue state   | `js/dialogue.js`  | Índice de linha, digitação, fase de monólogo |
+| Phone state      | `js/phone.js`     | Tela, timers persistentes, fila de mensagens |
+| Gallery state    | `js/gallery.js`   | Seleção de foto, preview, flash    |
+| Text input       | `js/text-entry.js` | Buffer, cursor, layout, shift      |
+| Inventory        | `js/bag.js`       | Itens, pesquisa, paginação         |
+
+### Persistência
+
+- **Formato de save**: JSON com `saveVersion: 1`, armazenado em `localStorage` sob a chave `sanmd:saves` (ou em memória quando `storage` é null).
+- **Saves manuais**: máximo 9, usados pelo sistema de fotos da Galeria.
+- **Autosave**: slot único, sobrescrito a cada chamada de `registrarAutosave()`.
+- **Validação de snapshot**: `persistence.js` valida estrutura, localização, fase de diálogo, visibilidade de arquivos, estado de mensagens, estado do celular e inventário antes de restaurar.
+
+## Checklist de Revisão de Código
+
+- Novas chaves de estado devem ser adicionadas a `capturarEstadoJogo()` em `persistence.js` se precisam sobreviver a saves.
+- `state.texto`, `state.bolsa`, e `state.galeria` são transitórios — não persistir.
+- Event listeners são anexados uma única vez durante `inicializarEventos()` (events.js). Não anexar listeners em construtores de fábrica.
+- Evitar `setTimeout` com números mágicos — usar valores de `CONFIG`.
+- Todos os métodos públicos de serviço devem retornar objetos `Object.freeze` quando apropriado.
+- Novas tarefas de hotspot: registrar a estratégia em `mechanics.js` → `criarMecanicasHotspot`. Retornar `false` se a interação deve ser bloqueada.
+- Novas cutscenes: definir a sequência em `js/data.js` como entrada em `CUTSCENES`. Usar `game.services.iniciarCutscene('id', onComplete)`.
