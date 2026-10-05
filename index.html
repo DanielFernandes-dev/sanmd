@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
+  <link rel="preload" as="image" href="assets/sprites/mapa-sem-beco.png">
   <link rel="stylesheet" href="styles.css?v=mobile-landscape-v1">
 </head>
 <body>
@@ -143,11 +144,12 @@
   <section id="world-map-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="world-map-title" hidden>
     <div class="prototype-panel prototype-map-panel">
       <h2 id="world-map-title">Mapa</h2>
+      <img id="world-map-art" src="assets/sprites/mapa-sem-beco.png" alt="" aria-hidden="true" draggable="false" decoding="sync">
       <div id="world-map-locations" class="world-map-locations" aria-label="Locais"></div>
       <div class="map-search-fields">
-        <label>Latitude <input id="map-latitude" type="text" readonly inputmode="none" autocomplete="off" aria-controls="text-entry"></label>
-        <label>Longitude <input id="map-longitude" type="text" readonly inputmode="none" autocomplete="off" aria-controls="text-entry"></label>
-        <button id="map-search" type="button">Localizar coordenadas</button>
+        <label class="map-coordinate-latitude"><span>Latitude</span><input id="map-latitude" type="text" placeholder=" " readonly inputmode="none" autocomplete="off" aria-controls="text-entry"></label>
+        <label class="map-coordinate-longitude"><span>Longitude</span><input id="map-longitude" type="text" placeholder=" " readonly inputmode="none" autocomplete="off" aria-controls="text-entry"></label>
+        <button id="map-search" type="button" aria-label="Localizar coordenadas">Localizar coordenadas</button>
       </div>
       <p id="map-feedback" role="status" aria-live="polite"></p>
       <button id="map-close" type="button">Voltar</button>

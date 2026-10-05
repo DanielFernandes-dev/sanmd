@@ -105,6 +105,23 @@ function rotulosMenu(ler) {
   return JSON.parse(ler('JSON.stringify(Array.from(el.irParaMenu.children).map((botao) => botao.textContent))'));
 }
 
+test('arte do mapa usa a mesma moldura dos controles e quatro posições distintas', () => {
+  const raiz = path.resolve(__dirname, '..');
+  const art = fs.readFileSync(path.join(raiz, 'assets/sprites/mapa-sem-beco.png'));
+  assert.equal(art.subarray(1, 4).toString(), 'PNG');
+  assert.deepEqual([art.readUInt32BE(16), art.readUInt32BE(20)], [1672, 941]);
+  const html = fs.readFileSync(path.join(raiz, 'index.html'), 'utf8');
+  const panel = html.match(/<div class="prototype-panel prototype-map-panel">([\s\S]*?)<\/section>/)?.[1];
+  assert.ok(panel?.includes('src="assets/sprites/mapa-sem-beco.png"'));
+  for (const id of ['world-map-locations', 'map-latitude', 'map-longitude', 'map-search', 'map-feedback', 'map-close']) {
+    assert.ok(panel.includes(`id="${id}"`), `${id} pertence ao mapa visual`);
+  }
+  const { ler } = controlarAmbiente();
+  const positions = JSON.parse(ler('JSON.stringify(Object.values(DATA.worldMapLocations).map(loc => loc.mapPosition))'));
+  assert.equal(new Set(positions.map(pos => `${pos.x},${pos.y}`)).size, 4);
+  assert.ok(positions.every(pos => pos.x > 0 && pos.x < 100 && pos.y > 0 && pos.y < 100));
+});
+
 test('beco: redesenhar preserva a posição do cofre com style nativo do DOM', async () => {
   const { executar, ler } = controlarAmbiente();
   await executar('irPara("beco_interior"); irPara("beco_fundo");');
@@ -471,16 +488,17 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   executar('abrirMapaGlobal({ source: "delegacia_computer" });');
   assert.equal(ler('el.overlay.inert'), true);
   assert.equal(ler('el.mapOverlay.hidden'), false);
-  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), true);
   assert.equal(ler('viajarPeloMapa("delegacia")'), false);
   assert.match(ler('el.mapFeedback.textContent'), /Você já está em Delegacia/);
   assert.equal(ler('state.modo'), 'interface');
   assert.equal(ler('irPara("delegacia_investigadores")'), undefined);
   assert.equal(ler('executarHotspot("mj_note")'), false);
-  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), true);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").hidden'), true);
   assert.equal(ler('viajarPeloMapa("beco")'), false);
   assert.match(ler('el.mapFeedback.textContent'), /latitude e a longitude do bilhete/);
-  assert.match(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").textContent'), /não localizado/);
+  assert.match(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").ariaLabel'), /indisponível/);
   assert.equal(ler('localizarCoordenadas()'), false);
   executar(`el.mapLatitude.value = DATA.prototypeAlleyCoordinates.latitude; el.mapLongitude.value = '0';`);
   assert.equal(ler('localizarCoordenadas()'), false);
@@ -494,6 +512,7 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   assert.equal(ler('localizarCoordenadas()'), true);
   assert.equal(ler('state.localizacao.local'), 'delegacia');
   assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").hidden'), false);
   const snapshot = ler('JSON.stringify(capturarEstadoJogo())');
   executar('fecharMapaGlobal();');
   await ler('viajarPeloMapa("beco")'); // Mapa fechado: nenhuma viagem.
@@ -504,6 +523,7 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   assert.equal(ler('state.sceneState.delegacia_mesa_mj.computerOn'), true);
   executar(`abrirMapaGlobal({source: 'test'});`);
   assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").hidden'), false);
   const trip = ler('viajarPeloMapa("beco")');
   assert.equal(ler('viajarPeloMapa("casa")'), false);
   await trip;
@@ -554,6 +574,7 @@ test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave dup
     if (field === 'wrong') executar(`el.mapLatitude.value = '0'; el.mapLongitude.value = '0';`);
     assert.equal(ler('localizarCoordenadas()'), false);
     assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+    assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").hidden'), true);
     assert.equal(ler('el.mapOverlay.hidden'), false);
   }
   executar(`const format = value => value.toLowerCase().replace(/°/g, 'º').replace(/'/g, '′').replace(/"/g, '″').replace(/ /g, '  ');
@@ -564,6 +585,7 @@ test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave dup
   assert.equal(ler('localizarCoordenadas()'), true);
   assert.equal(ler('saveRepository.obterAutosave().saveState.capturedAt'), savedAt);
   assert.match(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").className'), /available/);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").hidden'), false);
   executar('fecharMapaGlobal();');
   assert.equal(ler('state.modo'), 'interface');
   assert.equal(ler('el.map.focused'), true);

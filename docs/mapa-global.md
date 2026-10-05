@@ -30,15 +30,23 @@ foco, teclado aberto ou painéis. Saves sem mapa recebem disponibilidade
 compatível com sua progressão; Beco começa bloqueado. Visitas autorizadas à
 cena do crime e Delegacia atualizam a disponibilidade desses locais.
 
-## Interface provisória
+## Interface visual
 
 O teclado virtual existente edita os campos tanto por toque quanto por Enter
 ou Espaço. Escape cancela a edição, depois volta à estação e depois fecha o PC.
-Locais disponíveis são verdes; destinos ainda não localizados são cinza e indicam
-esse estado no texto do botão. Ao tocar no Beco bloqueado, o mapa orienta a usar
-as coordenadas do bilhete. O local atual tem estilo e rótulo próprios; seu botão
-explica que MJ já está ali, sem iniciar uma viagem. Durante uma viagem, todos os
-destinos ficam desabilitados. Rótulos acessíveis também indicam cada estado.
+`assets/sprites/mapa-sem-beco.png` é a camada visual do mapa (1672×941), uma cópia
+editada da arte original `mapa.png` sem o ícone fixo do Beco. Os inputs,
+o botão Localizar, os quatro marcadores e o feedback permanecem elementos HTML
+na mesma moldura proporcional. `mapPosition` em `DATA.worldMapLocations` guarda
+apenas a posição visual dos marcadores, em porcentagem; não altera as coordenadas
+do bilhete. A imagem é pré-carregada pelo navegador e uma falha de carregamento
+mostra os mesmos controles sobre um fundo simples.
+
+Locais disponíveis são verdes; bloqueados são cinza e desabilitados; o local
+atual é azul e não aceita viagem. O Beco é a exceção visual: seu botão inteiro,
+incluindo ícone e rótulo, permanece oculto até a confirmação das coordenadas
+corretas em Localizar. A visibilidade usa `worldMap.availableLocations.beco`,
+incluindo o desbloqueio restaurado por Save/Load. Rótulos acessíveis indicam cada estado.
 
 ## Integração futura
 

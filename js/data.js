@@ -239,10 +239,10 @@ const DATA = {
 
   prototypeAlleyCoordinates: { latitude: '23° 33\' 12" S', longitude: '46° 38\' 27" W' },
   worldMapLocations: {
-    casa: { label: "Casa", localId: "casa", initiallyAvailable: true },
-    cena_crime: { label: "Cena do Crime", localId: "cena_crime", initiallyAvailable: true },
-    delegacia: { label: "Delegacia", localId: "delegacia", initiallyAvailable: true },
-    beco: { label: "Beco", localId: "beco", initiallyAvailable: false }
+    casa: { label: "Casa", localId: "casa", initiallyAvailable: true, mapPosition: { x: 45.7, y: 22.4 } },
+    cena_crime: { label: "Cena do Crime", localId: "cena_crime", initiallyAvailable: true, mapPosition: { x: 52.6, y: 61.6 } },
+    delegacia: { label: "Delegacia", localId: "delegacia", initiallyAvailable: true, mapPosition: { x: 67.1, y: 15.0 } },
+    beco: { label: "Beco", localId: "beco", initiallyAvailable: false, mapPosition: { x: 80.5, y: 56.1 } }
   },
 
   personagens: {

@@ -65,13 +65,15 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.localId = location.localId;
+      button.dataset.label = location.label;
       const current = state.localizacao.local === location.localId;
       const available = localDisponivel(location.localId);
-      button.textContent = `${location.label}${current ? " — local atual" : !available ? " — não localizado" : ""}`;
+      button.hidden = location.localId === "beco" && !available;
+      button.textContent = location.label;
+      button.style = `left:${location.mapPosition.x}%;top:${location.mapPosition.y}%;`;
       button.className = `map-location ${current ? "map-location--current" : available
         ? "map-location--available" : "map-location--locked"}`;
-      // Destinos sem viagem possível ainda respondem ao clique com orientação.
-      button.disabled = traveling;
+      button.disabled = traveling || current || !available;
       button.ariaLabel = `${location.label} — ${current ? "local atual" : available ? "disponível" : "indisponível"}`;
       button.addEventListener("click", () => viajarPeloMapa(location.localId));
       return button;
@@ -195,6 +197,13 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     initialized = true;
     ui.noteOverlay.hidden = true;
     ui.mapOverlay.hidden = true;
+    const art = document.getElementById("world-map-art");
+    const artUnavailable = () => {
+      console.warn("Arte do mapa indisponível; exibindo controles sem a imagem.");
+      ui.mapOverlay.classList.add("map-art-unavailable");
+    };
+    art.addEventListener("error", artUnavailable);
+    if (art.complete && !art.naturalWidth) artUnavailable();
     ui.noteClose.addEventListener("click", () => fecharBilhete());
     ui.mapClose.addEventListener("click", () => fecharMapaGlobal());
     for (const input of [ui.mapLatitude, ui.mapLongitude]) {
