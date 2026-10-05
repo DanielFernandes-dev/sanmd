@@ -34,8 +34,11 @@ cena do crime e Delegacia atualizam a disponibilidade desses locais.
 
 O teclado virtual existente edita os campos tanto por toque quanto por Enter
 ou Espaço. Escape cancela a edição, depois volta à estação e depois fecha o PC.
-Locais disponíveis são verdes; bloqueados são cinza e desabilitados; o local
-atual tem estilo próprio e não aceita viagem. Rótulos acessíveis indicam cada estado.
+Locais disponíveis são verdes; destinos ainda não localizados são cinza e indicam
+esse estado no texto do botão. Ao tocar no Beco bloqueado, o mapa orienta a usar
+as coordenadas do bilhete. O local atual tem estilo e rótulo próprios; seu botão
+explica que MJ já está ali, sem iniciar uma viagem. Durante uma viagem, todos os
+destinos ficam desabilitados. Rótulos acessíveis também indicam cada estado.
 
 ## Integração futura
 

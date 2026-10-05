@@ -401,7 +401,8 @@ function criarSistemaCenas(context) {
       const existing = previous.find(o => o.dataset.objectId === sprite.dataset.objectId);
       if (!existing) return sprite;
       if (objectAnimation?.objectId !== sprite.dataset.objectId) existing.src = sprite.src;
-      existing.style = sprite.style;
+      const object = cena.objects.find(o => o.id === sprite.dataset.objectId);
+      posicionarObjeto(existing, object.rect, cena);
       return existing;
     }));
     const values = estadoDaCena(cena);
@@ -421,6 +422,13 @@ function criarSistemaCenas(context) {
   }
 
   window.addEventListener?.("resize", () => {
+    if (obterCenaAtual()?.backgroundSize) renderizarObjetos();
+  });
+
+  // Em aparelhos móveis o palco pode ainda não ter dimensões quando a cena é
+  // aplicada. Recalcular no load do background mantém os hotspots alinhados
+  // ao recorte `cover` da arte.
+  el.scene.cenario.addEventListener?.("load", () => {
     if (obterCenaAtual()?.backgroundSize) renderizarObjetos();
   });
 

@@ -65,12 +65,13 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       const button = document.createElement("button");
       button.type = "button";
       button.dataset.localId = location.localId;
-      button.textContent = location.label;
       const current = state.localizacao.local === location.localId;
       const available = localDisponivel(location.localId);
+      button.textContent = `${location.label}${current ? " — local atual" : !available ? " — não localizado" : ""}`;
       button.className = `map-location ${current ? "map-location--current" : available
         ? "map-location--available" : "map-location--locked"}`;
-      button.disabled = traveling || current || !available;
+      // Destinos sem viagem possível ainda respondem ao clique com orientação.
+      button.disabled = traveling;
       button.ariaLabel = `${location.label} — ${current ? "local atual" : available ? "disponível" : "indisponível"}`;
       button.addEventListener("click", () => viajarPeloMapa(location.localId));
       return button;
@@ -137,8 +138,21 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   function viajarPeloMapa(localId) {
     if (ui.mapOverlay.hidden || traveling || state.modo !== "interface"
       || services.isSceneTransitioning() || services.isCutsceneActive()
-      || !Object.values(DATA.worldMapLocations).some(location => location.localId === localId)
-      || !localDisponivel(localId) || localId === state.localizacao.local) return false;
+      || !Object.values(DATA.worldMapLocations).some(location => location.localId === localId)) return false;
+    if (localId === state.localizacao.local) {
+      ui.mapFeedback.textContent = `Você já está em ${DATA.worldMapLocations[localId].label}. Use Voltar para retornar ao computador.`;
+      return false;
+    }
+    if (!localDisponivel(localId)) {
+      ui.mapFeedback.textContent = localId === "beco"
+        ? "Para localizar o beco, digite a latitude e a longitude do bilhete da mesa e toque em Localizar coordenadas."
+        : "Este destino ainda não está disponível na investigação.";
+      if (localId === "beco") {
+        ui.mapLatitude.focus();
+        ui.mapFeedback.scrollIntoView?.({ block: "nearest" });
+      }
+      return false;
+    }
     return services.travelToWorldLocation(localId);
   }
 
@@ -159,9 +173,14 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     if (traveling || ui.mapOverlay.hidden || services.entradaTextoAberta()) return false;
     keyboardHome = el.phone.textEntryDock.parentNode;
     ui.mapOverlay.querySelector(".prototype-panel").appendChild(el.phone.textEntryDock);
-    return services.abrirEntradaTexto({ initialValue: input.value, maxLength: 48, allowEmpty: true,
+    const opened = services.abrirEntradaTexto({ initialValue: input.value, maxLength: 48, allowEmpty: true,
+      layout: "coordenadas",
       aoConfirmar: value => { input.value = value; fecharEditorCoordenada(); input.focus(); },
       aoCancelar: () => { fecharEditorCoordenada(); input.focus(); } });
+    // O mapa compartilha o teclado do celular, mas precisa revelar todas as
+    // linhas dentro do painel rolável, especialmente em telas horizontais.
+    if (opened) el.phone.textEntryDock.scrollIntoView?.({ block: "nearest" });
+    return opened;
   }
 
   function fecharInterfacesMapa() {

@@ -19,6 +19,12 @@ function criarSistemaTeclado(context) {
     ["layoutLetras", "backspace", "espaco", "ok"]
   ];
 
+  const LINHAS_COORDENADAS = [
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
+    ["°", "'", '"', "N", "S", "E", "W", "backspace"],
+    ["espaco", "ok"]
+  ];
+
   const ACENTOS_MINUSCULOS = ["á", "à", "â", "ã", "é", "ê", "í", "ó", "ô", "õ", "ú", "ç"];
   const ACENTOS_MAIUSCULOS = ["Á", "À", "Â", "Ã", "É", "Ê", "Í", "Ó", "Ô", "Õ", "Ú", "Ç"];
 
@@ -96,7 +102,8 @@ function criarSistemaTeclado(context) {
       el.phone.textEntryAccents.classList.add("oculto");
       return;
     }
-    const linhas = state.texto.layout === "numeros" ? LINHAS_NUMEROS : LINHAS_QWERTY;
+    const linhas = state.texto.layout === "coordenadas" ? LINHAS_COORDENADAS
+      : state.texto.layout === "numeros" ? LINHAS_NUMEROS : LINHAS_QWERTY;
     el.phone.gameKeyboard.replaceChildren(...linhas.map(montarLinha));
     renderizarAcentos();
   }

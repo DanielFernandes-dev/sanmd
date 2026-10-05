@@ -119,6 +119,26 @@ function criarAmbiente(storage = criarStorage()) {
   };
 }
 
+test("coordenadas: teclado oferece todos os caracteres do bilhete e confirma o valor", () => {
+  const { executar, ler } = criarAmbiente();
+  for (const field of ['latitude', 'longitude']) {
+    executar(`abrirEntradaTexto({ layout: 'coordenadas', maxLength: 48,
+      aoConfirmar: value => { globalThis.confirmedCoordinate = value; } });`);
+    const coordinate = ler(`DATA.prototypeAlleyCoordinates.${field}`);
+    const keys = JSON.parse(ler('JSON.stringify(el.gameKeyboard.children.flatMap(row => row.children.map(key => key.dataset.key)))'));
+    for (const character of coordinate) {
+      const key = character === ' ' ? 'espaco' : character;
+      assert.ok(keys.includes(key), `Tecla disponível: ${character}`);
+      executar(`pressionarTecla(${JSON.stringify(key)});`);
+    }
+    executar('pressionarTecla("ok");');
+    assert.equal(ler('confirmedCoordinate'), coordinate);
+    assert.equal(ler('entradaTextoAberta()'), false);
+  }
+  executar('abrirEntradaTexto();');
+  assert.equal(ler('state.texto.layout'), 'qwerty', 'celular mantém o teclado padrão');
+});
+
 test("galeria: teclado virtual nomeia e confirma a fotografia", () => {
   const ambiente = criarAmbiente();
   ambiente.executar(`

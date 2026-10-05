@@ -19,6 +19,7 @@ const CENAS_BECO = {
     id: "beco_fundo",
     label: "Fundo do beco",
     background: "assets/cenario/beco/background.png",
+    backgroundSize: [1672, 941],
     initialState: { safeOpened: false, lulithPhoneCollected: false },
     objects: [
       { id: "safe", rect: [40.8, 23, 29.6, 52.6], variants: [
@@ -165,7 +166,7 @@ const CENAS_DELEGACIA = {
     hotspots: [
       { id: "mj_note", rect: [48, 70, 17, 14], ariaLabel: "Examinar bilhete",
         type: "examine", changes: { noteRead: true }, eventId: "mjNoteRead" },
-      { id: "mj_computer", rect: [40, 34, 23, 24], ariaLabel: "Usar computador",
+      { id: "mj_computer", rect: [37, 32, 27, 39], ariaLabel: "Usar computador",
         type: "interact", changes: { computerOn: true }, eventId: "mjComputerUsed" }
     ],
     personagensPresentes: []

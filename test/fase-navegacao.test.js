@@ -34,6 +34,10 @@ class Element {
 
   addEventListener() {}
 
+  setAttribute(name, value) {
+    this[name] = String(value);
+  }
+
   appendChild(child) {
     this.children.push(child);
     return child;
@@ -100,6 +104,63 @@ function controlarAmbiente() {
 function rotulosMenu(ler) {
   return JSON.parse(ler('JSON.stringify(Array.from(el.irParaMenu.children).map((botao) => botao.textContent))'));
 }
+
+test('beco: redesenhar preserva a posição do cofre com style nativo do DOM', async () => {
+  const { executar, ler } = controlarAmbiente();
+  await executar('irPara("beco_interior"); irPara("beco_fundo");');
+  executar(`
+    el.cenario.clientWidth = 800;
+    el.cenario.clientHeight = 600;
+    renderizarObjetos();
+    const safeSprite = el.objectLayer.children[0];
+    const safeStyle = { cssText: safeSprite.style };
+    Object.defineProperty(safeSprite, 'style', {
+      get: () => safeStyle,
+      set: value => { safeStyle.cssText = String(value); }
+    });
+    const originalSafeStyle = safeStyle.cssText;
+    const createElement = document.createElement;
+    document.createElement = (...args) => {
+      const element = createElement(...args);
+      const style = { cssText: '' };
+      Object.defineProperty(element, 'style', {
+        get: () => style,
+        set: value => { style.cssText = String(value); }
+      });
+      return element;
+    };
+    renderizarObjetos();
+  `);
+  assert.equal(ler('safeStyle.cssText'), ler('originalSafeStyle'));
+  await executar('executarHotspot("safe");');
+  assert.equal(ler('state.sceneState.beco_fundo.safeOpened'), true);
+  assert.equal(ler('safeStyle.cssText'), ler('originalSafeStyle'));
+  await executar('executarHotspot("lulith_phone");');
+  assert.equal(ler('state.inventory.includes("lulith_phone")'), true);
+});
+
+test('delegacia e beco: alvos acompanham a arte em retrato e paisagem', () => {
+  const { executar, ler } = controlarAmbiente();
+  for (const [width, height] of [[390, 844], [844, 390], [1672, 941]]) {
+    for (const [local, scene, hotspot, point] of [
+      ['delegacia', 'delegacia_mesa_mj', 'mj_computer', [51, 46]],
+      ['delegacia', 'delegacia_mesa_mj', 'mj_computer', [50, 67]],
+      ['beco', 'beco_fundo', 'safe', [51, 46]]
+    ]) {
+      executar(`state.localizacao = { local: '${local}', cena: '${scene}' };
+        el.cenario.clientWidth = ${width}; el.cenario.clientHeight = ${height};
+        aplicarCena(obterCenaAtual());`);
+      const style = ler(`el.hotspotLayer.children.find(x => x.dataset.hotspot === '${hotspot}').style`);
+      const box = Object.fromEntries([...style.matchAll(/(left|top|width|height):([-\d.]+)px/g)]
+        .map(([, key, value]) => [key, Number(value)]));
+      const scale = Math.max(width / 1672, height / 941);
+      const x = (width - 1672 * scale) / 2 + point[0] / 100 * 1672 * scale;
+      const y = (height - 941 * scale) / 2 + point[1] / 100 * 941 * scale;
+      assert.ok(x >= box.left && x <= box.left + box.width, `${hotspot}: eixo X`);
+      assert.ok(y >= box.top && y <= box.top + box.height, `${hotspot}: eixo Y`);
+    }
+  }
+});
 
 test("início: local beco na cena beco_entrada", async () => {
   const { ler } = controlarAmbiente();
@@ -410,13 +471,16 @@ test('Delegacia e mapa global: bilhete, busca, desbloqueio, viagem e Load', asyn
   executar('abrirMapaGlobal({ source: "delegacia_computer" });');
   assert.equal(ler('el.overlay.inert'), true);
   assert.equal(ler('el.mapOverlay.hidden'), false);
-  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), true);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "delegacia").disabled'), false);
   assert.equal(ler('viajarPeloMapa("delegacia")'), false);
+  assert.match(ler('el.mapFeedback.textContent'), /Você já está em Delegacia/);
   assert.equal(ler('state.modo'), 'interface');
   assert.equal(ler('irPara("delegacia_investigadores")'), undefined);
   assert.equal(ler('executarHotspot("mj_note")'), false);
-  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), true);
+  assert.equal(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").disabled'), false);
   assert.equal(ler('viajarPeloMapa("beco")'), false);
+  assert.match(ler('el.mapFeedback.textContent'), /latitude e a longitude do bilhete/);
+  assert.match(ler('el.mapLocations.children.find(x => x.dataset.localId === "beco").textContent'), /não localizado/);
   assert.equal(ler('localizarCoordenadas()'), false);
   executar(`el.mapLatitude.value = DATA.prototypeAlleyCoordinates.latitude; el.mapLongitude.value = '0';`);
   assert.equal(ler('localizarCoordenadas()'), false);

@@ -59,6 +59,7 @@ function criarSistemaEntradaTexto(context) {
     if (state.texto.aberto) return false;
     state.texto = criarEstadoTexto();
     state.texto.aberto = true;
+    state.texto.layout = configuracao.layout ?? "qwerty";
     state.texto.buffer = String(configuracao.initialValue ?? "");
     state.texto.cursor = state.texto.buffer.length;
     state.texto.config = {
