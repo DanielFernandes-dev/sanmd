@@ -24,7 +24,7 @@
 - [x] Verificar saves: locais ou estados de cenas removidas são rejeitados sem alterar a sessão atual; não há migração desses registros.
 - [x] Executar `npm test` e conferir sprites no Chromium em desktop e viewport móvel horizontal.
 
-O asset atual de James possui fundo preto. A correção de diálogos utiliza essa imagem existente.
+O asset de James foi corrigido em 06/10/2026: o fundo preto externo virou transparência real, preservando o personagem e as dimensões originais.
 
 ### Skip da abertura e acesso ao menu — 06/10/2026
 
