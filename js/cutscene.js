@@ -4,7 +4,6 @@ function criarCutsceneController({ document, window, config, services, sequences
   const cancel = window.clearTimeout?.bind(window) ?? clearTimeout;
   let session = null;
   let firstInput = null;
-  let swallowClick = false;
 
   function cancelarAvanco(run) {
     cancel(run.timer);
@@ -35,28 +34,26 @@ function criarCutsceneController({ document, window, config, services, sequences
     }
   }
 
-  function skip() {
+  function skip(defer = false) {
     const run = session;
     if (!run || run.skipRequested || run.status === 'finishing') return;
     run.skipRequested = true;
     cancelarAvanco(run);
-    if (run.status !== 'preparing') finalizar(run);
+    if (run.status !== 'preparing') {
+      if (defer) run.timer = schedule(() => finalizar(run), 0);
+      else finalizar(run);
+    }
   }
   function input(event) {
-    // Consumir também click/dblclick sintetizados DEPOIS do pointerup que pulou.
-    if (!session) {
-      if (event.type === 'pointerdown' || event.type === 'keydown') swallowClick = false;
-      if (!swallowClick || !['click', 'dblclick', 'touchend', 'mouseup', 'keyup'].includes(event.type)) return;
-    }
+    const run = session;
+    if (!run) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (!session) return;
-    if (event.type === 'pointerdown' || event.type === 'keydown') swallowClick = true;
     if (event.type === 'pointercancel') firstInput = null;
-    if (event.type !== 'pointerup' || event.isPrimary === false || event.button > 0) return;
-    swallowClick = true;
+    if (run.id !== 'intro_abertura' || run.skipRequested || event.type !== 'pointerup'
+      || event.isPrimary === false || event.button > 0) return;
     const now = event.timeStamp;
-    if (firstInput !== null && now - firstInput <= config.cutscene.skipDoubleInputWindow) skip();
+    if (firstInput !== null && now - firstInput <= config.cutscene.skipDoubleInputWindow) skip(true);
     else firstInput = now;
   }
   for (const type of ['pointerdown', 'pointerup', 'pointermove', 'pointercancel', 'mousedown', 'mouseup',

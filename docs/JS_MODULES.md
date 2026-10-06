@@ -143,6 +143,18 @@ Key functions:
 | `selecionarFaseMonologo()` | Resolve monologue phase from state |
 | `digitarTexto(texto)` | Animated text typing with blips    |
 
+`mostrarLinha()` selects one sprite per line using the character's registered
+`nome` and the line's `autor`. An optional `personagemId` explicitly selects the
+sprite for narration, including sequences that begin without a speaker. Lines
+without an author keep the current sprite; named speakers without a registered
+sprite hide the previous character. The name plate is visible for named speakers,
+including MJ's monologues. Consecutive lines with the same sprite, pose and slot
+do not restart its entrance animation.
+
+`scene.restaurarPersonagemCena()` restores a visual character listed in
+`personagensPresentes` when dialogue ends, scenes change or saves load; otherwise
+the dialogue sprite exits. Phone messages keep their existing anonymous interface.
+
 ## phone.js
 
 `criarSistemaCelular(context)` — phone apps and messaging.
@@ -298,7 +310,7 @@ Single-session cutscene controller.
 | `isSkipping()`      | Return whether skip was requested  |
 
 Input handler captures all events in capture phase. Double primary input within
-`CONFIG.cutscene.skipDoubleInputWindow` (350ms) triggers skip.
+`CONFIG.cutscene.skipDoubleInputWindow` (350ms) triggers double-tap skip only for `intro_abertura`.
 
 ## cutscene-renderers.js
 

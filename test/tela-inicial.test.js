@@ -313,6 +313,64 @@ async function concluirIntro(contexto) {
   vm.runInContext('game.services.pularCutscene()', contexto);
 }
 
+async function pularAberturaComDuploClique(documento, contexto) {
+  await esperarIluminacao(contexto);
+  const gesto = tipo => {
+    const evento = { type: tipo, timeStamp: tipo === 'pointerup' ? gesto.tempo += 100 : gesto.tempo,
+      button: 0, isPrimary: true,
+      preventDefault() { this.prevented = true; },
+      stopImmediatePropagation() { this.stopped = true; } };
+    documento.disparar(tipo, evento);
+    return evento;
+  };
+  gesto.tempo = 0;
+  assert.equal(gesto('pointerup').prevented, true);
+  assert.equal(vm.runInContext('game.services.isCutsceneActive()', contexto), true);
+  assert.equal(gesto('pointerup').prevented, true);
+  assert.equal(gesto('click').prevented, true, 'o clique de saída pertence à cutscene');
+  await Promise.resolve();
+  assert.equal(vm.runInContext('game.services.isCutsceneActive()', contexto), false);
+  assert.equal(gesto('click').prevented, undefined, 'o menu recebe o próximo clique');
+}
+
+test('após Skip por duplo clique, um clique em Carregar abre o caderno', async () => {
+  const { contexto, documento, elementos } = criarAmbiente();
+  await pularAberturaComDuploClique(documento, contexto);
+  elementos.get('notebook-load').disparar('click');
+  for (let i = 0; i < 100 && elementos.get('title-menu').dataset.state !== 'load'; i++) await Promise.resolve();
+  assert.equal(elementos.get('title-menu').dataset.state, 'load');
+});
+
+test('após Skip por duplo clique, um clique em Novo jogo inicia a partida', async () => {
+  const { contexto, documento, elementos } = criarAmbiente();
+  await pularAberturaComDuploClique(documento, contexto);
+  elementos.get('notebook-new').disparar('click');
+  for (let i = 0; i < 100 && elementos.get('title-menu').hidden === false; i++) await Promise.resolve();
+  assert.equal(elementos.get('title-menu').hidden, true);
+  assert.equal(vm.runInContext('game.state.modo', contexto), 'dialogo');
+});
+
+for (const skip of [false, true]) {
+  test(`novo jogo mostra MJ após Cutscene 02, skip=${skip}`, async () => {
+    const { contexto, elementos } = criarAmbiente();
+    await concluirIntro(contexto);
+    const started = vm.runInContext('menu.newGame()', contexto);
+    if (skip) {
+      for (let i = 0; i < 100 && !vm.runInContext('game.services.isCutsceneActive()', contexto); i++) {
+        await Promise.resolve();
+      }
+      assert.equal(vm.runInContext('game.services.isCutsceneActive()', contexto), true);
+      vm.runInContext('game.services.pularCutscene()', contexto);
+    }
+    await started;
+    assert.equal(vm.runInContext('game.state.localizacao.cena', contexto), 'casa_quarto_mj');
+    assert.equal(vm.runInContext('game.state.modo', contexto), 'dialogo');
+    assert.equal(elementos.get('personagem').dataset.characterId, 'mj');
+    assert.equal(elementos.get('personagem').classList.contains('oculto'), false);
+    assert.equal(elementos.get('dialogue-box').classList.contains('oculto'), false);
+  });
+}
+
 /** Aguarda o relógio visual do harness até a finalização natural. */
 async function esperarIluminacao(contexto) {
   for (let i = 0; i < 60 && vm.runInContext('game.services.isCutsceneActive()', contexto); i++) {

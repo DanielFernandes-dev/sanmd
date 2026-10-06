@@ -334,12 +334,90 @@ function entrarCasa(executar) {
     aplicarCena(obterCenaAtual());`);
 }
 
-test('casa: monólogo inicial ocorre uma vez e sala conecta somente os quatro cômodos', async () => {
+test('monólogos exibem MJ em todos os cenários sem interlocutor', () => {
+  const { executar, ler } = controlarAmbiente();
+  const cenas = ler('Object.values(DATA.locais).flatMap(local => Object.values(local.cenas).filter(cena => !cena.personagensPresentes.length).map(cena => [local.id, cena.id]))');
+  for (const [local, cena] of cenas) {
+    executar(`state.localizacao = ${JSON.stringify({ local, cena })};
+      aplicarCena(obterCenaAtual()); iniciarConversa();`);
+    assert.equal(ler('state.modo'), 'dialogo', cena);
+    assert.equal(ler('el.personagem.dataset.characterId'), 'mj', cena);
+    assert.equal(ler('el.personagem.classList.contains("oculto")'), false, cena);
+    assert.equal(ler('el.namePlate.textContent'), 'MJ', cena);
+    executar('encerrarConversa();');
+    assert.equal(ler('el.personagem.classList.contains("personagem-saindo")'), true, cena);
+  }
+});
+
+test('falas alternam sprites, preservam narração e restauram James na cozinha', () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'casa', cena: 'casa_cozinha' };
+    aplicarCena(obterCenaAtual());
+    iniciarFalas([
+      { autor: 'James', texto: 'Olá.' },
+      { autor: '', texto: 'James entrega uma xícara de café à MJ.' },
+      { autor: 'MJ', texto: 'Obrigada.' },
+      { autor: 'MJ', texto: '(Preciso sair.)' },
+      { autor: 'Lulith', texto: 'Até mais.' },
+      { autor: 'MJ', texto: 'Até.' }
+    ]);`);
+  for (const id of ['james', 'james', 'mj', 'mj', 'lulith', 'mj']) {
+    assert.equal(ler('el.personagem.dataset.characterId'), id);
+    assert.equal(ler('el.personagem.classList.contains("oculto")'), false);
+    executar('finalizarDigitacao(); avancarDialogo();');
+  }
+  assert.equal(ler('state.modo'), 'livre');
+  assert.equal(ler('el.personagem.dataset.characterId'), 'james');
+  assert.equal(ler('el.personagem.dataset.slot'), 'right');
+  executar('restaurarEstadoJogo(capturarEstadoJogo());');
+  assert.equal(ler('el.personagem.dataset.characterId'), 'james');
+});
+
+test('falas consecutivas não reiniciam entrada e cancelam uma saída pendente', () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`iniciarFalas([{ autor: 'MJ', texto: 'Primeira.' }, { autor: 'MJ', texto: 'Segunda.' }]);
+    el.personagem.classList.remove('personagem-entrando');
+    finalizarDigitacao(); avancarDialogo();`);
+  assert.equal(ler('el.personagem.classList.contains("personagem-entrando")'), false);
+  executar(`encerrarConversa(); iniciarConversa();`);
+  assert.equal(ler('state.cena.personagemSaidaTimer'), null);
+  assert.equal(ler('el.personagem.classList.contains("personagem-saindo")'), false);
+  assert.equal(ler('el.personagem.classList.contains("oculto")'), false);
+});
+
+test('narração inicial de uma ação mostra MJ mesmo sem fala anterior', () => {
+  const { executar, ler } = controlarAmbiente();
+  executar(`state.localizacao = { local: 'cena_crime', cena: 'crime_sala' };
+    aplicarCena(obterCenaAtual()); iniciarFalas(DATA.monologos.crime_sala.phoneBreak);`);
+  assert.equal(ler('el.personagem.dataset.characterId'), 'mj');
+  assert.equal(ler('el.personagem.classList.contains("oculto")'), false);
+  assert.equal(ler('el.namePlate.classList.contains("oculto")'), true);
+  executar('finalizarDigitacao(); avancarDialogo();');
+  assert.equal(ler('el.personagem.dataset.characterId'), 'mj');
+  assert.equal(ler('el.namePlate.classList.contains("oculto")'), false);
+});
+
+test('save de cena removida é rejeitado sem modificar o progresso atual', () => {
+  const { executar, ler } = controlarAmbiente();
+  const before = ler('JSON.stringify(state.localizacao)');
+  executar(`const removedSceneSave = capturarEstadoJogo();
+    removedSceneSave.localizacao = { local: 'casa', cena: 'cena_removida' };`);
+  assert.equal(ler('validarSnapshot(removedSceneSave)'), null);
+  assert.throws(() => executar('restaurarEstadoJogo(removedSceneSave)'), /incompatível/);
+  assert.equal(ler('JSON.stringify(state.localizacao)'), before);
+  executar(`removedSceneSave.localizacao = { ...state.localizacao };
+    removedSceneSave.sceneState.cena_removida = {};`);
+  assert.equal(ler('validarSnapshot(removedSceneSave)'), null);
+});
+
+test('casa: monólogo inicial ocorre uma vez e sala conecta somente os três cômodos', async () => {
   const { executar, ler } = controlarAmbiente();
   entrarCasa(executar);
   executar('iniciarIntroCasa();');
   assert.equal(ler('state.modo'), 'dialogo');
-  assert.equal(ler('el.namePlate.classList.contains("oculto")'), true);
+  assert.equal(ler('el.namePlate.classList.contains("oculto")'), false);
+  assert.equal(ler('el.personagem.dataset.characterId'), 'mj');
+  assert.equal(ler('el.personagem.classList.contains("oculto")'), false);
   assert.equal(ler('el.btnIrPara.disabled'), true);
   executar('encerrarConversa();');
   assert.equal(ler('state.sceneState.casa_quarto_mj.introSeen'), true);
@@ -349,8 +427,8 @@ test('casa: monólogo inicial ocorre uma vez e sala conecta somente os quatro c�
   assert.equal(ler('state.localizacao.cena'), 'casa_quarto_mj');
   await executar('irPara("casa_sala");');
   assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'),
-    '["casa_quarto_mj","casa_cozinha","casa_quarto_james","casa_banheiro"]');
-  for (const destination of ['casa_cozinha', 'casa_quarto_james', 'casa_banheiro', 'casa_quarto_mj']) {
+    '["casa_quarto_mj","casa_cozinha","casa_quarto_james"]');
+  for (const destination of ['casa_cozinha', 'casa_quarto_james', 'casa_quarto_mj']) {
     await executar(`irPara("${destination}");`);
     assert.equal(ler('state.localizacao.cena'), destination);
     assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'), '["casa_sala"]');

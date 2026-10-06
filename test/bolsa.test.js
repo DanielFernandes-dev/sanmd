@@ -498,6 +498,8 @@ test("aparelho: coleta e seleção não desbloqueiam; USAR conclui uma única tr
   button.click();
   button.click();
   assert.equal(button.disabled, true);
+  assert.equal(a.ler('el.personagem.dataset.characterId'), 'mj');
+  assert.equal(a.ler('el.personagem.classList.contains("oculto")'), false);
   assert.equal(a.ler('state.modo'), 'dialogo');
   assert.equal(a.ler('state.dialogo.linha'), 0);
   assert.equal(a.ler('state.inventory.includes("lulith_phone")'), true);

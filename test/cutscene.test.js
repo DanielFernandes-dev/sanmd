@@ -71,16 +71,19 @@ for (let phase = 0; phase < FASES.length; phase++) {
     t.input('pointerup', 100, { pointerType: 'touch' });
     assert.equal(t.finished, 0);
     t.input('pointerup', 200, { pointerType: 'touch' });
+    assert.equal(t.finished, 0);
+    assert.equal(t.controller.isCutsceneActive(), true);
+    assert.equal(t.input('click', 201).prevented, true);
+    assert.equal(t.input('dblclick', 202).prevented, true);
+    t.advance();
     assert.equal(t.finished, 1); assert.equal(t.completions, 1);
     assert.equal(t.blocked, false); assert.equal(t.timers.size, 0);
     assert.equal(t.cancelled.length, phase === FASES.length - 1 ? 0 : 1);
     const count = t.phases.length;
     stale?.(); t.controller.pularCutscene();
     assert.equal(t.phases.length, count); assert.equal(t.finished, 1);
-    assert.equal(t.input('click', 201).prevented, true);
-    assert.equal(t.input('dblclick', 202).prevented, true);
-    assert.equal(t.input('pointerdown', 500).prevented, undefined);
-    assert.equal(t.input('click', 510).prevented, undefined);
+    assert.equal(t.input('pointerdown', 203).prevented, undefined);
+    assert.equal(t.input('click', 204).prevented, undefined);
   });
 }
 
@@ -89,7 +92,8 @@ test('clique único, fora da janela e multitoque não pulam; nova dupla pula', a
   t.input('pointerup', 0); t.input('pointerup', 500);
   t.input('pointerup', 510, { isPrimary: false });
   assert.equal(t.finished, 0);
-  t.input('pointerup', 600); assert.equal(t.finished, 1);
+  t.input('pointerup', 600); assert.equal(t.finished, 0);
+  t.advance(); assert.equal(t.finished, 1);
 });
 
 test('skip durante preparo espera asset, não executa fases e termina no mesmo caminho', async () => {
@@ -124,8 +128,10 @@ test('cauda do gesto não atravessa o fim da espera e o teclado volta a ativar o
   t.esvaziar();
   assert.equal(t.controller.isCutsceneActive(), true);
   t.input('pointerup', 100); t.input('pointerup', 200);
-  assert.equal(t.finished, 1);
+  assert.equal(t.finished, 0);
   assert.equal(t.input('click', 210).prevented, true);
+  t.advance();
+  assert.equal(t.finished, 1);
   assert.equal(t.input('keydown', 300).prevented, undefined);
   assert.equal(t.input('click', 301).prevented, undefined);
 });
@@ -214,7 +220,8 @@ test('última fase iluminada não libera menu sem Skip, nem repete áudio', asyn
   assert.equal(t.timers.size, 0);
   assert.equal(t.phases.filter(([phase]) => phase === 'luz').length, 1);
   t.input('pointerup', 100); assert.equal(t.finished, 0);
-  t.input('pointerup', 200); assert.equal(t.finished, 1);
+  t.input('pointerup', 200); assert.equal(t.finished, 0);
+  t.advance(); assert.equal(t.finished, 1);
   assert.equal(t.blocked, false);
 });
 
@@ -228,12 +235,14 @@ test('sequências sem hold continuam finalizando naturalmente uma única vez', a
 });
 
 for (let frame = 0; frame < 10; frame++) {
-  test(`Lulith: Skip no quadro ${frame + 1} invalida próximas trocas`, async () => {
+  test(`Lulith: duplo toque no quadro ${frame + 1} não pula; Skip explícito invalida próximas trocas`, async () => {
     const t = setup(); t.start('lulith_codigo'); await ready();
     for (let i = 0; i < frame; i++) t.advance();
     const stale = [...t.timers.values()][0].fn;
     t.input('pointerup', 100); assert.equal(t.finished, 0);
-    t.input('pointerup', 200); assert.equal(t.finished, 1);
+    t.input('pointerup', 200); assert.equal(t.finished, 0);
+    assert.equal(t.controller.isCutsceneActive(), true);
+    t.controller.pularCutscene(); assert.equal(t.finished, 1);
     stale(); t.controller.pularCutscene();
     assert.equal(t.phases.length, frame + 1);
     assert.equal(t.timers.size, 0); assert.equal(t.completions, 1);
@@ -302,6 +311,8 @@ for (let index = 0; index < 10; index++) test(`Ato 1: Skip no passo ${index + 1}
   const stale = [...t.timers.values()][0].fn;
   t.input('pointerup', 100, { pointerType: 'touch' });
   t.input('pointerup', 200, { pointerType: 'touch' });
+  assert.equal(t.completions, 0);
+  t.controller.pularCutscene();
   assert.equal(t.completions, 1); assert.equal(t.timers.size, 0);
   const count = t.phases.length; stale();
   assert.equal(t.phases.length, count);

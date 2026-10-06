@@ -51,11 +51,15 @@ Captura no documento bloqueia ponteiro, mouse, touch, teclado, formulários e
 wheel. O menu nasce `inert`; o app continua `inert` até a escolha de gameplay.
 As ações públicas do menu também verificam esse bloqueio.
 
-Dois `pointerup` primários na janela `skipDoubleInputWindow` (350 ms) pulam.
+Na `intro_abertura`, dois `pointerup` primários na janela `skipDoubleInputWindow` (350 ms) pulam.
+O controlador consome o clique gerado pelo segundo toque antes de liberar o menu;
+depois disso, o próximo clique chega aos botões da capa. Nas demais cutscenes,
+o detector de dois toques fica inativo, mas o controlador continua bloqueando
+input durante a apresentação e mantém o Skip explícito pela API.
 Clique único, dupla fora da janela e multitoque não pulam. Não depende de
-`dblclick`. `touch-action: none` impede zoom. Eventos sintetizados de cauda são
-consumidos mesmo após esconder o overlay, até uma nova pressão de ponteiro ou
-tecla; o segundo toque não ativa Novo jogo. O título é decorativo e não focável.
+`dblclick`. `touch-action: none` impede zoom. O overlay continua ativo até o
+navegador concluir os eventos do segundo toque; depois a captura é desligada
+e o menu aceita o primeiro clique. O título é decorativo e não focável.
 
 Os overlays de abertura e de quadros usam camada 1001, imediatamente sobre o menu 1000; somente uma sequência fica ativa. O fade de cena continua em
 7 e celular em 50. Cutscenes futuras que naveguem devem terminar e usar a API
@@ -168,7 +172,7 @@ inclui a transição de entrada do próprio quadro; o fade final é adicional.
 São 12.450 ms de quadros, mais 280 ms de fade final. Preload, abertura do caderno
 e fade do menu para gameplay são etapas adicionais. Push-in tem escala máxima
 1,02/1,025; flash de erro 110 ms; shakes 90/140 ms; fade de áudio 180 ms.
-A janela do Skip global continua 350 ms.
+A janela do duplo toque da abertura continua 350 ms.
 
 ### Validação registrada no aparelho — 2026-09-26
 
@@ -179,13 +183,13 @@ APK debug compilado e instalado por ADB no aparelho conectado em
 intervalos medidos próximos aos tempos da revisão testada, anterior ao aumento
 dos quadros 01–07 (aproximadamente 5–8 ms adicionais por quadro). Transição concluiu no gameplay inicial.
 
-Skip exercitado no WebView nos dez quadros pelo detector global de ponteiro:
+Na versão de 26/09, Skip foi exercitado no WebView nos dez quadros pelo detector global de ponteiro:
 primeiro toque não pula, segundo pula, contagem de quadros para imediatamente,
 nenhum HTMLAudioElement permanece tocando, zero animações residuais e transform
 do palco volta a `none`. Carregar o autosave não inicia `lulith_codigo`.
 Os registros existentes foram copiados antes dos testes e restaurados ao final.
 
-Verificação complementar no mesmo APK: duplo toque nativo via CDP no quadro 01
+Verificação complementar naquela versão do APK: duplo toque nativo via CDP no quadro 01
 chegou ao gameplay mantendo `visualViewport.scale === 1`; emulação de
 `prefers-reduced-motion` no WebView apresentou os dez quadros com zero animações
 de transform. A suspensão da tela foi restaurada para os 30 segundos originais.

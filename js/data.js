@@ -65,7 +65,7 @@ const CENAS_CASA = {
     id: "casa_sala", label: "Sala",
     background: "assets/cenario/casa-mj-james/sala.png",
     initialState: { mjPhoneCollected: false },
-    destinos: ["casa_quarto_mj", "casa_cozinha", "casa_quarto_james", "casa_banheiro"],
+    destinos: ["casa_quarto_mj", "casa_cozinha", "casa_quarto_james"],
     objects: [{ id: "mj_phone", rect: [6.5, 46, 3, 5], variants: [
       { asset: "assets/cenario/casa-mj-james/celular-mj.svg", conditions: { mjPhoneCollected: false } }
     ] }],
@@ -95,15 +95,6 @@ const CENAS_CASA = {
     initialState: {},
     hotspots: [{ id: "comics", rect: [12, 15, 22, 35], ariaLabel: "Ver quadrinhos",
       type: "examine", message: "James nunca perdeu o gosto pelos quadrinhos." }],
-    personagensPresentes: []
-  },
-  casa_banheiro: {
-    id: "casa_banheiro", label: "Banheiro",
-    background: "assets/cenario/casa-mj-james/banheiro.svg",
-    destinos: ["casa_sala"],
-    initialState: {},
-    hotspots: [{ id: "mirror", rect: [34, 14, 31, 48], ariaLabel: "Olhar no espelho",
-      type: "examine", message: "...Ele não precisava estar tão certo." }],
     personagensPresentes: []
   }
 };
@@ -246,6 +237,7 @@ const DATA = {
   },
 
   personagens: {
+    lulith: { id: "lulith", nome: "Lulith", sprites: { neutral: "assets/sprites/lulith.png" } },
     james: { id: "james", nome: "James", sprites: { neutral: "assets/sprites/james.png" } },
     mj: {
       id: "mj",
@@ -320,7 +312,7 @@ const DATA = {
     crime_sala: {
       inicial: [{ autor: "MJ", texto: "(Então foi aqui. Melhor olhar com calma antes de ir embora.)" }],
       phoneBreak: [
-        { autor: "", texto: "O telefone escorrega da mão de MJ e bate no chão.", eventId: "mjPhoneImpact" },
+        { autor: "", personagemId: "mj", texto: "O telefone escorrega da mão de MJ e bate no chão.", eventId: "mjPhoneImpact" },
         { autor: "MJ", texto: "(...Ótimo.)" }
       ]
     },
@@ -331,7 +323,6 @@ const DATA = {
     casa_sala: { inicial: [{ autor: "MJ", texto: "(Preciso me organizar antes de sair.)" }] },
     casa_cozinha: { inicial: [{ autor: "MJ", texto: "(James está preparando café.)" }] },
     casa_quarto_james: { inicial: [{ autor: "MJ", texto: "(James sempre deixa seus quadrinhos à vista.)" }] },
-    casa_banheiro: { inicial: [{ autor: "MJ", texto: "(Um minuto para respirar.)" }] },
     beco_entrada: {
       ...MONOLOGOS_BECO,
       inicial: {

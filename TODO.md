@@ -10,6 +10,34 @@
 
 ## Limites do escopo
 
+### Correção dos sprites nos diálogos — 06/10/2026
+
+- [x] Centralizar a exibição do sprite pelo autor de cada fala, usando o sistema de conversa do beco.
+- [x] Mostrar MJ na primeira fala após a Cutscene 02, na conclusão natural e no Skip.
+- [x] Exibir MJ nos monólogos da casa, cena do crime, delegacia e beco.
+- [x] Aplicar a apresentação às sequências narrativas de eventos e reações de itens.
+- [x] Alternar um personagem por vez e preservar o sprite em falas consecutivas sem reiniciar sua entrada.
+- [x] Manter o personagem durante narrações sem autor; permitir `personagemId` para ações que precisam indicar quem aparece, como a queda do telefone.
+- [x] Restaurar os personagens presentes ao encerrar conversas, trocar de cena ou carregar saves.
+- [x] Cadastrar o sprite existente de Lulith, preservando o anonimato das mensagens no celular.
+- [x] Remover exclusivamente o banheiro da casa: cena, destino, monólogo, espelho e asset dedicado; atualizar navegação e testes.
+- [x] Verificar saves: locais ou estados de cenas removidas são rejeitados sem alterar a sessão atual; não há migração desses registros.
+- [x] Executar `npm test` e conferir sprites no Chromium em desktop e viewport móvel horizontal.
+
+O asset atual de James possui fundo preto. A correção de diálogos utiliza essa imagem existente.
+
+### Skip da abertura e acesso ao menu — 06/10/2026
+
+- [x] Restringir o detector de dois toques à `intro_abertura`.
+- [x] Manter a abertura ativa até consumir o clique gerado pelo segundo toque.
+- [x] Liberar imediatamente o menu e eliminar o bloqueio residual depois do Skip.
+- [x] Confirmar que um clique em Novo jogo ou Carregar funciona após o Skip.
+- [x] Preservar o bloqueio de input enquanto qualquer cutscene estiver ativa.
+- [x] Confirmar que duplo clique não pula a Cutscene 02 de Lulith nem as cenas finais do beco.
+- [x] Cobrir o fluxo em testes automatizados e em Chromium com cliques reais.
+
+### Diretrizes do ato
+
 - [x] Tratar o Ato I como tutorial e início da trama principal.
 - [x] Manter MJ como protagonista feminina cujo nome real é escolhido pelo jogador.
 - [x] Manter Lulith como dona do celular, sem romance entre ela e MJ.

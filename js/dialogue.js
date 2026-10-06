@@ -42,7 +42,6 @@ function criarSistemaDialogos(context) {
     if (personagemPresente === "james" && state.sceneState.casa_cozinha?.jamesIntroConversationComplete) {
       state.dialogo.falas = [{ autor: "James", texto: "Quando estiver pronta, pegue sua bolsa e seu telefone." }];
     }
-    if (ehMonologo && cena.id !== "casa_quarto_mj") services.mostrarPersonagem("mj", "neutral", "center");
 
     state.dialogo.conversationId = personagemPresente === "james" && !state.sceneState.casa_cozinha?.jamesIntroConversationComplete
       ? "james_intro" : automatic ? "mj_intro" : null;
@@ -87,9 +86,17 @@ function criarSistemaDialogos(context) {
    */
   function mostrarLinha() {
     const fala = state.dialogo.falas[state.dialogo.linha];
+    const personagem = fala.personagemId
+      ? DATA.personagens[fala.personagemId]
+      : Object.values(DATA.personagens).find(personagem => personagem.nome === fala.autor);
+    if (personagem) {
+      const visual = services.obterCenaAtual().personagensVisuais?.find(visual => visual.id === personagem.id);
+      services.mostrarPersonagem(personagem.id, visual?.pose ?? "neutral", visual?.slot ?? "center");
+    } else if (fala.autor) {
+      services.ocultarPersonagem();
+    }
     el.dialogue.namePlate.textContent = fala.autor;
-    if (!fala.autor || (fala.autor === "MJ"
-      && ["casa_quarto_mj", "crime_sala"].includes(services.obterCenaAtual().id)))
+    if (!fala.autor)
       el.dialogue.namePlate.classList.add("oculto");
     else el.dialogue.namePlate.classList.remove("oculto");
     if (fala.eventId === "jamesNotification") tocarEfeitoTransitorio("assets/audio/phone_notification.wav");
@@ -204,7 +211,7 @@ function criarSistemaDialogos(context) {
     state.dialogo.conversationId = null;
     state.modo = "livre";
     el.dialogue.dialogueBox.classList.add("oculto");
-    if (services.obterCenaAtual().id !== "casa_cozinha") services.ocultarPersonagem();
+    services.restaurarPersonagemCena();
     services.registrarAutosave();
     services.definirBotoes();
     if (completedConversation === "mj_intro") el.scene.btnIrPara.focus();

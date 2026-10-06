@@ -100,6 +100,8 @@ Ao substituir as artes, manter os IDs existentes. Não substituir os IDs em save
 
 Antes de qualquer mutação, o load valida versão, IDs de local/cena, fases, rotas, arquivos, etapas, mensagens, flags e timestamps. Um snapshot inválido mantém a sessão intacta e exibe erro no detalhe da fotografia. Outros saves continuam disponíveis e o registro inválido ainda pode ser excluído.
 
+Saves que apontam para cenas removidas do catálogo, ou guardam estados dessas cenas, são incompatíveis e seguem essa mesma rejeição. Não são redirecionados automaticamente para outro cômodo.
+
 Falhas de escrita também não devem derrubar o jogo. O autosave registra aviso no console; ações manuais apresentam erro na própria Galeria.
 
 ## Objetos e Bolsa

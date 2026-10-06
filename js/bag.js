@@ -237,7 +237,6 @@ function criarSistemaBolsa(context) {
     state.dialogo.falas = ITEMS[itemId].inventoryAction.reaction;
     state.dialogo.linha = 0;
     state.modo = "dialogo";
-    services.mostrarPersonagem("mj", "neutral", "center");
     el.dialogue.dialogueBox.classList.remove("oculto");
     services.definirBotoes();
     services.mostrarLinha();

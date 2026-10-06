@@ -54,13 +54,28 @@ function criarSistemaCenas(context) {
     if (!sprite) return;
 
     clearTimeout(state.cena.personagemSaidaTimer);
+    state.cena.personagemSaidaTimer = null;
+    const mesmoPersonagem = el.scene.personagem.dataset.characterId === id
+      && el.scene.personagem.dataset.pose === pose && el.scene.personagem.dataset.slot === slot
+      && !el.scene.personagem.classList.contains("oculto")
+      && !el.scene.personagem.classList.contains("personagem-saindo");
+    if (mesmoPersonagem) return;
     el.scene.personagem.src = sprite;
+    el.scene.personagem.alt = personagem.nome;
     el.scene.personagem.dataset.characterId = personagem.id;
     el.scene.personagem.dataset.pose = pose;
     el.scene.personagem.dataset.slot = slot;
     el.scene.personagem.classList.remove("oculto");
     el.scene.personagem.classList.remove("personagem-saindo");
     el.scene.personagem.classList.add("personagem-entrando");
+  }
+
+  /** Restaura a presença visual da cena depois de falas ou carregamentos. */
+  function restaurarPersonagemCena() {
+    const cena = obterCenaAtual();
+    const visual = cena.personagensVisuais?.find(visual => cena.personagensPresentes.includes(visual.id));
+    if (visual) mostrarPersonagem(visual.id, visual.pose, visual.slot);
+    else ocultarPersonagem();
   }
 
   /** Obter local.
@@ -176,8 +191,7 @@ function criarSistemaCenas(context) {
     if (!cena) return;
     trocarCenario(cena);
     fecharMenuIrPara();
-    ocultarPersonagem();
-    if (cena.id === "casa_cozinha") services.mostrarPersonagem("james", "neutral", "right");
+    restaurarPersonagemCena();
     services.definirBotoes();
   }
 
@@ -307,7 +321,7 @@ function criarSistemaCenas(context) {
         el.scene.personagem.classList.remove("personagem-entrando", "personagem-saindo");
         el.scene.personagem.src = "";
         el.scene.personagem.dataset.characterId = "";
-        if (destino.id === "casa_cozinha") services.mostrarPersonagem("james", "neutral", "right");
+        restaurarPersonagemCena();
         await services.prepareSceneImages([el.scene.cenario.src,
           ...Array.from(el.scene.objectLayer.children).map(o => o.src)]);
       } catch (error) {
@@ -509,6 +523,7 @@ function criarSistemaCenas(context) {
   return Object.freeze({
     ocultarPersonagem,
     mostrarPersonagem,
+    restaurarPersonagemCena,
     obterLocal,
     obterCenaAtual,
     obterDestinos,
