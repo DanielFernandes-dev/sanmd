@@ -20,7 +20,7 @@ const CONFIG = Object.freeze({
       entryFade: 200, exitFade: 280, frameBlend: 100, impactShake: 140, errorShake: 90,
       errorFlash: 110, audioTimeout: 1500, audioFade: 180, audioFadeTick: 16
     }),
-    skipDoubleInputWindow: 350, introBlackHold: 5000, titleReveal: 1200,
+    skipDoubleInputWindow: 600, introBlackHold: 5000, titleReveal: 1200,
     titleHold: 650, titleExpansion: 2000, laughReveal: 450, completeTitleHold: 1600,
     titleExit: 1800, postTitleBlackHold: 550, lampLightDelay: 70,
     lampReveal: 1100, reducedMotion: 100
@@ -39,7 +39,6 @@ const CONFIG = Object.freeze({
   intervaloRelogio: 1000,
   intervaloCronometroReset: 250,
   tamanhoNomeFoto: 28,
-  tamanhoMensagem: 160,
   limiteBotoesPaginacao: 7
 });
 

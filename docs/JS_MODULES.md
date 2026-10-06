@@ -310,7 +310,7 @@ Single-session cutscene controller.
 | `isSkipping()`      | Return whether skip was requested  |
 
 Input handler captures all events in capture phase. Double primary input within
-`CONFIG.cutscene.skipDoubleInputWindow` (350ms) triggers double-tap skip only for `intro_abertura`.
+`CONFIG.cutscene.skipDoubleInputWindow` (600ms) triggers double-tap skip during every active cutscene.
 
 ## cutscene-renderers.js
 

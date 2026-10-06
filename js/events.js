@@ -110,7 +110,6 @@ function criarSistemaEventos(context) {
       const botao = event.target.closest("button[data-save-id]");
       if (botao) services.selecionarFoto(botao.dataset.saveId);
     });
-    el.phone.messagesComposerField.addEventListener("click", services.abrirEditorMensagem);
     el.phone.textEntrySend.addEventListener("click", services.confirmarEntradaTexto);
     el.phone.textEntryCancel.addEventListener("click", services.cancelarEntradaTexto);
     el.phone.gameKeyboard.addEventListener("click", (event) => {

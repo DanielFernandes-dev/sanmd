@@ -81,8 +81,6 @@ function criarElementos(document) {
       clock: buscar("clock"),
       phoneDate: buscar("phone-date"),
       btnVoltar: buscar("btn-voltar"),
-      messagesComposer: buscar("messages-composer"),
-      messagesComposerField: buscar("messages-composer-field"),
       textEntryDock: buscar("text-entry"),
       textEntryField: buscar("text-entry-field"),
       textEntryCount: buscar("text-entry-count"),

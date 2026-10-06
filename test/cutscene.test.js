@@ -89,10 +89,10 @@ for (let phase = 0; phase < FASES.length; phase++) {
 
 test('clique único, fora da janela e multitoque não pulam; nova dupla pula', async () => {
   const t = setup(); t.start(); await ready();
-  t.input('pointerup', 0); t.input('pointerup', 500);
-  t.input('pointerup', 510, { isPrimary: false });
+  t.input('pointerup', 0); t.input('pointerup', 700);
+  t.input('pointerup', 710, { isPrimary: false });
   assert.equal(t.finished, 0);
-  t.input('pointerup', 600); assert.equal(t.finished, 0);
+  t.input('pointerup', 800); assert.equal(t.finished, 0);
   t.advance(); assert.equal(t.finished, 1);
 });
 
@@ -235,14 +235,13 @@ test('sequências sem hold continuam finalizando naturalmente uma única vez', a
 });
 
 for (let frame = 0; frame < 10; frame++) {
-  test(`Lulith: duplo toque no quadro ${frame + 1} não pula; Skip explícito invalida próximas trocas`, async () => {
+  test(`Lulith: duplo toque no quadro ${frame + 1} pula e invalida próximas trocas`, async () => {
     const t = setup(); t.start('lulith_codigo'); await ready();
     for (let i = 0; i < frame; i++) t.advance();
     const stale = [...t.timers.values()][0].fn;
     t.input('pointerup', 100); assert.equal(t.finished, 0);
     t.input('pointerup', 200); assert.equal(t.finished, 0);
-    assert.equal(t.controller.isCutsceneActive(), true);
-    t.controller.pularCutscene(); assert.equal(t.finished, 1);
+    t.advance(); assert.equal(t.finished, 1);
     stale(); t.controller.pularCutscene();
     assert.equal(t.phases.length, frame + 1);
     assert.equal(t.timers.size, 0); assert.equal(t.completions, 1);
@@ -312,10 +311,37 @@ for (let index = 0; index < 10; index++) test(`Ato 1: Skip no passo ${index + 1}
   t.input('pointerup', 100, { pointerType: 'touch' });
   t.input('pointerup', 200, { pointerType: 'touch' });
   assert.equal(t.completions, 0);
-  t.controller.pularCutscene();
+  t.advance();
   assert.equal(t.completions, 1); assert.equal(t.timers.size, 0);
   const count = t.phases.length; stale();
   assert.equal(t.phases.length, count);
+});
+
+test('duplo toque pula o título do Ato 1 sem repetir conclusão', async () => {
+  const t = setup(); t.start('act1_title'); await ready();
+  t.input('pointerup', 100, { pointerType: 'touch' });
+  t.input('pointerup', 300, { pointerType: 'touch' });
+  assert.equal(t.controller.isCutsceneActive(), true);
+  t.advance();
+  assert.equal(t.completions, 1);
+  assert.equal(t.controller.isCutsceneActive(), false);
+});
+
+test('touchend funciona sem pointerup e não conta duas vezes o mesmo toque', async () => {
+  const t = setup(); t.start(); await ready();
+  const touch = { changedTouches: [{}], touches: [] };
+  t.input('pointerup', 100, { pointerType: 'touch' });
+  t.input('touchend', 105, touch);
+  assert.equal(t.controller.isSkipping(), false);
+  t.input('pointerup', 400, { pointerType: 'touch' });
+  t.advance();
+  assert.equal(t.completions, 1);
+
+  const fallback = setup(); fallback.start('lulith_codigo'); await ready();
+  fallback.input('touchend', 100, touch);
+  fallback.input('touchend', 350, touch);
+  fallback.advance();
+  assert.equal(fallback.completions, 1);
 });
 test('Ato 1: preload, ordem e preto separado do título', async () => {
   const t = setup(); t.start('act1_ending'); await ready(); t.esvaziar();

@@ -267,32 +267,30 @@ test("cancelar descarta o draft sem descartar a captura pendente", () => {
   assert.equal(ambiente.ler("saveRepository.listarManuais().length"), 0);
 });
 
-test("mensagens: compositor envia a mensagem digitada pelo jogador", () => {
+test("mensagens: somente as opções prontas enviam respostas sem abrir teclado", () => {
   const ambiente = criarAmbiente();
   ambiente.executar("prepararCelularTeste(); abrirCelular(); abrirMensagens();");
-  assert.equal(ambiente.ler('el.messagesComposer.classList.contains("oculto")'), false);
-  assert.equal(ambiente.executar("abrirEditorMensagem();"), true);
-  assert.equal(ambiente.ler("el.textEntrySend.textContent"), "Enviar");
-  assert.equal(ambiente.ler("state.texto.config.maxLength"), 160);
-  ambiente.executar('pressionarTecla("o"); pressionarTecla("i");');
-  assert.equal(ambiente.executar("confirmarEntradaTexto();"), true);
+  assert.equal(ambiente.elementos.has("messages-composer"), false);
+  assert.equal(ambiente.elementos.has("messages-composer-field"), false);
+  assert.equal(ambiente.ler('el.messagesChoices.children.length > 0'), true);
+  assert.equal(ambiente.ler('state.texto.aberto'), false);
+  ambiente.executar('escolherResposta("perguntar-identidade");');
   assert.equal(ambiente.ler("state.mensagens.historico.length"), 1);
   assert.equal(ambiente.ler("state.mensagens.historico[0].autor"), "protagonista");
-  assert.equal(ambiente.ler("state.mensagens.historico[0].texto"), "oi");
-  assert.equal(ambiente.ler("el.messagesComposerField.textContent"), "Toque para escrever…");
+  assert.equal(ambiente.ler("state.mensagens.historico[0].texto"), "Quem é você?");
   assert.equal(ambiente.ler("state.texto.aberto"), false);
-  assert.equal(ambiente.ler('el.messagesComposer.classList.contains("oculto")'), false);
+  assert.equal(ambiente.ler('el.textEntryDock.classList.contains("oculto")'), true);
 });
 
 test("voltar durante a edição cancela a entrada sem sair da tela", () => {
   const ambiente = criarAmbiente();
   ambiente.executar(`
-    prepararCelularTeste(); abrirCelular(); abrirMensagens();
-    abrirEditorMensagem(); pressionarTecla("x");
+    prepararCelularTeste(); abrirCelular(); abrirGaleria();
+    abrirEntradaTexto({ maxLength: 10 }); pressionarTecla("x");
   `);
   ambiente.executar("voltarCelular();");
   assert.equal(ambiente.ler("state.texto.aberto"), false);
-  assert.equal(ambiente.ler("state.celular.tela"), "mensagens");
+  assert.equal(ambiente.ler("state.celular.tela"), "galeria");
 });
 
 test("teclado físico: letras, backspace, setas, Enter confirma e Escape cancela", () => {
@@ -337,8 +335,8 @@ test("snapshot não persiste o texto e restaurar fecha a edição", () => {
 test("fecharCelular encerra a edição em andamento", () => {
   const ambiente = criarAmbiente();
   ambiente.executar(`
-    prepararCelularTeste(); abrirCelular(); abrirMensagens();
-    abrirEditorMensagem(); pressionarTecla("z");
+    prepararCelularTeste(); abrirCelular(); abrirGaleria();
+    abrirEntradaTexto({ maxLength: 10 }); pressionarTecla("z");
   `);
   ambiente.executar("fecharCelular();");
   assert.equal(ambiente.ler("state.modo"), "livre");

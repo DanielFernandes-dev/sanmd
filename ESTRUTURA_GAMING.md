@@ -624,7 +624,7 @@ Ao fechar o aparelho:
    - `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
    - `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
 
-   A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
+   A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. Galeria, decodificador e mapa/PC abrem o editor; em Mensagens, o jogador escolhe respostas prontas. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
 
    Layouts do teclado:
    - **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.
@@ -849,7 +849,7 @@ Abrir `http://localhost:8000`.
 | Investigação point-and-click | Parcial | Hotspots, objetos interativos e Bolsa implementados no beco; sistema geral ainda planejado |
 | Bolsa | Implementado | Inventário narrativo com pesquisa, paginação, detalhe e ação direta USAR |
    | Ativação do aparelho | Implementado | Coleta do celular no cofre, ativação pela Bolsa e reação narrativa |
-   | Teclado virtual próprio | Implementado | Substitui o IME do sistema; usado em Galeria (nomear fotos) e Mensagens (compositor); layouts QWERTY/Números, shift, acentos, teclado físico |
+   | Teclado virtual próprio | Implementado | Substitui o IME do sistema; usado em Galeria, decodificador e mapa/PC; layouts QWERTY/Números, shift, acentos, teclado físico |
 | Puzzles | Parcial | Enigma de identidade implementado; sistema geral ainda planejado |
 | Terminal | Não implementado | Planejado no GDD |
 | Estrutura de múltiplas cenas | Parcial | Três cenas do beco implementadas; Ato I completo ainda planejado |

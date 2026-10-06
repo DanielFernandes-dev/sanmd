@@ -4,6 +4,8 @@ function criarCutsceneController({ document, window, config, services, sequences
   const cancel = window.clearTimeout?.bind(window) ?? clearTimeout;
   let session = null;
   let firstInput = null;
+  let lastPointerUp = null;
+  let lastTouchEnd = null;
 
   function cancelarAvanco(run) {
     cancel(run.timer);
@@ -15,6 +17,8 @@ function criarCutsceneController({ document, window, config, services, sequences
     run.status = 'finishing';
     cancelarAvanco(run);
     firstInput = null;
+    lastPointerUp = null;
+    lastTouchEnd = null;
     const done = () => {
       if (session !== run) return;
       try { visual.finalizar(); }
@@ -49,9 +53,22 @@ function criarCutsceneController({ document, window, config, services, sequences
     if (!run) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    if (event.type === 'pointercancel') firstInput = null;
-    if (run.id !== 'intro_abertura' || run.skipRequested || event.type !== 'pointerup'
-      || event.isPrimary === false || event.button > 0) return;
+    if (event.type === 'pointercancel') {
+      firstInput = null;
+      lastPointerUp = null;
+      lastTouchEnd = null;
+    }
+    if (run.skipRequested) return;
+    if (event.type === 'pointerup') {
+      if (event.isPrimary === false || event.button > 0) return;
+      if (event.pointerType === 'touch' && lastTouchEnd !== null
+        && event.timeStamp - lastTouchEnd < 80) return;
+      lastPointerUp = event.timeStamp;
+    } else if (event.type === 'touchend') {
+      if (event.touches?.length || (event.changedTouches && event.changedTouches.length !== 1)
+        || (lastPointerUp !== null && event.timeStamp - lastPointerUp < 80)) return;
+      lastTouchEnd = event.timeStamp;
+    } else return;
     const now = event.timeStamp;
     if (firstInput !== null && now - firstInput <= config.cutscene.skipDoubleInputWindow) skip(true);
     else firstInput = now;
@@ -86,6 +103,8 @@ function criarCutsceneController({ document, window, config, services, sequences
       status: 'preparing', skipRequested: false,
       timing: sequence.timing ? config.cutscene[sequence.timing] : config.cutscene };
     firstInput = null;
+    lastPointerUp = null;
+    lastTouchEnd = null;
     try { visual.iniciar(sequence); }
     catch (error) {
       console.error('Falha ao iniciar cutscene', error);

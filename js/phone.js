@@ -167,11 +167,6 @@ function criarSistemaCelular(context) {
     }
 
     renderizarEscolhas(moverFoco);
-    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) {
-      el.phone.messagesComposer.classList.add("oculto");
-    } else {
-      el.phone.messagesComposer.classList.remove("oculto");
-    }
     rolarMensagens();
   }
 
@@ -319,36 +314,6 @@ function criarSistemaCelular(context) {
     iniciarMensagens();
     renderizarMensagens(!state.mensagens.donoRespondendo);
     agendarEnvioDono();
-  }
-
-  /** Enviar mensagem do jogador.
-   * @param {string} texto
-   */
-  function enviarMensagemJogador(texto) {
-    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return;
-    adicionarMensagem("protagonista", texto);
-    renderizarMensagens();
-    el.phone.messagesComposerField.textContent = "Toque para escrever…";
-    el.phone.messagesComposerField.focus();
-  }
-
-  /** Abrir editor de mensagem.
-   */
-  function abrirEditorMensagem() {
-    if (state.modo !== "celular" || state.celular.tela !== "mensagens") return false;
-    if (state.celular.resetStatus === RESET_STATUS.CONCLUIDO) return false;
-    return services.abrirEntradaTexto({
-      confirmLabel: "Enviar",
-      maxLength: CONFIG.tamanhoMensagem,
-      allowEmpty: false,
-      aoConfirmar: enviarMensagemJogador,
-      aoCancelar: () => {
-        el.phone.messagesComposerField.textContent = "Toque para escrever…";
-      },
-      aoAlterar: (valor) => {
-        el.phone.messagesComposerField.textContent = valor || "Toque para escrever…";
-      }
-    });
   }
 
   /** Renderizar arquivos.
@@ -624,8 +589,6 @@ function criarSistemaCelular(context) {
     cancelarEnvioDono,
     escolherResposta,
     abrirMensagens,
-    enviarMensagemJogador,
-    abrirEditorMensagem,
     renderizarArquivos,
     visualizarArquivo,
     abrirEditorIdentidade,

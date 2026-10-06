@@ -80,7 +80,7 @@ Já estão disponíveis:
 - Ativação do aparelho pela Bolsa com reação narrativa e transição de tema.
 - Layout da Galeria com linhas dimensionadas pelo conteúdo, metadados estruturados e suporte a nomes longos.
 - Otimização mobile com remoção do destaque de toque, redução do frame em paisagem e ajustes tipográficos.
-- Teclado virtual próprio e entrada de texto sem IME do sistema, usado em Galeria (nomear fotos) e Mensagens (compositor).
+- Teclado virtual próprio e entrada de texto sem IME do sistema, usado na Galeria, no decodificador e nas coordenadas do mapa/PC.
 - Transição de cena com fade global, bloqueio de input durante o efeito e suporte a `prefers-reduced-motion`.
 - Suíte Node cobrindo navegação, estado, saves, arte, teclado, menu, transições e as três cutscenes. Consulte [o relatório de implementação e validação](docs/STATUS_PROJETO.md).
 
@@ -100,7 +100,7 @@ A interface separa as conversas presenciais das mensagens digitais:
 - Na tela inicial, **Voltar** fecha o celular e retorna ao cenário.
 - A **Bolsa da MJ** abre o inventário narrativo pelo ícone de mochila; ela registra o Celular de Lulith após a coleta e permite a ação **USAR** para ativar o aparelho.
 - A investigação point-and-click usa hotspots acessíveis por mouse, toque e teclado, com objetos interativos e feedback visual direto no cenário.
-- O jogo possui um **teclado virtual próprio** que substitui o IME do sistema. Ele é usado para nomear fotografias na Galeria e para compor mensagens em Mensagens, mantendo a identidade visual e evitando sobreposição do teclado do Android em paisagem.
+- O jogo possui um **teclado virtual próprio** que substitui o IME do sistema. Ele é usado na Galeria, no decodificador e nas coordenadas do mapa/PC. Em Mensagens, o jogador escolhe respostas prontas.
 
 ## Entrada de texto e teclado virtual
 
@@ -110,7 +110,7 @@ Dois serviços compartilham o mesmo estado transitório:
 - `js/keyboard.js` — renderiza as teclas em `#game-keyboard` e o painel de acentos.
 - `js/text-entry.js` — mantém o buffer, cursor e estado da edição em `state.texto`.
 
-A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. `#gallery-photo-name` e `#messages-composer-field` viraram botões que abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
+A entrada de texto é aberta por requisição (`abrirEntradaTexto({...})` com `confirmLabel`, `maxLength`, `allowEmpty` e callbacks de confirmação) e confirmada ou cancelada sem diálogos nativos. Galeria, decodificador e mapa/PC abrem o editor. Enquanto edita, o teclado físico é desviado (digitar, Backspace, setas, Enter, Esc) e o IME do sistema nunca abre. O estado de edição não é persistido: restaurar um save fecha a edição.
 
 Layouts do teclado:
 - **QWERTY** — letras, shift, acentos (ÁÇ), espaço, OK.

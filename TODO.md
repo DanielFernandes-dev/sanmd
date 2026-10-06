@@ -28,6 +28,8 @@ O asset atual de James possui fundo preto. A correção de diálogos utiliza ess
 
 ### Skip da abertura e acesso ao menu — 06/10/2026
 
+> Registro da implementação anterior; a seção seguinte substitui a restrição à abertura e reativa o Skip das demais cutscenes.
+
 - [x] Restringir o detector de dois toques à `intro_abertura`.
 - [x] Manter a abertura ativa até consumir o clique gerado pelo segundo toque.
 - [x] Liberar imediatamente o menu e eliminar o bloqueio residual depois do Skip.
@@ -35,6 +37,18 @@ O asset atual de James possui fundo preto. A correção de diálogos utiliza ess
 - [x] Preservar o bloqueio de input enquanto qualquer cutscene estiver ativa.
 - [x] Confirmar que duplo clique não pula a Cutscene 02 de Lulith nem as cenas finais do beco.
 - [x] Cobrir o fluxo em testes automatizados e em Chromium com cliques reais.
+
+### Mensagens de Lulith e Skip de todas as cutscenes — 06/10/2026
+
+- [x] Remover somente o campo “Toque para escrever” e o envio de texto livre das Mensagens de Lulith.
+- [x] Manter as respostas prontas e a progressão da conversa por essas opções.
+- [x] Preservar o teclado virtual compartilhado na Galeria/Save, no decodificador de identidade e nos demais sistemas que usam entrada de texto.
+- [x] Aceitar dois toques ou cliques rápidos para pular a abertura, a cutscene de Lulith e as cenas de encerramento.
+- [x] Consumir os eventos do segundo toque antes de liberar o menu ou o diálogo seguinte.
+- [x] Verificar Novo jogo e Carregar com um clique depois de pular a abertura.
+- [x] Validar o fluxo em testes automatizados e no Chromium.
+- [x] Gerar APK de debug com as alterações.
+- [x] Instalar o APK via ADB e confirmar visualmente que dois toques na abertura levam ao menu.
 
 ### Diretrizes do ato
 
@@ -727,7 +741,7 @@ Validação do Ato I completo ainda pendente (o nome da fotografia não equivale
 
    - [x] Implementar teclado virtual próprio (`js/keyboard.js`) com layouts QWERTY e Números.
    - [x] Implementar controlador compartilhado de entrada de texto (`js/text-entry.js`).
-   - [x] Substituir campos `input` nativos por botões em `#gallery-photo-name` e `#messages-composer-field`.
+   - [x] Substituir os antigos campos `input` nativos por botões em `#gallery-photo-name` e no compositor de Mensagens (este último foi removido em 06/10/2026).
    - [x] Desviar teclado físico (digitar, Backspace, setas, Enter, Esc) enquanto a edição está aberta.
    - [x] Implementar painel de acentos (ÁÇ) com á, à, â, ã, é, ê, í, ó, ô, õ, ú, ç.
    - [x] Implementar shift temporário e bloqueio de maxLength.

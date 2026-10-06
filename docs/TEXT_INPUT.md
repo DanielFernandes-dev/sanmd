@@ -1,7 +1,7 @@
 # Entrada de texto e teclado virtual
 
 O jogo não usa campos `input` nativos nem o teclado IME do sistema: um teclado
-virtual próprio, dentro do celular, digita qualquer texto do jogo. Isso mantém a
+virtual próprio, dentro do celular e reutilizado no mapa/PC, atende os campos de texto. Isso mantém a
 identidade visual, evita sobreposição do teclado do SO e elimina o último
 diálogo/formulário nativo do fluxo.
 
@@ -43,10 +43,10 @@ edição é fechada e o estado resetado.
 
 ```js
 services.abrirEntradaTexto({
-  confirmLabel: "Enviar",
-  maxLength: 160,
+  confirmLabel: "OK",
+  maxLength: 28,
   allowEmpty: false,
-  aoConfirmar: (valor) => enviarMensagemJogador(valor),
+  aoConfirmar: (valor) => confirmarFoto(valor),
   aoCancelar: () => { ... },
   aoAlterar: (valor) => { ... }
 });
@@ -104,10 +104,12 @@ do preview descarta a captura.
 
 ### Mensagens
 
-`#messages-composer` fica irmão de `#messages-choices`, visível quando o reset
-remoto não terminou. `abrirEditorMensagem` usa `maxLength: CONFIG.tamanhoMensagem`
-(160) e "Enviar"; confirmar adiciona `{ autor: "protagonista", texto }` ao
-histórico através do sistema de celular — o teclado não mexe no histórico.
+O contato com Lulith oferece somente respostas prontas em `#messages-choices`.
+Selecionar uma opção adiciona a resposta ao histórico sem abrir o teclado.
+
+### Mapa e PC
+
+Os campos de coordenadas compartilham o teclado virtual com os demais editores.
 
 ### Enigma de identidade
 
@@ -121,5 +123,5 @@ teclado novamente; após `ELA`, o botão fica desabilitado.
 - O estado do teclado não é persistido e o dock é fechado ao restaurar, voltar,
   fechar o celular ou trocar de tela.
 - O cursor pisca com animação desativada em `prefers-reduced-motion`.
-- A test suite `test/text-input.test.js` cobre galeria, mensagens, limites,
+- A test suite `test/text-input.test.js` cobre galeria, enigma, coordenadas, limites,
   shift, layouts, acentos, teclado físico e snapshot.

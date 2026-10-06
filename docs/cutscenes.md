@@ -51,11 +51,11 @@ Captura no documento bloqueia ponteiro, mouse, touch, teclado, formulários e
 wheel. O menu nasce `inert`; o app continua `inert` até a escolha de gameplay.
 As ações públicas do menu também verificam esse bloqueio.
 
-Na `intro_abertura`, dois `pointerup` primários na janela `skipDoubleInputWindow` (350 ms) pulam.
+Em qualquer cutscene, dois toques primários na janela `skipDoubleInputWindow` (600 ms) pulam.
+O controlador aceita `pointerup` e `touchend` sem contar o mesmo toque duas vezes.
 O controlador consome o clique gerado pelo segundo toque antes de liberar o menu;
-depois disso, o próximo clique chega aos botões da capa. Nas demais cutscenes,
-o detector de dois toques fica inativo, mas o controlador continua bloqueando
-input durante a apresentação e mantém o Skip explícito pela API.
+depois disso, o próximo clique chega aos botões da capa. O controlador bloqueia
+input durante as demais apresentações e mantém o Skip explícito pela API.
 Clique único, dupla fora da janela e multitoque não pulam. Não depende de
 `dblclick`. `touch-action: none` impede zoom. O overlay continua ativo até o
 navegador concluir os eventos do segundo toque; depois a captura é desligada
@@ -172,7 +172,7 @@ inclui a transição de entrada do próprio quadro; o fade final é adicional.
 São 12.450 ms de quadros, mais 280 ms de fade final. Preload, abertura do caderno
 e fade do menu para gameplay são etapas adicionais. Push-in tem escala máxima
 1,02/1,025; flash de erro 110 ms; shakes 90/140 ms; fade de áudio 180 ms.
-A janela do duplo toque da abertura continua 350 ms.
+A janela do duplo toque é 600 ms em todas as cutscenes.
 
 ### Validação registrada no aparelho — 2026-09-26
 
