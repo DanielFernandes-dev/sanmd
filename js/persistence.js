@@ -140,6 +140,16 @@ function criarSistemaPersistencia(context) {
     if (candidato.act1Complete !== undefined && typeof candidato.act1Complete !== 'boolean') return null;
     const exploration = validarExploracao(candidato);
     if (!exploration) return null;
+    if (["cena_crime", "delegacia", "beco"].includes(candidato.localizacao.local)) {
+      exploration.sceneState.casa_quarto_mj = {
+        introSeen: candidato.sceneState?.casa_quarto_mj?.introSeen ?? true,
+        mjBagCollected: candidato.sceneState?.casa_quarto_mj?.mjBagCollected ?? true };
+      exploration.sceneState.casa_cozinha = {
+        jamesIntroConversationComplete: candidato.sceneState?.casa_cozinha?.jamesIntroConversationComplete ?? true };
+    } else if (candidato.localizacao.cena !== "casa_quarto_mj"
+      && candidato.sceneState?.casa_quarto_mj?.introSeen === undefined) {
+      exploration.sceneState.casa_quarto_mj = { ...exploration.sceneState.casa_quarto_mj, introSeen: true };
+    }
     const aparelho = validarAparelho(candidato, exploration);
     if (!aparelho) return null;
     const worldMap = validarWorldMap(candidato.worldMap, candidato);
@@ -220,6 +230,9 @@ function criarSistemaPersistencia(context) {
     restaurarDadosPersistidos(snapshot);
     retomarResetRestaurado();
     restaurarInterface();
+    services.iniciarIntroCasa();
+    if (state.localizacao.cena === "casa_cozinha"
+      && !state.sceneState.casa_cozinha?.jamesIntroConversationComplete) services.iniciarConversa();
   }
 
   /** Registrar autosave.
@@ -319,7 +332,8 @@ function criarSistemaPersistencia(context) {
     services.fecharMenuIrPara();
     services.atualizarCabecalhoMensagens();
     services.definirBotoes();
-    (state.aparelho.activePhone ? el.phone.btnCelular : el.bag.btnBolsa).focus();
+    [el.phone.btnCelular, el.bag.btnBolsa, el.scene.btnIrPara, el.dialogue.btnConversar]
+      .find(botao => !botao.hidden && !botao.disabled)?.focus();
   }
 
   /** Retomar reset restaurado.

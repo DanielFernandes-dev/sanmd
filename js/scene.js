@@ -332,6 +332,8 @@ function criarSistemaCenas(context) {
     });
     return changed.then(success => {
       if (success && cenaId === "casa_quarto_mj") iniciarIntroCasa();
+      if (success && cenaId === "casa_cozinha"
+        && !state.sceneState.casa_cozinha?.jamesIntroConversationComplete) services.iniciarConversa();
       if (success && cenaId === "crime_sala") iniciarIntroCrime();
       return success;
     });

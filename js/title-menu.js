@@ -115,7 +115,8 @@ function criarTelaInicial({ game, document, window }) {
         services.iniciarIntroCasa();
         services.registrarAutosave();
       }
-      get('btn-conversar').focus();
+      ['btn-conversar', 'btn-ir-para', 'btn-bolsa', 'btn-celular']
+        .map(get).find(botao => !botao.hidden && !botao.disabled)?.focus();
     } catch (error) {
       playing = false;
       app.inert = true;

@@ -70,6 +70,20 @@ Saves manuais só podem ser criados pelo celular, que por contrato abre no modo 
 
 ## Autosave
 
+### Desbloqueios da sidebar
+
+Os controles reutilizam flags de `sceneState`, sem `hudUnlocks` duplicado:
+`casa_quarto_mj.introSeen` libera Ir para, `casa_cozinha.jamesIntroConversationComplete`
+libera Conversar permanentemente (inclusive sem NPC), e `casa_quarto_mj.mjBagCollected`
+libera Bolsa. Os autosaves existentes de conclusão de diálogo e coleta preservam essas flags.
+Celular continua derivado de `aparelho.activePhone`, incluindo quebra e ativação pela Bolsa.
+
+Saves antigos em cena do crime, delegacia ou beco sem estados da casa recebem os
+três marcos concluídos; flags explícitas são preservadas. Na casa, estar fora do
+quarto permite inferir a introdução concluída quando a flag está ausente.
+Load no quarto ou cozinha com introdução pendente retoma o diálogo existente.
+Novo jogo limpa `sceneState` e oculta os controles até cada marco narrativo.
+
 O autosave não possui nome, expressão fotográfica nem posição na grade. Cada gravação substitui o checkpoint anterior.
 
 Os pontos lógicos atuais são:

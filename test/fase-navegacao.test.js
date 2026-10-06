@@ -432,6 +432,7 @@ test('casa: monólogo inicial ocorre uma vez e sala conecta somente os três cô
     await executar(`irPara("${destination}");`);
     assert.equal(ler('state.localizacao.cena'), destination);
     assert.equal(ler('JSON.stringify(obterDestinos().map(x => x.id))'), '["casa_sala"]');
+    if (destination === 'casa_cozinha') executar('encerrarConversa();');
     await executar('irPara("casa_sala");');
   }
 });
@@ -703,6 +704,7 @@ test('Load antigo migra mapa pela progressão e novas visitas liberam os locais'
   assert.equal(ler('state.worldMap.availableLocations.cena_crime'), false);
   assert.equal(ler('state.worldMap.availableLocations.delegacia'), false);
   assert.equal(ler('state.worldMap.availableLocations.beco'), false);
+  executar('encerrarConversa();');
   executar(`state.sceneState.casa_quarto_mj = { introSeen: true, mjBagCollected: true };
     state.sceneState.casa_cozinha = { jamesIntroConversationComplete: true };
     state.sceneState.casa_sala = { mjPhoneCollected: true };
@@ -714,4 +716,58 @@ test('Load antigo migra mapa pela progressão e novas visitas liberam os locais'
     state.aparelho.originalPhoneStatus = 'broken'; state.aparelho.activePhone = null;`);
   await executar('irPara("ir_delegacia");');
   assert.equal(ler('state.worldMap.availableLocations.delegacia'), true);
+});
+
+test('HUD acompanha introdução, James, bolsa e preserva monólogo sem NPC e Save/Load', async () => {
+  const { executar, ler } = controlarAmbiente();
+  entrarCasa(executar);
+  const visibilidade = () => JSON.parse(ler('JSON.stringify([el.btnIrPara, el.btnConversar, el.btnBolsa, el.btnCelular].map(b => !b.hidden))'));
+  executar('definirBotoes(); iniciarIntroCasa();');
+  assert.deepEqual(visibilidade(), [false, false, false, false]);
+  assert.equal(ler('el.btnIrPara.disabled && el.btnConversar.disabled && el.btnBolsa.disabled'), true);
+  executar('encerrarConversa();');
+  assert.deepEqual(visibilidade(), [true, false, false, false]);
+  await executar('irPara("casa_sala"); irPara("casa_cozinha");');
+  assert.equal(ler('state.dialogo.conversationId'), 'james_intro');
+  assert.deepEqual(visibilidade(), [true, false, false, false]);
+  executar('encerrarConversa();');
+  assert.deepEqual(visibilidade(), [true, true, false, false]);
+  assert.equal(ler('saveRepository.obterAutosave().saveState.sceneState.casa_cozinha.jamesIntroConversationComplete'), true);
+  await executar('irPara("casa_sala");');
+  assert.equal(ler('el.btnConversar.disabled'), false);
+  executar('iniciarConversa();');
+  assert.equal(ler('state.dialogo.falas[0].texto'), ler('DATA.monologos.casa_sala.inicial[0].texto'));
+  executar('encerrarConversa();');
+  await executar('irPara("casa_quarto_mj"); executarHotspot("mj_bag");');
+  assert.deepEqual(visibilidade(), [true, true, true, false]);
+  executar('const hudSave = capturarEstadoJogo(); Object.assign(state, criarEstadoJogo()); restaurarEstadoJogo(hudSave);');
+  assert.deepEqual(visibilidade(), [true, true, true, false]);
+  await executar('irPara("casa_sala"); executarHotspot("mj_phone");');
+  assert.deepEqual(visibilidade(), [true, true, true, true]);
+  executar('state.modo = "cutscene"; definirBotoes();');
+  assert.equal(ler('[el.btnIrPara, el.btnConversar, el.btnBolsa, el.btnCelular].every(b => b.disabled)'), true);
+  executar('Object.assign(state, criarEstadoJogo()); state.localizacao = { local: "casa", cena: "casa_quarto_mj" }; restaurarInterface();');
+  assert.deepEqual(visibilidade(), [false, false, false, false]);
+});
+
+test('HUD migra save antigo do beco e mantém desbloqueios ao retornar para casa', async () => {
+  const { executar, ler } = controlarAmbiente();
+  executar('const legadoHud = capturarEstadoJogo(); delete legadoHud.sceneState; restaurarEstadoJogo(legadoHud);');
+  assert.equal(ler('el.btnConversar.hidden || el.btnBolsa.hidden || el.btnIrPara.hidden'), false);
+  assert.equal(ler('el.btnCelular.hidden'), true);
+  await executar('irParaLocal("casa");');
+  assert.equal(ler('el.btnConversar.hidden || el.btnBolsa.hidden || el.btnIrPara.hidden'), false);
+  assert.equal(ler('state.modo'), 'livre');
+});
+
+test('HUD retoma saves anteriores à conclusão das introduções sem travar o acesso', () => {
+  for (const cena of ['casa_quarto_mj', 'casa_cozinha']) {
+    const { executar, ler } = controlarAmbiente();
+    entrarCasa(executar);
+    executar(`state.localizacao.cena = '${cena}'; const introSave = capturarEstadoJogo(); restaurarEstadoJogo(introSave);`);
+    assert.equal(ler('state.modo'), 'dialogo');
+    assert.equal(ler('el.btnConversar.hidden'), true);
+    executar('encerrarConversa();');
+    assert.equal(ler(cena === 'casa_quarto_mj' ? 'el.btnIrPara.hidden' : 'el.btnConversar.hidden'), false);
+  }
 });

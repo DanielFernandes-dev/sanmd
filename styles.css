@@ -2057,12 +2057,7 @@ button:hover:not(:disabled) .action-icon {
 .photo-objects { position: absolute; top: 0; height: 100%; width: calc(100% * 1672 / 941 * 3 / 4); left: 50%; transform: translateX(-50%); pointer-events: none; }
 .scene-hotspot { min-width: 44px; min-height: 44px; }
 
-/* Sem aparelho ativo, as três ações restantes ocupam linhas consecutivas. */
-#btn-celular[hidden] { display: none !important; }
-#app:has(#btn-celular[hidden]) {
-  grid-template-rows: minmax(0, 1fr) repeat(3, minmax(44px, 60px)) minmax(0, 1fr);
-}
-#app:has(#btn-celular[hidden]) #btn-bolsa { grid-row: 4; }
+#btn-conversar[hidden], #btn-ir-para[hidden], #btn-celular[hidden], #btn-bolsa[hidden] { display: none !important; }
 
 #phone-screen[data-phone-theme="lulith"] {
   background: linear-gradient(160deg, #111c30, #29334c 55%, #121827);
