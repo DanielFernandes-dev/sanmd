@@ -1482,7 +1482,7 @@ button:hover:not(:disabled) .action-icon {
   touch-action: manipulation;
 }
 .scene-hotspot:focus-visible { outline: 2px solid var(--cor-destaque); outline-offset: 2px; }
-.scene-hotspot:hover { background: #ffffff18; outline: 1px solid #ffffff55; }
+.scene-hotspot:hover { background: transparent; }
 .prototype-overlay:not([hidden]) {
   position: fixed; inset: 0; z-index: 10000; display: grid; place-items: center;
   background: #080c15e8; padding: 16px;
@@ -2487,3 +2487,26 @@ button:hover:not(:disabled) .action-icon {
   font: 700 clamp(10px, 1.15cqw, 16px) var(--fonte);
 }
 #world-map-overlay.map-art-unavailable #map-feedback:not(:empty) { top: 53%; }
+
+#app button, #bag-dialog button, #phone-overlay button,
+.prototype-overlay button, .prototype-overlay input {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+:root:not(:has(#app[data-input-mode="keyboard"])) :is(
+  #btn-ir-para, #btn-conversar, #btn-bolsa, #btn-celular,
+  #ir-para-menu .message-choice, .scene-hotspot, #map-search
+):focus {
+  outline: none;
+}
+
+:root:not(:has(#app[data-input-mode="keyboard"])) #ir-para-menu .message-choice:focus {
+  background: transparent;
+}
+
+@media (hover: none) {
+  #ir-para-menu .message-choice:hover { background: transparent; color: #f4f0df; }
+  #ir-para-menu .message-choice:hover::before { color: rgba(244, 240, 223, 0.48); }
+  .scene-hotspot:hover { outline: none; }
+}

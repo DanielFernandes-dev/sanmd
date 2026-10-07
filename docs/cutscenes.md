@@ -35,9 +35,10 @@ invalida callbacks pela identidade e fase da sessão, limpa a intenção de Skip
 Cada visual limpa seus recursos. A abertura cancela animações, observação de
 tamanho e som, revelando o menu com foco em Novo jogo. Lulith faz fade e encerra
 o áudio antes de ocultar o palco; o callback do caderno entrega o gameplay. A conclusão roda
-uma vez. Na abertura, a fase `luz` declara `hold: true`: o acendimento termina e
-a cena iluminada permanece, sem timer ou repetição de áudio, até o Skip.
-Sequências sem `hold` continuam finalizando naturalmente.
+uma vez. Na abertura, a fase `luz` termina após `lampReveal` e libera o menu
+automaticamente. A capa visível não exige outro duplo toque de Skip: Novo jogo
+e Carregar respondem ao primeiro clique após a iluminação. O Skip antecipado
+continua usando dois toques e a mesma finalização.
 
 Skip durante preparo aguarda somente o carregamento já limitado pelo timeout
 global; não executa os passos. Falha de asset não prende a interface.

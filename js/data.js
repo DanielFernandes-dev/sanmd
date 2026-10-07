@@ -630,7 +630,7 @@ const CUTSCENES = Object.freeze({
       { phase: 'pausa-completa', duration: 'completeTitleHold' },
       { phase: 'subida', duration: 'titleExit', reduced: 'reducedMotion' },
       { phase: 'preto-final', duration: 'postTitleBlackHold' },
-      { phase: 'luz', duration: 'lampReveal', reduced: 'reducedMotion', sound: true, hold: true }
+      { phase: 'luz', duration: 'lampReveal', reduced: 'reducedMotion', sound: true }
     ]
   })
 });

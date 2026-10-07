@@ -314,7 +314,9 @@ async function concluirIntro(contexto) {
 }
 
 async function pularAberturaComDuploClique(documento, contexto) {
-  await esperarIluminacao(contexto);
+  for (let i = 0; i < 60 && vm.runInContext("document.getElementById('cutscene-stage').dataset.phase === 'preto'", contexto); i++) {
+    await Promise.resolve();
+  }
   const gesto = tipo => {
     const evento = { type: tipo, timeStamp: tipo === 'pointerup' ? gesto.tempo += 100 : gesto.tempo,
       button: 0, isPrimary: true,
@@ -394,15 +396,22 @@ test('intro precede controle do menu e snapshot ignora apresentação', async ()
   assert.doesNotMatch(after, /cutscene|intro_abertura|skipDoubleInput|pausa-siglas/);
 });
 
-test('luz permanece visível e bloqueia menu até Skip', async () => {
+test('iluminação concluída libera Carregar com um clique sem Skip adicional', async () => {
   const { contexto, elementos } = criarAmbiente();
   await esperarIluminacao(contexto);
-  assert.equal(elementos.get('cutscene-stage').dataset.phase, 'luz');
-  assert.equal(elementos.get('title-menu').inert, true);
-  vm.runInContext('game.services.pularCutscene()', contexto);
   assert.equal(elementos.get('cutscene-stage').dataset.phase, 'fim');
   assert.equal(elementos.get('title-menu').inert, false);
   assert.equal(elementos.get('cutscene-overlay').hidden, true);
-  await vm.runInContext('menu.openLoad()', contexto);
+  elementos.get('notebook-load').disparar('click');
+  for (let i = 0; i < 100 && elementos.get('title-menu').dataset.state !== 'load'; i++) await Promise.resolve();
   assert.equal(elementos.get('title-menu').dataset.state, 'load');
+});
+
+test('iluminação concluída libera Novo jogo com um clique sem Skip adicional', async () => {
+  const { contexto, elementos } = criarAmbiente();
+  await esperarIluminacao(contexto);
+  elementos.get('notebook-new').disparar('click');
+  for (let i = 0; i < 100 && elementos.get('title-menu').hidden === false; i++) await Promise.resolve();
+  assert.equal(elementos.get('title-menu').hidden, true);
+  assert.equal(vm.runInContext('game.state.modo', contexto), 'dialogo');
 });

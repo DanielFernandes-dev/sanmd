@@ -50,6 +50,15 @@ function criarSistemaEventos(context) {
   function inicializarEventos() {
     if (inicializarEventos.inicializado) return;
     inicializarEventos.inicializado = true;
+    const inputRoot = document.getElementById("app");
+    inputRoot.dataset.inputMode = "pointer";
+    document.addEventListener("pointerdown", () => { inputRoot.dataset.inputMode = "pointer"; }, { capture: true });
+    document.addEventListener("touchstart", () => { inputRoot.dataset.inputMode = "pointer"; }, { capture: true, passive: true });
+    document.addEventListener("keydown", event => {
+      if (["Tab", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Enter", " "].includes(event.key)) {
+        inputRoot.dataset.inputMode = "keyboard";
+      }
+    }, { capture: true });
     el.bag.btnBolsa.addEventListener("click", () => {
       if (state.modo !== "livre") return;
       services.fecharMenuIrPara();

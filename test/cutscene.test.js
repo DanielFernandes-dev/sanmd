@@ -57,8 +57,8 @@ test('bloqueia sincronamente, aguarda assets, executa ordem e finaliza uma vez',
   assert.equal(t.phases[4][1], t.config.cutscene.laughReveal);
   assert.equal(t.phases[8][1], t.config.cutscene.lampReveal);
   assert.equal(t.controller.isCutsceneActive(), true);
-  assert.equal(t.timers.size, 0);
-  t.controller.pularCutscene();
+  assert.equal(t.timers.size, 1);
+  t.advance();
   assert.equal(t.finished, 1); assert.equal(t.completions, 1); assert.equal(t.blocked, false);
   t.controller.pularCutscene(); assert.equal(t.finished, 1);
 });
@@ -78,7 +78,7 @@ for (let phase = 0; phase < FASES.length; phase++) {
     t.advance();
     assert.equal(t.finished, 1); assert.equal(t.completions, 1);
     assert.equal(t.blocked, false); assert.equal(t.timers.size, 0);
-    assert.equal(t.cancelled.length, phase === FASES.length - 1 ? 0 : 1);
+    assert.equal(t.cancelled.length, 1);
     const count = t.phases.length;
     stale?.(); t.controller.pularCutscene();
     assert.equal(t.phases.length, count); assert.equal(t.finished, 1);
@@ -117,7 +117,7 @@ test('teclado, toque e gameplay bloqueados; reduced motion mantém narrativa', a
   assert.equal(t.phases[5][1], t.config.cutscene.completeTitleHold);
   assert.equal(t.phases[4][1], t.config.cutscene.reducedMotion, 'a risada também é narrativa');
 
-  assert.equal(t.finished, 0);
+  assert.equal(t.finished, 1);
   t.controller.pularCutscene();
   assert.equal(t.finished, 1);
 });
@@ -125,7 +125,7 @@ test('teclado, toque e gameplay bloqueados; reduced motion mantém narrativa', a
 test('cauda do gesto não atravessa o fim da espera e o teclado volta a ativar o menu', async () => {
   const t = setup(); t.start(); await ready();
   t.input('pointerdown', 0);
-  t.esvaziar();
+  for (let i = 0; i < FASES.length - 1; i++) t.advance();
   assert.equal(t.controller.isCutsceneActive(), true);
   t.input('pointerup', 100); t.input('pointerup', 200);
   assert.equal(t.finished, 0);
@@ -213,16 +213,16 @@ test('rejeição de autoplay e áudio indisponível não escapam do serviço; ca
 });
 
 
-test('última fase iluminada não libera menu sem Skip, nem repete áudio', async () => {
-  const t = setup(); t.start(); await ready(); t.esvaziar();
+test('última fase libera menu ao terminar a iluminação sem exigir Skip', async () => {
+  const t = setup(); t.start(); await ready();
+  for (let i = 0; i < FASES.length - 1; i++) t.advance();
   assert.equal(t.controller.isCutsceneActive(), true);
   assert.equal(t.blocked, true);
-  assert.equal(t.timers.size, 0);
+  assert.equal(t.timers.size, 1);
   assert.equal(t.phases.filter(([phase]) => phase === 'luz').length, 1);
-  t.input('pointerup', 100); assert.equal(t.finished, 0);
-  t.input('pointerup', 200); assert.equal(t.finished, 0);
   t.advance(); assert.equal(t.finished, 1);
   assert.equal(t.blocked, false);
+  assert.equal(t.input('click', 100).prevented, undefined);
 });
 
 test('sequências sem hold continuam finalizando naturalmente uma única vez', async () => {
