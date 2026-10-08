@@ -294,9 +294,21 @@ function criarSistemaGaleria(context) {
     const save = state.galeria.saves.find((item) => item.id === state.galeria.selecionadoId);
     if (!save) return false;
 
+    const restaurar = () => {
+      try {
+        services.restaurarEstadoJogo(save.saveState);
+        return true;
+      } catch (erro) {
+        definirStatusGaleria(erro.message || "Não foi possível carregar esta fotografia.");
+        return false;
+      }
+    };
     try {
-      services.restaurarEstadoJogo(save.saveState);
-      return true;
+      const loaded = services.prepararModuloCena(save.saveState?.localizacao?.local);
+      return loaded?.then ? loaded.then(restaurar, erro => {
+        definirStatusGaleria(erro.message || "Não foi possível carregar esta fotografia.");
+        return false;
+      }) : restaurar();
     } catch (erro) {
       definirStatusGaleria(erro.message || "Não foi possível carregar esta fotografia.");
       return false;

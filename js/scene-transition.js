@@ -41,6 +41,16 @@ function criarSceneTransitionController({ el, services, document, window, config
     }));
   }
 
+  /** Solta referências de imagens decodificadas de cenas que já saíram do palco.
+   * O navegador pode manter seu cache HTTP; este controlador não precisa reter
+   * os objetos Image das cenas anteriores indefinidamente.
+   */
+  function retainSceneImages(sources) {
+    const active = new Set(sources.filter(Boolean).map(source =>
+      window.URL ? new window.URL(source, document.baseURI).href : source));
+    for (const source of cache.keys()) if (!active.has(source)) cache.delete(source);
+  }
+
   async function runSceneTransition(loadScene) {
     if (transitioning) return false;
     transitioning = true;
@@ -72,6 +82,6 @@ function criarSceneTransitionController({ el, services, document, window, config
     }
   }
 
-  return Object.freeze({ runSceneTransition, prepareSceneImages,
+  return Object.freeze({ runSceneTransition, prepareSceneImages, retainSceneImages,
     isSceneTransitioning: () => transitioning });
 }

@@ -1,11 +1,15 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-// Os testes executam os mesmos scripts e a mesma ordem usados no navegador.
+// Os testes executam os scripts da página na mesma ordem e pré-registram os
+// módulos de cena que o navegador busca ao entrar em cada local.
 module.exports = function carregarScripts(raiz) {
   const html = fs.readFileSync(path.join(raiz, "index.html"), "utf8");
   const scripts = [...html.matchAll(/<script src="([^"?]+)(?:\?[^\"]*)?"><\/script>/g)]
-    .map(([, arquivo]) => fs.readFileSync(path.join(raiz, arquivo), "utf8"))
+    .flatMap(([, arquivo]) => arquivo === "js/bootstrap.js"
+      ? ["js/scenes/casa/events.js", "js/scenes/cena-crime/events.js", "js/scenes/delegacia/events.js", arquivo]
+      : [arquivo])
+    .map(arquivo => fs.readFileSync(path.join(raiz, arquivo), "utf8"))
     .join("\n")
     .replace("titleMenu.iniciar({ bloqueado: true });", "game.iniciar();")
     .replace("game.services.iniciarCutscene('intro_abertura');", "");

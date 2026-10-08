@@ -24,7 +24,7 @@ function setup(reduced = false) {
     decode() { return Promise.resolve(); }
   }
   const sandbox = vm.createContext({ console: { error() {} }, setTimeout, clearTimeout });
-  for (const file of ['config', 'data', 'state', 'animation', 'mechanics', 'scene-transition', 'scene']) {
+  for (const file of ['config', 'data', 'state', 'animation', 'mechanics', 'scene-transition', 'scene-modules', 'scene']) {
     vm.runInContext(fs.readFileSync(`js/${file}.js`, 'utf8'), sandbox);
   }
   const state = vm.runInContext('criarEstadoJogo()', sandbox);
@@ -35,7 +35,8 @@ function setup(reduced = false) {
     data: vm.runInContext('DATA', sandbox), items: vm.runInContext('ITEMS', sandbox),
     config: { sceneTransition: { out: 180, in: 220, hold: 0, reduced: 10, assetTimeout: 100 } },
     eventosInteracao: {} };
-  Object.assign(services, sandbox.criarSistemaAnimacoes(context), sandbox.criarSceneTransitionController(context), sandbox.criarSistemaCenas(context));
+  Object.assign(services, sandbox.criarSistemaAnimacoes(context), sandbox.criarSceneTransitionController(context),
+    sandbox.criarSistemaModulosCena(context), sandbox.criarSistemaCenas(context));
   services.aplicarCena(services.obterCenaAtual());
   return { services, state, scene, animations, listeners, context };
 }

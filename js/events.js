@@ -5,48 +5,6 @@
  */
 function criarSistemaEventos(context) {
   const { state, el, services, document } = context;
-  context.eventosInteracao.casaExitDoor = () => {
-    el.scene.interactionStatus.textContent = services.podeSairDaCasa()
-      ? "Estamos prontos. Podemos sair pelo Ir para." : "Minha bolsa e meu telefone. E preciso falar com James.";
-  };
-  context.eventosInteracao.mjBagCollected = () => {
-    el.scene.interactionStatus.textContent = "Peguei minha bolsa.";
-    services.definirBotoes();
-  };
-  context.eventosInteracao.mjPhoneCollected = () => {
-    state.aparelho.originalPhoneStatus = "working";
-    state.aparelho.activePhone = "mj";
-    state.aparelho.phoneTheme = "mj";
-    el.scene.interactionStatus.textContent = "Peguei meu telefone.";
-    services.definirBotoes();
-  };
-  function concluirInvestigacao() {
-    const crime = state.sceneState.crime_sala;
-    if (state.localizacao.local !== "cena_crime" || state.localizacao.cena !== "crime_sala"
-      || !crime?.firstEvidenceExamined || !crime?.lockedEvidenceOpened
-      || state.aparelho.originalPhoneStatus !== "working") return false;
-    state.aparelho.originalPhoneStatus = "broken";
-    state.aparelho.activePhone = null;
-    services.definirBotoes();
-    services.iniciarFalas(context.data.monologos.crime_sala.phoneBreak);
-    return true;
-  }
-  context.eventosInteracao.crimeEvidenceExamined = ({ sceneId }) => {
-    if (sceneId !== "crime_sala") return;
-    if (!concluirInvestigacao()) el.scene.interactionStatus.textContent = "Os cacos se espalharam a partir da mesa.";
-  };
-  context.eventosInteracao.crimeCaseOpened = ({ sceneId }) => {
-    if (sceneId !== "crime_sala") return;
-    if (!concluirInvestigacao()) el.scene.interactionStatus.textContent = "Há documentos dentro. Melhor examinar o resto da sala.";
-  };
-  context.eventosInteracao.mjNoteRead = ({ sceneId }) => {
-    if (sceneId !== "delegacia_mesa_mj") return;
-    services.abrirBilhete({ returnHotspotId: "mj_note" });
-  };
-  context.eventosInteracao.mjComputerUsed = ({ sceneId }) => {
-    if (sceneId !== "delegacia_mesa_mj") return;
-    services.abrirEstacaoTrabalho();
-  };
   function inicializarEventos() {
     if (inicializarEventos.inicializado) return;
     inicializarEventos.inicializado = true;

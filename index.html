@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sim, Acredite nas Mentiras Dele kk — Protótipo V1</title>
-  <link rel="preload" as="image" href="assets/sprites/mapa-sem-beco.png">
   <link rel="stylesheet" href="styles.css?v=overlays-input-20261007">
 </head>
 <body>
@@ -45,7 +44,7 @@
   <div id="app" inert>
     <main id="vn-area">
       <div id="scene">
-        <img id="cenario" src="assets/cenario/beco/entrada.png" alt="Entrada do beco" aria-hidden="true" draggable="false">
+        <img id="cenario" alt="Cenário atual" aria-hidden="true" draggable="false">
         <div id="object-layer" aria-hidden="true"></div>
         <div id="hotspot-layer"></div>
         <img id="personagem" alt="" aria-hidden="true" draggable="false">
@@ -132,7 +131,7 @@
   </section>
   <section id="workstation-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="workstation-title" hidden>
     <div class="prototype-panel workstation-dashboard">
-      <img class="workstation-art" src="assets/interfaces/layout-pc-mj.png" alt="" aria-hidden="true" draggable="false">
+      <img class="workstation-art" data-src="assets/interfaces/layout-pc-mj.png" alt="" aria-hidden="true" draggable="false">
       <h2 id="workstation-title" class="workstation-sr-only">S. P. Investigação — Estação de trabalho da MJ</h2>
       <button id="workstation-map" type="button" aria-label="Mapa — abrir mapa global">
         <span class="workstation-sr-only">MAPA — disponível. Ver mapa</span>
@@ -161,7 +160,7 @@
   <section id="world-map-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="world-map-title" hidden>
     <div class="prototype-panel prototype-map-panel">
       <h2 id="world-map-title">Mapa</h2>
-      <img id="world-map-art" src="assets/sprites/mapa-sem-beco.png" alt="" aria-hidden="true" draggable="false" decoding="sync">
+      <img id="world-map-art" data-src="assets/sprites/mapa-sem-beco.png" alt="" aria-hidden="true" draggable="false" decoding="sync">
       <div id="world-map-locations" class="world-map-locations" aria-label="Locais"></div>
       <div class="map-search-fields">
         <label class="map-coordinate-latitude"><span>Latitude</span><input id="map-latitude" type="text" placeholder=" " readonly inputmode="none" autocomplete="off" aria-controls="text-entry"></label>
@@ -346,6 +345,7 @@
   <script src="js/animation.js?v=1"></script>
   <script src="js/mechanics.js?v=1"></script>
   <script src="js/scene-transition.js?v=1"></script>
+  <script src="js/scene-modules.js?v=1"></script>
   <script src="js/scene.js?v=refatoracao-2"></script>
   <script src="js/dialogue.js?v=refatoracao-2"></script>
   <script src="js/phone.js?v=mensagens-skip-20261006"></script>

@@ -5,6 +5,7 @@
  */
 function criarSistemaPersistencia(context) {
   const { state, el, saveRepository, data: DATA, items: ITEMS, services } = context;
+  const fasesMonologo = new Set(Object.values(DATA.monologos).flatMap(monologos => Object.keys(monologos)));
 
   /** Copia dados serializáveis sem preservar referências mutáveis.
    * @param {Object} dados
@@ -83,12 +84,12 @@ function criarSistemaPersistencia(context) {
    */
   function validarDialogo(dialogo, localizacao) {
     if (!ehRegistro(dialogo)) return false;
-    const monologos = DATA.monologos[localizacao.cena];
+    // A fase acompanha o celular/arquivos ao viajar; não pertence à cena atual.
+    // Saves v1 feitos após uma resposta em outro local continuam válidos.
     const rota = dialogo.rotaMonologoArquivo;
-    return Boolean(monologos)
-      && typeof dialogo.faseMonologo === "string"
-      && Object.hasOwn(monologos, dialogo.faseMonologo)
-      && (rota === null || (typeof rota === "string" && Object.hasOwn(monologos, rota)));
+    return typeof dialogo.faseMonologo === "string"
+      && fasesMonologo.has(dialogo.faseMonologo)
+      && (rota === null || (typeof rota === "string" && fasesMonologo.has(rota)));
   }
 
   /** Validar arquivos.
@@ -313,6 +314,8 @@ function criarSistemaPersistencia(context) {
   /** Sincroniza a interface e devolve o foco após carregar um snapshot.
    */
   function restaurarInterface() {
+    services.ativarModuloCena(state.localizacao.local);
+    services.retainSceneImages([]);
     services.fecharInterfacesMapa();
     if (el.bag.bagDialog.open && typeof el.bag.bagDialog.close === "function") el.bag.bagDialog.close();
     el.bag.bagSearch.value = "";

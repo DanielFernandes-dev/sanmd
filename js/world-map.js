@@ -91,6 +91,8 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     const fromWorkstation = services.estacaoAberta();
     if ((!fromWorkstation && state.modo !== "livre") || modalAberto() || services.isSceneTransitioning()
       || services.isWorldTraveling() || services.isCutsceneActive() || el.bag.bagDialog.open) return false;
+    const art = document.getElementById("world-map-art");
+    if (art && !art.src) art.src = art.dataset.src || "assets/sprites/mapa-sem-beco.png";
     returnToWorkstation = fromWorkstation;
     if (fromWorkstation) {
       services.pararAtividadeEstacao();
@@ -216,7 +218,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       ui.mapOverlay.classList.add("map-art-unavailable");
     };
     art.addEventListener("error", artUnavailable);
-    if (art.complete && !art.naturalWidth) artUnavailable();
+    if (art.src && art.complete && !art.naturalWidth) artUnavailable();
     ui.noteClose.addEventListener("click", () => fecharBilhete());
     ui.mapClose.addEventListener("click", () => fecharMapaGlobal());
     for (const input of [ui.mapLatitude, ui.mapLongitude]) {

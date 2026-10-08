@@ -399,6 +399,17 @@ test("snapshots rejeitam identificadores herdados e formatos inválidos sem alte
   assert.equal(a.ler("state.mensagens.etapa"), null);
 });
 
+test("fase global do celular continua salvável após voltar para casa", () => {
+  const a = criarAmbiente();
+  assert.equal(a.ler(`(() => {
+    const s = capturarEstadoJogo();
+    s.localizacao = { local: "casa", cena: "casa_sala" };
+    s.dialogo.faseMonologo = "aposPrimeiroEnvio";
+    s.dialogo.rotaMonologoArquivo = "arquivoRota";
+    return validarSnapshot(s)?.dialogo.faseMonologo;
+  })()`), "aposPrimeiroEnvio");
+});
+
 test("validação preserva o candidato e aceita um reset agendado com prazo válido", async () => {
   const a = criarAmbiente();
   assert.equal(a.ler(`(() => {

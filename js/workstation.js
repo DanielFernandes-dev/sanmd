@@ -64,6 +64,9 @@ function criarSistemaEstacaoTrabalho({ state, el, document, services, window, co
   function abrirEstacaoTrabalho() {
     if (state.modo !== "livre" || services.isSceneTransitioning() || services.isCutsceneActive()
       || state.localizacao.cena !== "delegacia_mesa_mj" || el.bag.bagDialog.open) return false;
+    const art = ui.overlay.querySelector?.(".workstation-art")
+      ?? document.querySelector?.(".workstation-art");
+    if (art && !art.src) art.src = art.dataset.src || "assets/interfaces/layout-pc-mj.png";
     ui.overlay.hidden = false;
     ui.overlay.inert = false;
     state.modo = "interface";

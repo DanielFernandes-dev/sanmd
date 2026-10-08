@@ -96,7 +96,7 @@ function criarTelaInicial({ game, document, window }) {
     const duration = services.movimentoReduzido() ? 100 : 420;
     try {
       await services.animarFade(fade, 0, 1, duration);
-      restore();
+      await restore();
       game.iniciar();
       get('notebook-stage').hidden = true;
       menu.classList.add('entering-game');
@@ -137,23 +137,30 @@ function criarTelaInicial({ game, document, window }) {
     status.textContent = '';
     await animateBook(true);
     await enter(() => {
-      services.cancelarTemporizadores();
-      Object.assign(state, criarEstadoJogo());
-      state.localizacao = { local: "casa", cena: "casa_quarto_mj" };
-      services.restaurarInterface();
+      const preparar = services.prepararModuloCena('casa');
+      const iniciar = () => {
+        services.cancelarTemporizadores();
+        Object.assign(state, criarEstadoJogo());
+        state.localizacao = { local: "casa", cena: "casa_quarto_mj" };
+        services.restaurarInterface();
+      };
+      return preparar?.then ? preparar.then(iniciar) : iniciar();
     }, true);
   }
   async function load(id) {
     if (mode !== 'load') return;
     const save = records().find(record => record.id === id);
     if (!save) { render(); return; }
-    await enter(() => {
+    await enter(async () => {
+      await services.prepararModuloCena(save.saveState?.localizacao?.local);
       if (services.restaurarEstadoJogo(save.saveState) === false) throw new Error('Aguarde a transição e tente novamente.');
     }, false);
   }
   function retornarAoMenu() {
     playing = false;
     services.cancelarTemporizadores();
+    services.desativarModuloCena();
+    services.retainSceneImages([]);
     app.inert = true;
     menu.hidden = false;
     menu.inert = false;

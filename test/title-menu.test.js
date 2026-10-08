@@ -39,6 +39,9 @@ function setup({ compact = false, deferCutscene = false, rejectCutscene = false 
     isCutsceneActive: () => false,
     iniciarConversa: () => phases.push('story'),
     iniciarIntroCasa: () => phases.push('story'),
+    prepararModuloCena: () => true,
+    desativarModuloCena() {},
+    retainSceneImages() {},
     restaurarEstadoJogo(snapshot) {
       phases.push('restore');
       if (snapshot.invalid) throw new Error('Registro incompatível');

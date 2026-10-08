@@ -189,6 +189,7 @@ function criarSistemaCenas(context) {
    */
   function aplicarCena(cena) {
     if (!cena) return;
+    services.ativarModuloCena(state.localizacao.local);
     trocarCenario(cena);
     fecharMenuIrPara();
     restaurarPersonagemCena();
@@ -311,6 +312,7 @@ function criarSistemaCenas(context) {
     }
     const anterior = { ...state.localizacao };
     const changed = services.runSceneTransition(async () => {
+      await services.prepararModuloCena(localId);
       await services.prepareSceneImages(assetsDaCena(destino));
       try {
         state.localizacao.local = localId;
@@ -324,6 +326,7 @@ function criarSistemaCenas(context) {
         restaurarPersonagemCena();
         await services.prepareSceneImages([el.scene.cenario.src,
           ...Array.from(el.scene.objectLayer.children).map(o => o.src)]);
+        services.retainSceneImages(assetsDaCena(destino));
       } catch (error) {
         Object.assign(state.localizacao, anterior);
         aplicarCena(obterCenaAtual());
