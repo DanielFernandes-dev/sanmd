@@ -131,14 +131,31 @@
     </div>
   </section>
   <section id="workstation-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="workstation-title" hidden>
-    <div class="prototype-panel">
-      <h2 id="workstation-title">Estação de trabalho</h2>
-      <div class="workstation-apps">
-        <button id="workstation-map" type="button">MAPA</button>
-        <button type="button" disabled>CASOS — indisponível</button>
-        <button type="button" disabled>ARQUIVOS — indisponível</button>
+    <div class="prototype-panel workstation-dashboard">
+      <img class="workstation-art" src="assets/interfaces/layout-pc-mj.png" alt="" aria-hidden="true" draggable="false">
+      <h2 id="workstation-title" class="workstation-sr-only">S. P. Investigação — Estação de trabalho da MJ</h2>
+      <button id="workstation-map" type="button" aria-label="Mapa — abrir mapa global">
+        <span class="workstation-sr-only">MAPA — disponível. Ver mapa</span>
+      </button>
+      <section class="workstation-recent" aria-labelledby="workstation-recent-title">
+        <h3 id="workstation-recent-title">ATIVIDADE RECENTE</h3>
+        <div class="workstation-recent-viewport">
+          <ul id="workstation-recent-list"></ul>
+          <p id="workstation-recent-empty">Nenhum item registrado.</p>
+        </div>
+      </section>
+      <!-- TODO: habilitar cada módulo somente quando seu sistema for implementado. -->
+      <div class="workstation-future-modules">
+        <button class="workstation-future workstation-files" type="button" disabled><span>ARQUIVOS</span><small>INDISPONÍVEL</small></button>
+        <button class="workstation-future workstation-people" type="button" disabled><span>PESSOAS</span><small>INDISPONÍVEL</small></button>
+        <button class="workstation-future workstation-evidence" type="button" disabled><span>EVIDÊNCIAS</span><small>INDISPONÍVEL</small></button>
+        <button class="workstation-future workstation-reports" type="button" disabled><span>RELATÓRIOS</span><small>INDISPONÍVEL</small></button>
       </div>
-      <button id="workstation-close" type="button">Fechar</button>
+      <!-- TODO: implementar Anotações futuramente; esta área é somente visual. -->
+      <section class="workstation-notes" aria-label="Anotações — indisponível">
+        <h3>ANOTAÇÕES</h3><span>INDISPONÍVEL</span>
+      </section>
+      <button id="workstation-close" type="button" aria-label="Fechar computador">FECHAR ×</button>
     </div>
   </section>
   <section id="world-map-overlay" class="prototype-overlay" role="dialog" aria-modal="true" aria-labelledby="world-map-title" hidden>

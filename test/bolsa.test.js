@@ -630,6 +630,7 @@ test("cena do crime: examinar, coletar, usar pela Bolsa e quebrar o telefone", a
   a.executar('executarHotspot("crime_case");');
   assert.equal(a.ler('state.sceneState.crime_sala.lockedEvidenceOpened'), true);
   assert.equal(a.ler('state.inventory.includes("crime_small_key")'), false);
+  assert.equal(a.ler('obterAtividadeInventario().find(x => x.itemId === "crime_small_key").status'), 'discarded');
   assert.equal(a.ler('state.aparelho.originalPhoneStatus'), 'broken');
   assert.equal(a.ler('state.aparelho.activePhone'), null);
   assert.equal(a.ler('el.btnCelular.hidden'), true);
@@ -651,4 +652,66 @@ test("cena do crime: examinar, coletar, usar pela Bolsa e quebrar o telefone", a
     assert.equal(a.ler('state.aparelho.originalPhoneStatus'), index === 3 ? 'broken' : 'working');
     assert.equal(a.ler('state.bolsa.itemEmUsoId'), null);
   }
+});
+
+test("PC: atividade consulta a Bolsa, ordena remoções reais e retorna do mapa com dados atuais", () => {
+  const a = criarAmbiente();
+  a.executar(`state.localizacao = { local: 'delegacia', cena: 'delegacia_mesa_mj' };
+    aplicarCena(obterCenaAtual()); abrirEstacaoTrabalho();`);
+  assert.equal(a.ler('el.recentEmpty.hidden'), false);
+  a.executar('el.map.click();');
+  assert.equal(a.ler('el.mapOverlay.hidden'), false);
+  a.executar('adicionarItem("crime_small_key"); adicionarItem("lulith_phone"); el.mapClose.click();');
+  assert.equal(a.ler('state.modo'), 'interface');
+  assert.equal(a.ler('el.overlay.hidden'), false);
+  assert.equal(a.ler('el.recentEmpty.hidden'), true);
+  assert.equal(a.ler('el.recentList.children[0].dataset.itemId'), 'lulith_phone');
+  assert.equal(a.ler('el.recentList.children[0].children[1].textContent'), 'NA BOLSA');
+  assert.equal(a.ler('el.recentList.children[0].listeners.size'), 0);
+  a.executar('el.btnBolsa.click();');
+  assert.equal(a.ler('el.bagDialog.open'), false);
+  assert.equal(a.ler('executarHotspot("mj_note")'), false);
+  a.executar('el.map.click(); removerItem("crime_small_key"); el.mapClose.click();');
+  assert.equal(a.ler('el.recentList.children[0].dataset.itemId'), 'crime_small_key');
+  assert.equal(a.ler('el.recentList.children[0].children[1].textContent'), 'DESCARTADO');
+  assert.equal(a.ler('el.recentList.children[1].children[1].textContent'), 'NA BOLSA');
+  assert.equal(a.ler('removerItem("crime_small_key")'), false);
+  assert.equal(a.ler('adicionarItem("lulith_phone")'), false);
+  assert.equal(a.ler('state.inventoryHistory.length'), 2);
+  a.executar('el.close.click();');
+  assert.equal(a.ler('state.modo'), 'livre');
+  assert.equal(a.ler('el.overlay.hidden'), true);
+});
+
+test("histórico mínimo: Save/Load independente, legado vazio e rejeição atômica de dados inválidos", () => {
+  const a = criarAmbiente();
+  a.executar(`adicionarItem('crime_small_key'); adicionarItem('lulith_phone'); removerItem('crime_small_key');
+    const snapshotAtividade = capturarEstadoJogo(); registrarAutosave();
+    adicionarItem('crime_small_key'); restaurarEstadoJogo(snapshotAtividade);`);
+  assert.equal(a.ler('state.inventory.includes("crime_small_key")'), false);
+  assert.equal(a.ler('obterAtividadeInventario()[0].status'), 'discarded');
+  assert.equal(a.ler('state.inventoryHistory === snapshotAtividade.inventoryHistory'), false);
+  assert.equal(a.ler('saveRepository.obterAutosave().saveState.inventoryHistory.at(-1)'), 'crime_small_key');
+  const before = a.ler('JSON.stringify(capturarEstadoJogo().inventoryHistory)');
+  for (const history of [null, {}, ['inexistente'], ['__proto__'], ['lulith_phone', 'lulith_phone'], [3]]) {
+    assert.throws(() => a.executar(`restaurarEstadoJogo({ ...snapshotAtividade, inventoryHistory: ${JSON.stringify(history)} });`), /incompatível/);
+    assert.equal(a.ler('JSON.stringify(state.inventoryHistory)'), before);
+  }
+  a.executar('delete snapshotAtividade.inventoryHistory; restaurarEstadoJogo(snapshotAtividade);');
+  assert.equal(a.ler('state.inventoryHistory.length'), 0);
+  assert.equal(a.ler('obterAtividadeInventario().length'), 1);
+  assert.equal(a.ler('obterAtividadeInventario()[0].status'), 'in_bag');
+});
+
+test("item reutilizável usado no hotspot permanece NA BOLSA", () => {
+  const a = criarAmbiente();
+  a.executar(`state.localizacao = { local: 'cena_crime', cena: 'crime_sala' };
+    aplicarCena(obterCenaAtual());
+    ITEMS.crime_small_key.consumable = false;
+    const reusableTarget = DATA.locais.cena_crime.cenas.crime_sala.hotspots.find(h => h.id === 'crime_case');
+    reusableTarget.consumeItem = false;
+    adicionarItem('crime_small_key'); el.btnBolsa.click(); executarAcaoInventario('crime_small_key');`);
+  assert.equal(a.ler('executarHotspot("crime_case")'), true);
+  assert.equal(a.ler('state.inventory.includes("crime_small_key")'), true);
+  assert.equal(a.ler('obterAtividadeInventario()[0].status'), 'in_bag');
 });

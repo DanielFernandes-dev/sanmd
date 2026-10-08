@@ -13,6 +13,7 @@ function criarSistemaBolsa(context) {
     if (!Object.hasOwn(ITEMS, id) || state.inventory.includes(id)
       || (ITEMS[id].inventoryAction?.device === state.aparelho.activePhone)) return false;
     state.inventory.push(id);
+    registrarAtividadeItem(id);
     renderizarBolsa();
     return true;
   }
@@ -24,11 +25,28 @@ function criarSistemaBolsa(context) {
     const index = state.inventory.indexOf(id);
     if (index < 0) return false;
     state.inventory.splice(index, 1);
+    registrarAtividadeItem(id);
     if (state.bolsa.itemSelecionadoId === id) {
       state.bolsa.itemSelecionadoId = null;
     }
     renderizarBolsa();
     return true;
+  }
+
+  /** Mantém somente IDs únicos, do evento mais antigo ao mais recente. */
+  function registrarAtividadeItem(id) {
+    state.inventoryHistory = state.inventoryHistory.filter(itemId => itemId !== id);
+    state.inventoryHistory.push(id);
+  }
+
+  /** Projeção de leitura: a presença continua sendo determinada pelo inventário. */
+  function obterAtividadeInventario() {
+    const ids = [...state.inventory.filter(id => !state.inventoryHistory.includes(id)),
+      ...state.inventoryHistory];
+    return ids.reverse().filter(id => Object.hasOwn(ITEMS, id)).map(itemId => ({
+      itemId, label: ITEMS[itemId].label,
+      status: state.inventory.includes(itemId) ? "in_bag" : "discarded"
+    }));
   }
 
   /** Normaliza texto para busca sem distinguir acentos ou maiúsculas.
@@ -392,6 +410,7 @@ function criarSistemaBolsa(context) {
   return Object.freeze({
     adicionarItem,
     removerItem,
+    obterAtividadeInventario,
     normalizarTexto,
     obterItensFiltradosBolsa,
     gerarNumerosPaginacao,

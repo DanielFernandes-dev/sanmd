@@ -92,7 +92,10 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     if ((!fromWorkstation && state.modo !== "livre") || modalAberto() || services.isSceneTransitioning()
       || services.isWorldTraveling() || services.isCutsceneActive() || el.bag.bagDialog.open) return false;
     returnToWorkstation = fromWorkstation;
-    if (fromWorkstation) el.workstation.overlay.inert = true;
+    if (fromWorkstation) {
+      services.pararAtividadeEstacao();
+      el.workstation.overlay.inert = true;
+    }
     opener = document.activeElement;
     returnHotspotId = hotspotId ?? null;
     traveling = false;
@@ -120,6 +123,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     state.modo = back ? "interface" : "livre";
     app.inert = back;
     el.workstation.overlay.inert = false;
+    if (back) services.atualizarHomeEstacao();
     services.definirBotoes();
     if (restoreFocus) { if (back) el.workstation.map.focus(); else focusOpener(); }
     opener = null;

@@ -51,6 +51,7 @@ function criarEstadoJogo(data = DATA) {
     act1Complete: false,
     inventoryActionPending: null,
     inventory: [],
+    inventoryHistory: [],
     sceneState: {},
     worldMap: criarEstadoMapaGlobal(data.worldMapLocations),
     modo: "livre",

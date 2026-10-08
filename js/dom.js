@@ -11,7 +11,8 @@ function criarElementos(document) {
   };
   return {
     workstation: {
-      overlay: buscar("workstation-overlay"), map: buscar("workstation-map"), close: buscar("workstation-close")
+      overlay: buscar("workstation-overlay"), map: buscar("workstation-map"), close: buscar("workstation-close"),
+      recentList: buscar("workstation-recent-list"), recentEmpty: buscar("workstation-recent-empty")
     },
     worldMap: {
       noteOverlay: buscar("note-overlay"), noteLatitude: buscar("note-latitude"),

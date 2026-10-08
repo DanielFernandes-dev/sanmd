@@ -1,4 +1,4 @@
-# PC e mapa global — protótipo funcional
+# Home do PC e mapa global
 
 A mesa da MJ usa `mj_computer` (`interact`) para persistir `computerOn`
 no `sceneState` e abrir a estação de trabalho. Não depende do bilhete.
@@ -7,7 +7,7 @@ MAPA é o único aplicativo habilitado. O bilhete (`examine`) pode ser relido;
 
 ## Responsabilidades
 
-- `js/workstation.js`: abre/fecha a estação e devolve o foco ao PC.
+- `js/workstation.js`: abre/fecha a estação, apresenta atividade da Bolsa e devolve o foco ao PC.
 - `js/world-map.js`: apresenta os locais, recebe coordenadas, desbloqueia
   o Beco e encaminha a seleção. `abrirMapaGlobal({ source })` aceita outras
   interfaces; `source` não modifica as regras de disponibilidade.
@@ -31,6 +31,19 @@ compatível com sua progressão; Beco começa bloqueado. Visitas autorizadas à
 cena do crime e Delegacia atualizam a disponibilidade desses locais.
 
 ## Interface visual
+
+A Home usa `assets/interfaces/layout-pc-mj.png` na moldura proporcional 1672×941.
+O card MAPA inteiro chama `abrirMapaGlobal({ source: "delegacia_computer" })`.
+Voltar ou Escape no mapa retorna à Home, mantém a cena bloqueada e consulta
+novamente a atividade da Bolsa. Fechar usa `fecharEstacaoTrabalho()`.
+
+Arquivos, Pessoas, Evidências e Relatórios são botões `disabled`, sem handlers,
+com rótulo INDISPONÍVEL cobrindo as chamadas da arte. Anotações é uma seção
+estática sem editor. Atividade recente cobre integralmente os dados ilustrativos
+da imagem e consulta `obterAtividadeInventario()`; não possui ações nem links.
+Exibe quatro registros; excedentes deslizam verticalmente segundo `CONFIG.atividadePc`.
+A rotação para ao abrir o mapa, fechar o PC, carregar um save, ocultar a aba ou
+ativar reduced motion. A posição visual e os timers ficam fora do snapshot.
 
 O teclado virtual existente edita os campos tanto por toque quanto por Enter
 ou Espaço. Escape cancela a edição, depois volta à estação e depois fecha o PC.
@@ -57,10 +70,21 @@ A consulta de destinos usa o registro de marcadores, sem percorrer o catálogo
 em cada seleção. A edição e a normalização de coordenadas são funções internas
 do módulo de mapa.
 
+## Verificação da Home
+
+`npm test` cobre inventário/histórico, saves legados e inválidos, retorno do mapa,
+uso consumível/reutilizável e ciclo de vida dos timers. Com o jogo servido em
+`localhost:8000` e um Chromium de teste com depuração remota em `localhost:9222`,
+`node scripts/check-workstation.cjs` verifica toque, Tab/Enter/Escape, foco,
+coordenadas e quatro viewports (1440×900, 915×412, 640×360 e 390×844).
+O script usa uma nova aba e grava screenshots em `/tmp/sanmd-pc-LARGURAxALTURA.png`.
+`SANMD_URL` e `CDP_URL` permitem outros endereços. A validação em dispositivo
+Android continua sendo necessária para confirmar o comportamento no APK.
+
 ## Integração futura
 
 Inserir a apresentação de fast travel em `travelToWorldLocation`, depois de
 validar e fechar as interfaces, antes de chamar `irParaLocal`. Manter o bloqueio
 contra concorrência durante toda a apresentação. O mapa não precisa conhecer
 cenas internas nem implementar outra transição. Nesta fase não há GIF, boot
-complexo, arte final ou aplicativos secundários.
+complexo ou aplicativos secundários funcionais.

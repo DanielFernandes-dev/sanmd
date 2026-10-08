@@ -20,6 +20,7 @@ function criarSistemaPersistencia(context) {
       act1Complete: state.act1Complete,
       aparelho: { ...state.aparelho },
       inventory: [...state.inventory],
+      inventoryHistory: [...state.inventoryHistory],
       sceneState: copiarDados(state.sceneState),
       worldMap: copiarDados(state.worldMap),
       saveVersion: SAVE_VERSION,
@@ -254,8 +255,12 @@ function criarSistemaPersistencia(context) {
    */
   function validarExploracao(snapshot) {
     const inventory = snapshot.inventory === undefined ? [] : snapshot.inventory;
+    const inventoryHistory = snapshot.inventoryHistory === undefined ? [] : snapshot.inventoryHistory;
     const scenes = snapshot.sceneState === undefined ? {} : snapshot.sceneState;
     if (!Array.isArray(inventory) || !inventory.every(id => Object.hasOwn(ITEMS, id))
+      || !Array.isArray(inventoryHistory)
+      || !inventoryHistory.every(id => typeof id === "string" && Object.hasOwn(ITEMS, id))
+      || new Set(inventoryHistory).size !== inventoryHistory.length
       || !scenes || typeof scenes !== "object" || Array.isArray(scenes)) return null;
     const result = {};
     const definitions = Object.values(DATA.locais).flatMap(local => Object.values(local.cenas));
@@ -266,7 +271,7 @@ function criarSistemaPersistencia(context) {
         && typeof value === typeof definition.initialState[key])) return null;
       result[id] = { ...definition.initialState, ...values };
     }
-    return { inventory: [...new Set(inventory)], sceneState: result };
+    return { inventory: [...new Set(inventory)], inventoryHistory: [...inventoryHistory], sceneState: result };
   }
 
   /** Cancela tarefas pendentes para impedir alterações tardias após uma restauração.
@@ -293,6 +298,7 @@ function criarSistemaPersistencia(context) {
     state.aparelho = snapshot.aparelho;
     state.localizacao = snapshot.localizacao;
     state.inventory = snapshot.inventory;
+    state.inventoryHistory = snapshot.inventoryHistory;
     state.sceneState = snapshot.sceneState;
     state.worldMap = snapshot.worldMap;
     state.bolsa = criarEstadoBolsa();

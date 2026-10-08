@@ -35,6 +35,7 @@ const CONFIG = Object.freeze({
   esperaAntesReset: 60 * 1000,
   duracaoReset: 2800,
   itensPorPaginaBolsa: 9,
+  atividadePc: Object.freeze({ linhas: 4, intervalo: 4000, transicao: 240 }),
   duracaoFlashFoto: 140,
   intervaloRelogio: 1000,
   intervaloCronometroReset: 250,

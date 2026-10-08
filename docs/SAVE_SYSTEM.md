@@ -47,6 +47,7 @@ O formato versão 1 persiste somente estruturas existentes no jogo:
 - `act1Complete`: conclusão narrativa do protótipo (`false` em snapshots v1 antigos sem esse campo);
 - `aparelho`: `originalPhoneStatus`, `activePhone` e `phoneTheme`;
 - `inventory`: IDs únicos de itens coletados;
+- `inventoryHistory`: IDs únicos ordenados pela última coleta/remoção, do mais antigo ao mais recente;
 - `sceneState`: flags persistentes por cena, como `safeOpened` e `lulithPhoneCollected`;
 - `localizacao`: IDs de local e cena;
 - `dialogo`: fase do monólogo e rota narrativa escolhida;
@@ -121,6 +122,16 @@ Falhas de escrita também não devem derrubar o jogo. O autosave registra aviso 
 ## Objetos e Bolsa
 
 O snapshot v1 também aceita `inventory` (IDs únicos) e `sceneState` (flags por cena). Saves anteriores recebem inventário vazio e estados iniciais. A restauração substitui esses dados por cópias independentes. Veja [POINT_AND_CLICK.md](POINT_AND_CLICK.md).
+
+`inventoryHistory` é um histórico mínimo da Bolsa, sem objetos de itens nem cópia
+do inventário. Coleta e remoção reais movem o ID para o final da lista. Usar um
+item que permanece na Bolsa não registra descarte. A Home do PC consulta
+`obterAtividadeInventario()`: IDs presentes em `inventory` aparecem como `NA BOLSA`,
+e IDs removidos como `DESCARTADO`. Isso inclui a remoção existente ao ativar o
+celular de Lulith. A ordem visual é inversa à armazenada. O histórico é validado
+antes de restaurar; IDs desconhecidos, duplicados ou estrutura inválida são rejeitados.
+Saves antigos recebem `inventoryHistory: []`; seus itens atuais continuam visíveis,
+mas descartes anteriores não são inventados. A rotação visual não é persistida.
 
 ## Aquisição funcional do celular
 
