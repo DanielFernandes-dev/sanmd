@@ -54,7 +54,7 @@ test("tela inicial usa grade 4x2 de apps com ícones SVG e botão Voltar", () =>
   for (const id of appsHabilitados) {
     assert.match(html, new RegExp(`<button id="${id}" class="phone-app phone-app--[a-z]+" type="button"`));
   }
-  const appsDesabilitados = ["btn-telefone", "btn-notas", "btn-config", "btn-mapas", "btn-musica"];
+  const appsDesabilitados = ["btn-telefone", "btn-notas", "btn-config", "btn-musica"];
   for (const id of appsDesabilitados) {
     assert.match(html, new RegExp(`<button id="${id}" class="phone-app phone-app--[a-z]+" type="button"[^>]*disabled`));
   }

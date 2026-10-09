@@ -51,12 +51,13 @@ const CENAS_CASA = {
   casa_quarto_mj: {
     id: "casa_quarto_mj", label: "Quarto da MJ",
     background: "assets/cenario/casa-mj-james/quarto-mj.png",
+    backgroundSize: [1672, 941],
     initialState: { introSeen: false, mjBagCollected: false },
     destinos: ["casa_sala"],
-    objects: [{ id: "mj_bag", rect: [78, 62, 9, 13], variants: [
+    objects: [{ id: "mj_bag", rect: [78, 64.74, 9, 13], variants: [
       { asset: "assets/cenario/casa-mj-james/bolsa-mj.svg", conditions: { mjBagCollected: false } }
     ] }],
-    hotspots: [{ id: "mj_bag", rect: [77, 60, 12, 17], ariaLabel: "Pegar bolsa da MJ",
+    hotspots: [{ id: "mj_bag", rect: [77, 62.74, 12, 17], ariaLabel: "Pegar bolsa da MJ",
       type: "interact", conditions: { mjBagCollected: false },
       changes: { mjBagCollected: true }, message: "Peguei minha bolsa.", eventId: "mjBagCollected" }],
     personagensPresentes: []
@@ -108,7 +109,7 @@ const CENAS_CRIME = {
       investigationItemCollected: false, lockedEvidenceOpened: false },
     destinos: [],
     objects: [
-      { id: "crime_small_key", rect: [44, 70, 3.5, 5.5], variants: [
+      { id: "crime_small_key", rect: [42.75, 68.75, 6, 8], variants: [
         { asset: "assets/cenario/cena-do-crime/chave-pequena.svg",
           conditions: { investigationItemCollected: false } }
       ] },
@@ -123,7 +124,7 @@ const CENAS_CRIME = {
       { id: "crime_glass", rect: [31, 80, 12, 13], ariaLabel: "Examinar os cacos de vidro",
         type: "examine", conditions: { firstEvidenceExamined: false },
         changes: { firstEvidenceExamined: true }, eventId: "crimeEvidenceExamined" },
-      { id: "crime_small_key", rect: [42.5, 68.5, 6.5, 9], ariaLabel: "Coletar chave pequena",
+      { id: "crime_small_key", rect: [40.5, 66.5, 10.5, 12], ariaLabel: "Coletar chave pequena",
         type: "collect", itemId: "crime_small_key",
         conditions: { investigationItemCollected: false },
         changes: { investigationItemCollected: true }, message: "Uma chave pequena. Vou guardá-la na Bolsa." },

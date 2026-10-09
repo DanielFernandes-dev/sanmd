@@ -634,11 +634,11 @@ test('cena do crime: hotspots acompanham o recorte cover em landscape', () => {
     aplicarCena(obterCenaAtual());`);
   const keyStyle = ler('el.objectLayer.children.find(x => x.dataset.objectId === "crime_small_key").style');
   const hotspotStyle = ler('el.hotspotLayer.children.find(x => x.dataset.hotspot === "crime_small_key").style');
-  assert.match(keyStyle, /left:704px;top:540px;/);
-  assert.match(hotspotStyle, /left:680px;top:526\.5px;/);
+  assert.match(keyStyle, /left:684px;top:528\.75px;width:96px;height:72px;/);
+  assert.match(hotspotStyle, /left:648px;top:508\.5px;width:168px;height:108px;/);
   executar('el.cenario.clientWidth = 1664; el.cenario.clientHeight = 936; renderizarObjetos();');
   assert.match(ler('el.objectLayer.children.find(x => x.dataset.objectId === "crime_small_key").style'),
-    /left:732\.16px;top:655\.2px;/);
+    /left:711\.36px;top:643\.5px;/);
 });
 
 test('mapa: coordenadas incompletas, formatação e desbloqueio sem autosave duplicado', async () => {

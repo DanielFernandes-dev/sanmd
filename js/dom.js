@@ -68,6 +68,7 @@ function criarElementos(document) {
       btnMensagens: buscar("btn-mensagens"),
       btnGaleria: buscar("btn-galeria"),
       btnArquivos: buscar("btn-arquivos"),
+      btnMapas: buscar("btn-mapas"),
       filesList: buscar("files-list"),
       fileViewer: buscar("file-viewer"),
       fileType: buscar("file-type"),

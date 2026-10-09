@@ -4,7 +4,7 @@
 
 A mesa da MJ usa `mj_computer` (`interact`) para persistir `computerOn`
 no `sceneState` e abrir a estação de trabalho. Não depende do bilhete.
-MAPA é o único aplicativo habilitado. O bilhete (`examine`) pode ser relido;
+MAPA é acessível pelo PC da MJ e, no celular, somente pelo aparelho ativo da Lulith. O ícone permanece indisponível no celular da MJ. O bilhete (`examine`) pode ser relido;
 `noteRead` passa pelo mesmo pipeline de alterações e autosave dos hotspots.
 
 ## Responsabilidades
@@ -83,7 +83,11 @@ O script usa uma nova aba e grava screenshots em `/tmp/sanmd-pc-LARGURAxALTURA.p
 `SANMD_URL` e `CDP_URL` permitem outros endereços. A validação em dispositivo
 Android continua sendo necessária para confirmar o comportamento no APK.
 
-## Integração futura
+## Integração do celular da Lulith
+
+O celular da Lulith abre o mesmo overlay por `abrirMapaGlobal({ source: "lulith_phone" })`.
+Ao fechar, o modo celular e a tela inicial são restaurados; durante uma viagem o celular
+é fechado antes da transição. A origem é transitória e não entra no snapshot.
 
 Inserir a apresentação de fast travel em `travelToWorldLocation`, depois de
 validar e fechar as interfaces, antes de chamar `irParaLocal`. Manter o bloqueio

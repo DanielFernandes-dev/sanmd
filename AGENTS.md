@@ -54,9 +54,9 @@ Direções criativas preservadas: investigação por pistas/contradições, narr
 
 - Explora ambientes, examina objetos, coleta uma chave e a usa numa maleta; abre um cofre e recolhe um aparelho.
 - Usa **Conversar** para falas presenciais ou pensamentos de MJ na ausência de interlocutor.
-- Usa **Ir para** para destinos do ambiente; viaja entre locais desbloqueados pelo mapa. Na delegacia, o computador oferece mapa e busca por coordenadas.
+- Usa **Ir para** para destinos do ambiente; viaja entre locais desbloqueados pelo mapa. Na delegacia, o computador oferece mapa e busca por coordenadas; o celular ativo da Lulith abre o mesmo mapa.
 - Recolhe Bolsa e telefone de MJ na casa. O telefone original funciona nesse trecho e quebra posteriormente. O aparelho do beco precisa ser ativado pela Bolsa.
-- Consulta Mensagens, Arquivos e Galeria. Mensagens oferece respostas, espera e entrega sequencial; Arquivos apresenta pistas e um enigma de identidade. Os demais ícones não equivalem a apps funcionais.
+- Consulta Mensagens, Arquivos e Galeria. Mensagens oferece respostas, espera e entrega sequencial; Arquivos apresenta pistas e um enigma de identidade. Mapas funciona no celular ativo da Lulith, enquanto permanece indisponível no da MJ. Os demais ícones não equivalem a apps funcionais.
 - Pesquisa itens e navega por páginas de nove slots na **Bolsa**. A chave exige seleção e é consumida na interação correta; o celular tem ação própria.
 - Cria até nove saves manuais apresentados como fotografias, com nome, preview, load e exclusão. Autosave é separado. O caderno do menu também carrega registros.
 - Avança falas por clique, Enter ou espaço; volta por Escape quando permitido. Duplo clique/toque pula cutscenes. O reset narrativo do aparelho preserva fotografias/saves.
@@ -196,7 +196,7 @@ Transição bloqueia input antes do await, faz fade-out, prepara módulo/imagens
 
 `phone.js` controla aparelho, tema, relógio, apps, filas, cooldown e reset. `aparelho` distingue original funcionando/quebrado, ativo (`null`, `mj`, `lulith`) e tema (`mj`, `lulith`). Disponibilidade depende de progresso e modo livre.
 
-Mensagens, Arquivos e Galeria são funcionais. MJ usa seu tema na casa; ativar o celular do beco usa Lulith. Personalização livre não existe. Reset limpa conteúdo narrativo visível, preserva dados pré-reset previstos e saves.
+Mensagens, Arquivos e Galeria são funcionais. Mapas reutiliza o sistema global no celular ativo da Lulith. MJ usa seu tema na casa; ativar o celular do beco usa Lulith. Personalização livre não existe. Reset limpa conteúdo narrativo visível, preserva dados pré-reset previstos e saves.
 
 `gallery.js` apresenta saves; não implementa armazenamento. `text-entry.js`/`keyboard.js` atendem nome de foto, identidade e coordenadas, com layouts/cursor/acentos. Mensagens usa opções; a pesquisa da Bolsa é input nativo, contrariando a antiga afirmação de ausência total de inputs.
 

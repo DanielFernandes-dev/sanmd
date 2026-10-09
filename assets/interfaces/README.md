@@ -47,7 +47,7 @@ O frame usa largura `min(360px, calc(100vw - 20px))` e altura `min(720px, calc(1
 
 ## Outros recursos em runtime
 
-`layout-pc-mj.png` compõe a estação da delegacia e recebe src ao abri-la. `bolsa.png` e `game-icon.png` permanecem na pasta, mas não têm referência direta nos fontes web atuais; o último consta no histórico de produção do ícone Android em [ADR](../../docs/ADR_LOG.md). `preview_celular.png` e `save-aleatorio.png` são referências de produção, não apps. A grade tem oito ícones, mas apenas Galeria, Mensagens e Arquivos funcionam. A descrição rosa acima se refere ao tema MJ; [temas](../../docs/PHONE_THEMES.md) detalha Lulith.
+`layout-pc-mj.png` compõe a estação da delegacia e recebe src ao abri-la. `bolsa.png` e `game-icon.png` permanecem na pasta, mas não têm referência direta nos fontes web atuais; o último consta no histórico de produção do ícone Android em [ADR](../../docs/ADR_LOG.md). `preview_celular.png` e `save-aleatorio.png` são referências de produção, não apps. A grade tem oito ícones. Galeria, Mensagens e Arquivos funcionam; Mapas usa o sistema global compartilhado e fica disponível somente no aparelho ativo da Lulith. A descrição rosa acima se refere ao tema MJ; [temas](../../docs/PHONE_THEMES.md) detalha Lulith.
 
 ## Distribuição
 

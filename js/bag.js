@@ -402,6 +402,7 @@ function criarSistemaBolsa(context) {
         state.aparelho.activePhone = item.inventoryAction.device;
         state.aparelho.phoneTheme = item.inventoryAction.theme;
         removerItem(item.id);
+        services.renderizarAparelho?.();
         el.scene.interactionStatus.textContent = "";
       }
     }

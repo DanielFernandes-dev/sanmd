@@ -9,6 +9,7 @@ function criarSistemaViagemGlobal({ state, el, services }) {
     try {
       services.bloquearMapaGlobal();
       services.fecharInterfacesMapa();
+      if (state.modo === "celular") services.fecharCelular();
       // Futuro fast travel visual entra aqui, antes da navegação real.
       const success = await services.irParaLocal(localId);
       if (success) services.registrarAutosave();

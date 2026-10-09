@@ -57,6 +57,7 @@ function criarSistemaEventos(context) {
     el.phone.btnMensagens.addEventListener("click", services.abrirMensagens);
     el.phone.btnGaleria.addEventListener("click", services.abrirGaleria);
     el.phone.btnArquivos.addEventListener("click", services.abrirArquivos);
+    el.phone.btnMapas.addEventListener("click", () => services.abrirMapaGlobal({ source: "lulith_phone" }));
     el.phone.btnVoltar.addEventListener("click", services.voltarCelular);
     el.phone.filesList.addEventListener("click", (event) => {
       const botao = event.target.closest("button[data-file-id]");

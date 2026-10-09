@@ -10,6 +10,7 @@ function criarSistemaCelular(context) {
    */
   function renderizarAparelho() {
     el.phone.btnCelular.hidden = state.aparelho.activePhone === null;
+    el.phone.btnMapas.disabled = state.aparelho.activePhone !== "lulith";
     el.phone.phoneScreen.dataset.phoneTheme = state.aparelho.phoneTheme;
   }
 

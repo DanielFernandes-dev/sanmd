@@ -7,6 +7,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
   let traveling = false;
   let initialized = false;
   let returnToWorkstation = false;
+  let returnToPhone = false;
   let keyboardHome = null;
   const marcadores = new Map();
 
@@ -89,11 +90,14 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
 
   function abrirMapaGlobal({ source, returnHotspotId: hotspotId } = {}) {
     const fromWorkstation = services.estacaoAberta();
-    if ((!fromWorkstation && state.modo !== "livre") || modalAberto() || services.isSceneTransitioning()
+    const fromPhone = source === "lulith_phone" && state.modo === "celular"
+      && state.aparelho.activePhone === "lulith";
+    if ((!fromWorkstation && !fromPhone && state.modo !== "livre") || modalAberto() || services.isSceneTransitioning()
       || services.isWorldTraveling() || services.isCutsceneActive() || el.bag.bagDialog.open) return false;
     const art = document.getElementById("world-map-art");
     if (art && !art.src) art.src = art.dataset.src || "assets/sprites/mapa-sem-beco.png";
     returnToWorkstation = fromWorkstation;
+    returnToPhone = fromPhone;
     if (fromWorkstation) {
       services.pararAtividadeEstacao();
       el.workstation.overlay.inert = true;
@@ -121,13 +125,22 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
     fecharEditorCoordenada();
     ui.mapOverlay.hidden = true;
     const back = returnToWorkstation && services.estacaoAberta();
+    const phone = returnToPhone && state.aparelho.activePhone === "lulith";
     returnToWorkstation = false;
-    state.modo = back ? "interface" : "livre";
+    returnToPhone = false;
+    state.modo = back ? "interface" : phone ? "celular" : "livre";
     app.inert = back;
     el.workstation.overlay.inert = false;
     if (back) services.atualizarHomeEstacao();
+    if (phone) {
+      services.mostrarTelaInicial(false);
+    }
     services.definirBotoes();
-    if (restoreFocus) { if (back) el.workstation.map.focus(); else focusOpener(); }
+    if (restoreFocus) {
+      if (back) el.workstation.map.focus();
+      else if (phone) el.phone.btnMapas.focus();
+      else focusOpener();
+    }
     opener = null;
     returnHotspotId = null;
     return true;
@@ -155,7 +168,7 @@ function criarSistemaMapaGlobal({ state, el, document, data: DATA, services }) {
       || services.isSceneTransitioning() || services.isCutsceneActive()
       || !marcadores.has(localId)) return false;
     if (localId === state.localizacao.local) {
-      ui.mapFeedback.textContent = `Você já está em ${DATA.worldMapLocations[localId].label}. Use Voltar para retornar ao computador.`;
+      ui.mapFeedback.textContent = `Você já está em ${DATA.worldMapLocations[localId].label}. Use Voltar para retornar.`;
       return false;
     }
     if (!localDisponivel(localId)) {
