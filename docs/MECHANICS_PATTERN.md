@@ -1,5 +1,7 @@
 # Padrão das mecânicas e animações
 
+> Referência geral em [AGENTS](../AGENTS.md); este documento mantém somente o contrato especializado.
+
 A implementação mantém **Factory + injeção de dependências** para os sistemas,
 **Strategy** para os tipos de interação e uma **Facade de animação** para a
 apresentação. Não exige framework, classes base ou alteração dos snapshots v1.

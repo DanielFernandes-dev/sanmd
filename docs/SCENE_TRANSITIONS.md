@@ -1,5 +1,7 @@
 # Transições globais de cena
 
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
 `scene-transition.js` cria um controlador por instância de jogo. O overlay único
 em `#vn-area` cobre background, objetos, personagens, hotspots e contexto.
 Os controles laterais persistem visualmente, mas ficam desabilitados. A cor
@@ -12,13 +14,13 @@ comuns chamam `transitionToScene(localId, cenaId)`. Na entrada do beco, a opçã
 narrativa **Sair do beco** inicia `act1_ending` quando o cofre está aberto,
 o celular foi coletado e `act1Complete` é falso. A localização não muda durante
 o encerramento. `lulith_codigo` é a apresentação de Novo jogo; o estado inicial
-do beco já foi criado antes dela. Caderno e cutscenes reutilizam `animarFade`, com overlays próprios, sem invocar uma segunda
+da casa já foi criado antes dela. Caderno e cutscenes reutilizam `animarFade`, com overlays próprios, sem invocar uma segunda
 transição de navegação. Ver [Cutscenes](cutscenes.md).
 
 Para uma nova navegação, valide primeiro as regras narrativas e então use:
 
 ```js
-await game.services.transitionToScene("delegacia", "delegacia_arquivo");
+await game.services.transitionToScene("delegacia", "delegacia_mesa_mj");
 ```
 
 O destino precisa existir no catálogo. A API verifica existência e ignora a
@@ -42,7 +44,7 @@ entrada 400 ms. Com `prefers-reduced-motion: reduce`, cada fade leva 10 ms, sem
 espera de composição. Apenas opacity é animada; não há blur ou transform.
 A implementação usa somente fade. Novos efeitos poderão ser internos ao controlador.
 
-O carregador prepara e decodifica background e variantes visíveis dos objetos,
+O carregador prepara e decodifica background, todas as variantes dos objetos e frames de hotspots,
 reutilizando um cache de imagens por controlador. Falhas/timeout de 10 s impedem
 a revelação de uma cena sem assets. Objetos e hotspots são reconstruídos pelo
 Scene State existente. O personagem anterior é removido ainda sob o overlay.
@@ -51,8 +53,7 @@ O bloqueio é síncrono, anterior ao primeiro await. Captura de eventos protege
 mouse, touch, teclado e formulários; serviços de navegação, hotspots, conversa,
 celular e load também recusam chamadas durante a transição. Menus e feedback
 antigos são fechados antes do fade. O estado transitório fica na closure do
-controlador, fora de saves/autosaves. Inicialização e Load continuam usando o
-carregador imediato existente. O controlador de transição não altera snapshots; a Cutscene 03 acrescenta somente `act1Complete` ao progresso persistente.
+controlador, fora de saves/autosaves. Inicialização e Load preparam o módulo local antes de aplicar a cena; não usam o fade de navegação. O controlador de transição não altera snapshots; a Cutscene 03 acrescenta somente `act1Complete` ao progresso persistente.
 
 Checklist para integrar navegação:
 
@@ -85,6 +86,10 @@ inspeção visual em WebView Android real.
   percurso Entrada → Interior → Fundo validados. O fade suave (saída 320 ms,
   composição 100 ms, entrada 400 ms) cobre e descobre a cena sem flash,
   resize ou touch atravessando; a fluidez foi confirmada no aparelho.
+
+## Carregamento local e cache
+
+A transição prepara o script de eventos via `scene-modules.js`, ativa callbacks locais e desativa os anteriores. O cache de imagens retém referências da cena atual após sucesso e é limpo no menu/restore. Isso não descarrega scripts nem força limpeza do cache do navegador. O timeout de assets não cobre o loader de scripts, que ainda não tem timeout próprio.
 
 ## Organização do código
 

@@ -1,7 +1,9 @@
 # Game Design Document — Sim, Acredite nas Mentiras Dele kk
 
+> Revisão documental — 08/10/2026: Documento de visão de longo prazo. A identidade e o estado técnico atual estão em [AGENTS](AGENTS.md). Trechos de implementação abaixo são históricos: casa, James, crime e delegacia já existem; finais, terminal e replay continuam planejados. Nenhuma ideia futura foi descartada nesta consolidação.
+
 > Revisado em 05/10/2026. Este documento distingue o design planejado do
-> [estado implementado](docs/STATUS_PROJETO.md). Consulte também o
+> [estado implementado atual](AGENTS.md#parte-ii). Consulte também o
 > [guia de desenvolvedor](AGENTS.md) e a
 > [referência de módulos JS](docs/JS_MODULES.md).
 
@@ -19,7 +21,7 @@
 
 ### Protagonista
 
-- **Nome de desenvolvimento:** MJ; o nome real será escolhido pelo jogador.
+- **Nome definitivo:** MJ; não há escolha de outro nome pelo jogador.
 - **Perfil:** Mulher, investigadora criminal/consultora técnica ligada à polícia.
 - **Experiência:** Enigmas, ARGs, escape rooms e atividades semelhantes.
 - **Estado inicial:** Cansada e dormindo mal por causa do trabalho antes dos eventos principais.

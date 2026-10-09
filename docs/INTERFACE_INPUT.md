@@ -1,5 +1,7 @@
 # Realces de toque e foco
 
+> Referência geral em [AGENTS](../AGENTS.md); este documento mantém somente o contrato especializado.
+
 Os botões de Ir para, Bolsa, Celular, mapa/PC e os hotspots não usam o realce
 nativo de toque do WebView. Os hotspots continuam clicáveis e transparentes,
 inclusive o celular da Lulith antes da coleta. O pipeline existente remove

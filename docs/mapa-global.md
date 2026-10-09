@@ -1,5 +1,7 @@
 # Home do PC e mapa global
 
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
 A mesa da MJ usa `mj_computer` (`interact`) para persistir `computerOn`
 no `sceneState` e abrir a estação de trabalho. Não depende do bilhete.
 MAPA é o único aplicativo habilitado. O bilhete (`examine`) pode ser relido;
@@ -52,7 +54,7 @@ editada da arte original `mapa.png` sem o ícone fixo do Beco. Os inputs,
 o botão Localizar, os quatro marcadores e o feedback permanecem elementos HTML
 na mesma moldura proporcional. `mapPosition` em `DATA.worldMapLocations` guarda
 apenas a posição visual dos marcadores, em porcentagem; não altera as coordenadas
-do bilhete. A imagem é pré-carregada pelo navegador e uma falha de carregamento
+do bilhete. A imagem recebe `src` ao abrir o mapa, não na inicialização; uma falha de carregamento
 mostra os mesmos controles sobre um fundo simples.
 
 Locais disponíveis são verdes; bloqueados são cinza e desabilitados; o local

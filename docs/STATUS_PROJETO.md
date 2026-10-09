@@ -12,6 +12,8 @@ updated: 2026-10-05
 
 # Estado do projeto
 
+> Revisão documental — 08/10/2026: REGISTRO HISTÓRICO: estado atual em [AGENTS](../AGENTS.md), validações desta revisão na [auditoria](AUDITORIA_DOCUMENTAL.md). Início no beco e James/casa/mapa pendentes foram superados. Resultados de QA abaixo pertencem às respectivas revisões, não à versão atual.
+
 > [!summary] Objetivo
 > Consolidar o que está implementado e a evidência disponível, sem confundir
 > protótipo funcional com o roteiro completo. Código: `js/`, `index.html` e
@@ -121,7 +123,7 @@ auditiva e o Skip em todos os quadros no aparelho permanecem pendentes.
 
 ## Ainda pendente
 
-- Nome escolhido pelo jogador, James, dormitório e caso introdutório.
+- À época: escolha de nome (decisão posteriormente revogada), James, dormitório e caso introdutório (implementados depois deste registro).
 - Nota, coordenadas, puzzle canônico do cofre e ligação entre as cenas do Ato I.
 - Personalização futura do telefone e encaixe da saída no Ato I canônico.
 - Evidências, terminal, mapa, sistema geral de puzzles, atos completos e finais.
@@ -143,4 +145,4 @@ o comportamento resultante, sem criar outra fonte de configuração.
 |---|---|
 | [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) | Visão geral da arquitetura, fluxo de dados e padrões |
 | [`docs/JS_MODULES.md`](JS_MODULES.md) | Referência de cada módulo JS com suas APIs |
-| [`AGENTS.md`](AGENTS.md) | Diretrizes para agentes Kilo e revisão de código |
+| [`AGENTS.md`](../AGENTS.md) | Referência central criativa, técnica e de manutenção |

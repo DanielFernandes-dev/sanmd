@@ -1,5 +1,7 @@
 # Visuais do celular
 
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
 Os temas usam `state.aparelho.phoneTheme`, persistido pelo Save/Load e aplicado
 em `data-phone-theme` na tela do celular. A aparência é independente do aparelho
 ativo. Não existem versões separadas dos apps ou da Galeria.
@@ -7,7 +9,7 @@ ativo. Não existem versões separadas dos apps ou da Galeria.
 | Tema | Tela inicial | Fundos dos apps | Uso narrativo |
 | --- | --- | --- | --- |
 | `lulith` | Gradiente azul escuro, sem assinatura MJ | Mensagens, Arquivos e Galeria usam a paleta azul escura; Galeria sem assinatura MJ | Tema inicial do aparelho ao ativá-lo pela Bolsa |
-| `mj` | Wallpaper e assinatura MJ preservados | Fundos existentes de Mensagens e Arquivos; Galeria com cabeçalho translúcido, assinatura e detalhes rosa preservados | Tema reservado para futura personalização; também preservado em saves legados |
+| `mj` | Wallpaper e assinatura MJ preservados | Fundos existentes de Mensagens e Arquivos; Galeria com cabeçalho translúcido, assinatura e detalhes rosa preservados | Tema do telefone de MJ recolhido na casa; também preservado em saves legados |
 
 As regras base de `styles.css` preservam os visuais anteriores, inclusive os
 fundos de cada app. As regras específicas de `data-phone-theme="lulith"`
@@ -20,4 +22,4 @@ Save/Load e autosave mantêm a implementação existente.
 A personalização do tema continua pendente. A saída do beco já aciona a Cutscene 03
 após a coleta, independentemente do tema e de o aparelho ter sido ativado. A Cutscene 02 de Novo
 jogo (`lulith_codigo`) não ativa o aparelho nem troca o tema: o jogador ainda
-precisa coletar o celular no cofre e usá-lo na Bolsa.
+começa na casa, onde recolhe seu próprio telefone; posteriormente coleta o aparelho do cofre e o ativa na Bolsa.

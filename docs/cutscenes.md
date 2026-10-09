@@ -1,4 +1,6 @@
 ---
+
+> Estado vigente em [AGENTS](../AGENTS.md#cenas). A abertura atual conclui naturalmente após a luz ou por Skip em 600 ms; menções antigas a hold/espera obrigatória abaixo são históricas. Resultados de QA são datados e não foram repetidos nesta consolidação.
 aliases:
   - Sistema de Cutscene
 tags:
@@ -29,7 +31,7 @@ Outras apresentações podem ser injetadas na mesma fábrica sem duplicar Skip.
 
 `iniciarCutscene(id, onComplete)` recusa concorrência e bloqueia imediatamente.
 O carregador global `prepareSceneImages` fornece cache, decode e timeout para
-a arte do menu. Depois, um único timer por vez avança pelos passos, exceto o passo final com `hold`. Término
+a arte do menu. Depois, um único timer por vez avança pelos passos; a sequência atual da abertura não possui hold indefinido. Término
 natural e `pularCutscene()` convergem em `finalizar()`, que cancela timer,
 invalida callbacks pela identidade e fase da sessão, limpa a intenção de Skip e finaliza o visual.
 Cada visual limpa seus recursos. A abertura cancela animações, observação de

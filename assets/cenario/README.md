@@ -1,11 +1,20 @@
 # Cenários
 
+> Arquitetura e regras gerais: [AGENTS.md](../../AGENTS.md). Este README mantém apenas o contrato local dos recursos.
+
 Esta pasta contém os fundos de cena usados pelo protótipo. Eles são assets 2D provisórios dos Protótipos 1 e 2 e não definem a direção canônica dos locais do jogo.
 
 ## Conteúdo Atual
 
-Os três fundos navegáveis pertencem ao local lógico `beco`. A pasta também contém
-os dez quadros narrativos do quarto e oito do telhado, que não são destinos de navegação:
+Há 11 cenas navegáveis em quatro locais. Os dez quadros do quarto de Lulith e oito do telhado não são destinos de navegação:
+
+| Pasta/arquivos adicionais | Cenas |
+|---|---|
+| `casa-mj-james/quarto-mj.png`, `sala.png`, `cozinha.png`, `quarto-james.png` | `casa_quarto_mj`, `casa_sala`, `casa_cozinha`, `casa_quarto_james` |
+| `cena-do-crime/cena-do-crime.png` | `crime_sala` |
+| `delegacia/corredor-delegacia.png`, `central-delegacia.png`, `escritoria-mj.png` | `delegacia_corredor`, `delegacia_investigadores`, `delegacia_mesa_mj` |
+
+Bolsa/telefone da casa e chave/maleta do crime usam SVGs separados nessas pastas. IDs, conexões e flags ficam em `js/data.js`; eventos específicos em `js/scenes/`. Não há banheiro navegável no catálogo atual.
 
 | Arquivo | Cena | Rótulo | Destinos |
 |---|---|---|---|
@@ -13,7 +22,7 @@ os dez quadros narrativos do quarto e oito do telhado, que não são destinos de
 | `beco/corredor.png` | `beco_interior` | Interior do beco | `beco_entrada`, `beco_fundo` |
 | `beco/background.png` | `beco_fundo` | Fundo do beco | `beco_interior` |
 
-Os fundos de entrada e corredor possuem `3344×1882`; o fundo independente `background.png` possui `1672×941`. O palco preserva a proporção `1672:941`, sem recortar objetos interativos. `cofre.png` é referência histórica e não é carregado pelo jogo.
+Os fundos de entrada e corredor possuem `3344×1882`; o fundo independente `background.png` possui `1672×941`. O palco usa referência `1672:941`; o encaixe cover e as dimensões lógicas por cena exigem conferir recortes/hotspots em cada viewport. `cofre.png` é referência histórica e não é carregado pelo jogo.
 
 Os sprites RGBA independentes ficam em `beco/objects/`: `safe_closed.png`, `safe_opening_01.png` a `safe_opening_04.png`, `safe_open.png` e `lulith_phone.png`. Os seis frames do cofre compartilham canvas 1254×1254. Ver [POINT_AND_CLICK](../../docs/POINT_AND_CLICK.md).
 

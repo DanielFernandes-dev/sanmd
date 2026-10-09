@@ -1,6 +1,8 @@
 # Interfaces
 
-Esta pasta contém assets da interface e mockups exclusivamente de referência. O caminho real é `assets/interfaces/`, no plural, e deve ser preservado. Regras de layout e interação permanecem em `index.html`, `styles.css` e `js/game.js`.
+> Arquitetura e regras gerais: [AGENTS.md](../../AGENTS.md). Este README mantém apenas o contrato local dos recursos.
+
+Esta pasta contém artes usadas em runtime e mockups exclusivamente de referência. O caminho real é `assets/interfaces/`, no plural, e deve ser preservado. Regras de layout e interação permanecem em `index.html`, `styles.css` e nos sistemas de interface (`title-menu.js`, `phone.js`, `gallery.js`, `scene.js`, `workstation.js`).
 
 ## Tela Inicial
 
@@ -13,7 +15,7 @@ As duas artes são a **única fonte visual** da tela inicial: o título `Sanmd` 
 
 Geometria medida na arte e mantida em `styles.css` (percentuais de `1672×941`):
 
-| Elemento |_x_|_y_|
+| Elemento | Geometria (x · y) |
 |---|---|
 | Rótulo `Novo jogo` | 43,5-70,0% · 57,5-65,0% |
 | Rótulo `Carregar` | 43,9-71,0% · 65,6-73,3% |
@@ -31,7 +33,7 @@ Geometria medida na arte e mantida em `styles.css` (percentuais de `1672×941`):
 
 | Arquivo PNG | Dimensões | Modo | Uso |
 |---|---|---|---|
-| `wallpaper.png` | 940×1672 | RGB | Único PNG desta pasta usado em runtime pelo redesign |
+| `wallpaper.png` | 940×1672 | RGB | Fundo do tema MJ; não é o único PNG de interface em runtime |
 | `celular.png` | 1225×1284 | RGBA | Exclusivamente mockup de referência do celular |
 | `save.png` | 1161×1355 | RGB | Exclusivamente mockup de referência da Galeria/save |
 
@@ -42,6 +44,10 @@ O wallpaper é declarado uma única vez, como fundo de `#phone-screen` em `style
 O redesign implementado usa frame arredondado em gradiente escuro, identidade rosa/lilás e assinatura decorativa da MJ. A tela inicial tem data e uma grade 4×2 com oito apps na parte inferior (Galeria, Mensagens, Telefone, Notas, Config., Arquivos, Mapas, Música), com ícones SVG sobre tiles quadrados de cor própria e destaque rosa para Galeria. O cabeçalho da Galeria é alinhado à esquerda, com subtítulo e assinatura; a grade 3×3 tem slots vazios com `+`, número e `Espaço livre`. As fotos usam moldura clara `#efe3da`, e preview/detalhe ficam retos, sem rotação. Ações têm gradiente rosa e altura mínima de `44px`; exclusão mantém tratamento vinho/vermelho, e o foco visível dos botões do celular é rosa.
 
 O frame usa largura `min(360px, calc(100vw - 20px))` e altura `min(720px, calc(100dvh - 20px))`. Até `700px`, a largura passa a `min(360px, calc(100vw - 12px))`, o padding cai de `10px` para `6px` e há `max-height: calc(100dvh - 12px)`, sem substituir a altura base. A grade mantém três colunas, linhas mínimas de `112px` e rolagem vertical; tela inicial, preview e detalhe também podem rolar.
+
+## Outros recursos em runtime
+
+`layout-pc-mj.png` compõe a estação da delegacia e recebe src ao abri-la. `bolsa.png` e `game-icon.png` permanecem na pasta, mas não têm referência direta nos fontes web atuais; o último consta no histórico de produção do ícone Android em [ADR](../../docs/ADR_LOG.md). `preview_celular.png` e `save-aleatorio.png` são referências de produção, não apps. A grade tem oito ícones, mas apenas Galeria, Mensagens e Arquivos funcionam. A descrição rosa acima se refere ao tema MJ; [temas](../../docs/PHONE_THEMES.md) detalha Lulith.
 
 ## Distribuição
 
@@ -61,7 +67,7 @@ Os SVGs-fonte usam `viewBox="0 0 32 32"`, `currentColor` e `shape-rendering="cri
 
 - SVGs são decorativos e usam `aria-hidden="true"`.
 - Clique, foco, nome acessível e estado desabilitado pertencem aos elementos `button`, nunca ao SVG.
-- Os comandos principais preservam `aria-label` e touch target de `60×60` pixels.
+- Preservar nomes acessíveis e conferir tamanho de toque nas regras responsivas; existem overrides de `56×44` pixels, portanto `60×60` não é um tamanho universal.
 - Nos três controles principais do gameplay, a cor normal é creme; dourado é reservado a hover, foco e feedback de interação. Essa regra não descreve os botões rosa do celular/Galeria.
 - Os ícones não devem conter texto, imagens externas, gradientes, filtros ou lógica de navegação.
 - Alterar um ícone exige manter sincronizadas sua fonte nesta pasta e a forma inline correspondente em `index.html`.
@@ -71,7 +77,7 @@ Os SVGs-fonte usam `viewBox="0 0 32 32"`, `currentColor` e `shape-rendering="cri
 O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato está documentado em `ESTRUTURA_GAMING.md` e implementado por `#ir-para-menu` em `styles.css`.
 
 - O menu permanece contextual, compacto e associado ao ícone **Ir para**.
-- Destinos continuam sendo `button.message-choice` criados por `js/game.js`.
+- Destinos continuam sendo `button.message-choice` criados por `js/scene.js`.
 - Estilos específicos não devem alterar globalmente `.message-choice`, também usada no celular.
 - Nenhuma regra de destino ou conexão entre cenas pertence aos arquivos desta pasta.
 
@@ -90,7 +96,7 @@ O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato
 
 ## Integração com as cutscenes
 
-O caderno é preparado sob a Cutscene 01; o Skip global libera seus botões. Novo
+O caderno é preparado sob a Cutscene 01; conclusão natural ou Skip libera seus botões. Novo
 jogo abre a capa e cobre a tela antes de reiniciar o estado e executar Lulith.
 Carregar segue para os registros e nunca dispara a Cutscene 02. A Cutscene 03
 devolve o jogador à mesma capa após **ATO 1 COMPLETO**, sem repetir SANMD ou

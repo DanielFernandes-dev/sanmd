@@ -16,6 +16,8 @@ updated: 2026-10-05
 
 # Regras de Design
 
+> Revisão documental — 08/10/2026: Especificações detalhadas preservadas. [AGENTS](AGENTS.md#arte) centraliza diretrizes e ressalvas atuais; contagens CSS e descrições de conformidade abaixo são registros da revisão original, não medições atuais. Regras aprovadas não foram revogadas por estarem parcialmente aplicadas.
+
 > [!summary] Objetivo
 > Este documento é o **canon das regras gerais de design** de *Sim, Acredite nas Mentiras Dele kk*: as regras transversais que valem para toda cena, toda interface e todo asset, independentemente de onde o elemento aparece.
 >

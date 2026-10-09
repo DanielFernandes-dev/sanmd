@@ -1,5 +1,7 @@
 # Game Architecture
 
+> Revisão documental — 08/10/2026: LEGADO: visão arquitetural substituída por [AGENTS](../AGENTS.md#parte-ii). Este texto conserva decisões históricas, mas lista módulos/fluxos antigos (inclusive el.js inexistente, rsync e Skip de 350 ms). Não usar como descrição da implementação atual. Candidato a arquivamento, sem remoção autorizada.
+
 ## Overview
 
 SANMD is a vanilla ES2024 JavaScript visual novel built with **no framework, no bundler, no transpiler**. The entire runtime is a single page (`index.html`) backed by 30 JS modules, a stylesheet (`styles.css`), and static assets.

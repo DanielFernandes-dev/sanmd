@@ -1,5 +1,7 @@
 # JavaScript Modules Reference
 
+> Revisão documental — 08/10/2026: LEGADO: o inventário atual dos 34 scripts está em [AGENTS](../AGENTS.md#modulos). As 30 entradas e responsabilidades abaixo antecedem scene-modules e a extração de eventos locais; APIs devem ser conferidas no código. Candidato a arquivamento após preservar detalhes úteis.
+
 This document provides a reference for each of the 30 modules in `js/`. See
 [ARCHITECTURE.md](ARCHITECTURE.md) for the overall architecture.
 

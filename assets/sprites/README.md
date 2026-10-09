@@ -1,23 +1,30 @@
 # Sprites
 
+> Arquitetura e regras gerais: [AGENTS.md](../../AGENTS.md). Este README mantém apenas o contrato local dos recursos.
+
 Esta pasta contém os sprites de personagens usados em runtime. Os assets atuais pertencem aos Protótipos 1 e 2 e não representam o design canônico dos personagens.
 
 ## Conteúdo Atual
 
 | Arquivo | Personagem | Pose | Uso |
 |---|---|---|---|
-| `MJ.png` | `mj` | `neutral` | Monólogos nas três cenas provisórias do beco |
+| `MJ.png` | `mj` | `neutral` | Falas e monólogos nos locais atuais |
+| `james.png` | `james` | `neutral` | Conversa na cozinha |
+| `lulith.png` | `lulith` | `neutral` | Cadastrado no catálogo; não substitui quadros cinematográficos |
 
 `MJ.png` possui canvas transparente de `1070×1470` pixels. É um asset estático, genérico, provisório e produzido com auxílio de IA para validar presença, escala e integração. Ele pode ser substituído integralmente no Protótipo 3.
 
 ## Arte de Lulith
 
-`lulith.png` está disponível como arte de personagem, mas não está cadastrado em
-`DATA.personagens` nem é carregado como sprite de diálogo. A Cutscene 02 usa os
+`lulith.png` está cadastrado em `DATA.personagens` e pode ser resolvido pelo motor de falas. O chat preserva o anonimato; cadastro não significa exibição em toda conversa. A Cutscene 02 usa os
 dez quadros completos em `assets/cenario/quarto-lulith`, preservando o desenho
 original; não recorta nem anima membros do sprite. A Cutscene 03 também usa
 quadros completos do telhado em `assets/cenario/custcene-beco`; a MJ distante
 já está desenhada nos Frames 02–03 e não usa overlay de sprite.
+
+## Mapas nesta pasta
+
+`mapa.png` é a arte original; `mapa-sem-beco.png` é usada pelo mapa com marcadores HTML. Não são sprites de personagem e não devem ser adicionados ao catálogo de poses. O src do mapa é atribuído ao abrir a interface.
 
 ## Contrato
 
@@ -69,7 +76,7 @@ O registro de produção e os prompts estão em
 
 - A resolução-base e o padrão final dos sprites ainda precisam ser definidos.
 - Poses pensando, surpresa, irritada e cansada de MJ continuam pendentes.
-- Sprites genéricos de Lulith e James continuam pendentes.
+- Sprites genéricos de Lulith e James já existem; arte definitiva/poses adicionais continuam pendentes.
 - O design definitivo será fechado somente no Protótipo 3.
 
 ## Referências

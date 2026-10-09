@@ -1,12 +1,14 @@
 # TODO — Ato I — A Curiosidade
 
+> Revisão documental — 08/10/2026: Roadmap preservado, com checklists de revisões diferentes. Estado atual e regras centrais: [AGENTS](AGENTS.md). Caixas antigas sobre James/casa, início no beco e espera obrigatória por Skip não são prova de pendência atual; consultar a [auditoria](docs/AUDITORIA_DOCUMENTAL.md). Convenções abaixo são históricas quando divergirem da referência central.
+
 > Roadmap exclusivo do primeiro ato de **Sim, Acredite nas Mentiras Dele kk**.
 >
 > Fontes: [`GDD.md`](GDD.md), [`ESTRUTURA_GAMING.md`](ESTRUTURA_GAMING.md) e [`IDEIA_CONCEITUAL.md`](IDEIA_CONCEITUAL.md).
 >
 > Objetivo do Ato I: apresentar MJ, James, investigação point-and-click, nota, coordenadas, cofre, celular, Lulith e os principais sistemas de gameplay.
 
-> Atualização de implementação: **05/10/2026**. Ver [estado consolidado](docs/STATUS_PROJETO.md).
+> Checklists de implementação: revisão histórica de **05/10/2026** e adendos posteriores. Ver [estado consolidado atual](AGENTS.md#parte-ii).
 
 ## Limites do escopo
 
@@ -53,7 +55,7 @@ O asset de James foi corrigido em 06/10/2026: o fundo preto externo virou transp
 ### Diretrizes do ato
 
 - [x] Tratar o Ato I como tutorial e início da trama principal.
-- [x] Manter MJ como protagonista feminina cujo nome real é escolhido pelo jogador.
+- [x] Manter MJ como protagonista feminina com nome definitivo.
 - [x] Manter Lulith como dona do celular, sem romance entre ela e MJ.
 - [x] Manter William James como amigo, antigo professor e colega de MJ.
 - [x] Ambientar o ato em São Paulo.
@@ -218,13 +220,11 @@ Implementada em `js/title-menu.js`, sobre as artes aprovadas `assets/interfaces/
 - [ ] Bloquear ações incompatíveis durante diálogos, puzzles e transições.
 - [ ] Manter o foco e os controles corretos após cada mudança de estado.
 
-### Nome e progresso
+### Identidade e progresso
 
-- [ ] Criar a tela inicial de escolha do nome real de MJ.
-- [ ] Validar nome vazio, tamanho máximo e caracteres aceitos.
-- [ ] Usar o nome escolhido em diálogos, mensagens e telas de resultado.
+- [ ] Conferir o uso consistente de MJ em diálogos, mensagens e telas de resultado.
 - [ ] Criar marcos de progresso do Ato I.
-- [ ] Persistir nome, cena atual, pistas, escolhas e estado dos puzzles.
+- [ ] Persistir cena atual, pistas, escolhas e estado dos puzzles que forem implementados.
 - [ ] Restaurar a partida após recarregar ou fechar o jogo.
 - [ ] Permitir reiniciar o Ato I após o final da nota descartada.
 
@@ -634,7 +634,7 @@ O recorte de Save/Load abaixo está implementado e testado no protótipo atual, 
 
 ### Fluxo narrativo
 
-- [ ] Jogar o Ato I canônico da escolha do nome até a cutscene final; o encerramento atual do protótipo já funciona após a coleta no beco.
+- [ ] Jogar o Ato I canônico da abertura até a cutscene final; o encerramento atual do protótipo já funciona após a coleta no beco.
 - [ ] Confirmar a ordem correta de todas as cenas e transições.
 - [ ] Confirmar que o caso ensina investigação antes da nota.
 - [ ] Confirmar que descartar a nota encerra o jogo imediatamente.
@@ -673,11 +673,11 @@ O recorte de Save/Load abaixo está implementado e testado no protótipo atual, 
 - [ ] Criar interface dedicada para carregar o autosave.
 - [ ] Implementar migrations quando houver evolução incompatível do formato dos saves.
 
-Validação do Ato I completo ainda pendente (o nome da fotografia não equivale ao nome escolhido pelo jogador):
+Validação do Ato I completo ainda pendente (o nome da fotografia é metadado do Save, não altera a identidade de MJ):
 
 - [ ] Recarregar o jogo em cada fase e validar a restauração.
 - [ ] Fechar e reabrir durante diálogos, investigação, puzzles e mensagens.
-- [ ] Confirmar persistência do nome escolhido.
+- [ ] Confirmar consistência do nome MJ após restaurar saves.
 - [ ] Confirmar persistência de evidências, pistas e puzzles concluídos.
 - [ ] Confirmar persistência do conteúdo visto antes do reset.
 - [ ] Testar reinício após o final da nota descartada.
@@ -750,7 +750,7 @@ Validação do Ato I completo ainda pendente (o nome da fotografia não equivale
 
 ## Fase 12 — Critérios de conclusão do Ato I
 
-- [ ] O jogador escolhe o nome de MJ e o nome aparece corretamente durante o ato.
+- [ ] O nome definitivo MJ aparece corretamente durante o ato.
 - [ ] A abertura apresenta Lulith, MJ e James sem exposição excessiva.
 - [ ] O caso policial original ensina investigação point-and-click.
 - [ ] A cena do crime pode ser concluída apenas com pistas disponíveis no jogo.

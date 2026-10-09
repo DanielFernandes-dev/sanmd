@@ -1,5 +1,7 @@
 # Point-and-click e Bolsa da MJ
 
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
 O cenário é sempre interativo: não existe botão, modo ou cursor de investigação.
 Na lateral direita, **Bolsa da MJ** abre um inventário narrativo sem limite, peso,
 quantidades ou organização manual. O diálogo nativo permite fechar por botão ou
@@ -23,11 +25,12 @@ das funções da cena. Isso não é um modo de investigação.
 
 ## Coordenadas e arte
 
-`rect: [x, y, width, height]` usa percentuais da mesma área lógica de **1672:941**.
-O contêiner `#scene` preserva essa proporção e cabe inteiro na área disponível
-(`contain` por dimensões do contêiner). Background, objetos e hotspots compartilham
-exatamente essa área; barras externas não fazem parte das coordenadas. O alvo de
-toque tem mínimo de 44×44 CSS px. A lateral direita permanece disponível em retrato.
+`rect: [x, y, width, height]` usa percentuais. Quando a cena declara
+`backgroundSize`, `posicionarObjeto` converte as coordenadas para o encaixe
+`cover` centralizado do background; sem esse campo usa percentuais do palco.
+A referência 1672:941 não é dimensão universal: crime usa 1664×936.
+Objetos e hotspots devem acompanhar o mesmo recorte; validar em retrato/paisagem.
+Hotspots declaram mínimo de 44×44 CSS px, o que exige conferir sobreposição em telas pequenas.
 
 `background.png` não contém cofre. `objects/safe_closed.png` e `safe_open.png`
 são PNGs RGBA 1254×1254 com a mesma caixa lógica e âncora; somente a porta muda.
@@ -101,20 +104,18 @@ Exemplo para uma futura porta, sem adicionar uma porta ao jogo agora:
 ```
 
 `doorOpened: false` precisa estar em `initialState`. O item precisa existir em
-`ITEMS`. `executarHotspot(id, selectedItem = null)` admite seleção explícita futura;
-nenhuma interface de seleção de itens/puzzle foi implementada.
+`ITEMS`. A Bolsa já oferece seleção `use_on_hotspot`; a chave da cena do crime exige seleção para abrir a maleta (`requiresSelection: true`) e é consumida. O exemplo da porta continua apenas ilustrativo.
 
 ## Inventário e narrativa
 
-`ITEMS[id]` contém somente `id`, `label`, `description`, `asset`, `consumable`.
+`ITEMS[id]` contém `id`, `label`, `shortLabel`, `description`, `purpose`, `asset`, `consumable` e `inventoryAction`.
 `state.inventory` guarda apenas IDs únicos. `adicionarItem(id)` e `removerItem(id)`
 retornam booleano e atualizam a Bolsa. Itens permanentes têm `consumable: false`;
 isso impede consumo automático padrão, mas não remoção explícita pela narrativa.
 Ações narrativas externas devem chamar `registrarAutosave()` depois de concluir
 todas as suas alterações; o executor de hotspots já faz isso após o callback.
 
-O celular coletado não se torna aparelho ativo automaticamente. Um evento futuro
-pode remover `lulith_phone` e fazer a transição narrativa para o aparelho funcional.
+O celular coletado não se torna ativo automaticamente. A ação implementada `activate_phone` na Bolsa remove `lulith_phone`, ativa o aparelho e apresenta a reação narrativa.
 A remoção não apaga `lulithPhoneCollected`, portanto não permite recoleta.
 
 ## Estados e Save/Load

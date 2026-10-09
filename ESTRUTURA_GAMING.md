@@ -12,11 +12,13 @@ tags:
   - visual-novel
   - obsidian
   - js-modules
-status: atual
+status: historico
 updated: 2026-10-05
 ---
 
 # Estrutura Gaming
+
+> Revisão documental — 08/10/2026: Referência histórica, parcialmente desatualizada, preservada para rastreabilidade e registros de produção. [AGENTS](AGENTS.md) substitui sua função de arquitetura/estado central. Menções a início no beco, estado só em memória e casa/James futuros não descrevem o código atual. Consulte a [auditoria](docs/AUDITORIA_DOCUMENTAL.md) antes de reutilizar instruções.
 
 > [!summary] Objetivo
 > Esta nota documenta o que funciona atualmente em **Sim, Acredite nas Mentiras Dele kk**, explica sua arquitetura e organiza a evolução do protótipo em formato de roadmap. O código é a fonte de verdade; recursos descritos no [[GDD]] que ainda não possuem implementação são identificados como planejamento.
@@ -112,7 +114,7 @@ flowchart TD
 
 | Personagem | Função atual |
 |---|---|
-| MJ | Protagonista; nome escolhido pelo jogador; experiente em enigmas, ARGs e escape rooms |
+| MJ | Protagonista com nome definitivo; experiente em enigmas, ARGs e escape rooms |
 | Lulith | Dona do celular e responsável por conduzir os testes |
 | William James | Amigo, antigo professor e colega de trabalho de MJ |
 
@@ -933,7 +935,7 @@ Status: **próxima prioridade**.
 Status: **planejada**.
 
 - [ ] Trocar o conteúdo atual para MJ, Lulith e William James.
-- [ ] Permitir a escolha do nome real de MJ.
+- Decisão posterior: MJ é o nome definitivo; a antiga tarefa de escolha de nome foi cancelada.
 - [x] Implementar a Cutscene 02 de Lulith em dez quadros estáticos.
 - [x] Implementar a Cutscene 03 do encerramento do protótipo em oito quadros e preto criado pelo código.
 - [ ] Prototipar a cena de dormitório e James após a cutscene.

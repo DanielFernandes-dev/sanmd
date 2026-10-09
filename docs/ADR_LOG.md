@@ -1,8 +1,10 @@
 # Registro de decisões
 
+> Registro histórico: decisões e validações pertencem às datas indicadas. Estado atual e regras centrais em [AGENTS](../AGENTS.md).
+
 > Histórico de decisões e revisões. Entradas antigas preservam o contexto da época
 > e podem ter sido substituídas por decisões posteriores. Para o comportamento
-> vigente, consulte [Estado do projeto](STATUS_PROJETO.md) e os contratos por sistema.
+> vigente, consulte [AGENTS](../AGENTS.md) e os contratos por sistema.
 
 ## 2026-09-09 — Teclado virtual próprio e entrada de texto sem IME
 

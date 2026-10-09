@@ -1,6 +1,12 @@
 # Áudio
 
-Assets de apresentação, fora do Save System. Nenhum arquivo foi baixado.
+> Arquitetura e regras gerais: [AGENTS.md](../../AGENTS.md). Este README mantém apenas o contrato local dos recursos.
+
+Assets de apresentação, fora do snapshot. Os scripts abaixo documentam geração local de placeholders; a proveniência histórica não foi reconstituída integralmente nesta auditoria.
+
+## Efeitos de diálogo
+
+`phone_notification.wav` atende a notificação durante a conversa com James; `kick_impact.wav` também é reutilizado na sequência do telefone. O blip de digitação é sintetizado em `js/dialogue.js` por Web Audio, sem WAV dedicado. Os três geradores abaixo não documentam uma receita para todos os arquivos desta pasta.
 
 ## Interruptor da abertura
 

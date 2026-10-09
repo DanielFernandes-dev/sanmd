@@ -1,9 +1,8 @@
 # Entrada de texto e teclado virtual
 
-O jogo não usa campos `input` nativos nem o teclado IME do sistema: um teclado
-virtual próprio, dentro do celular e reutilizado no mapa/PC, atende os campos de texto. Isso mantém a
-identidade visual, evita sobreposição do teclado do SO e elimina o último
-diálogo/formulário nativo do fluxo.
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
+Nome de foto, identidade e coordenadas usam teclado virtual próprio, compartilhado entre celular e mapa/PC. A busca da Bolsa continua usando input nativo; os campos de coordenadas são readonly e abrem o editor. Portanto, ausência de IME se refere ao editor próprio, não a todo o jogo.
 
 ## Arquitetura
 
@@ -17,7 +16,7 @@ Dois serviços compartilham o mesmo estado transitório:
   `#text-entry-field` com o contador e o botão de confirmação, e decide o que
   acontece com cada tecla pressionada.
 
-A interação flui por `game.js`: o teclado delega cliques (`dataset.key`) para
+`game.js` compõe os serviços; `events.js` registra a interação: o teclado delega cliques (`dataset.key`) para
 `services.pressionarTecla`; a entrada de texto pede o re-render ao teclado. Os
 pontos de entrada no jogo chamam `services.abrirEntradaTexto({...})` e ignoram
 como o buffer é preenchido.
@@ -28,7 +27,7 @@ como o buffer é preenchido.
 
 ```text
 aberto         se uma edição está em andamento
-layout         qwerty | numeros
+layout         qwerty | numeros | coordenadas
 shift          acionado até a próxima letra
 buffer         texto digitado
 cursor         posição de edição no buffer

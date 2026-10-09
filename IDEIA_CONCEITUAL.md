@@ -1,5 +1,7 @@
 # IDEIA_CONCEITUAL
 
+> Revisão documental — 08/10/2026: Arquivo de decisões, hipóteses e pendências criativas. A referência geral vigente é [AGENTS](AGENTS.md); os status técnicos antigos abaixo não são um inventário atual. Save persistente, casa, James, crime e mapa já existem. Expressões fotográficas não concluem poses narrativas.
+
 > Documento-base para atualização conceitual de **Sim, Acredite nas Mentiras Dele kk (SANMD)**.
 >
 > Este arquivo consolida as decisões narrativas e visuais mais recentes discutidas até agora, separando o que já foi definido do que ainda permanece em aberto.
@@ -51,8 +53,7 @@ Esse celular inicia a trama principal do jogo.
 **[DECIDIDO]**
 
 - A protagonista é uma mulher.
-- O nome real da protagonista será escolhido pelo jogador no início.
-- Durante o desenvolvimento, ela será chamada de **MJ**.
+- O nome definitivo da protagonista é **MJ**, sem escolha de outro nome.
 - O gênero da protagonista não possui função narrativa específica.
 - A escolha por uma protagonista feminina é uma preferência autoral e não precisa ser justificada dentro da narrativa.
 - MJ questiona mentalmente muitas das coisas que observa.
@@ -340,7 +341,7 @@ Após a conclusão da primeira conversa entre MJ e Lulith:
 - Mensagens e Arquivos continuam acessíveis depois da limpeza, mas aparecem vazios.
 - Os arquivos vistos, a solução do enigma, o histórico e a rota de monólogo permanecem registrados internamente durante a sessão.
 
-O replay persistente ainda não está implementado. A preservação atual existe somente em memória e funciona como protótipo da regra narrativa futura.
+O replay persistente ainda não está implementado. Saves já preservam progresso em `localStorage`; isso não implementa metaprogressão entre campanhas.
 
 ## Funções planejadas
 
@@ -965,8 +966,7 @@ Esses assets não representam o design final.
 ## Já decidido
 
 - Protagonista feminina.
-- Nome de desenvolvimento: MJ.
-- Nome escolhido pelo jogador.
+- Nome definitivo: MJ.
 - Dona do celular: Lulith.
 - Sem romance entre MJ e Lulith.
 - William James como amigo/professor/colega.

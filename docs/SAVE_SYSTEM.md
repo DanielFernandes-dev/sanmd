@@ -1,5 +1,7 @@
 # Sistema de Save
 
+> Referência geral: [AGENTS.md](../AGENTS.md). Este documento aprofunda somente o contrato deste sistema.
+
 ## Responsabilidades
 
 O snapshot do jogo é a fonte de verdade. A fotografia é somente a identidade visual de um save manual.
@@ -44,6 +46,8 @@ A captura é temporária até a confirmação do nome. Cancelar descarta ID, exp
 
 O formato versão 1 persiste somente estruturas existentes no jogo:
 
+- `saveVersion: 1` e `capturedAt`: versão e timestamp do snapshot;
+- `worldMap`: disponibilidade de locais, com normalização para saves legados;
 - `act1Complete`: conclusão narrativa do protótipo (`false` em snapshots v1 antigos sem esse campo);
 - `aparelho`: `originalPhoneStatus`, `activePhone` e `phoneTheme`;
 - `inventory`: IDs únicos de itens coletados;
@@ -94,9 +98,10 @@ Os pontos lógicos atuais são:
 - conclusão bem-sucedida de hotspots, após flags e eventos narrativos;
 - Novo jogo, depois de concluir ou pular `lulith_codigo`, revelar o gameplay e iniciar a conversa inicial;
 - conclusão ou Skip de `act1_ending`, depois de marcar `act1Complete: true` e antes de `act1_title`/menu;
+- viagem bem-sucedida em `world-travel.js` e desbloqueio de local em `world-map.js`;
 - `saveOnExit`, em `visibilitychange`/`pagehide`, somente durante a partida, sem cutscene ativa ou transição de cena.
 
-Trocar de cena, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele será substituído pelo próximo gatilho elegível da lista acima. A Cutscene 01 não grava autosave. A coleta registra o autosave normal do hotspot, mas não inicia a Cutscene 03. Frames, timers, áudio, câmera, título e estado de Skip nunca entram no snapshot. O retorno ao menu não apaga saves; carregar o autosave final conserva `act1Complete` e impede repetir a saída.
+Navegar entre cômodos por si só, abrir o celular, abrir a Galeria e carregar uma fotografia não acionam autosave. Em especial, carregar um save manual antigo preserva o autosave existente. Ele será substituído pelo próximo gatilho elegível da lista acima. A Cutscene 01 não grava autosave. A coleta registra o autosave normal do hotspot, mas não inicia a Cutscene 03. Frames, timers, áudio, câmera, título e estado de Skip nunca entram no snapshot. O retorno ao menu não apaga saves; carregar o autosave final conserva `act1Complete` e impede repetir a saída.
 
 ## Expressões Fotográficas
 
@@ -113,7 +118,7 @@ Ao substituir as artes, manter os IDs existentes. Não substituir os IDs em save
 
 ## Validação E Erros
 
-Antes de qualquer mutação, o load valida versão, IDs de local/cena, fases, rotas, arquivos, etapas, mensagens, flags e timestamps. Um snapshot inválido mantém a sessão intacta e exibe erro no detalhe da fotografia. Outros saves continuam disponíveis e o registro inválido ainda pode ser excluído.
+A fase do monólogo é validada contra todos os catálogos, pois o progresso do celular acompanha viagens. Antes de qualquer mutação, o load valida versão, IDs de local/cena, fases, rotas, arquivos, etapas, mensagens, flags e timestamps. Um snapshot inválido mantém a sessão intacta e exibe erro no detalhe da fotografia. Outros saves continuam disponíveis e o registro inválido ainda pode ser excluído.
 
 Saves que apontam para cenas removidas do catálogo, ou guardam estados dessas cenas, são incompatíveis e seguem essa mesma rejeição. Não são redirecionados automaticamente para outro cômodo.
 
@@ -136,8 +141,7 @@ mas descartes anteriores não são inventados. A rotação visual não é persis
 ## Aquisição funcional do celular
 
 O snapshot v1 inclui `aparelho: { originalPhoneStatus, activePhone, phoneTheme }`.
-O original permanece `broken`; o aparelho ativo é `null` ou `lulith`, e o tema é
-`lulith` ou `mj`. A coleta já é registrada em `sceneState.beco_fundo`; a ativação
+O original pode ser `working` (telefone recolhido na casa) ou `broken` após a sequência do crime. O ativo é `null`, `mj` ou `lulith`; tema `lulith` ou `mj`. A validação relaciona esses valores às flags de coleta e conclusão do crime. A coleta já é registrada em `sceneState.beco_fundo`; a ativação
 é derivada de `activePhone`, sem flags redundantes de disponibilidade.
 
 Os estados restauráveis são: aparelho no cofre, aparelho coletado na Bolsa e
@@ -150,8 +154,7 @@ Migração de saves sem `aparelho`: sem histórico de mensagens, arquivos vistos
 reset iniciado, o aparelho permanece inativo e o inventário é preservado. Havendo
 esse progresso anterior no celular, a migração conserva o acesso com aparelho
 Lulith ativo e o antigo tema MJ; normaliza a coleta e retira eventual cópia da
-Bolsa. A migração usa somente o snapshot, nunca o estado da sessão atual. Saves
-novos começam com tema Lulith e não antecipam a personalização.
+Bolsa. A migração usa somente o snapshot, nunca o estado da sessão atual. O estado-base usa tema Lulith; recolher o telefone de MJ na casa aplica tema MJ. Personalização livre continua pendente. Saves antigos da casa com telefone recolhido, original quebrado/inativo e crime não concluído são normalizados para MJ funcionando.
 
 A coleta mantém o autosave existente dos hotspots. A ativação salva ao concluir
 a reação, depois da mudança de estado. Os saves manuais continuam na Galeria,
