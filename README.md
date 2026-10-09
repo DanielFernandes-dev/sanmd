@@ -1,6 +1,6 @@
 # Sim, Acredite nas Mentiras Dele — SANMD
 
-Protótipo de Visual Novel investigativa ambientada em São Paulo, com MJ como protagonista, exploração point-and-click, diálogos, celular e inventário. Disponível em navegador e Android via Capacitor; conteúdo e arte estão em desenvolvimento.
+Esta é a versão **1.1.1** do protótipo de Visual Novel investigativa ambientada em São Paulo, com MJ como protagonista, exploração point-and-click, diálogos, celular e inventário. Disponível em navegador e Android via Capacitor; conteúdo e arte estão em desenvolvimento.
 
 O recorte atual percorre casa, cena do crime, delegacia e beco, com investigação básica, mensagens, arquivos, fotografias/saves e cutscenes. Campanha completa, ARG e múltiplos finais permanecem planejados.
 
@@ -81,3 +81,7 @@ AGENTS.md                Referência criativa/técnica, design e roadmap
 - [Auditoria documental — inventário e registro da consolidação](docs/AUDITORIA_DOCUMENTAL.md).
 
 Em 09/10/2026, GDD, ESTRUTURA_GAMING, REGRAS_DE_DESIGN, IDEIA_CONCEITUAL e TODO foram consolidados no AGENTS.md e removidos da raiz. Decisões, pendências e registros de produção foram preservados, distinguindo o implementado do planejado. Contratos em `docs/` e READMEs dos assets continuam especializados; versões integrais dos documentos removidos permanecem no histórico Git.
+
+## Próxima versão planejada
+
+A versão **1.1.5** está planejada para conter toda a história do jogo, adicionar a trilha sonora, corrigir bugs da versão 1.1.1 e usar *Doki Doki Literature Club!* como inspiração.

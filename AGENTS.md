@@ -1,5 +1,7 @@
 # SANMD — referência central
 
+O protótipo atual é a versão **1.1.1**. Esta indicação descreve o estágio do projeto; a campanha completa continua planejada.
+
 Consolidação de **08/10/2026**, conferida contra o código do commit `85b081e`. Este documento reúne identidade, arquitetura atual e manutenção de **Sim, Acredite nas Mentiras Dele (SANMD)**. A abertura também apresenta `kk`.
 
 Atualização pontual de **09/10/2026**, referente ao commit `cfa1b28`: acesso ao mapa pelo celular da Lulith, ajuste vertical da bolsa e ampliação da chave. As demais seções mantêm a base da consolidação; esta atualização não representa uma nova auditoria integral.
