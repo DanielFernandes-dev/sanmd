@@ -68,7 +68,7 @@ São derivados gerados com IA, não recortes pixel a pixel da folha original.
 A normalização de tamanho preserva o alpha gerado, inclusive valores interiores
 próximos de 255. A folha original é apenas fonte de produção e não é usada pelo renderer.
 O registro de produção e os prompts estão em
-[Expressões fotográficas da MJ](../../ESTRUTURA_GAMING.md#expressões-fotográficas-da-mj).
+[Expressões fotográficas da MJ](../../AGENTS.md#producao-fotografica).
 
 `npm run copy:web` replica os PNGs para `www/assets/sprites/mj/photo/`.
 
@@ -81,6 +81,6 @@ O registro de produção e os prompts estão em
 
 ## Referências
 
-- [`../../ESTRUTURA_GAMING.md`](../../ESTRUTURA_GAMING.md): carregamento, slots e transições de personagem.
-- [`../../IDEIA_CONCEITUAL.md`](../../IDEIA_CONCEITUAL.md): decisões sobre personagens e direção artística.
-- [`../../TODO.md`](../../TODO.md): poses e personagens ainda pendentes.
+- [AGENTS — arquitetura](../../AGENTS.md#parte-ii): carregamento, slots e transições de personagem.
+- [AGENTS — visão criativa](../../AGENTS.md#visao-criativa): decisões sobre personagens e direção artística.
+- [AGENTS — roadmap](../../AGENTS.md#roadmap): poses e personagens ainda pendentes.

@@ -17,7 +17,7 @@ updated: 2026-10-05
 > [!summary] Objetivo
 > Consolidar o que está implementado e a evidência disponível, sem confundir
 > protótipo funcional com o roteiro completo. Código: `js/`, `index.html` e
-> `styles.css`. Plano narrativo: [GDD](../GDD.md). Pendências: [TODO](../TODO.md).
+> `styles.css`. Plano narrativo: [Visão criativa](../AGENTS.md#visao-criativa). Pendências: [Roadmap](../AGENTS.md#roadmap).
 
 ## Fluxo jogável atual
 
@@ -48,10 +48,10 @@ Cutscene 03 salva `act1Complete` e retorna ao menu.
 | Abertura | Um título que expande as próprias iniciais; luz e som da lâmpada; espera por Skip | [Cutscenes](cutscenes.md) |
 | Novo jogo | Reset anterior à apresentação; dez quadros de Lulith sem falas | [Cutscenes](cutscenes.md) |
 | Encerramento do protótipo | Saída condicional do beco, oito quadros, título final, autosave e menu | [Cutscenes](cutscenes.md#cutscene-03--act1_ending) |
-| Menu | Caderno com abertura, páginas, paginação, saves reais e autosave | [Arquitetura](../ESTRUTURA_GAMING.md#tela-inicial) |
+| Menu | Caderno com abertura, páginas, paginação, saves reais e autosave | [Arquitetura](../AGENTS.md#tela-inicial) |
 | Navegação | Entrada, interior e fundo do beco; fade global e bloqueio de input | [Transições](SCENE_TRANSITIONS.md) |
 | Investigação | Hotspots, objetos por estado, abertura do cofre, coleta e Bolsa | [Point-and-click](POINT_AND_CLICK.md) |
-| Narrativa | Diálogos, monólogos condicionais, primeiro contato anônimo, enigma e reset | [Arquitetura](../ESTRUTURA_GAMING.md) |
+| Narrativa | Diálogos, monólogos condicionais, primeiro contato anônimo, enigma e reset | [Arquitetura](../AGENTS.md#parte-ii) |
 | Celular | Temas, Mensagens, Arquivos, Galeria e relógio | [Temas](PHONE_THEMES.md) |
 | Persistência | Snapshot v1 em localStorage, nove saves manuais e um autosave separado | [Save System](SAVE_SYSTEM.md) |
 | Fotografias | Dez expressões da MJ, composição, preview, captura, load e exclusão | [Sprites](../assets/sprites/README.md) |
@@ -129,11 +129,11 @@ auditiva e o Skip em todos os quadros no aparelho permanecem pendentes.
 - Evidências, terminal, mapa, sistema geral de puzzles, atos completos e finais.
 - Replay narrativo persistente, progresso de 100% e ARG.
 - Arte/trilha definitivas, avaliação auditiva dos SFX e revisão subjetiva do último ritmo.
-- Dívidas de acessibilidade e tokens visuais descritas em [Regras de design](../REGRAS_DE_DESIGN.md).
+- Dívidas de acessibilidade e tokens visuais descritas em [Regras de design](../AGENTS.md#design).
 
 ## Manutenção
 
-`README.md` é a porta de entrada; `ESTRUTURA_GAMING.md` descreve arquitetura;
+`README.md` é a porta de entrada; [AGENTS](../AGENTS.md) centraliza arquitetura, visão e roadmap;
 `docs/` mantém os contratos por sistema; os README de assets descrevem os
 arquivos reais. O [ADR](ADR_LOG.md) conserva decisões históricas, inclusive as
 substituídas. Tempos devem mudar primeiro em CONFIG; esta documentação registra

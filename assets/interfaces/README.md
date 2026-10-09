@@ -74,7 +74,7 @@ Os SVGs-fonte usam `viewBox="0 0 32 32"`, `currentColor` e `shape-rendering="cri
 
 ## Menu Ir Para
 
-O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato está documentado em `ESTRUTURA_GAMING.md` e implementado por `#ir-para-menu` em `styles.css`.
+O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato está documentado em [AGENTS — design](../../AGENTS.md#design) e implementado por `#ir-para-menu` em `styles.css`.
 
 - O menu permanece contextual, compacto e associado ao ícone **Ir para**.
 - Destinos continuam sendo `button.message-choice` criados por `js/scene.js`.
@@ -87,11 +87,11 @@ O menu de destinos é parte da interface, mas não é um asset SVG. Seu contrato
 
 ## Referências
 
-- [Design atual da Galeria](../../ESTRUTURA_GAMING.md#design-atual): composição visual e responsividade do celular e da Galeria, sem alteração do contrato de persistência.
-- [Tela Inicial](../../ESTRUTURA_GAMING.md#tela-inicial): capa, páginas de registros e animação do caderno.
-- [`../../ESTRUTURA_GAMING.md`](../../ESTRUTURA_GAMING.md): controles e contrato arquitetural do menu.
-- [`../../IDEIA_CONCEITUAL.md`](../../IDEIA_CONCEITUAL.md): direção minimalista da interface atual.
-- [`../../TODO.md`](../../TODO.md): implementação e validações pendentes.
+- [Design atual da Galeria](../../AGENTS.md#galeria): composição visual e responsividade do celular e da Galeria, sem alteração do contrato de persistência.
+- [Tela Inicial](../../AGENTS.md#tela-inicial): capa, páginas de registros e animação do caderno.
+- [AGENTS — arquitetura](../../AGENTS.md#parte-ii): controles e contrato arquitetural do menu.
+- [AGENTS — design](../../AGENTS.md#design): direção minimalista da interface atual.
+- [AGENTS — roadmap](../../AGENTS.md#roadmap): implementação e validações pendentes.
 
 
 ## Integração com as cutscenes

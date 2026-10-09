@@ -210,7 +210,7 @@ o uso de `:has()` no layout é seguro. As regras específicas de assets não for
 alteradas, e a promoção delas para a raiz permanece em aberto. O registro formal
 de voz do texto do jogo continua pendente: o projeto tem personagem e princípio
 narrativo, mas nenhum documento declara idioma, cadência ou comprimento de linha.
-Contrato e extensão: [Regras de design](../REGRAS_DE_DESIGN.md).
+Contrato e extensão: [Regras de design](../AGENTS.md#design).
 
 Validação: os 108 testes existentes seguem aprovados com `node --test`, sem
 alteração de código. Os 16 links relativos e as 14 âncoras internas do novo
@@ -390,3 +390,16 @@ aprovados incluem regressões das Cutscenes 01/02 e dos demais sistemas. O APK
 foi gerado, seus scripts/CSS conferidos contra o fonte e instalado no SM-A055M.
 A sequência natural completa, autosave, menu e reentrada passaram no WebView,
 com restauração dos saves originais. Ver [Cutscenes](cutscenes.md).
+
+
+## 2026-10-09 — Consolidação dos documentos da raiz no AGENTS
+
+Por solicitação explícita do responsável, GDD, IDEIA_CONCEITUAL, ESTRUTURA_GAMING,
+REGRAS_DE_DESIGN e TODO foram comparados com a referência central e removidos
+após migração do conteúdo útil. AGENTS passa a incluir visão criativa detalhada,
+regras de design, roadmap e registros de produção fotográfica; README mantém
+apresentação/comandos e links. Contratos especializados e READMEs de assets
+permanecem, com backlinks corrigidos. Entradas anteriores deste ADR registram
+os nomes e decisões de sua época. Não houve mudança de runtime.
+
+Rastreabilidade e validações: [limpeza documental](AUDITORIA_DOCUMENTAL.md#limpeza-raiz).

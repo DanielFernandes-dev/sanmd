@@ -67,15 +67,17 @@ assets/                  Cenários, sprites, interfaces e áudio
 test/ / scripts/         Testes Node e checks de navegador
 android/                 Projeto/configuração nativa
 docs/                    Contratos e histórico
-AGENTS.md                Referência criativa, técnica e de manutenção
-TODO.md                  Tarefas e planos futuros
+AGENTS.md                Referência criativa/técnica, design e roadmap
 ```
 
 ## Documentação
 
 - [AGENTS — referência central e índice dos contratos](AGENTS.md#documentacao).
-- [TODO — roadmap](TODO.md).
+- [Visão criativa e personagens](AGENTS.md#visao-criativa).
+- [Regras de design](AGENTS.md#design).
+- [Roadmap e validações pendentes](AGENTS.md#roadmap).
+- [Produção fotográfica e prompts](AGENTS.md#producao-fotografica).
 - [ADR — decisões históricas](docs/ADR_LOG.md).
-- [Auditoria documental — inventário e limpeza proposta](docs/AUDITORIA_DOCUMENTAL.md).
+- [Auditoria documental — inventário e registro da consolidação](docs/AUDITORIA_DOCUMENTAL.md).
 
-Documentos antigos foram preservados e sinalizados; suas propostas não significam funcionalidades implementadas.
+Em 09/10/2026, GDD, ESTRUTURA_GAMING, REGRAS_DE_DESIGN, IDEIA_CONCEITUAL e TODO foram consolidados no AGENTS.md e removidos da raiz. Decisões, pendências e registros de produção foram preservados, distinguindo o implementado do planejado. Contratos em `docs/` e READMEs dos assets continuam especializados; versões integrais dos documentos removidos permanecem no histórico Git.

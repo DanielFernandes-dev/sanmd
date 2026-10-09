@@ -78,7 +78,7 @@ antes do primeiro corte. Ver [Cutscenes](../../docs/cutscenes.md).
 
 ## Referências
 
-- [`../../ESTRUTURA_GAMING.md`](../../ESTRUTURA_GAMING.md): arquitetura de cenas e navegação.
-- [`../../GDD.md`](../../GDD.md): função dos cenários no design do jogo.
-- [`../../IDEIA_CONCEITUAL.md`](../../IDEIA_CONCEITUAL.md): decisões visuais e caráter provisório.
-- [`../../TODO.md`](../../TODO.md): produção e validação dos cenários do Ato I.
+- [AGENTS — arquitetura](../../AGENTS.md#parte-ii): arquitetura de cenas e navegação.
+- [AGENTS — visão criativa](../../AGENTS.md#visao-criativa): função dos cenários no design do jogo.
+- [AGENTS — visão criativa](../../AGENTS.md#visao-criativa): decisões visuais e caráter provisório.
+- [AGENTS — roadmap](../../AGENTS.md#roadmap): produção e validação dos cenários do Ato I.

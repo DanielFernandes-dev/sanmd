@@ -1,5 +1,7 @@
 # Auditoria e consolidação documental — 08/10/2026
 
+> Atualização de 09/10/2026: a limpeza dos cinco documentos da raiz foi autorizada e executada após consolidação complementar no AGENTS. O corpo datado de 08/10 abaixo permanece histórico; a recomendação antiga de mantê-los foi substituída pelo [registro de limpeza](#limpeza-raiz). Links dos documentos removidos agora levam às seções consolidadas.
+
 ## Escopo e resultado
 
 Base técnica: commit `85b081e`. Consolidação somente documental; nenhum módulo, asset, HTML, CSS ou configuração nativa foi alterado. Nenhum documento foi apagado ou movido. [AGENTS](../AGENTS.md) passa a centralizar identidade, arquitetura atual e manutenção; README apresenta/ensina executar. Este relatório guarda evidências e decisões de limpeza, não duplica o manual do jogo.
@@ -14,11 +16,11 @@ Os 24 documentos preexistentes abaixo foram analisados. Referências locais de p
 |---|---|---|
 | [AGENTS](../AGENTS.md) | Guia inglês, composição, Save, testes e tarefas comuns | Reestruturado como central em português |
 | [README](../README.md) | Apresentação, comandos, arquitetura/status e índice | Simplificado; comandos preservados |
-| [GDD](../GDD.md) | Visão narrativa/mecânica, direção e estado técnico misturados | Identidade/direções incorporadas; planos preservados, ressalva histórica |
-| [IDEIA_CONCEITUAL](../IDEIA_CONCEITUAL.md) | Decisões, hipóteses, personagens, finais e produção | Direções aprovadas incorporadas; dúvidas/ideias mantidas, MJ corrigida |
-| [ESTRUTURA_GAMING](../ESTRUTURA_GAMING.md) | Arquitetura, fluxos, Save, fotos e registros de produção | Função central substituída; histórico preservado/sinalizado |
-| [REGRAS_DE_DESIGN](../REGRAS_DE_DESIGN.md) | Tokens, composição, acessibilidade, naming e pipeline | Regras gerais consolidadas; especificações extensas preservadas |
-| [TODO](../TODO.md) | Roadmap, revisões e convenções | Mantido separado; nota de precedência/status histórico |
+| [GDD](../AGENTS.md#visao-criativa) | Visão narrativa/mecânica, direção e estado técnico misturados | Identidade/direções incorporadas; planos preservados, ressalva histórica |
+| [IDEIA_CONCEITUAL](../AGENTS.md#visao-criativa) | Decisões, hipóteses, personagens, finais e produção | Direções aprovadas incorporadas; dúvidas/ideias mantidas, MJ corrigida |
+| [ESTRUTURA_GAMING](../AGENTS.md#parte-ii) | Arquitetura, fluxos, Save, fotos e registros de produção | Função central substituída; histórico preservado/sinalizado |
+| [REGRAS_DE_DESIGN](../AGENTS.md#design) | Tokens, composição, acessibilidade, naming e pipeline | Regras gerais consolidadas; especificações extensas preservadas |
+| [TODO](../AGENTS.md#roadmap) | Roadmap, revisões e convenções | Mantido separado; nota de precedência/status histórico |
 | [ARCHITECTURE](ARCHITECTURE.md) | Composição/dependências antigas | Visão geral substituída; candidato a arquivar |
 | [JS_MODULES](JS_MODULES.md) | Responsabilidades/APIs de 30 módulos | Inventário atualizado na central; candidato a arquivar após conferir APIs úteis |
 | [STATUS_PROJETO](STATUS_PROJETO.md) | Status e evidências de QA de revisões antigas | Histórico sinalizado, link relativo corrigido |
@@ -70,7 +72,7 @@ README mantém HTTP local, npm ci, npm run apk e npm test; remove detalhamento d
 
 Documentos antigos recebem avisos de precedência, não uma reescrita silenciosa da história. Datas, resultados de QA e ideias ainda válidas não foram apagados. As regras de desenvolvimento antigas conflitantes (comentários/docstrings, listeners somente em um arquivo, ausência universal de erros) foram contextualizadas, sem mudança de código.
 
-## Limpeza proposta — aguardando aprovação
+## Proposta histórica de limpeza — 08/10/2026
 
 | Candidato | Recomendação e motivo | Referências que exigem cuidado |
 |---|---|---|
@@ -103,3 +105,23 @@ Não há recomendação de exclusão imediata. **Após aprovação**, `docs/ARCH
 ### Critério para concluir a limpeza futura
 
 Aprovação explícita dos destinos; conteúdo único preservado; backlinks/âncoras redirecionados; índice central e TODO coerentes; diff apenas no escopo autorizado. Esta consolidação não inicia migração arquitetural.
+
+
+<a id="limpeza-raiz"></a>
+## Limpeza autorizada da raiz — 09/10/2026
+
+Base: `5dd9ea5`, árvore de trabalho inicialmente limpa. Escopo: comparar todos os Markdown da raiz exceto README, consolidar informações faltantes no AGENTS, remover os cinco documentos indicados e atualizar README/backlinks. O nome solicitado “REGRA_DE_DESING” corresponde ao arquivo existente `REGRAS_DE_DESIGN.md`. Nenhum documento em docs/assets foi removido; alterações neles se limitam às referências e aos registros desta limpeza na auditoria e no ADR. Nenhum gameplay, asset, teste ou configuração foi alterado.
+
+| Documento removido | Conteúdo preservado / destino |
+|---|---|
+| GDD.md | [Visão criativa](../AGENTS.md#visao-criativa): público/referências, pilares, atos, finais, progresso, replay, ARG, princípio de investigação justa e hipóteses |
+| IDEIA_CONCEITUAL.md | [Personagens e decisões](../AGENTS.md#visao-criativa): perfis, relações, código dramático, seleção de MJ, pendências de motivação/candidatos, protótipos e questões estéticas abertas |
+| ESTRUTURA_GAMING.md | [Sistemas](../AGENTS.md#sistemas), [primeiro contato](../AGENTS.md#primeiro-contato), [caderno](../AGENTS.md#tela-inicial), [Galeria](../AGENTS.md#galeria) e [produção](../AGENTS.md#producao-fotografica), incluindo prompts, recortes, tentativas rejeitadas e limites dos registros de QA |
+| REGRAS_DE_DESIGN.md | [Design](../AGENTS.md#design): tokens/paleta, tipografia, composição, interação, movimento, copy, naming, pipeline, exceções e [dívidas](../AGENTS.md#roadmap) |
+| TODO.md | [Roadmap](../AGENTS.md#roadmap): conteúdo, puzzles, apps futuros, arte, acessibilidade, testes e critérios de conclusão; itens já implementados deixam de aparecer como pendências |
+
+Conferências locais: catálogo e CONFIG, fluxo do telefone e persistência, caderno/autosave, CSS e contrato de input, suíte/arquivos de teste e pacote do teste instrumentado Android. Arquitetura geral conserva a base auditada anteriormente; não houve nova auditoria integral do runtime. Corrigidas as interpretações antigas de início no beco, ausência de mapa/James, save só em memória, autosave sem acesso e Skip restrito. Cofre sem puzzle definitivo, metaprogressão, terminal e final de descarte permanecem planos.
+
+Regras de design herdadas continuam distinguindo intenção e implementação. Contagens/linhas antigas de CSS e checklists históricos não foram promovidos a evidência atual. Documentos integrais podem ser consultados com `git show 5dd9ea5:GDD.md` e o equivalente para cada nome da tabela. Essa rastreabilidade não substitui a migração do conteúdo útil para AGENTS.
+
+Validação desta limpeza: 20 documentos Markdown, 193 links/âncoras locais conferidos sem erro, ausência de referências ativas aos arquivos removidos e `git diff --check` sem erros. `npm test` não foi executado nesta limpeza porque Node/npm não estavam disponíveis no ambiente. Os 241 testes mencionados acima pertencem à auditoria de 08/10/2026. Não foram executados build, ADB ou QA visual/sonoro nesta tarefa documental.
