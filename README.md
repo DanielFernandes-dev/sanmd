@@ -4,6 +4,8 @@ Protótipo de Visual Novel investigativa ambientada em São Paulo, com MJ como p
 
 O recorte atual percorre casa, cena do crime, delegacia e beco, com investigação básica, mensagens, arquivos, fotografias/saves e cutscenes. Campanha completa, ARG e múltiplos finais permanecem planejados.
 
+O mapa global é compartilhado pelo PC da delegacia e pelo celular da Lulith, após ativar o aparelho pela Bolsa. O ícone Mapas permanece desabilitado no celular da MJ. Ambos os acessos usam os mesmos destinos, desbloqueios e dados do Save v1.
+
 ## Como executar
 
 É possível abrir `index.html` diretamente, mas recomenda-se servidor HTTP local para validar recursos e scripts. Com Python 3, na raiz:
@@ -25,6 +27,20 @@ npm run apk
 
 O comando recria `www/` com os recursos web, sincroniza Capacitor e executa `assembleDebug`. APK: `android/app/build/outputs/apk/debug/app-debug.apk`. Edite os fontes, não a cópia em www. Veja [ambiente e validação Android](AGENTS.md#validacao).
 
+### Instalar e abrir pelo ADB
+
+Com a depuração ativada e o aparelho autorizado, consulte `adb devices -l`. Na depuração sem fio, use `adb pair IP:PORTA_PAREAMENTO` e informe o código exibido pelo Android; depois use `adb connect IP:PORTA_CONEXAO`. As duas portas podem ser diferentes.
+
+Substitua `SERIAL` pelo identificador listado pelo ADB:
+
+```bash
+adb -s SERIAL install -r android/app/build/outputs/apk/debug/app-debug.apk
+adb -s SERIAL shell am force-stop com.sanmd.game
+adb -s SERIAL shell am start -W -n com.sanmd.game/.MainActivity
+```
+
+`install -r` atualiza o aplicativo preservando os dados existentes. A abertura confirma a inicialização; posicionamento dos objetos e funcionamento completo exigem validação no aparelho.
+
 ## Controles
 
 Use **Conversar**, **Ir para**, **Celular** e **Bolsa** conforme desbloqueados. Clique na caixa, Enter ou espaço avança falas; Escape volta quando permitido. Duplo clique/toque pula cutscenes.
@@ -38,6 +54,8 @@ npm test
 ```
 
 Testes usam mocks e verificações de fontes/assets; renderização, toque e áudio reais exigem QA em navegador e Android.
+
+Na validação de 09/10/2026 do commit `cfa1b28`, os 241 testes passaram. A bolsa recebeu deslocamentos verticais e a chave teve sprite e hotspot ampliados. O alinhamento visual da bolsa com o chão ainda aguarda confirmação; os deslocamentos são medidos na arte lógica e variam em pixels na tela conforme a escala.
 
 ## Estrutura resumida
 

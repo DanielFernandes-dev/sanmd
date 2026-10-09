@@ -2,6 +2,8 @@
 
 Consolidação de **08/10/2026**, conferida contra o código do commit `85b081e`. Este documento reúne identidade, arquitetura atual e manutenção de **Sim, Acredite nas Mentiras Dele (SANMD)**. A abertura também apresenta `kk`.
 
+Atualização pontual de **09/10/2026**, referente ao commit `cfa1b28`: acesso ao mapa pelo celular da Lulith, ajuste vertical da bolsa e ampliação da chave. As demais seções mantêm a base da consolidação; esta atualização não representa uma nova auditoria integral.
+
 ## Regras obrigatórias
 
 - Investigar código, testes e documentação local antes de modificar. Intenção criativa não comprova funcionalidade.
@@ -198,6 +200,8 @@ Transição bloqueia input antes do await, faz fade-out, prepara módulo/imagens
 
 Mensagens, Arquivos e Galeria são funcionais. Mapas reutiliza o sistema global no celular ativo da Lulith. MJ usa seu tema na casa; ativar o celular do beco usa Lulith. Personalização livre não existe. Reset limpa conteúdo narrativo visível, preserva dados pré-reset previstos e saves.
 
+O ícone Mapas é habilitado por `activePhone === "lulith"`, independentemente do tema. Abre o overlay global existente com `source: "lulith_phone"`; fechar retorna à tela inicial e ao foco do ícone. Viagens fecham o celular antes da transição. Origem e retorno são transitórios, sem mudança no Save v1. A apresentação permanece no overlay global, sem uma tela de mapa própria encaixada no celular; responsividade, reset e navegação por toque desse acesso ainda exigem QA real.
+
 `gallery.js` apresenta saves; não implementa armazenamento. `text-entry.js`/`keyboard.js` atendem nome de foto, identidade e coordenadas, com layouts/cursor/acentos. Mensagens usa opções; a pesquisa da Bolsa é input nativo, contrariando a antiga afirmação de ausência total de inputs.
 
 #### Bolsa
@@ -229,6 +233,8 @@ Há **11 cenas em quatro locais**, em `data.js`:
 | Beco | `beco_entrada`, `beco_interior`, `beco_fundo` | Cofre, aparelho, saída |
 
 Definições têm background, destinos, personagens, initialState, objetos/variantes e hotspots com condições/changes/eventId. `sceneState` preserva flags em retorno/save. O banheiro removido não é destino atual. Pastas de eventos não contêm toda a cena: dados, falas, assets e regras do beco continuam compartilhados.
+
+No quarto da MJ, `backgroundSize: [1672, 941]` ativa a compensação do recorte `cover` já existente. A bolsa usa `rect: [78, 64.74, 9, 13]` e hotspot `[77, 62.74, 12, 17]`. Na cena do crime, a chave usa `[42.75, 68.75, 6, 8]` e hotspot `[40.5, 66.5, 10.5, 12]`. Os valores são porcentagens da arte lógica: ajustes de poucos pixels nessa arte podem ser pouco perceptíveis no aparelho. Os SVGs e as regras de interação foram preservados. O alinhamento final da bolsa com o chão ainda não foi confirmado visualmente.
 
 `CUTSCENES` contém `intro_abertura` (título/luz), `lulith_codigo` (dez quadros), `act1_ending` (oito quadros + preto gerado, sem nono PNG) e `act1_title`. Controlador mantém uma sessão, exclusão/Skip/conclusão idempotente; renderers e pool de áudio limpam tarefas. Preload é ligado à sequência solicitada. Fim natural e Skip compartilham efeitos narrativos.
 
@@ -266,6 +272,8 @@ Checklist: conferir escopo/diff, modos e marcos, reentrância/falhas, limpeza de
 ### Testes e Android
 
 `npm test` executa `node --test`. Há 18 arquivos *.test.js e load-game.cjs. Alguns usam VM/mocks próprios, outros inspecionam fontes/assets; não há Jest nem jsdom instalado. O helper simula DOM/Audio/Image, não renderização real. Loader tem teste dedicado; harness geral também prepara factories locais.
+
+Validação pontual em 09/10/2026: 241 testes passaram com as mudanças de `cfa1b28`. Builds anteriores desse conjunto de ajustes foram instalados por ADB no SM_A055M, com inicialização confirmada; na última reinstalação antes do commit, o SHA-256 do APK no aparelho coincidiu com o artefato local. A correção final de foco do commit foi validada pela suíte, sem QA visual específico. Esses resultados não comprovam o alinhamento da bolsa nem todos os fluxos do mapa no celular.
 
 Testes exercitam navegação/marcos, monólogos, Bolsa/consumo, saves, fotos, texto, menu, cutscenes, transições, loader e workstation. Resultado desta execução no [relatório](docs/AUDITORIA_DOCUMENTAL.md#validacoes); não representa percentual de cobertura. Toque, clipping, foco, som, movimento reduzido e suspensão/retomada exigem QA real.
 
